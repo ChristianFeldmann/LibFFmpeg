@@ -28,7 +28,7 @@ public:
   SharedLibraryLoader() = default;
 
   void unload();
-  bool load(std::filesystem::path pathToLib);
+  bool load(std::string absolutePathOrLibName);
 
   auto getLibraryPath() const { return this->libraryPath; }
 

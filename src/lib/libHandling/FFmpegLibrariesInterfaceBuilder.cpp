@@ -39,7 +39,7 @@ LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
     result.loadingLog.push_back("Trying to load the libraries in the path " + path.string());
 
     const auto [success, log] = libraryInterface->tryLoadFFmpegLibrariesInPath(path);
-    result.loadingLog.insert(result.loadingLog.begin(), log.begin(), log.end());
+    result.loadingLog.insert(result.loadingLog.end(), log.begin(), log.end());
 
     if (success)
     {

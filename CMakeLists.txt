@@ -16,6 +16,7 @@ endif()
 option(ENABLE_TEST "Enable build of Tests" OFF)
 
 add_subdirectory(src/lib)
+add_subdirectory(src/app)
 
 if(ENABLE_TEST)
     message(STATUS "Enable building of unit tests")

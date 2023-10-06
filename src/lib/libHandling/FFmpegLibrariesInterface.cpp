@@ -44,18 +44,26 @@ bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
 
   for (const auto &possibleLibName : getPossibleLibraryNames(libName, version.major))
   {
-    const auto filePath   = absoluteDirectoryPath / possibleLibName;
-    const auto fileStatus = std::filesystem::status(filePath);
-
-    if (fileStatus.type() == std::filesystem::file_type::not_found)
+    std::string absolutePathOrLibName;
+    if (absoluteDirectoryPath.empty())
+      absolutePathOrLibName = possibleLibName;
+    else
     {
-      log.push_back("Loading using lib name " + possibleLibName + " failed. Can not find file " +
-                    filePath.string());
-      continue;
+      const auto filePath   = absoluteDirectoryPath / possibleLibName;
+      const auto fileStatus = std::filesystem::status(filePath);
+
+      if (fileStatus.type() == std::filesystem::file_type::not_found)
+      {
+        log.push_back("Loading using lib name " + possibleLibName + " failed. Can not find file " +
+                      filePath.string());
+        continue;
+      }
+
+      absolutePathOrLibName = filePath.string();
     }
 
-    const auto success = lib.load(filePath);
-    log.push_back("Loading library " + filePath.string() + (success ? " succeded" : " failed"));
+    const auto success = lib.load(absolutePathOrLibName);
+    log.push_back("Loading library " + absolutePathOrLibName + (success ? " succeded" : " failed"));
     if (success)
       return true;
   }
@@ -81,14 +89,14 @@ bool checkLibraryVersion(const std::string &libName,
 }
 
 // These FFmpeg versions are supported. The numbers indicate the major version of
-// the following libraries in this order: Util, codec, format, swresample
+// the following libraries in this order: avformat, avcodec, avutil, swresample
 // The versions are sorted from newest to oldest, so that we try to open the newest ones first.
 auto SupportedMajorLibraryVersionCombinations = {
-    LibraryVersions({Version(58), Version(60), Version(60), Version(4)}),
-    LibraryVersions({Version(57), Version(59), Version(59), Version(4)}),
-    LibraryVersions({Version(56), Version(58), Version(58), Version(3)}),
-    LibraryVersions({Version(55), Version(57), Version(57), Version(2)}),
-    LibraryVersions({Version(54), Version(56), Version(56), Version(1)}),
+    LibraryVersions({Version(60), Version(60), Version(58), Version(4)}),
+    LibraryVersions({Version(59), Version(59), Version(57), Version(4)}),
+    LibraryVersions({Version(58), Version(58), Version(56), Version(3)}),
+    LibraryVersions({Version(57), Version(57), Version(55), Version(2)}),
+    LibraryVersions({Version(56), Version(56), Version(54), Version(1)}),
 };
 
 } // namespace
