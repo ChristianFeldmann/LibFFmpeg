@@ -168,7 +168,6 @@ AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContext *      c,
 
 void AVFormatContextWrapper::updateFrom(AVFormatContext *c)
 {
-  assert(this->ctx == nullptr);
   this->ctx = c;
   this->update();
 }

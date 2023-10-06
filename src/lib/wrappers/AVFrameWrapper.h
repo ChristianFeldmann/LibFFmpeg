@@ -25,7 +25,7 @@ public:
   int           getWidth();
   int           getHeight();
   Size          getSize();
-  int           getPTS();
+  int64_t       getPTS();
   AVPictureType getPictType();
   int           getKeyFrame();
   AVDictionary *getMetadata();

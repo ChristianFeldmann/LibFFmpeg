@@ -6,18 +6,15 @@
 
 #pragma once
 
-#include <common/Expected.h>
 #include <common/FFMpegLibrariesTypes.h>
 
+#include <functional>
 #include <sstream>
 #include <string>
 #include <vector>
 
 namespace LibFFmpeg::functions
 {
-
-using LoadingResult       = tl::expected<void, std::string>;
-using LoadingResultAndLog = std::pair<LoadingResult, Log>;
 
 template <typename T>
 void checkForMissingFunctionAndLog(std::function<T> &        function,

@@ -46,13 +46,13 @@ private:
   std::string                  filename{};
   int64_t                      start_time{-1};
   int64_t                      duration{-1};
-  int                          bit_rate{0};
+  int64_t                      bit_rate{0};
   unsigned int                 packet_size{0};
   int                          max_delay{0};
   int                          flags{0};
 
-  unsigned int        probesize{0};
-  int                 max_analyze_duration{0};
+  int64_t             probesize{0};
+  int64_t             max_analyze_duration{0};
   std::string         key{};
   unsigned int        nb_programs{0};
   AVCodecID           video_codec_id{AV_CODEC_ID_NONE};

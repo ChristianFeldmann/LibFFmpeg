@@ -37,7 +37,7 @@ private:
   AVCodecID     codec_id{};
   unsigned int  codec_tag{};
   unsigned int  stream_codec_tag{};
-  int           bit_rate{};
+  int64_t       bit_rate{};
   int           bit_rate_tolerance{};
   int           global_quality{};
   int           compression_level{};

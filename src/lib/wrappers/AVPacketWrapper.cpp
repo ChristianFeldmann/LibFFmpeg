@@ -11,7 +11,6 @@ namespace LibFFmpeg
 
 AVPacketWrapper::AVPacketWrapper(AVPacket *packet, const LibraryVersions &libraryVersions)
 {
-  assert(packet != nullptr);
   this->libraryVersions = libraryVersions;
 
   if (this->libraryVersions.avcodec.major == 56)
@@ -47,33 +46,36 @@ void AVPacketWrapper::clear()
   this->libraryVersions = {};
 }
 
-void AVPacketWrapper::setData(QByteArray &set_data)
+void AVPacketWrapper::setData(const ByteVector &data)
 {
   if (this->libraryVersions.avcodec.major == 56)
   {
-    auto p  = reinterpret_cast<AVPacket_56 *>(this->pkt);
-    p->data = (uint8_t *)set_data.data();
-    p->size = set_data.size();
-    data    = p->data;
-    size    = p->size;
+    auto p           = reinterpret_cast<AVPacket_56 *>(this->pkt);
+    this->packetData = data;
+    p->data          = (uint8_t *)data.data();
+    p->size          = static_cast<int>(data.size());
+    this->data       = p->data;
+    size             = p->size;
   }
   else if (this->libraryVersions.avcodec.major == 57 || //
            this->libraryVersions.avcodec.major == 58)
   {
-    auto p  = reinterpret_cast<AVPacket_57_58 *>(this->pkt);
-    p->data = (uint8_t *)set_data.data();
-    p->size = set_data.size();
-    data    = p->data;
-    size    = p->size;
+    auto p           = reinterpret_cast<AVPacket_57_58 *>(this->pkt);
+    this->packetData = data;
+    p->data          = (uint8_t *)data.data();
+    p->size          = static_cast<int>(data.size());
+    this->data       = p->data;
+    size             = p->size;
   }
   else if (this->libraryVersions.avcodec.major == 59 || //
            this->libraryVersions.avcodec.major == 60)
   {
-    auto p  = reinterpret_cast<AVPacket_59_60 *>(this->pkt);
-    p->data = (uint8_t *)set_data.data();
-    p->size = set_data.size();
-    data    = p->data;
-    size    = p->size;
+    auto p           = reinterpret_cast<AVPacket_59_60 *>(this->pkt);
+    this->packetData = data;
+    p->data          = (uint8_t *)data.data();
+    p->size          = static_cast<int>(data.size());
+    this->data       = p->data;
+    size             = p->size;
   }
   else
     throw std::runtime_error("Invalid library version");

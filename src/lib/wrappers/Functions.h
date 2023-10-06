@@ -13,7 +13,8 @@ namespace LibFFmpeg
 
 inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int inputDataSize)
 {
-  assert(inputDataSize >= 0);
+  if (inputDataSize <= 0)
+    return {};
 
   ByteVector data;
   data.resize(inputDataSize);

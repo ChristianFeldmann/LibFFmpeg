@@ -47,7 +47,7 @@ private:
   int64_t               start_time{};
   int64_t               duration{};
   int64_t               nb_frames{};
-  int                   disposition{};
+  int64_t               disposition{};
   enum AVDiscard        discard
   {
   };

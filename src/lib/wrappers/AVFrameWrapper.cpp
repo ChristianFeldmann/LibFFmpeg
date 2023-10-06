@@ -148,7 +148,7 @@ Size AVFrameWrapper::getSize()
   return Size({width, height});
 }
 
-int AVFrameWrapper::getPTS()
+int64_t AVFrameWrapper::getPTS()
 {
   this->update();
   return this->pts;
@@ -168,7 +168,6 @@ int AVFrameWrapper::getKeyFrame()
 
 AVDictionary *AVFrameWrapper::getMetadata()
 {
-  assert(this->libraryVersions.avutil.major >= 57);
   this->update();
   return this->metadata;
 }

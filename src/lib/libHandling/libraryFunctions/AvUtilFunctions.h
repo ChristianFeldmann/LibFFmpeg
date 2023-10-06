@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <common/Expected.h>
 #include <common/FFMpegLibrariesTypes.h>
 #include <libHandling/SharedLibraryLoader.h>
 

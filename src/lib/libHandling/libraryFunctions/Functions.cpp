@@ -25,7 +25,8 @@ std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string>
                                                   const std::string               libraryName,
                                                   Log &                           log)
 {
-  assert(!missingFunctions.empty());
+  if (missingFunctions.empty())
+    return {};
 
   const auto errorMessage = "Binding " + libraryName +
                             " functions failed. Missing functions: " + to_string(missingFunctions);

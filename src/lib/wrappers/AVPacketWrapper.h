@@ -76,7 +76,7 @@ public:
 
   void clear();
 
-  void setData(QByteArray &set_data);
+  void setData(const ByteVector &data);
   void setPTS(int64_t pts);
   void setDTS(int64_t dts);
 
@@ -109,6 +109,8 @@ private:
   int               side_data_elems{};
   int64_t           duration{};
   int64_t           pos{};
+
+  ByteVector packetData{};
 
   AVPacket *      pkt{};
   LibraryVersions libraryVersions{};

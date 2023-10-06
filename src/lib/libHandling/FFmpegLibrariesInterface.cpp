@@ -12,9 +12,6 @@ namespace LibFFmpeg
 namespace
 {
 
-using LoadingResult       = tl::expected<void, std::string>;
-using LoadingResultAndLog = std::pair<LoadingResult, Log>;
-
 std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int version)
 {
   // The ffmpeg libraries are named using a major version number. E.g: avutil-55.dll on windows.
