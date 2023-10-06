@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
 
 namespace LibFFmpeg
 {
@@ -15,7 +15,10 @@ class AVInputFormatWrapper
 {
 public:
   AVInputFormatWrapper() = default;
-  AVInputFormatWrapper(AVInputFormat *avInputFormat, const LibraryVersions &libraryVersions);
+  AVInputFormatWrapper(AVInputFormat                            *avInputFormat,
+                       std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+
+  std::string getName();
 
   explicit operator bool() const { return this->avInputFormat != nullptr; };
 
@@ -30,8 +33,8 @@ private:
   std::string extensions{};
   std::string mime_type{};
 
-  AVInputFormat * avInputFormat{};
-  LibraryVersions libraryVersions{};
+  AVInputFormat                            *avInputFormat{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace LibFFmpeg

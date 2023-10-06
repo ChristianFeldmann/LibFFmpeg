@@ -17,14 +17,14 @@ namespace
 // These functions give us version independent access to the structs.
 typedef struct AVFormatContext_56
 {
-  const AVClass *        av_class;
-  struct AVInputFormat * iformat;
+  const AVClass         *av_class;
+  struct AVInputFormat  *iformat;
   struct AVOutputFormat *oformat;
-  void *                 priv_data;
-  AVIOContext *          pb;
+  void                  *priv_data;
+  AVIOContext           *pb;
   int                    ctx_flags;
   unsigned int           nb_streams; //
-  AVStream **            streams;    //
+  AVStream             **streams;    //
   char                   filename[1024];
   int64_t                start_time;
   int64_t                duration; //
@@ -34,32 +34,32 @@ typedef struct AVFormatContext_56
   int                    flags;
   unsigned int           probesize;
   int                    max_analyze_duration;
-  const uint8_t *        key;
+  const uint8_t         *key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram **           programs;
+  AVProgram            **programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter **           chapters;
-  AVDictionary *         metadata;
+  AVChapter            **chapters;
+  AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 } AVFormatContext_56;
 
 typedef struct AVFormatContext_57
 {
-  const AVClass *        av_class;
-  struct AVInputFormat * iformat;
+  const AVClass         *av_class;
+  struct AVInputFormat  *iformat;
   struct AVOutputFormat *oformat;
-  void *                 priv_data;
-  AVIOContext *          pb;
+  void                  *priv_data;
+  AVIOContext           *pb;
   int                    ctx_flags;
   unsigned int           nb_streams;
-  AVStream **            streams;
+  AVStream             **streams;
   char                   filename[1024];
   int64_t                start_time;
   int64_t                duration;
@@ -69,34 +69,34 @@ typedef struct AVFormatContext_57
   int                    flags;
   unsigned int           probesize;
   int                    max_analyze_duration;
-  const uint8_t *        key;
+  const uint8_t         *key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram **           programs;
+  AVProgram            **programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter **           chapters;
-  AVDictionary *         metadata;
+  AVChapter            **chapters;
+  AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 } AVFormatContext_57;
 
 typedef struct AVFormatContext_58
 {
-  const AVClass *        av_class;
-  struct AVInputFormat * iformat;
+  const AVClass         *av_class;
+  struct AVInputFormat  *iformat;
   struct AVOutputFormat *oformat;
-  void *                 priv_data;
-  AVIOContext *          pb;
+  void                  *priv_data;
+  AVIOContext           *pb;
   int                    ctx_flags;
   unsigned int           nb_streams;
-  AVStream **            streams;
+  AVStream             **streams;
   char                   filename[1024];
-  char *                 url;
+  char                  *url;
   int64_t                start_time;
   int64_t                duration;
   int64_t                bit_rate;
@@ -105,33 +105,33 @@ typedef struct AVFormatContext_58
   int                    flags;
   int64_t                probesize;
   int64_t                max_analyze_duration;
-  const uint8_t *        key;
+  const uint8_t         *key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram **           programs;
+  AVProgram            **programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter **           chapters;
-  AVDictionary *         metadata;
+  AVChapter            **chapters;
+  AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 } AVFormatContext_58;
 
 typedef struct AVFormatContext_59_60
 {
-  const AVClass *        av_class;
-  struct AVInputFormat * iformat;
+  const AVClass         *av_class;
+  struct AVInputFormat  *iformat;
   struct AVOutputFormat *oformat;
-  void *                 priv_data;
-  AVIOContext *          pb;
+  void                  *priv_data;
+  AVIOContext           *pb;
   int                    ctx_flags;
   unsigned int           nb_streams;
-  AVStream **            streams;
-  char *                 url;
+  AVStream             **streams;
+  char                  *url;
   int64_t                start_time;
   int64_t                duration;
   int64_t                bit_rate;
@@ -140,41 +140,67 @@ typedef struct AVFormatContext_59_60
   int                    flags;
   int64_t                probesize;
   int64_t                max_analyze_duration;
-  const uint8_t *        key;
+  const uint8_t         *key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram **           programs;
+  AVProgram            **programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter **           chapters;
-  AVDictionary *         metadata;
+  AVChapter            **chapters;
+  AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 } AVFormatContext_59_60;
 
 } // namespace
 
-AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContext *      c,
-                                               const LibraryVersions &libraryVersions)
+AVFormatContextWrapper::AVFormatContextWrapper(
+    std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
 {
-  this->ctx             = c;
-  this->libraryVersions = libraryVersions;
-  this->update();
+  this->librariesInterface = librariesInterface;
 }
 
-void AVFormatContextWrapper::updateFrom(AVFormatContext *c)
+ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
 {
-  this->ctx = c;
+  Log log;
+
+  if (this->formatContext)
+  {
+    log.push_back("Error opening file. AVFormatContext is already initialized.");
+    return {false, log};
+  }
+
+  auto ret = this->librariesInterface->avformat.avformat_open_input(
+      &this->formatContext, path.string().c_str(), nullptr, nullptr);
+  if (ret < 0)
+  {
+    log.push_back("Error opening file (avformat_open_input). Return code " + std::to_string(ret));
+    return {false, log};
+  }
+  if (this->librariesInterface == nullptr)
+  {
+    log.push_back("Error opening file (avformat_open_input). Nullptr returned.");
+    return {false, log};
+  }
+
+  ret = this->librariesInterface->avformat.avformat_find_stream_info(this->formatContext, nullptr);
+  if (ret < 0)
+  {
+    log.push_back("Error opening file (avformat_open_input). Return code " + std::to_string(ret));
+    return {false, log};
+  }
+
   this->update();
+  return {true, log};
 }
 
 AVFormatContextWrapper::operator bool() const
 {
-  return this->ctx;
+  return this->formatContext != nullptr;
 };
 
 unsigned AVFormatContextWrapper::getNbStreams()
@@ -207,11 +233,6 @@ int64_t AVFormatContextWrapper::getDuration()
   return this->duration;
 }
 
-AVFormatContext *AVFormatContextWrapper::getFormatCtx() const
-{
-  return this->ctx;
-}
-
 AVDictionaryWrapper AVFormatContextWrapper::getMetadata()
 {
   this->update();
@@ -220,19 +241,19 @@ AVDictionaryWrapper AVFormatContextWrapper::getMetadata()
 
 void AVFormatContextWrapper::update()
 {
-  if (this->ctx == nullptr)
+  if (this->formatContext == nullptr)
     return;
 
   this->streams.clear();
 
   // Copy values from the source pointer
-  if (this->libraryVersions.avformat.major == 56)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major == 56)
   {
-    auto p           = reinterpret_cast<AVFormatContext_56 *>(this->ctx);
+    auto p           = reinterpret_cast<AVFormatContext_56 *>(this->formatContext);
     this->ctx_flags  = p->ctx_flags;
     this->nb_streams = p->nb_streams;
     for (unsigned i = 0; i < this->nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->libraryVersions));
+      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
     this->filename             = std::string(p->filename);
     this->start_time           = p->start_time;
     this->duration             = p->duration;
@@ -252,15 +273,15 @@ void AVFormatContextWrapper::update()
     this->nb_chapters          = p->nb_chapters;
     this->metadata             = AVDictionaryWrapper(p->metadata);
 
-    this->iformat = AVInputFormatWrapper(p->iformat, this->libraryVersions);
+    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
-  else if (this->libraryVersions.avformat.major == 57)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)
   {
-    auto p           = reinterpret_cast<AVFormatContext_57 *>(this->ctx);
+    auto p           = reinterpret_cast<AVFormatContext_57 *>(this->formatContext);
     this->ctx_flags  = p->ctx_flags;
     this->nb_streams = p->nb_streams;
     for (unsigned i = 0; i < nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->libraryVersions));
+      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
     this->filename             = std::string(p->filename);
     this->start_time           = p->start_time;
     this->duration             = p->duration;
@@ -280,15 +301,15 @@ void AVFormatContextWrapper::update()
     this->nb_chapters          = p->nb_chapters;
     this->metadata             = AVDictionaryWrapper(p->metadata);
 
-    this->iformat = AVInputFormatWrapper(p->iformat, this->libraryVersions);
+    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
-  else if (this->libraryVersions.avformat.major == 58)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)
   {
-    auto p           = reinterpret_cast<AVFormatContext_58 *>(this->ctx);
+    auto p           = reinterpret_cast<AVFormatContext_58 *>(this->formatContext);
     this->ctx_flags  = p->ctx_flags;
     this->nb_streams = p->nb_streams;
     for (unsigned i = 0; i < nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->libraryVersions));
+      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
     this->filename             = std::string(p->filename);
     this->start_time           = p->start_time;
     this->duration             = p->duration;
@@ -308,16 +329,16 @@ void AVFormatContextWrapper::update()
     this->nb_chapters          = p->nb_chapters;
     this->metadata             = AVDictionaryWrapper(p->metadata);
 
-    this->iformat = AVInputFormatWrapper(p->iformat, this->libraryVersions);
+    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
-  else if (this->libraryVersions.avformat.major == 59 || //
-           this->libraryVersions.avformat.major == 60)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 59 || //
+           this->librariesInterface->getLibrariesVersion().avformat.major == 60)
   {
-    auto p           = reinterpret_cast<AVFormatContext_59_60 *>(this->ctx);
+    auto p           = reinterpret_cast<AVFormatContext_59_60 *>(this->formatContext);
     this->ctx_flags  = p->ctx_flags;
     this->nb_streams = p->nb_streams;
     for (unsigned i = 0; i < nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->libraryVersions));
+      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
     this->filename             = std::string(p->url);
     this->start_time           = p->start_time;
     this->duration             = p->duration;
@@ -337,7 +358,7 @@ void AVFormatContextWrapper::update()
     this->nb_chapters          = p->nb_chapters;
     this->metadata             = AVDictionaryWrapper(p->metadata);
 
-    this->iformat = AVInputFormatWrapper(p->iformat, this->libraryVersions);
+    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
   else
     throw std::runtime_error("Invalid library version");

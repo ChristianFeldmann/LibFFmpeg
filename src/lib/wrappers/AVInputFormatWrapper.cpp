@@ -14,25 +14,31 @@ namespace
 
 typedef struct AVInputFormat_56_57_58_59_60
 {
-  const char *                    name;
-  const char *                    long_name;
+  const char                     *name;
+  const char                     *long_name;
   int                             flags;
-  const char *                    extensions;
+  const char                     *extensions;
   const struct AVCodecTag *const *codec_tag;
-  const AVClass *                 priv_class;
-  const char *                    mime_type;
+  const AVClass                  *priv_class;
+  const char                     *mime_type;
 
   // There is more but it is not part of the public ABI
 } AVInputFormat_56_57_58_59_60;
 
 } // namespace
 
-AVInputFormatWrapper::AVInputFormatWrapper(AVInputFormat *        avInputFormat,
-                                           const LibraryVersions &libraryVersions)
+AVInputFormatWrapper::AVInputFormatWrapper(
+    AVInputFormat *avInputFormat, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
 {
-  this->avInputFormat   = avInputFormat;
-  this->libraryVersions = libraryVersions;
+  this->avInputFormat      = avInputFormat;
+  this->librariesInterface = librariesInterface;
   this->update();
+}
+
+std::string AVInputFormatWrapper::getName()
+{
+  this->update();
+  return this->name;
 }
 
 void AVInputFormatWrapper::update()
@@ -40,11 +46,11 @@ void AVInputFormatWrapper::update()
   if (this->avInputFormat == nullptr)
     return;
 
-  if (this->libraryVersions.avformat.major == 56 || //
-      this->libraryVersions.avformat.major == 57 || //
-      this->libraryVersions.avformat.major == 58 || //
-      this->libraryVersions.avformat.major == 59 || //
-      this->libraryVersions.avformat.major == 60)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major == 56 || //
+      this->librariesInterface->getLibrariesVersion().avformat.major == 57 || //
+      this->librariesInterface->getLibrariesVersion().avformat.major == 58 || //
+      this->librariesInterface->getLibrariesVersion().avformat.major == 59 || //
+      this->librariesInterface->getLibrariesVersion().avformat.major == 60)
   {
     auto p           = reinterpret_cast<AVInputFormat_56_57_58_59_60 *>(this->avInputFormat);
     this->name       = std::string(p->name);

@@ -14,4 +14,25 @@ Demuxer::Demuxer(std::shared_ptr<FFmpegLibrariesInterface> libraries)
   this->libraries = libraries;
 }
 
+ResultAndLog Demuxer::openFile(std::filesystem::path path)
+{
+  Log log;
+
+  if (!this->libraries)
+  {
+    log.push_back("Error. Libraries not loaded");
+    return {false, log};
+  }
+
+  this->formatContext = LibFFmpeg::AVFormatContextWrapper(this->libraries);
+  const auto result   = this->formatContext.openFile(path);
+
+  return result;
+}
+
+AVPacketWrapper Demuxer::getNextPacket()
+{
+  return {};
+}
+
 } // namespace LibFFmpeg

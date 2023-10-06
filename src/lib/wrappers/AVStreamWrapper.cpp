@@ -18,8 +18,8 @@ typedef struct AVStream_56
 {
   int               index;
   int               id;
-  AVCodecContext *  codec;
-  void *            priv_data;
+  AVCodecContext   *codec;
+  void             *priv_data;
   struct AVFrac     pts;
   AVRational        time_base;
   int64_t           start_time;
@@ -28,7 +28,7 @@ typedef struct AVStream_56
   int               disposition;
   enum AVDiscard    discard;
   AVRational        sample_aspect_ratio;
-  AVDictionary *    metadata;
+  AVDictionary     *metadata;
   AVRational        avg_frame_rate;
   AVPacket_56       attached_pic;
   AVPacketSideData *side_data;
@@ -38,18 +38,18 @@ typedef struct AVStream_56
 
 typedef struct AVProbeData_57
 {
-  const char *   filename;
+  const char    *filename;
   unsigned char *buf;
   int            buf_size;
-  const char *   mime_type;
+  const char    *mime_type;
 } AVProbeData_57;
 
 typedef struct AVStream_57
 {
   int               index;
   int               id;
-  AVCodecContext *  codec; // Deprecated. Might be removed in the next major version.
-  void *            priv_data;
+  AVCodecContext   *codec; // Deprecated. Might be removed in the next major version.
+  void             *priv_data;
   struct AVFrac     pts; // Deprecated. Might be removed in the next major version.
   AVRational        time_base;
   int64_t           start_time;
@@ -58,7 +58,7 @@ typedef struct AVStream_57
   int               disposition;
   enum AVDiscard    discard;
   AVRational        sample_aspect_ratio;
-  AVDictionary *    metadata;
+  AVDictionary     *metadata;
   AVRational        avg_frame_rate;
   AVPacket_57_58    attached_pic;
   AVPacketSideData *side_data;
@@ -93,7 +93,7 @@ typedef struct AVStream_57
   int                          codec_info_nb_frames;
   enum AVStreamParseType       need_parsing;
   struct AVCodecParserContext *parser;
-  struct AVPacketList *        last_in_packet_buffer;
+  struct AVPacketList         *last_in_packet_buffer;
   AVProbeData_57               probe_data;
 #define MAX_REORDER_DELAY 16
   int64_t       pts_buffer[MAX_REORDER_DELAY + 1];
@@ -123,10 +123,10 @@ typedef struct AVStream_57
   int           inject_global_side_data;
   // All fields above this line are not part of the public API.
   // All fields below are part of the public API and ABI again.
-  char *             recommended_encoder_configuration;
+  char              *recommended_encoder_configuration;
   AVRational         display_aspect_ratio;
-  struct FFFrac *    priv_pts;
-  AVStreamInternal * internal;
+  struct FFFrac     *priv_pts;
+  AVStreamInternal  *internal;
   AVCodecParameters *codecpar;
 } AVStream_57;
 
@@ -134,8 +134,8 @@ typedef struct AVStream_58
 {
   int                index;
   int                id;
-  AVCodecContext *   codec;
-  void *             priv_data;
+  AVCodecContext    *codec;
+  void              *priv_data;
   AVRational         time_base;
   int64_t            start_time;
   int64_t            duration;
@@ -143,14 +143,14 @@ typedef struct AVStream_58
   int                disposition;
   enum AVDiscard     discard;
   AVRational         sample_aspect_ratio;
-  AVDictionary *     metadata;
+  AVDictionary      *metadata;
   AVRational         avg_frame_rate;
   AVPacket_57_58     attached_pic;
-  AVPacketSideData * side_data;
+  AVPacketSideData  *side_data;
   int                nb_side_data;
   int                event_flags;
   AVRational         r_frame_rate;
-  char *             recommended_encoder_configuration;
+  char              *recommended_encoder_configuration;
   AVCodecParameters *codecpar;
 
   // All field following this line are not part of the public API and may change/be removed.
@@ -160,7 +160,7 @@ typedef struct AVStream_59
 {
   int                index;
   int                id;
-  void *             priv_data;
+  void              *priv_data;
   AVRational         time_base;
   int64_t            start_time;
   int64_t            duration;
@@ -168,10 +168,10 @@ typedef struct AVStream_59
   int                disposition;
   enum AVDiscard     discard;
   AVRational         sample_aspect_ratio;
-  AVDictionary *     metadata;
+  AVDictionary      *metadata;
   AVRational         avg_frame_rate;
   AVPacket_59_60     attached_pic;
-  AVPacketSideData * side_data;
+  AVPacketSideData  *side_data;
   int                nb_side_data;
   int                event_flags;
   AVRational         r_frame_rate;
@@ -181,11 +181,11 @@ typedef struct AVStream_59
 
 typedef struct AVStream_60
 {
-  const AVClass *    av_class;
+  const AVClass     *av_class;
   int                index;
   int                id;
   AVCodecParameters *codecpar;
-  void *             priv_data;
+  void              *priv_data;
   AVRational         time_base;
   int64_t            start_time;
   int64_t            duration;
@@ -193,10 +193,10 @@ typedef struct AVStream_60
   int                disposition;
   enum AVDiscard     discard;
   AVRational         sample_aspect_ratio;
-  AVDictionary *     metadata;
+  AVDictionary      *metadata;
   AVRational         avg_frame_rate;
   AVPacket_59_60     attached_pic;
-  AVPacketSideData * side_data;
+  AVPacketSideData  *side_data;
   int                nb_side_data;
   int                event_flags;
   AVRational         r_frame_rate;
@@ -205,17 +205,18 @@ typedef struct AVStream_60
 
 } // namespace
 
-AVStreamWrapper::AVStreamWrapper(AVStream *src_str, const LibraryVersions &libraryVersions)
+AVStreamWrapper::AVStreamWrapper(AVStream                                 *avStream,
+                                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
 {
-  this->stream          = src_str;
-  this->libraryVersions = libraryVersions;
+  this->stream             = avStream;
+  this->librariesInterface = librariesInterface;
   this->update();
 }
 
 AVMediaType AVStreamWrapper::getCodecType()
 {
   this->update();
-  if (this->libraryVersions.avformat.major <= 56 || !this->codecpar)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
     return this->codec.getCodecType();
   return this->codecpar.getCodecType();
 }
@@ -250,7 +251,7 @@ AVCodecID AVStreamWrapper::getCodecID()
   if (this->stream == nullptr)
     return AV_CODEC_ID_NONE;
 
-  if (this->libraryVersions.avformat.major <= 56 || !this->codecpar)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
     return this->codec.getCodecID();
   else
     return this->codecpar.getCodecID();
@@ -280,7 +281,7 @@ AVRational AVStreamWrapper::getTimeBase()
 Size AVStreamWrapper::getFrameSize()
 {
   this->update();
-  if (this->libraryVersions.avformat.major <= 56 || !this->codecpar)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
     return this->codec.getSize();
   return this->codecpar.getSize();
 }
@@ -288,7 +289,7 @@ Size AVStreamWrapper::getFrameSize()
 AVColorSpace AVStreamWrapper::getColorspace()
 {
   this->update();
-  if (this->libraryVersions.avformat.major <= 56 || !this->codecpar)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
     return this->codec.getColorspace();
   return this->codecpar.getColorspace();
 }
@@ -296,7 +297,7 @@ AVColorSpace AVStreamWrapper::getColorspace()
 AVPixelFormat AVStreamWrapper::getPixelFormat()
 {
   this->update();
-  if (this->libraryVersions.avformat.major <= 56 || !this->codecpar)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
     return this->codec.getPixelFormat();
   return this->codecpar.getPixelFormat();
 }
@@ -304,7 +305,7 @@ AVPixelFormat AVStreamWrapper::getPixelFormat()
 ByteVector AVStreamWrapper::getExtradata()
 {
   this->update();
-  if (this->libraryVersions.avformat.major <= 56 || !this->codecpar)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
     return this->codec.getExtradata();
   return this->codecpar.getExtradata();
 }
@@ -327,12 +328,12 @@ void AVStreamWrapper::update()
     return;
 
   // Copy values from the source pointer
-  if (this->libraryVersions.avformat.major == 56)
+  if (this->librariesInterface->getLibrariesVersion().avformat.major == 56)
   {
     auto p                    = reinterpret_cast<AVStream_56 *>(this->stream);
     this->index               = p->index;
     this->id                  = p->id;
-    this->codec               = AVCodecContextWrapper(p->codec, this->libraryVersions);
+    this->codec               = AVCodecContextWrapper(p->codec, this->librariesInterface);
     this->time_base           = p->time_base;
     this->start_time          = p->start_time;
     this->duration            = p->duration;
@@ -344,12 +345,12 @@ void AVStreamWrapper::update()
     this->nb_side_data        = p->nb_side_data;
     this->event_flags         = p->event_flags;
   }
-  else if (this->libraryVersions.avformat.major == 57)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)
   {
     auto p                    = reinterpret_cast<AVStream_57 *>(this->stream);
     this->index               = p->index;
     this->id                  = p->id;
-    this->codec               = AVCodecContextWrapper(p->codec, this->libraryVersions);
+    this->codec               = AVCodecContextWrapper(p->codec, this->librariesInterface);
     this->time_base           = p->time_base;
     this->start_time          = p->start_time;
     this->duration            = p->duration;
@@ -360,14 +361,14 @@ void AVStreamWrapper::update()
     this->avg_frame_rate      = p->avg_frame_rate;
     this->nb_side_data        = p->nb_side_data;
     this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->libraryVersions);
+    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->libraryVersions.avformat.major == 58)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)
   {
     auto p                    = reinterpret_cast<AVStream_58 *>(this->stream);
     this->index               = p->index;
     this->id                  = p->id;
-    this->codec               = AVCodecContextWrapper(p->codec, this->libraryVersions);
+    this->codec               = AVCodecContextWrapper(p->codec, this->librariesInterface);
     this->time_base           = p->time_base;
     this->start_time          = p->start_time;
     this->duration            = p->duration;
@@ -378,9 +379,9 @@ void AVStreamWrapper::update()
     this->avg_frame_rate      = p->avg_frame_rate;
     this->nb_side_data        = p->nb_side_data;
     this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->libraryVersions);
+    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->libraryVersions.avformat.major == 59)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)
   {
     auto p                    = reinterpret_cast<AVStream_59 *>(this->stream);
     this->index               = p->index;
@@ -395,9 +396,9 @@ void AVStreamWrapper::update()
     this->avg_frame_rate      = p->avg_frame_rate;
     this->nb_side_data        = p->nb_side_data;
     this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->libraryVersions);
+    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->libraryVersions.avformat.major == 60)
+  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)
   {
     auto p                    = reinterpret_cast<AVStream_60 *>(this->stream);
     this->index               = p->index;
@@ -412,7 +413,7 @@ void AVStreamWrapper::update()
     this->avg_frame_rate      = p->avg_frame_rate;
     this->nb_side_data        = p->nb_side_data;
     this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->libraryVersions);
+    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
   else
     throw std::runtime_error("Invalid library version");

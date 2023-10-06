@@ -20,21 +20,21 @@ typedef struct AVCodecContext_56
   int            log_level_offset;
 
   AVMediaType             codec_type;
-  const struct AVCodec *  codec;
+  const struct AVCodec   *codec;
   char                    codec_name[32];
   AVCodecID               codec_id;
   unsigned int            codec_tag;
   unsigned int            stream_codec_tag;
-  void *                  priv_data;
+  void                   *priv_data;
   struct AVCodecInternal *internal;
-  void *                  opaque;
+  void                   *opaque;
   int                     bit_rate;
   int                     bit_rate_tolerance;
   int                     global_quality;
   int                     compression_level;
   int                     flags;
   int                     flags2;
-  uint8_t *               extradata;
+  uint8_t                *extradata;
   int                     extradata_size;
   AVRational              time_base;
   int                     ticks_per_frame;
@@ -45,7 +45,7 @@ typedef struct AVCodecContext_56
   AVPixelFormat           pix_fmt;
   int                     me_method;
   void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame *        src,
+                          const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
@@ -67,7 +67,7 @@ typedef struct AVCodecContext_56
   float                         dark_masking;
   int                           slice_count;
   int                           prediction_method;
-  int *                         slice_offset;
+  int                          *slice_offset;
   AVRational                    sample_aspect_ratio;
   int                           me_cmp;
   int                           me_sub_cmp;
@@ -86,8 +86,8 @@ typedef struct AVCodecContext_56
   int                           slice_flags;
   int                           xvmc_acceleration;
   int                           mb_decision;
-  uint16_t *                    intra_matrix;
-  uint16_t *                    inter_matrix;
+  uint16_t                     *intra_matrix;
+  uint16_t                     *inter_matrix;
   int                           scenechange_threshold;
   int                           noise_reduction;
   int                           me_threshold;
@@ -118,24 +118,24 @@ typedef struct AVCodecContext_56
 
 typedef struct AVCodecContext_57
 {
-  const AVClass *         av_class;
+  const AVClass          *av_class;
   int                     log_level_offset;
   AVMediaType             codec_type;
-  const struct AVCodec *  codec;
+  const struct AVCodec   *codec;
   char                    codec_name[32];
   AVCodecID               codec_id;
   unsigned int            codec_tag;
   unsigned int            stream_codec_tag;
-  void *                  priv_data;
+  void                   *priv_data;
   struct AVCodecInternal *internal;
-  void *                  opaque;
+  void                   *opaque;
   int64_t                 bit_rate;
   int                     bit_rate_tolerance;
   int                     global_quality;
   int                     compression_level;
   int                     flags;
   int                     flags2;
-  uint8_t *               extradata;
+  uint8_t                *extradata;
   int                     extradata_size;
   AVRational              time_base;
   int                     ticks_per_frame;
@@ -146,7 +146,7 @@ typedef struct AVCodecContext_57
   AVPixelFormat           pix_fmt;
   int                     me_method;
   void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame *        src,
+                          const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
@@ -168,7 +168,7 @@ typedef struct AVCodecContext_57
   float                         dark_masking;
   int                           slice_count;
   int                           prediction_method;
-  int *                         slice_offset;
+  int                          *slice_offset;
   AVRational                    sample_aspect_ratio;
   int                           me_cmp;
   int                           me_sub_cmp;
@@ -187,8 +187,8 @@ typedef struct AVCodecContext_57
   int                           slice_flags;
   int                           xvmc_acceleration;
   int                           mb_decision;
-  uint16_t *                    intra_matrix;
-  uint16_t *                    inter_matrix;
+  uint16_t                     *intra_matrix;
+  uint16_t                     *inter_matrix;
   int                           scenechange_threshold;
   int                           noise_reduction;
   int                           me_threshold;
@@ -219,22 +219,22 @@ typedef struct AVCodecContext_57
 
 typedef struct AVCodecContext_58
 {
-  const AVClass *         av_class;
+  const AVClass          *av_class;
   int                     log_level_offset;
   enum AVMediaType        codec_type;
-  const struct AVCodec *  codec;
+  const struct AVCodec   *codec;
   enum AVCodecID          codec_id;
   unsigned int            codec_tag;
-  void *                  priv_data;
+  void                   *priv_data;
   struct AVCodecInternal *internal;
-  void *                  opaque;
+  void                   *opaque;
   int64_t                 bit_rate;
   int                     bit_rate_tolerance;
   int                     global_quality;
   int                     compression_level;
   int                     flags;
   int                     flags2;
-  uint8_t *               extradata;
+  uint8_t                *extradata;
   int                     extradata_size;
   AVRational              time_base;
   int                     ticks_per_frame;
@@ -244,7 +244,7 @@ typedef struct AVCodecContext_58
   int                     gop_size;
   enum AVPixelFormat      pix_fmt;
   void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame *        src,
+                          const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
@@ -265,7 +265,7 @@ typedef struct AVCodecContext_58
   float                              dark_masking;
   int                                slice_count;
   int                                prediction_method;
-  int *                              slice_offset;
+  int                               *slice_offset;
   AVRational                         sample_aspect_ratio;
   int                                me_cmp;
   int                                me_sub_cmp;
@@ -280,8 +280,8 @@ typedef struct AVCodecContext_58
   int                                me_range;
   int                                slice_flags;
   int                                mb_decision;
-  uint16_t *                         intra_matrix;
-  uint16_t *                         inter_matrix;
+  uint16_t                          *intra_matrix;
+  uint16_t                          *inter_matrix;
   int                                scenechange_threshold;
   int                                noise_reduction;
   int                                intra_dc_precision;
@@ -309,22 +309,22 @@ typedef struct AVCodecContext_58
 
 typedef struct AVCodecContext_59_60
 {
-  const AVClass *         av_class;
+  const AVClass          *av_class;
   int                     log_level_offset;
   enum AVMediaType        codec_type;
-  const struct AVCodec *  codec;
+  const struct AVCodec   *codec;
   enum AVCodecID          codec_id;
   unsigned int            codec_tag;
-  void *                  priv_data;
+  void                   *priv_data;
   struct AVCodecInternal *internal;
-  void *                  opaque;
+  void                   *opaque;
   int64_t                 bit_rate;
   int                     bit_rate_tolerance;
   int                     global_quality;
   int                     compression_level;
   int                     flags;
   int                     flags2;
-  uint8_t *               extradata;
+  uint8_t                *extradata;
   int                     extradata_size;
   AVRational              time_base;
   int                     ticks_per_frame;
@@ -334,7 +334,7 @@ typedef struct AVCodecContext_59_60
   int                     gop_size;
   enum AVPixelFormat      pix_fmt;
   void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame *        src,
+                          const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
@@ -352,7 +352,7 @@ typedef struct AVCodecContext_59_60
   float                              p_masking;
   float                              dark_masking;
   int                                slice_count;
-  int *                              slice_offset;
+  int                               *slice_offset;
   AVRational                         sample_aspect_ratio;
   int                                me_cmp;
   int                                me_sub_cmp;
@@ -366,8 +366,8 @@ typedef struct AVCodecContext_59_60
   int                                me_range;
   int                                slice_flags;
   int                                mb_decision;
-  uint16_t *                         intra_matrix;
-  uint16_t *                         inter_matrix;
+  uint16_t                          *intra_matrix;
+  uint16_t                          *inter_matrix;
   int                                intra_dc_precision;
   int                                skip_top;
   int                                skip_bottom;
@@ -394,11 +394,11 @@ AVCodecContextWrapper::AVCodecContextWrapper()
   this->codec = nullptr;
 }
 
-AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext *       c,
-                                             const LibraryVersions &libraryVersions)
+AVCodecContextWrapper::AVCodecContextWrapper(
+    AVCodecContext *c, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
 {
-  this->codec           = c;
-  this->libraryVersions = libraryVersions;
+  this->codec              = c;
+  this->librariesInterface = librariesInterface;
   this->update();
 }
 
@@ -454,7 +454,7 @@ void AVCodecContextWrapper::update()
   if (this->codec == nullptr)
     return;
 
-  if (this->libraryVersions.avcodec.major == 56)
+  if (this->librariesInterface->getLibrariesVersion().avcodec.major == 56)
   {
     auto p                        = reinterpret_cast<AVCodecContext_56 *>(this->codec);
     this->codec_type              = p->codec_type;
@@ -538,7 +538,7 @@ void AVCodecContextWrapper::update()
     this->color_range             = p->color_range;
     this->chroma_sample_location  = p->chroma_sample_location;
   }
-  else if (this->libraryVersions.avcodec.major == 57)
+  else if (this->librariesInterface->getLibrariesVersion().avcodec.major == 57)
   {
     auto p                        = reinterpret_cast<AVCodecContext_57 *>(this->codec);
     this->codec_type              = p->codec_type;
@@ -622,7 +622,7 @@ void AVCodecContextWrapper::update()
     this->color_range             = p->color_range;
     this->chroma_sample_location  = p->chroma_sample_location;
   }
-  else if (this->libraryVersions.avcodec.major == 58)
+  else if (this->librariesInterface->getLibrariesVersion().avcodec.major == 58)
   {
     auto p                        = reinterpret_cast<AVCodecContext_58 *>(this->codec);
     this->codec_type              = p->codec_type;
@@ -706,8 +706,8 @@ void AVCodecContextWrapper::update()
     this->color_range             = p->color_range;
     this->chroma_sample_location  = p->chroma_sample_location;
   }
-  else if (this->libraryVersions.avcodec.major == 59 || //
-           this->libraryVersions.avcodec.major == 60)
+  else if (this->librariesInterface->getLibrariesVersion().avcodec.major == 59 || //
+           this->librariesInterface->getLibrariesVersion().avcodec.major == 60)
   {
     auto p                        = reinterpret_cast<AVCodecContext_59_60 *>(this->codec);
     this->codec_type              = p->codec_type;

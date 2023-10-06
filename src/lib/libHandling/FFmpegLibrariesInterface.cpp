@@ -101,7 +101,7 @@ auto SupportedMajorLibraryVersionCombinations = {
 
 } // namespace
 
-FFmpegLibrariesInterface::LoadingResultAndLog
+ResultAndLog
 FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path)
 {
   Log log;
@@ -128,7 +128,7 @@ FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::pa
     {
       log.push_back(
           "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used.");
-      return {false, log};
+      return {true, log};
     }
   }
 

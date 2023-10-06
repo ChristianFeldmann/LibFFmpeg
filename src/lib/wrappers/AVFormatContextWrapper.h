@@ -11,7 +11,9 @@
 #include "AVPacketWrapper.h"
 #include "AVStreamWrapper.h"
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
+
+#include <memory>
 
 namespace LibFFmpeg
 {
@@ -20,9 +22,10 @@ class AVFormatContextWrapper
 {
 public:
   AVFormatContextWrapper() = default;
-  AVFormatContextWrapper(AVFormatContext *c, const LibraryVersions &libraryVersions);
+  AVFormatContextWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  void     updateFrom(AVFormatContext *c);
+  ResultAndLog openFile(std::filesystem::path path);
+
   explicit operator bool() const;
 
   unsigned int         getNbStreams();
@@ -30,7 +33,6 @@ public:
   AVInputFormatWrapper getInputFormat();
   int64_t              getStartTime();
   int64_t              getDuration();
-  AVFormatContext *    getFormatCtx() const;
   AVDictionaryWrapper  getMetadata();
 
 private:
@@ -63,8 +65,8 @@ private:
   unsigned int        nb_chapters{0};
   AVDictionaryWrapper metadata;
 
-  AVFormatContext *ctx{nullptr};
-  LibraryVersions  libraryVersions{};
+  AVFormatContext                          *formatContext{nullptr};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace LibFFmpeg

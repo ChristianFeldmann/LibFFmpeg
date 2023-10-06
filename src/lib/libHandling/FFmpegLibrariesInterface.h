@@ -31,10 +31,10 @@ public:
   FFmpegLibrariesInterface()  = default;
   ~FFmpegLibrariesInterface() = default;
 
-  using LoadingResultAndLog = std::pair<bool, Log>;
-  LoadingResultAndLog tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path);
+  ResultAndLog tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path);
 
   std::vector<LibraryInfo> getLibrariesInfo() const;
+  LibraryVersions          getLibrariesVersion() const { return this->libraryVersions; }
 
   functions::AvFormatFunctions   avformat{};
   functions::AvCodecFunctions    avcodec{};
@@ -44,8 +44,8 @@ public:
 private:
   bool
   tryLoadLibrariesBindFunctionsAndCheckVersions(const std::filesystem::path &absoluteDirectoryPath,
-                                                const LibraryVersions &      libraryVersions,
-                                                Log &                        log);
+                                                const LibraryVersions       &libraryVersions,
+                                                Log                         &log);
 
   void unloadAllLibraries();
 

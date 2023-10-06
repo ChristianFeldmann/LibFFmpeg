@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
 
 namespace LibFFmpeg
 {
@@ -15,7 +15,8 @@ class AVCodecContextWrapper
 {
 public:
   AVCodecContextWrapper();
-  AVCodecContextWrapper(AVCodecContext *c, const LibraryVersions &libraryVersions);
+  AVCodecContextWrapper(AVCodecContext                           *c,
+                        std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   explicit operator bool() const { return this->codec != nullptr; };
 
@@ -114,8 +115,8 @@ private:
   AVColorRange                  color_range{};
   AVChromaLocation              chroma_sample_location{};
 
-  AVCodecContext *codec{};
-  LibraryVersions libraryVersions{};
+  AVCodecContext                           *codec{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace LibFFmpeg

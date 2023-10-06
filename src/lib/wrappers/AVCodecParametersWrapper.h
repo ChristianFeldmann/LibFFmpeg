@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
 
 namespace LibFFmpeg
 {
@@ -14,7 +14,8 @@ class AVCodecParametersWrapper
 {
 public:
   AVCodecParametersWrapper() = default;
-  AVCodecParametersWrapper(AVCodecParameters *p, const LibraryVersions &libraryVersions);
+  AVCodecParametersWrapper(AVCodecParameters                        *p,
+                           std::shared_ptr<FFmpegLibrariesInterface> libraries);
   explicit operator bool() const { return this->param != nullptr; }
 
   AVMediaType   getCodecType();
@@ -64,8 +65,8 @@ private:
   AVChromaLocation              chroma_location{};
   int                           video_delay{};
 
-  AVCodecParameters *param{};
-  LibraryVersions    libraryVersions{};
+  AVCodecParameters                        *param{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;
 };
 
 } // namespace LibFFmpeg

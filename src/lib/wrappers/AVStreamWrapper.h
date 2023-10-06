@@ -10,7 +10,9 @@
 #include "AVCodecIDWrapper.h"
 #include "AVCodecParametersWrapper.h"
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
+
+#include <memory>
 
 namespace LibFFmpeg
 {
@@ -19,14 +21,14 @@ class AVStreamWrapper
 {
 public:
   AVStreamWrapper() {}
-  AVStreamWrapper(AVStream *src_str, const LibraryVersions &libraryVersions);
+  AVStreamWrapper(AVStream *src_str, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   explicit operator bool() const { return this->stream != nullptr; };
 
   AVMediaType              getCodecType();
   std::string              getCodecTypeName();
   AVCodecID                getCodecID();
-  AVCodecContextWrapper &  getCodec();
+  AVCodecContextWrapper   &getCodec();
   AVRational               getAvgFrameRate();
   AVRational               getTimeBase();
   Size                     getFrameSize();
@@ -59,8 +61,8 @@ private:
   // The AVCodecParameters are present from avformat major version 57 and up.
   AVCodecParametersWrapper codecpar{};
 
-  AVStream *      stream{};
-  LibraryVersions libraryVersions{};
+  AVStream                                 *stream{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace LibFFmpeg
