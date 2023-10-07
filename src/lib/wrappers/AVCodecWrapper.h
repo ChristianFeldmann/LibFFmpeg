@@ -22,26 +22,20 @@ public:
   explicit operator bool() const { return this->codec != nullptr; }
   AVCodec *getAVCodec() { return this->codec; }
 
-  AVCodecID   getCodecID();
-  std::string getName();
-  std::string getLongName();
+  std::string                 getName() const;
+  std::string                 getLongName() const;
+  AVMediaType                 getMediaType() const;
+  AVCodecID                   getCodecID() const;
+  int                         getCapabilities() const;
+  std::vector<AVRational>     getSupportedFramerates() const;
+  std::vector<AVPixelFormat>  getPixelFormats() const;
+  std::vector<int>            getSupportedSamplerates() const;
+  std::vector<AVSampleFormat> getSampleFormats() const;
+  std::vector<uint64_t>       getChannelLayouts() const;
+  uint8_t                     getMaxLowres() const;
 
 private:
-  void update();
-
-  std::string                 name{};
-  std::string                 long_name{};
-  AVMediaType                 type;
-  AVCodecID                   id{AV_CODEC_ID_NONE};
-  int                         capabilities{0};
-  std::vector<AVRational>     supported_framerates;
-  std::vector<AVPixelFormat>  pix_fmts;
-  std::vector<int>            supported_samplerates;
-  std::vector<AVSampleFormat> sample_fmts;
-  std::vector<uint64_t>       channel_layouts;
-  uint8_t                     max_lowres{0};
-
-  AVCodec *       codec{nullptr};
+  AVCodec        *codec{nullptr};
   LibraryVersions libraryVersions;
 };
 
