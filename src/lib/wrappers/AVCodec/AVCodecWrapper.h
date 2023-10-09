@@ -36,7 +36,7 @@ public:
 
 private:
   AVCodec        *codec{nullptr};
-  LibraryVersions libraryVersions;
+  LibraryVersions libraryVersions{};
 };
 
 } // namespace ffmpeg::avcodec

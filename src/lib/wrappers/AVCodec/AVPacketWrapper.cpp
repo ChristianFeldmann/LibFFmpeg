@@ -6,256 +6,103 @@
 
 #include "AVPacketWrapper.h"
 
+#include <wrappers/Functions.h>
+
+#include "CastCodecClasses.h"
+
 namespace ffmpeg::avcodec
 {
 
 AVPacketWrapper::AVPacketWrapper(AVPacket *packet, const LibraryVersions &libraryVersions)
+    : libraryVersions(libraryVersions), packet(packet)
 {
-  this->libraryVersions = libraryVersions;
-
-  if (this->libraryVersions.avcodec.major == 56)
-  {
-    auto p    = reinterpret_cast<AVPacket_56 *>(packet);
-    p->data   = nullptr;
-    p->size   = 0;
-    this->pkt = reinterpret_cast<AVPacket *>(p);
-  }
-  else if (this->libraryVersions.avcodec.major == 57 || //
-           this->libraryVersions.avcodec.major == 58)
-  {
-    auto p    = reinterpret_cast<AVPacket_57_58 *>(packet);
-    p->data   = nullptr;
-    p->size   = 0;
-    this->pkt = reinterpret_cast<AVPacket *>(p);
-  }
-  else if (this->libraryVersions.avcodec.major == 59 || //
-           this->libraryVersions.avcodec.major == 60)
-  {
-    auto p    = reinterpret_cast<AVPacket_59_60 *>(packet);
-    p->data   = nullptr;
-    p->size   = 0;
-    this->pkt = reinterpret_cast<AVPacket *>(p);
-  }
-  else
-    throw std::runtime_error("Invalid library version");
-}
-
-void AVPacketWrapper::clear()
-{
-  this->pkt             = nullptr;
-  this->libraryVersions = {};
 }
 
 void AVPacketWrapper::setData(const ByteVector &data)
 {
+  // Use av functions to create buffers
+}
+
+void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)
+{
   if (this->libraryVersions.avcodec.major == 56)
   {
-    auto p           = reinterpret_cast<AVPacket_56 *>(this->pkt);
-    this->packetData = data;
-    p->data          = (uint8_t *)data.data();
-    p->size          = static_cast<int>(data.size());
-    this->data       = p->data;
-    size             = p->size;
+    auto p = reinterpret_cast<AVPacket_56 *>(this->packet);
+    p->dts = dts;
+    p->pts = pts;
   }
   else if (this->libraryVersions.avcodec.major == 57 || //
            this->libraryVersions.avcodec.major == 58)
   {
-    auto p           = reinterpret_cast<AVPacket_57_58 *>(this->pkt);
-    this->packetData = data;
-    p->data          = (uint8_t *)data.data();
-    p->size          = static_cast<int>(data.size());
-    this->data       = p->data;
-    size             = p->size;
+    auto p = reinterpret_cast<AVPacket_57 *>(this->packet);
+    p->dts = dts;
+    p->pts = pts;
   }
   else if (this->libraryVersions.avcodec.major == 59 || //
            this->libraryVersions.avcodec.major == 60)
   {
-    auto p           = reinterpret_cast<AVPacket_59_60 *>(this->pkt);
-    this->packetData = data;
-    p->data          = (uint8_t *)data.data();
-    p->size          = static_cast<int>(data.size());
-    this->data       = p->data;
-    size             = p->size;
+    auto p = reinterpret_cast<AVPacket_59 *>(this->packet);
+    p->dts = dts;
+    p->pts = pts;
   }
   else
     throw std::runtime_error("Invalid library version");
 }
 
-void AVPacketWrapper::setPTS(int64_t pts)
+int AVPacketWrapper::getStreamIndex() const
 {
-  if (this->libraryVersions.avcodec.major == 56)
-  {
-    auto p    = reinterpret_cast<AVPacket_56 *>(this->pkt);
-    p->pts    = pts;
-    this->pts = pts;
-  }
-  else if (this->libraryVersions.avcodec.major == 57 || //
-           this->libraryVersions.avcodec.major == 58)
-  {
-    auto p    = reinterpret_cast<AVPacket_57_58 *>(this->pkt);
-    p->pts    = pts;
-    this->pts = pts;
-  }
-  else if (this->libraryVersions.avcodec.major == 59 || //
-           this->libraryVersions.avcodec.major == 60)
-  {
-    auto p    = reinterpret_cast<AVPacket_59_60 *>(this->pkt);
-    p->pts    = pts;
-    this->pts = pts;
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  int index;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, index, stream_index);
+  return index;
 }
 
-void AVPacketWrapper::setDTS(int64_t dts)
+int64_t AVPacketWrapper::getPTS() const
 {
-  if (this->libraryVersions.avcodec.major == 56)
-  {
-    auto p    = reinterpret_cast<AVPacket_56 *>(this->pkt);
-    p->dts    = dts;
-    this->dts = dts;
-  }
-  else if (this->libraryVersions.avcodec.major == 57 || //
-           this->libraryVersions.avcodec.major == 58)
-  {
-    auto p    = reinterpret_cast<AVPacket_57_58 *>(this->pkt);
-    p->dts    = dts;
-    this->dts = dts;
-  }
-  else if (this->libraryVersions.avcodec.major == 59 || //
-           this->libraryVersions.avcodec.major == 60)
-  {
-    auto p    = reinterpret_cast<AVPacket_59_60 *>(this->pkt);
-    p->dts    = dts;
-    this->dts = dts;
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  int pts;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, pts, pts);
+  return pts;
 }
 
-AVPacket *AVPacketWrapper::getPacket()
+int64_t AVPacketWrapper::getDTS() const
 {
-  this->update();
-  return this->pkt;
+  int dts;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, dts, dts);
+  return dts;
 }
 
-int AVPacketWrapper::getStreamIndex()
+int64_t AVPacketWrapper::getDuration() const
 {
-  this->update();
-  return this->stream_index;
+  int duration;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, duration, duration);
+  return duration;
 }
 
-int64_t AVPacketWrapper::getPTS()
+AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 {
-  this->update();
-  return this->pts;
+  int flagsAsInt;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, flagsAsInt, flags);
+
+  Flags flags;
+
+  if (flagsAsInt & AV_PKT_FLAG_KEY)
+    flags.keyframe = true;
+  if (flagsAsInt & AV_PKT_FLAG_CORRUPT)
+    flags.corrupt = true;
+  if (flagsAsInt & AV_PKT_FLAG_DISCARD)
+    flags.discard = true;
+
+  return flags;
 }
 
-int64_t AVPacketWrapper::getDTS()
+ByteVector AVPacketWrapper::getData() const
 {
-  this->update();
-  return this->dts;
-}
+  uint8_t *data;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, data, data);
 
-int64_t AVPacketWrapper::getDuration()
-{
-  this->update();
-  return this->duration;
-}
+  int dataSize;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, dataSize, size);
 
-int AVPacketWrapper::getFlags()
-{
-  this->update();
-  return this->flags;
-}
-
-bool AVPacketWrapper::getFlagKeyframe()
-{
-  this->update();
-  return this->flags & AV_PKT_FLAG_KEY;
-}
-
-bool AVPacketWrapper::getFlagCorrupt()
-{
-  this->update();
-  return this->flags & AV_PKT_FLAG_CORRUPT;
-}
-
-bool AVPacketWrapper::getFlagDiscard()
-{
-  this->update();
-  return this->flags & AV_PKT_FLAG_DISCARD;
-}
-
-uint8_t *AVPacketWrapper::getData()
-{
-  this->update();
-  return this->data;
-}
-
-int AVPacketWrapper::getDataSize()
-{
-  this->update();
-  return this->size;
-}
-
-void AVPacketWrapper::update()
-{
-  if (this->pkt == nullptr)
-    return;
-
-  if (this->libraryVersions.avcodec.major == 56)
-  {
-    auto p = reinterpret_cast<AVPacket_56 *>(this->pkt);
-
-    this->buf             = p->buf;
-    this->pts             = p->pts;
-    this->dts             = p->dts;
-    this->data            = p->data;
-    this->size            = p->size;
-    this->stream_index    = p->stream_index;
-    this->flags           = p->flags;
-    this->side_data       = p->side_data;
-    this->side_data_elems = p->side_data_elems;
-    this->duration        = p->duration;
-    this->pos             = p->pos;
-  }
-  else if (this->libraryVersions.avcodec.major == 57 || //
-           this->libraryVersions.avcodec.major == 58)
-  {
-    auto p = reinterpret_cast<AVPacket_57_58 *>(this->pkt);
-
-    this->buf             = p->buf;
-    this->pts             = p->pts;
-    this->dts             = p->dts;
-    this->data            = p->data;
-    this->size            = p->size;
-    this->stream_index    = p->stream_index;
-    this->flags           = p->flags;
-    this->side_data       = p->side_data;
-    this->side_data_elems = p->side_data_elems;
-    this->duration        = p->duration;
-    this->pos             = p->pos;
-  }
-  else if (this->libraryVersions.avcodec.major == 59 || //
-           this->libraryVersions.avcodec.major == 60)
-  {
-    auto p = reinterpret_cast<AVPacket_59_60 *>(this->pkt);
-
-    this->buf             = p->buf;
-    this->pts             = p->pts;
-    this->dts             = p->dts;
-    this->data            = p->data;
-    this->size            = p->size;
-    this->stream_index    = p->stream_index;
-    this->flags           = p->flags;
-    this->side_data       = p->side_data;
-    this->side_data_elems = p->side_data_elems;
-    this->duration        = p->duration;
-    this->pos             = p->pos;
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  return copyDataFromRawArray(data, dataSize);
 }
 
 } // namespace ffmpeg::avcodec

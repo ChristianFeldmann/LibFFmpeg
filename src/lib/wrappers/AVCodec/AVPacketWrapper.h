@@ -15,7 +15,7 @@ namespace ffmpeg::avcodec
 // These are the version independent functions to retrive data from AVPacket.
 // The size of this struct is part of the public API and must be correct
 // since its size is used in other structures (e.g. AVStream).
-typedef struct AVPacket_56
+struct AVPacket_56
 {
   AVBufferRef      *buf;
   int64_t           pts;
@@ -30,9 +30,9 @@ typedef struct AVPacket_56
   void (*destruct)(struct AVPacket *);
   void   *priv;
   int64_t pos;
-} AVPacket_56;
+};
 
-typedef struct AVPacket_57_58
+struct AVPacket_57
 {
   AVBufferRef      *buf;
   int64_t           pts;
@@ -46,9 +46,11 @@ typedef struct AVPacket_57_58
   int64_t           duration;
   int64_t           pos;
   int64_t           convergence_duration;
-} AVPacket_57_58;
+};
 
-typedef struct AVPacket_59_60
+typedef AVPacket_57 AVPacket_58;
+
+struct AVPacket_59
 {
   AVBufferRef      *buf;
   int64_t           pts;
@@ -64,7 +66,9 @@ typedef struct AVPacket_59_60
   void             *opaque;
   AVBufferRef      *opaque_ref;
   AVRational        time_base;
-} AVPacket_59_60;
+};
+
+typedef AVPacket_59 AVPacket_60;
 
 // A wrapper around the different versions of the AVPacket versions.
 // It also adds some functions like automatic deletion when it goes out of scope.
@@ -74,45 +78,29 @@ public:
   AVPacketWrapper() = default;
   AVPacketWrapper(AVPacket *packet, const LibraryVersions &libraryVersions);
 
-  void clear();
-
   void setData(const ByteVector &data);
-  void setPTS(int64_t pts);
-  void setDTS(int64_t dts);
+  void setTimestamps(const int64_t dts, const int64_t pts);
 
-  AVPacket *getPacket();
-  int       getStreamIndex();
-  int64_t   getPTS();
-  int64_t   getDTS();
-  int64_t   getDuration();
-  int       getFlags();
-  bool      getFlagKeyframe();
-  bool      getFlagCorrupt();
-  bool      getFlagDiscard();
-  uint8_t  *getData();
-  int       getDataSize();
+  AVPacket *getPacket() const { return this->packet; }
 
-  explicit operator bool() const { return this->pkt != nullptr; };
+  struct Flags
+  {
+    bool keyframe{};
+    bool corrupt{};
+    bool discard{};
+  };
+
+  int        getStreamIndex() const;
+  int64_t    getPTS() const;
+  int64_t    getDTS() const;
+  int64_t    getDuration() const;
+  Flags      getFlags() const;
+  ByteVector getData() const;
+
+  explicit operator bool() const { return this->packet != nullptr; };
 
 private:
-  void update();
-
-  // These are private. Use "update" to update them from the AVFormatContext
-  AVBufferRef      *buf{};
-  int64_t           pts{};
-  int64_t           dts{};
-  uint8_t          *data{};
-  int               size{};
-  int               stream_index{};
-  int               flags{};
-  AVPacketSideData *side_data{};
-  int               side_data_elems{};
-  int64_t           duration{};
-  int64_t           pos{};
-
-  ByteVector packetData{};
-
-  AVPacket       *pkt{};
+  AVPacket       *packet{};
   LibraryVersions libraryVersions{};
 };
 

@@ -7,13 +7,15 @@
 #include "AVCodecWrapper.h"
 #include <stdexcept>
 
+#include "CastCodecClasses.h"
+
 namespace ffmpeg::avcodec
 {
 
 namespace
 {
 
-typedef struct AVCodec_56_57_58
+struct AVCodec_56
 {
   const char                *name;
   const char                *long_name;
@@ -29,9 +31,12 @@ typedef struct AVCodec_56_57_58
   const AVClass             *priv_class;
 
   // Actually, there is more here, but nothing more of the public API
-} AVCodec_56_57_58;
+};
 
-typedef struct AVCodec_59
+typedef AVCodec_56 AVCodec_57;
+typedef AVCodec_56 AVCodec_58;
+
+struct AVCodec_59
 {
   const char                *name;
   const char                *long_name;
@@ -47,43 +52,9 @@ typedef struct AVCodec_59
   const AVClass             *priv_class;
 
   // Actually, there is more here, but nothing more of the public API
-} AVCodec_59;
+};
 
-#define CAST_POINTER_AND_RETURN_MEMBER(member)                                                     \
-  {                                                                                                \
-    if (this->libraryVersions.avcodec.major == 56 || this->libraryVersions.avcodec.major == 57 ||  \
-        this->libraryVersions.avcodec.major == 58)                                                 \
-    {                                                                                              \
-      const auto p = reinterpret_cast<AVCodec_56_57_58 *>(this->codec);                            \
-      return p->member;                                                                            \
-    }                                                                                              \
-    else if (this->libraryVersions.avcodec.major == 59)                                            \
-    {                                                                                              \
-      const auto p = reinterpret_cast<AVCodec_59 *>(codec);                                        \
-      return p->member;                                                                            \
-    }                                                                                              \
-    else                                                                                           \
-      throw std::runtime_error("Invalid library version");                                         \
-  }
-
-#define CAST_POINTER_AND_RETURN_ARRAY_MEMBER(member, terminationValue)                             \
-  {                                                                                                \
-    if (this->codec)                                                                               \
-      throw std::runtime_error("Nullptr exception");                                               \
-    if (this->libraryVersions.avcodec.major == 56 || this->libraryVersions.avcodec.major == 57 ||  \
-        this->libraryVersions.avcodec.major == 58)                                                 \
-    {                                                                                              \
-      const auto p = reinterpret_cast<AVCodec_56_57_58 *>(this->codec);                            \
-      return convertRawListToVec(p->member, terminationValue);                                     \
-    }                                                                                              \
-    else if (this->libraryVersions.avcodec.major == 59)                                            \
-    {                                                                                              \
-      const auto p = reinterpret_cast<AVCodec_59 *>(codec);                                        \
-      return convertRawListToVec(p->member, terminationValue);                                     \
-    }                                                                                              \
-    else                                                                                           \
-      throw std::runtime_error("Invalid library version");                                         \
-  }
+typedef AVCodec_59 AVCodec_60;
 
 template <typename T> std::vector<T> convertRawListToVec(const T *rawValues, T terminationValue)
 {
@@ -107,57 +78,80 @@ AVCodecWrapper::AVCodecWrapper(AVCodec *codec, const LibraryVersions &libraryVer
 
 std::string AVCodecWrapper::getName() const
 {
-  CAST_POINTER_AND_RETURN_MEMBER(name);
+  const char *name;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, name, name);
+  return std::string(name);
 }
 
 std::string AVCodecWrapper::getLongName() const
 {
-  CAST_POINTER_AND_RETURN_MEMBER(long_name);
+  const char *longName;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, longName, long_name);
+  return std::string(longName);
 }
 
 AVMediaType AVCodecWrapper::getMediaType() const
 {
-  CAST_POINTER_AND_RETURN_MEMBER(type);
+  AVMediaType mediaType;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, mediaType, type);
+  return mediaType;
 }
 
 AVCodecID AVCodecWrapper::getCodecID() const
 {
-  CAST_POINTER_AND_RETURN_MEMBER(id);
+  AVCodecID codecID;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, codecID, id);
+  return codecID;
 }
 
 int AVCodecWrapper::getCapabilities() const
 {
-  CAST_POINTER_AND_RETURN_MEMBER(capabilities);
+  int capabilities;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, capabilities, capabilities);
+  return capabilities;
 }
 
 std::vector<AVRational> AVCodecWrapper::getSupportedFramerates() const
 {
-  CAST_POINTER_AND_RETURN_ARRAY_MEMBER(supported_framerates, AVRational({0, 0}));
+  const AVRational *rates;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, rates, supported_framerates);
+  return convertRawListToVec(rates, AVRational({0, 0}));
 }
 
 std::vector<AVPixelFormat> AVCodecWrapper::getPixelFormats() const
 {
-  CAST_POINTER_AND_RETURN_ARRAY_MEMBER(pix_fmts, AVPixelFormat(-1));
+  const AVPixelFormat *formats;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, formats, pix_fmts);
+  return convertRawListToVec(formats, AVPixelFormat(-1));
 }
 
 std::vector<int> AVCodecWrapper::getSupportedSamplerates() const
 {
-  CAST_POINTER_AND_RETURN_ARRAY_MEMBER(supported_samplerates, 0);
+  const int *rates;
+  CAST_AVCODEC_GET_MEMBER(
+      this->libraryVersions, AVCodec, this->codec, rates, supported_samplerates);
+  return convertRawListToVec(rates, 0);
 }
 
 std::vector<AVSampleFormat> AVCodecWrapper::getSampleFormats() const
 {
-  CAST_POINTER_AND_RETURN_ARRAY_MEMBER(sample_fmts, AVSampleFormat(-1));
+  const AVSampleFormat *formats;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, formats, sample_fmts);
+  return convertRawListToVec(formats, AVSampleFormat(-1));
 }
 
 std::vector<uint64_t> AVCodecWrapper::getChannelLayouts() const
 {
-  CAST_POINTER_AND_RETURN_ARRAY_MEMBER(channel_layouts, uint64_t(0));
+  const uint64_t *layouts;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, layouts, channel_layouts);
+  return convertRawListToVec(layouts, uint64_t(0));
 }
 
 uint8_t AVCodecWrapper::getMaxLowres() const
 {
-  CAST_POINTER_AND_RETURN_MEMBER(max_lowres);
+  uint8_t maxLowres;
+  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, maxLowres, max_lowres);
+  return maxLowres;
 }
 
 } // namespace ffmpeg::avcodec

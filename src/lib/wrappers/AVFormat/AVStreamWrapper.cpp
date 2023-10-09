@@ -47,24 +47,24 @@ typedef struct AVProbeData_57
 
 typedef struct AVStream_57
 {
-  int                     index;
-  int                     id;
-  AVCodecContext         *codec; // Deprecated. Might be removed in the next major version.
-  void                   *priv_data;
-  struct AVFrac           pts; // Deprecated. Might be removed in the next major version.
-  AVRational              time_base;
-  int64_t                 start_time;
-  int64_t                 duration;
-  int64_t                 nb_frames;
-  int                     disposition;
-  enum AVDiscard          discard;
-  AVRational              sample_aspect_ratio;
-  AVDictionary           *metadata;
-  AVRational              avg_frame_rate;
-  avcodec::AVPacket_57_58 attached_pic;
-  AVPacketSideData       *side_data;
-  int                     nb_side_data;
-  int                     event_flags;
+  int                  index;
+  int                  id;
+  AVCodecContext      *codec; // Deprecated. Might be removed in the next major version.
+  void                *priv_data;
+  struct AVFrac        pts; // Deprecated. Might be removed in the next major version.
+  AVRational           time_base;
+  int64_t              start_time;
+  int64_t              duration;
+  int64_t              nb_frames;
+  int                  disposition;
+  enum AVDiscard       discard;
+  AVRational           sample_aspect_ratio;
+  AVDictionary        *metadata;
+  AVRational           avg_frame_rate;
+  avcodec::AVPacket_57 attached_pic;
+  AVPacketSideData    *side_data;
+  int                  nb_side_data;
+  int                  event_flags;
   // All field following this line are not part of the public API and may change/be removed.
   // However, we still need them here because further below some fields which are part of the public
   // API will follow. I really don't understand who thought up this idiotic scheme...
@@ -133,75 +133,75 @@ typedef struct AVStream_57
 
 typedef struct AVStream_58
 {
-  int                     index;
-  int                     id;
-  AVCodecContext         *codec;
-  void                   *priv_data;
-  AVRational              time_base;
-  int64_t                 start_time;
-  int64_t                 duration;
-  int64_t                 nb_frames;
-  int                     disposition;
-  enum AVDiscard          discard;
-  AVRational              sample_aspect_ratio;
-  AVDictionary           *metadata;
-  AVRational              avg_frame_rate;
-  avcodec::AVPacket_57_58 attached_pic;
-  AVPacketSideData       *side_data;
-  int                     nb_side_data;
-  int                     event_flags;
-  AVRational              r_frame_rate;
-  char                   *recommended_encoder_configuration;
-  AVCodecParameters      *codecpar;
+  int                  index;
+  int                  id;
+  AVCodecContext      *codec;
+  void                *priv_data;
+  AVRational           time_base;
+  int64_t              start_time;
+  int64_t              duration;
+  int64_t              nb_frames;
+  int                  disposition;
+  enum AVDiscard       discard;
+  AVRational           sample_aspect_ratio;
+  AVDictionary        *metadata;
+  AVRational           avg_frame_rate;
+  avcodec::AVPacket_58 attached_pic;
+  AVPacketSideData    *side_data;
+  int                  nb_side_data;
+  int                  event_flags;
+  AVRational           r_frame_rate;
+  char                *recommended_encoder_configuration;
+  AVCodecParameters   *codecpar;
 
   // All field following this line are not part of the public API and may change/be removed.
 } AVStream_58;
 
 typedef struct AVStream_59
 {
-  int                     index;
-  int                     id;
-  void                   *priv_data;
-  AVRational              time_base;
-  int64_t                 start_time;
-  int64_t                 duration;
-  int64_t                 nb_frames;
-  int                     disposition;
-  enum AVDiscard          discard;
-  AVRational              sample_aspect_ratio;
-  AVDictionary           *metadata;
-  AVRational              avg_frame_rate;
-  avcodec::AVPacket_59_60 attached_pic;
-  AVPacketSideData       *side_data;
-  int                     nb_side_data;
-  int                     event_flags;
-  AVRational              r_frame_rate;
-  AVCodecParameters      *codecpar;
-  int                     pts_wrap_bits;
+  int                  index;
+  int                  id;
+  void                *priv_data;
+  AVRational           time_base;
+  int64_t              start_time;
+  int64_t              duration;
+  int64_t              nb_frames;
+  int                  disposition;
+  enum AVDiscard       discard;
+  AVRational           sample_aspect_ratio;
+  AVDictionary        *metadata;
+  AVRational           avg_frame_rate;
+  avcodec::AVPacket_59 attached_pic;
+  AVPacketSideData    *side_data;
+  int                  nb_side_data;
+  int                  event_flags;
+  AVRational           r_frame_rate;
+  AVCodecParameters   *codecpar;
+  int                  pts_wrap_bits;
 } AVStream_59;
 
 typedef struct AVStream_60
 {
-  const AVClass          *av_class;
-  int                     index;
-  int                     id;
-  AVCodecParameters      *codecpar;
-  void                   *priv_data;
-  AVRational              time_base;
-  int64_t                 start_time;
-  int64_t                 duration;
-  int64_t                 nb_frames;
-  int                     disposition;
-  enum AVDiscard          discard;
-  AVRational              sample_aspect_ratio;
-  AVDictionary           *metadata;
-  AVRational              avg_frame_rate;
-  avcodec::AVPacket_59_60 attached_pic;
-  AVPacketSideData       *side_data;
-  int                     nb_side_data;
-  int                     event_flags;
-  AVRational              r_frame_rate;
-  int                     pts_wrap_bits;
+  const AVClass       *av_class;
+  int                  index;
+  int                  id;
+  AVCodecParameters   *codecpar;
+  void                *priv_data;
+  AVRational           time_base;
+  int64_t              start_time;
+  int64_t              duration;
+  int64_t              nb_frames;
+  int                  disposition;
+  enum AVDiscard       discard;
+  AVRational           sample_aspect_ratio;
+  AVDictionary        *metadata;
+  AVRational           avg_frame_rate;
+  avcodec::AVPacket_60 attached_pic;
+  AVPacketSideData    *side_data;
+  int                  nb_side_data;
+  int                  event_flags;
+  AVRational           r_frame_rate;
+  int                  pts_wrap_bits;
 } AVStream_60;
 
 } // namespace

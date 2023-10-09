@@ -8,13 +8,15 @@
 
 #include <wrappers/Functions.h>
 
+#include "CastCodecClasses.h"
+
 namespace ffmpeg::avcodec
 {
 
 namespace
 {
 
-typedef struct AVCodecContext_56
+struct AVCodecContext_56
 {
   const AVClass *av_class;
   int            log_level_offset;
@@ -114,9 +116,9 @@ typedef struct AVCodecContext_56
   AVChromaLocation              chroma_sample_location;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVCodecContext_56;
+};
 
-typedef struct AVCodecContext_57
+struct AVCodecContext_57
 {
   const AVClass          *av_class;
   int                     log_level_offset;
@@ -215,9 +217,9 @@ typedef struct AVCodecContext_57
   AVChromaLocation              chroma_sample_location;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVCodecContext_57;
+};
 
-typedef struct AVCodecContext_58
+struct AVCodecContext_58
 {
   const AVClass          *av_class;
   int                     log_level_offset;
@@ -305,9 +307,9 @@ typedef struct AVCodecContext_58
   int                                slices;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVCodecContext_58;
+};
 
-typedef struct AVCodecContext_59_60
+struct AVCodecContext_59
 {
   const AVClass          *av_class;
   int                     log_level_offset;
@@ -385,414 +387,109 @@ typedef struct AVCodecContext_59_60
   int                                slices;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVCodecContext_59_60;
+};
+
+typedef AVCodecContext_59 AVCodecContext_60;
 
 } // namespace
 
-AVCodecContextWrapper::AVCodecContextWrapper()
-{
-  this->codec = nullptr;
-}
-
 AVCodecContextWrapper::AVCodecContextWrapper(
-    AVCodecContext *c, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    AVCodecContext *codecContext, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : codecContext(codecContext), librariesInterface(librariesInterface)
 {
-  this->codec              = c;
-  this->librariesInterface = librariesInterface;
-  this->update();
 }
 
-AVMediaType AVCodecContextWrapper::getCodecType()
+AVMediaType AVCodecContextWrapper::getCodecType() const
 {
-  this->update();
-  return this->codec_type;
+  AVMediaType type;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          type,
+                          codec_type);
+  return type;
 }
 
-AVCodecID AVCodecContextWrapper::getCodecID()
+AVCodecID AVCodecContextWrapper::getCodecID() const
 {
-  this->update();
-  return this->codec_id;
+  AVCodecID id;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          id,
+                          codec_id);
+  return id;
 }
 
-AVCodecContext *AVCodecContextWrapper::getCodec()
+AVPixelFormat AVCodecContextWrapper::getPixelFormat() const
 {
-  return this->codec;
+  AVPixelFormat pixelFormat;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          pixelFormat,
+                          pix_fmt);
+  return pixelFormat;
 }
 
-AVPixelFormat AVCodecContextWrapper::getPixelFormat()
+Size AVCodecContextWrapper::getSize() const
 {
-  this->update();
-  return this->pix_fmt;
+  int width;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          width,
+                          width);
+
+  int height;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          height,
+                          height);
+
+  return {width, height};
 }
 
-Size AVCodecContextWrapper::getSize()
+AVColorSpace AVCodecContextWrapper::getColorspace() const
 {
-  this->update();
-  return {this->width, this->height};
+  AVColorSpace colorspace;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          colorspace,
+                          colorspace);
+  return colorspace;
 }
 
-AVColorSpace AVCodecContextWrapper::getColorspace()
+AVRational AVCodecContextWrapper::getTimeBase() const
 {
-  this->update();
-  return this->colorspace;
+  AVRational timebase;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          timebase,
+                          time_base);
+  return timebase;
 }
 
-AVRational AVCodecContextWrapper::getTimeBase()
+ByteVector AVCodecContextWrapper::getExtradata() const
 {
-  this->update();
-  return this->time_base;
-}
+  uint8_t *extradata;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          extradata,
+                          extradata);
 
-ByteVector AVCodecContextWrapper::getExtradata()
-{
-  this->update();
-  return this->extradata;
-}
+  int extradataSize;
+  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                          AVCodecContext,
+                          this->codecContext,
+                          extradataSize,
+                          extradata_size);
 
-void AVCodecContextWrapper::update()
-{
-  if (this->codec == nullptr)
-    return;
-
-  if (this->librariesInterface->getLibrariesVersion().avcodec.major == 56)
-  {
-    auto p                        = reinterpret_cast<AVCodecContext_56 *>(this->codec);
-    this->codec_type              = p->codec_type;
-    this->codec_name              = std::string(p->codec_name);
-    this->codec_id                = p->codec_id;
-    this->codec_tag               = p->codec_tag;
-    this->stream_codec_tag        = p->stream_codec_tag;
-    this->bit_rate                = p->bit_rate;
-    this->bit_rate_tolerance      = p->bit_rate_tolerance;
-    this->global_quality          = p->global_quality;
-    this->compression_level       = p->compression_level;
-    this->flags                   = p->flags;
-    this->flags2                  = p->flags2;
-    this->extradata               = copyDataFromRawArray(p->extradata, p->extradata_size);
-    this->time_base               = p->time_base;
-    this->ticks_per_frame         = p->ticks_per_frame;
-    this->delay                   = p->delay;
-    this->width                   = p->width;
-    this->height                  = p->height;
-    this->coded_width             = p->coded_width;
-    this->coded_height            = p->coded_height;
-    this->gop_size                = p->gop_size;
-    this->pix_fmt                 = p->pix_fmt;
-    this->me_method               = p->me_method;
-    this->max_b_frames            = p->max_b_frames;
-    this->b_quant_factor          = p->b_quant_factor;
-    this->rc_strategy             = p->rc_strategy;
-    this->b_frame_strategy        = p->b_frame_strategy;
-    this->b_quant_offset          = p->b_quant_offset;
-    this->has_b_frames            = p->has_b_frames;
-    this->mpeg_quant              = p->mpeg_quant;
-    this->i_quant_factor          = p->i_quant_factor;
-    this->i_quant_offset          = p->i_quant_offset;
-    this->lumi_masking            = p->lumi_masking;
-    this->temporal_cplx_masking   = p->temporal_cplx_masking;
-    this->spatial_cplx_masking    = p->spatial_cplx_masking;
-    this->p_masking               = p->p_masking;
-    this->dark_masking            = p->dark_masking;
-    this->slice_count             = p->slice_count;
-    this->prediction_method       = p->prediction_method;
-    this->sample_aspect_ratio     = p->sample_aspect_ratio;
-    this->me_cmp                  = p->me_cmp;
-    this->me_sub_cmp              = p->me_sub_cmp;
-    this->mb_cmp                  = p->mb_cmp;
-    this->ildct_cmp               = p->ildct_cmp;
-    this->dia_size                = p->dia_size;
-    this->last_predictor_count    = p->last_predictor_count;
-    this->pre_me                  = p->pre_me;
-    this->me_pre_cmp              = p->me_pre_cmp;
-    this->pre_dia_size            = p->pre_dia_size;
-    this->me_subpel_quality       = p->me_subpel_quality;
-    this->dtg_active_format       = p->dtg_active_format;
-    this->me_range                = p->me_range;
-    this->intra_quant_bias        = p->intra_quant_bias;
-    this->inter_quant_bias        = p->inter_quant_bias;
-    this->slice_flags             = p->slice_flags;
-    this->xvmc_acceleration       = p->xvmc_acceleration;
-    this->mb_decision             = p->mb_decision;
-    this->scenechange_threshold   = p->scenechange_threshold;
-    this->noise_reduction         = p->noise_reduction;
-    this->me_threshold            = p->me_threshold;
-    this->mb_threshold            = p->mb_threshold;
-    this->intra_dc_precision      = p->intra_dc_precision;
-    this->skip_top                = p->skip_top;
-    this->skip_bottom             = p->skip_bottom;
-    this->border_masking          = p->border_masking;
-    this->mb_lmin                 = p->mb_lmin;
-    this->mb_lmax                 = p->mb_lmax;
-    this->me_penalty_compensation = p->me_penalty_compensation;
-    this->bidir_refine            = p->bidir_refine;
-    this->brd_scale               = p->brd_scale;
-    this->keyint_min              = p->keyint_min;
-    this->refs                    = p->refs;
-    this->chromaoffset            = p->chromaoffset;
-    this->scenechange_factor      = p->scenechange_factor;
-    this->mv0_threshold           = p->mv0_threshold;
-    this->b_sensitivity           = p->b_sensitivity;
-    this->color_primaries         = p->color_primaries;
-    this->color_trc               = p->color_trc;
-    this->colorspace              = p->colorspace;
-    this->color_range             = p->color_range;
-    this->chroma_sample_location  = p->chroma_sample_location;
-  }
-  else if (this->librariesInterface->getLibrariesVersion().avcodec.major == 57)
-  {
-    auto p                        = reinterpret_cast<AVCodecContext_57 *>(this->codec);
-    this->codec_type              = p->codec_type;
-    this->codec_name              = std::string(p->codec_name);
-    this->codec_id                = p->codec_id;
-    this->codec_tag               = p->codec_tag;
-    this->stream_codec_tag        = p->stream_codec_tag;
-    this->bit_rate                = p->bit_rate;
-    this->bit_rate_tolerance      = p->bit_rate_tolerance;
-    this->global_quality          = p->global_quality;
-    this->compression_level       = p->compression_level;
-    this->flags                   = p->flags;
-    this->flags2                  = p->flags2;
-    this->extradata               = copyDataFromRawArray(p->extradata, p->extradata_size);
-    this->time_base               = p->time_base;
-    this->ticks_per_frame         = p->ticks_per_frame;
-    this->delay                   = p->delay;
-    this->width                   = p->width;
-    this->height                  = p->height;
-    this->coded_width             = p->coded_width;
-    this->coded_height            = p->coded_height;
-    this->gop_size                = p->gop_size;
-    this->pix_fmt                 = p->pix_fmt;
-    this->me_method               = p->me_method;
-    this->max_b_frames            = p->max_b_frames;
-    this->b_quant_factor          = p->b_quant_factor;
-    this->rc_strategy             = p->rc_strategy;
-    this->b_frame_strategy        = p->b_frame_strategy;
-    this->b_quant_offset          = p->b_quant_offset;
-    this->has_b_frames            = p->has_b_frames;
-    this->mpeg_quant              = p->mpeg_quant;
-    this->i_quant_factor          = p->i_quant_factor;
-    this->i_quant_offset          = p->i_quant_offset;
-    this->lumi_masking            = p->lumi_masking;
-    this->temporal_cplx_masking   = p->temporal_cplx_masking;
-    this->spatial_cplx_masking    = p->spatial_cplx_masking;
-    this->p_masking               = p->p_masking;
-    this->dark_masking            = p->dark_masking;
-    this->slice_count             = p->slice_count;
-    this->prediction_method       = p->prediction_method;
-    this->sample_aspect_ratio     = p->sample_aspect_ratio;
-    this->me_cmp                  = p->me_cmp;
-    this->me_sub_cmp              = p->me_sub_cmp;
-    this->mb_cmp                  = p->mb_cmp;
-    this->ildct_cmp               = p->ildct_cmp;
-    this->dia_size                = p->dia_size;
-    this->last_predictor_count    = p->last_predictor_count;
-    this->pre_me                  = p->pre_me;
-    this->me_pre_cmp              = p->me_pre_cmp;
-    this->pre_dia_size            = p->pre_dia_size;
-    this->me_subpel_quality       = p->me_subpel_quality;
-    this->dtg_active_format       = p->dtg_active_format;
-    this->me_range                = p->me_range;
-    this->intra_quant_bias        = p->intra_quant_bias;
-    this->inter_quant_bias        = p->inter_quant_bias;
-    this->slice_flags             = p->slice_flags;
-    this->xvmc_acceleration       = p->xvmc_acceleration;
-    this->mb_decision             = p->mb_decision;
-    this->scenechange_threshold   = p->scenechange_threshold;
-    this->noise_reduction         = p->noise_reduction;
-    this->me_threshold            = p->me_threshold;
-    this->mb_threshold            = p->mb_threshold;
-    this->intra_dc_precision      = p->intra_dc_precision;
-    this->skip_top                = p->skip_top;
-    this->skip_bottom             = p->skip_bottom;
-    this->border_masking          = p->border_masking;
-    this->mb_lmin                 = p->mb_lmin;
-    this->mb_lmax                 = p->mb_lmax;
-    this->me_penalty_compensation = p->me_penalty_compensation;
-    this->bidir_refine            = p->bidir_refine;
-    this->brd_scale               = p->brd_scale;
-    this->keyint_min              = p->keyint_min;
-    this->refs                    = p->refs;
-    this->chromaoffset            = p->chromaoffset;
-    this->scenechange_factor      = p->scenechange_factor;
-    this->mv0_threshold           = p->mv0_threshold;
-    this->b_sensitivity           = p->b_sensitivity;
-    this->color_primaries         = p->color_primaries;
-    this->color_trc               = p->color_trc;
-    this->colorspace              = p->colorspace;
-    this->color_range             = p->color_range;
-    this->chroma_sample_location  = p->chroma_sample_location;
-  }
-  else if (this->librariesInterface->getLibrariesVersion().avcodec.major == 58)
-  {
-    auto p                        = reinterpret_cast<AVCodecContext_58 *>(this->codec);
-    this->codec_type              = p->codec_type;
-    this->codec_name              = std::string("Not supported in AVCodec >= 58");
-    this->codec_id                = p->codec_id;
-    this->codec_tag               = p->codec_tag;
-    this->stream_codec_tag        = -1;
-    this->bit_rate                = p->bit_rate;
-    this->bit_rate_tolerance      = p->bit_rate_tolerance;
-    this->global_quality          = p->global_quality;
-    this->compression_level       = p->compression_level;
-    this->flags                   = p->flags;
-    this->flags2                  = p->flags2;
-    this->extradata               = copyDataFromRawArray(p->extradata, p->extradata_size);
-    this->time_base               = p->time_base;
-    this->ticks_per_frame         = p->ticks_per_frame;
-    this->delay                   = p->delay;
-    this->width                   = p->width;
-    this->height                  = p->height;
-    this->coded_width             = p->coded_width;
-    this->coded_height            = p->coded_height;
-    this->gop_size                = p->gop_size;
-    this->pix_fmt                 = p->pix_fmt;
-    this->me_method               = -1;
-    this->max_b_frames            = p->max_b_frames;
-    this->b_quant_factor          = p->b_quant_factor;
-    this->rc_strategy             = -1;
-    this->b_frame_strategy        = p->b_frame_strategy;
-    this->b_quant_offset          = p->b_quant_offset;
-    this->has_b_frames            = p->has_b_frames;
-    this->mpeg_quant              = p->mpeg_quant;
-    this->i_quant_factor          = p->i_quant_factor;
-    this->i_quant_offset          = p->i_quant_offset;
-    this->lumi_masking            = p->lumi_masking;
-    this->temporal_cplx_masking   = p->temporal_cplx_masking;
-    this->spatial_cplx_masking    = p->spatial_cplx_masking;
-    this->p_masking               = p->p_masking;
-    this->dark_masking            = p->dark_masking;
-    this->slice_count             = p->slice_count;
-    this->prediction_method       = p->prediction_method;
-    this->sample_aspect_ratio     = p->sample_aspect_ratio;
-    this->me_cmp                  = p->me_cmp;
-    this->me_sub_cmp              = p->me_sub_cmp;
-    this->mb_cmp                  = p->mb_cmp;
-    this->ildct_cmp               = p->ildct_cmp;
-    this->dia_size                = p->dia_size;
-    this->last_predictor_count    = p->last_predictor_count;
-    this->pre_me                  = p->pre_me;
-    this->me_pre_cmp              = p->me_pre_cmp;
-    this->pre_dia_size            = p->pre_dia_size;
-    this->me_subpel_quality       = p->me_subpel_quality;
-    this->dtg_active_format       = -1;
-    this->me_range                = p->me_range;
-    this->intra_quant_bias        = -1;
-    this->inter_quant_bias        = -1;
-    this->slice_flags             = p->slice_flags;
-    this->xvmc_acceleration       = -1;
-    this->mb_decision             = p->mb_decision;
-    this->scenechange_threshold   = p->scenechange_threshold;
-    this->noise_reduction         = p->noise_reduction;
-    this->me_threshold            = -1;
-    this->mb_threshold            = -1;
-    this->intra_dc_precision      = p->intra_dc_precision;
-    this->skip_top                = p->skip_top;
-    this->skip_bottom             = p->skip_bottom;
-    this->border_masking          = -1;
-    this->mb_lmin                 = p->mb_lmin;
-    this->mb_lmax                 = p->mb_lmax;
-    this->me_penalty_compensation = p->me_penalty_compensation;
-    this->bidir_refine            = p->bidir_refine;
-    this->brd_scale               = p->brd_scale;
-    this->keyint_min              = p->keyint_min;
-    this->refs                    = p->refs;
-    this->chromaoffset            = p->chromaoffset;
-    this->scenechange_factor      = -1;
-    this->mv0_threshold           = p->mv0_threshold;
-    this->b_sensitivity           = p->b_sensitivity;
-    this->color_primaries         = p->color_primaries;
-    this->color_trc               = p->color_trc;
-    this->colorspace              = p->colorspace;
-    this->color_range             = p->color_range;
-    this->chroma_sample_location  = p->chroma_sample_location;
-  }
-  else if (this->librariesInterface->getLibrariesVersion().avcodec.major == 59 || //
-           this->librariesInterface->getLibrariesVersion().avcodec.major == 60)
-  {
-    auto p                        = reinterpret_cast<AVCodecContext_59_60 *>(this->codec);
-    this->codec_type              = p->codec_type;
-    this->codec_name              = std::string("Not supported in AVCodec >= 58");
-    this->codec_id                = p->codec_id;
-    this->codec_tag               = p->codec_tag;
-    this->stream_codec_tag        = -1;
-    this->bit_rate                = p->bit_rate;
-    this->bit_rate_tolerance      = p->bit_rate_tolerance;
-    this->global_quality          = p->global_quality;
-    this->compression_level       = p->compression_level;
-    this->flags                   = p->flags;
-    this->flags2                  = p->flags2;
-    this->extradata               = copyDataFromRawArray(p->extradata, p->extradata_size);
-    this->time_base               = p->time_base;
-    this->ticks_per_frame         = p->ticks_per_frame;
-    this->delay                   = p->delay;
-    this->width                   = p->width;
-    this->height                  = p->height;
-    this->coded_width             = p->coded_width;
-    this->coded_height            = p->coded_height;
-    this->gop_size                = p->gop_size;
-    this->pix_fmt                 = p->pix_fmt;
-    this->me_method               = -1;
-    this->max_b_frames            = p->max_b_frames;
-    this->b_quant_factor          = p->b_quant_factor;
-    this->rc_strategy             = -1;
-    this->b_frame_strategy        = -1;
-    this->b_quant_offset          = p->b_quant_offset;
-    this->has_b_frames            = p->has_b_frames;
-    this->mpeg_quant              = -1;
-    this->i_quant_factor          = p->i_quant_factor;
-    this->i_quant_offset          = p->i_quant_offset;
-    this->lumi_masking            = p->lumi_masking;
-    this->temporal_cplx_masking   = p->temporal_cplx_masking;
-    this->spatial_cplx_masking    = p->spatial_cplx_masking;
-    this->p_masking               = p->p_masking;
-    this->dark_masking            = p->dark_masking;
-    this->slice_count             = p->slice_count;
-    this->prediction_method       = -1;
-    this->sample_aspect_ratio     = p->sample_aspect_ratio;
-    this->me_cmp                  = p->me_cmp;
-    this->me_sub_cmp              = p->me_sub_cmp;
-    this->mb_cmp                  = p->mb_cmp;
-    this->ildct_cmp               = p->ildct_cmp;
-    this->dia_size                = p->dia_size;
-    this->last_predictor_count    = p->last_predictor_count;
-    this->pre_me                  = -1;
-    this->me_pre_cmp              = p->me_pre_cmp;
-    this->pre_dia_size            = p->pre_dia_size;
-    this->me_subpel_quality       = p->me_subpel_quality;
-    this->dtg_active_format       = -1;
-    this->me_range                = p->me_range;
-    this->intra_quant_bias        = -1;
-    this->inter_quant_bias        = -1;
-    this->slice_flags             = p->slice_flags;
-    this->xvmc_acceleration       = -1;
-    this->mb_decision             = p->mb_decision;
-    this->scenechange_threshold   = -1;
-    this->noise_reduction         = -1;
-    this->me_threshold            = -1;
-    this->mb_threshold            = -1;
-    this->intra_dc_precision      = p->intra_dc_precision;
-    this->skip_top                = p->skip_top;
-    this->skip_bottom             = p->skip_bottom;
-    this->border_masking          = -1;
-    this->mb_lmin                 = p->mb_lmin;
-    this->mb_lmax                 = p->mb_lmax;
-    this->me_penalty_compensation = -1;
-    this->bidir_refine            = p->bidir_refine;
-    this->brd_scale               = -1;
-    this->keyint_min              = p->keyint_min;
-    this->refs                    = p->refs;
-    this->chromaoffset            = -1;
-    this->scenechange_factor      = -1;
-    this->mv0_threshold           = p->mv0_threshold;
-    this->b_sensitivity           = -1;
-    this->color_primaries         = p->color_primaries;
-    this->color_trc               = p->color_trc;
-    this->colorspace              = p->colorspace;
-    this->color_range             = p->color_range;
-    this->chroma_sample_location  = p->chroma_sample_location;
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  return copyDataFromRawArray(extradata, extradataSize);
 }
 
 } // namespace ffmpeg::avcodec
