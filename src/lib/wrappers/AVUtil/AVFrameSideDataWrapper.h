@@ -8,6 +8,9 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 #include <common/MotionVector.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
+
+#include <memory>
 
 namespace ffmpeg::avutil
 {
@@ -16,15 +19,16 @@ class AVFrameSideDataWrapper
 {
 public:
   AVFrameSideDataWrapper() = default;
-  AVFrameSideDataWrapper(AVFrameSideData *sideData, const LibraryVersions &libraryVersions);
+  AVFrameSideDataWrapper(AVFrameSideData                          *sideData,
+                         std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   std::vector<MotionVector> getMotionVectors() const;
 
   explicit operator bool() const { return sideData != nullptr; }
 
 private:
-  AVFrameSideData *sideData{};
-  LibraryVersions  libraryVersions{};
+  AVFrameSideData                          *sideData{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace ffmpeg::avutil

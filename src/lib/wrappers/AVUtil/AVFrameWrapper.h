@@ -7,6 +7,10 @@
 #pragma once
 
 #include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
+#include <wrappers/AVUtil/AVDictionaryWrapper.h>
+
+#include <memory>
 
 namespace ffmpeg::avutil
 {
@@ -15,46 +19,23 @@ class AVFrameWrapper
 {
 public:
   AVFrameWrapper() = default;
-  AVFrameWrapper(AVFrame *frame, const LibraryVersions &libraryVersions);
+  AVFrameWrapper(AVFrame *frame, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  void clear();
+  AVFrame *getFrame() const { return this->frame; }
 
-  uint8_t      *getData(int component);
-  int           getLineSize(int component);
-  AVFrame      *getFrame() const;
-  int           getWidth();
-  int           getHeight();
-  Size          getSize();
-  int64_t       getPTS();
-  AVPictureType getPictType();
-  int           getKeyFrame();
-  AVDictionary *getMetadata();
+  ByteVector          getData(int component) const;
+  int                 getLineSize(int component) const;
+  Size                getSize() const;
+  int64_t             getPTS() const;
+  AVPictureType       getPictType() const;
+  bool                isKeyFrame() const;
+  AVDictionaryWrapper getMetadata() const;
 
   explicit operator bool() const { return this->frame != nullptr; }
 
 private:
-  void update();
-
-  // These are private. Use "update" to update them from the AVFormatContext
-  uint8_t      *data[AV_NUM_DATA_POINTERS]{};
-  int           linesize[AV_NUM_DATA_POINTERS]{};
-  int           width{};
-  int           height{};
-  int           nb_samples{};
-  int           format{};
-  int           key_frame{};
-  AVPictureType pict_type{};
-  AVRational    sample_aspect_ratio{};
-  int64_t       pts{};
-  int64_t       pkt_pts{};
-  int64_t       pkt_dts{};
-  int           coded_picture_number{};
-  int           display_picture_number{};
-  int           quality{};
-  AVDictionary *metadata{};
-
-  AVFrame        *frame{};
-  LibraryVersions libraryVersions{};
+  AVFrame                                  *frame{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace ffmpeg::avutil

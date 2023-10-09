@@ -5,6 +5,9 @@
  */
 
 #include "AVFrameSideDataWrapper.h"
+
+#include "CastUtilClasses.h"
+
 #include <stdexcept>
 
 namespace ffmpeg::avutil
@@ -14,29 +17,34 @@ namespace
 {
 
 // Part of AVUtil
-typedef struct AVFrameSideData_54_55_56
+struct AVFrameSideData_54
 {
-  enum AVFrameSideDataType type;
-  uint8_t                 *data;
-  int                      size;
-  AVDictionary            *metadata;
-  AVBufferRef             *buf;
-} AVFrameSideData_54_55_56;
+  AVFrameSideDataType type;
+  uint8_t            *data;
+  int                 size;
+  AVDictionary       *metadata;
+  AVBufferRef        *buf;
+};
 
-typedef struct AVFrameSideData_57_58
+typedef AVFrameSideData_54 AVFrameSideData_55;
+typedef AVFrameSideData_54 AVFrameSideData_56;
+
+struct AVFrameSideData_57
 {
-  enum AVFrameSideDataType type;
-  uint8_t                 *data;
-  size_t                   size;
-  AVDictionary            *metadata;
-  AVBufferRef             *buf;
-} AVFrameSideData_57_58;
+  AVFrameSideDataType type;
+  uint8_t            *data;
+  size_t              size;
+  AVDictionary       *metadata;
+  AVBufferRef        *buf;
+};
+
+typedef AVFrameSideData_57 AVFrameSideData_58;
 
 } // namespace
 
-AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData       *sideData,
-                                               const LibraryVersions &libraryVersions)
-    : sideData(sideData), libraryVersions(libraryVersions)
+AVFrameSideDataWrapper::AVFrameSideDataWrapper(
+    AVFrameSideData *sideData, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : sideData(sideData), librariesInterface(librariesInterface)
 {
 }
 
@@ -45,29 +53,21 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   if (this->sideData == nullptr)
     return {};
 
-  if (this->libraryVersions.avutil.major == 54 || //
-      this->libraryVersions.avutil.major == 55 || //
-      this->libraryVersions.avutil.major == 56)
-  {
-    auto p = reinterpret_cast<AVFrameSideData_54_55_56 *>(sideData);
+  const auto version = this->librariesInterface->getLibrariesVersion();
 
-    if (p->type != AV_FRAME_DATA_MOTION_VECTORS)
-      return {};
+  AVFrameSideDataType type;
+  CAST_AVUTIL_GET_MEMBER(version, AVFrameSideData, this->sideData, type, type);
 
-    return parseMotionData(this->libraryVersions, p->data, p->size);
-  }
-  else if (this->libraryVersions.avutil.major == 57 || //
-           this->libraryVersions.avutil.major == 58)
-  {
-    auto p = reinterpret_cast<AVFrameSideData_57_58 *>(sideData);
+  if (type != AV_FRAME_DATA_MOTION_VECTORS)
+    return {};
 
-    if (p->type != AV_FRAME_DATA_MOTION_VECTORS)
-      return {};
+  uint8_t *data;
+  CAST_AVUTIL_GET_MEMBER(version, AVFrameSideData, this->sideData, data, data);
 
-    return parseMotionData(this->libraryVersions, p->data, p->size);
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  int size;
+  CAST_AVUTIL_GET_MEMBER(version, AVFrameSideData, this->sideData, size, size);
+
+  return parseMotionData(version, data, size);
 }
 
 } // namespace ffmpeg::avutil

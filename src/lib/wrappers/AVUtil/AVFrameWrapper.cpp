@@ -5,6 +5,9 @@
  */
 
 #include "AVFrameWrapper.h"
+
+#include "CastUtilClasses.h"
+
 #include <stdexcept>
 
 namespace ffmpeg::avutil
@@ -13,8 +16,7 @@ namespace ffmpeg::avutil
 namespace
 {
 
-// AVFrames is part of AVUtil
-typedef struct AVFrame_54
+struct AVFrame_54
 {
   uint8_t      *data[AV_NUM_DATA_POINTERS];
   int           linesize[AV_NUM_DATA_POINTERS];
@@ -33,9 +35,9 @@ typedef struct AVFrame_54
   int           display_picture_number;
   int           quality;
   // Actually, there is more here, but the variables above are the only we need.
-} AVFrame_54;
+};
 
-typedef struct AVFrame_55_56
+struct AVFrame_55
 {
   uint8_t      *data[AV_NUM_DATA_POINTERS];
   int           linesize[AV_NUM_DATA_POINTERS];
@@ -53,9 +55,11 @@ typedef struct AVFrame_55_56
   int           display_picture_number;
   int           quality;
   // Actually, there is more here, but the variables above are the only we need.
-} AVFrame_55_56;
+};
 
-typedef struct AVFrame_57_58
+typedef AVFrame_55 AVFrame_56;
+
+struct AVFrame_57
 {
   uint8_t                           *data[AV_NUM_DATA_POINTERS];
   int                                linesize[AV_NUM_DATA_POINTERS];
@@ -97,157 +101,98 @@ typedef struct AVFrame_57_58
   AVDictionary                      *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVFrame_57_58;
+};
+
+typedef AVFrame_57 AVFrame_58;
 
 } // namespace
 
-AVFrameWrapper::AVFrameWrapper(AVFrame *frame, const LibraryVersions &libraryVersions)
+AVFrameWrapper::AVFrameWrapper(AVFrame                                  *frame,
+                               std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : frame(frame), librariesInterface(librariesInterface)
 {
-  this->frame           = frame;
-  this->libraryVersions = libraryVersions;
 }
 
-void AVFrameWrapper::clear()
+ByteVector AVFrameWrapper::getData(int component) const
 {
-  this->frame           = nullptr;
-  this->libraryVersions = {};
+  uint8_t *dataPointer;
+  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                         AVFrame,
+                         this->frame,
+                         dataPointer,
+                         data[component]);
+
+  ByteVector data;
+  // Data copying function
+
+  return data;
 }
 
-uint8_t *AVFrameWrapper::getData(int component)
+int AVFrameWrapper::getLineSize(int component) const
 {
-  this->update();
-  return this->data[component];
+  if (component < 0 || component > AV_NUM_DATA_POINTERS)
+    return {};
+
+  int linesize;
+  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                         AVFrame,
+                         this->frame,
+                         linesize,
+                         linesize[component]);
+  return linesize;
 }
 
-int AVFrameWrapper::getLineSize(int component)
+Size AVFrameWrapper::getSize() const
 {
-  this->update();
-  return this->linesize[component];
+  int width;
+  CAST_AVUTIL_GET_MEMBER(
+      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, width, width);
+
+  int height;
+  CAST_AVUTIL_GET_MEMBER(
+      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, height, height);
+
+  return {width, height};
 }
 
-AVFrame *AVFrameWrapper::getFrame() const
+int64_t AVFrameWrapper::getPTS() const
 {
-  return this->frame;
+  int pts;
+  CAST_AVUTIL_GET_MEMBER(
+      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, pts, pts);
+  return pts;
 }
 
-int AVFrameWrapper::getWidth()
+AVPictureType AVFrameWrapper::getPictType() const
 {
-  this->update();
-  return this->width;
+  AVPictureType pictureType;
+  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                         AVFrame,
+                         this->frame,
+                         pictureType,
+                         pict_type);
+  return pictureType;
 }
 
-int AVFrameWrapper::getHeight()
+bool AVFrameWrapper::isKeyFrame() const
 {
-  this->update();
-  return this->height;
+  int keyframe;
+  CAST_AVUTIL_GET_MEMBER(
+      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, keyframe, key_frame);
+  return keyframe == 1;
 }
 
-Size AVFrameWrapper::getSize()
+AVDictionaryWrapper AVFrameWrapper::getMetadata() const
 {
-  this->update();
-  return Size({width, height});
-}
+  const auto version = this->librariesInterface->getLibrariesVersion().avutil.major;
 
-int64_t AVFrameWrapper::getPTS()
-{
-  this->update();
-  return this->pts;
-}
-
-AVPictureType AVFrameWrapper::getPictType()
-{
-  this->update();
-  return this->pict_type;
-}
-
-int AVFrameWrapper::getKeyFrame()
-{
-  this->update();
-  return this->key_frame;
-}
-
-AVDictionary *AVFrameWrapper::getMetadata()
-{
-  this->update();
-  return this->metadata;
-}
-
-void AVFrameWrapper::update()
-{
-  if (this->frame == nullptr)
-    return;
-
-  if (this->libraryVersions.avutil.major == 54)
+  if (version == 57 || version == 58)
   {
-    auto p = reinterpret_cast<AVFrame_54 *>(this->frame);
-    for (auto i = 0; i < AV_NUM_DATA_POINTERS; ++i)
-    {
-      this->data[i]     = p->data[i];
-      this->linesize[i] = p->linesize[i];
-    }
-    this->width                  = p->width;
-    this->height                 = p->height;
-    this->nb_samples             = p->nb_samples;
-    this->format                 = p->format;
-    this->key_frame              = p->key_frame;
-    this->pict_type              = p->pict_type;
-    this->sample_aspect_ratio    = p->sample_aspect_ratio;
-    this->pts                    = p->pts;
-    this->pkt_pts                = p->pkt_pts;
-    this->pkt_dts                = p->pkt_dts;
-    this->coded_picture_number   = p->coded_picture_number;
-    this->display_picture_number = p->display_picture_number;
-    this->quality                = p->quality;
+    const auto p = reinterpret_cast<AVFrame_57 *>(this->frame);
+    return AVDictionaryWrapper(p->metadata);
   }
-  else if (this->libraryVersions.avutil.major == 55 || //
-           this->libraryVersions.avutil.major == 56)
-  {
-    auto p = reinterpret_cast<AVFrame_55_56 *>(this->frame);
-    for (auto i = 0; i < AV_NUM_DATA_POINTERS; ++i)
-    {
-      this->data[i]     = p->data[i];
-      this->linesize[i] = p->linesize[i];
-    }
-    this->width                  = p->width;
-    this->height                 = p->height;
-    this->nb_samples             = p->nb_samples;
-    this->format                 = p->format;
-    this->key_frame              = p->key_frame;
-    this->pict_type              = p->pict_type;
-    this->sample_aspect_ratio    = p->sample_aspect_ratio;
-    this->pts                    = p->pts;
-    this->pkt_pts                = p->pkt_pts;
-    this->pkt_dts                = p->pkt_dts;
-    this->coded_picture_number   = p->coded_picture_number;
-    this->display_picture_number = p->display_picture_number;
-    this->quality                = p->quality;
-  }
-  else if (this->libraryVersions.avutil.major == 57 || //
-           this->libraryVersions.avutil.major == 58)
-  {
-    auto p = reinterpret_cast<AVFrame_57_58 *>(this->frame);
-    for (auto i = 0; i < AV_NUM_DATA_POINTERS; ++i)
-    {
-      this->data[i]     = p->data[i];
-      this->linesize[i] = p->linesize[i];
-    }
-    this->width                  = p->width;
-    this->height                 = p->height;
-    this->nb_samples             = p->nb_samples;
-    this->format                 = p->format;
-    this->key_frame              = p->key_frame;
-    this->pict_type              = p->pict_type;
-    this->sample_aspect_ratio    = p->sample_aspect_ratio;
-    this->pts                    = p->pts;
-    this->pkt_pts                = -1;
-    this->pkt_dts                = p->pkt_dts;
-    this->coded_picture_number   = p->coded_picture_number;
-    this->display_picture_number = p->display_picture_number;
-    this->quality                = p->quality;
-    this->metadata               = p->metadata;
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+
+  return {};
 }
 
 } // namespace ffmpeg::avutil
