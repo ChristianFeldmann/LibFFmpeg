@@ -9,7 +9,7 @@
 #include <common/FFMpegLibrariesTypes.h>
 #include <libHandling/SharedLibraryLoader.h>
 
-namespace LibFFmpeg::functions
+namespace ffmpeg::functions
 {
 
 struct AvFormatFunctions
@@ -29,4 +29,4 @@ struct AvFormatFunctions
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(SharedLibraryLoader &lib,
                                                                      Log &                log);
 
-} // namespace LibFFmpeg::functions
+} // namespace ffmpeg::functions

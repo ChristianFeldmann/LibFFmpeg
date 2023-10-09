@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 // Demuxer openFileForParsing();
@@ -15,4 +15,4 @@ namespace LibFFmpeg
 
 // Check if a path contains usable ffmpeg libraries
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

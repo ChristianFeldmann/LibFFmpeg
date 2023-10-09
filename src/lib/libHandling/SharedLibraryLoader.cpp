@@ -6,7 +6,7 @@
 
 #include "SharedLibraryLoader.h"
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 void SharedLibraryLoader::unload()
@@ -36,4 +36,4 @@ bool SharedLibraryLoader::load(std::string absolutePathOrLibName)
   return this->isLoaded();
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

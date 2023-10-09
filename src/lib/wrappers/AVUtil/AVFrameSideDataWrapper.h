@@ -9,7 +9,7 @@
 #include <common/FFMpegLibrariesTypes.h>
 #include <common/MotionVector.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avutil
 {
 
 class AVFrameSideDataWrapper
@@ -27,4 +27,4 @@ private:
   LibraryVersions  libraryVersions{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avutil

@@ -8,7 +8,7 @@
 
 #include "Functions.h"
 
-namespace LibFFmpeg::functions
+namespace ffmpeg::functions
 {
 
 std::optional<SwResampleFunctions> tryBindSwResampleFunctionsFromLibrary(SharedLibraryLoader &lib,
@@ -40,4 +40,4 @@ std::optional<SwResampleFunctions> tryBindSwResampleFunctionsFromLibrary(SharedL
   return functions;
 }
 
-} // namespace LibFFmpeg::functions
+} // namespace ffmpeg::functions

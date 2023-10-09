@@ -8,7 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 class AVCodecIDWrapper
@@ -46,4 +46,4 @@ private:
   std::string codecName;
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

@@ -6,7 +6,7 @@
 
 #include "Functions.h"
 
-namespace LibFFmpeg::functions
+namespace ffmpeg::functions
 {
 
 std::string to_string(std::vector<std::string> strings)
@@ -34,4 +34,4 @@ std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string>
   return errorMessage;
 }
 
-} // namespace LibFFmpeg::functions
+} // namespace ffmpeg::functions

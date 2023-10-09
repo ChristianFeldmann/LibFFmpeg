@@ -8,7 +8,7 @@
 
 #include <cstdarg>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 namespace
@@ -272,4 +272,4 @@ void FFmpegLibrariesInterface::avLogCallback(void *, int level, const char *fmt,
   FFmpegLibrariesInterface::logListFFmpeg.append("Level " + std::to_string(level) + message);
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

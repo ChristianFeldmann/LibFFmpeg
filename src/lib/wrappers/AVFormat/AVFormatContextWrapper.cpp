@@ -7,7 +7,7 @@
 #include "AVFormatContextWrapper.h"
 #include "AVStreamWrapper.h"
 
-namespace LibFFmpeg
+namespace ffmpeg::avformat
 {
 
 namespace
@@ -233,7 +233,7 @@ int64_t AVFormatContextWrapper::getDuration()
   return this->duration;
 }
 
-AVDictionaryWrapper AVFormatContextWrapper::getMetadata()
+avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata()
 {
   this->update();
   return this->metadata;
@@ -271,7 +271,7 @@ void AVFormatContextWrapper::update()
     this->max_index_size       = p->max_index_size;
     this->max_picture_buffer   = p->max_picture_buffer;
     this->nb_chapters          = p->nb_chapters;
-    this->metadata             = AVDictionaryWrapper(p->metadata);
+    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
 
     this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
@@ -299,7 +299,7 @@ void AVFormatContextWrapper::update()
     this->max_index_size       = p->max_index_size;
     this->max_picture_buffer   = p->max_picture_buffer;
     this->nb_chapters          = p->nb_chapters;
-    this->metadata             = AVDictionaryWrapper(p->metadata);
+    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
 
     this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
@@ -327,7 +327,7 @@ void AVFormatContextWrapper::update()
     this->max_index_size       = p->max_index_size;
     this->max_picture_buffer   = p->max_picture_buffer;
     this->nb_chapters          = p->nb_chapters;
-    this->metadata             = AVDictionaryWrapper(p->metadata);
+    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
 
     this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
@@ -356,7 +356,7 @@ void AVFormatContextWrapper::update()
     this->max_index_size       = p->max_index_size;
     this->max_picture_buffer   = p->max_picture_buffer;
     this->nb_chapters          = p->nb_chapters;
-    this->metadata             = AVDictionaryWrapper(p->metadata);
+    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
 
     this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
   }
@@ -364,4 +364,4 @@ void AVFormatContextWrapper::update()
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avformat

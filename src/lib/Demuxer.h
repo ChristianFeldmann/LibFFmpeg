@@ -7,10 +7,10 @@
 #pragma once
 
 #include <libHandling/FFmpegLibrariesInterface.h>
-#include <wrappers/AVFormatContextWrapper.h>
-#include <wrappers/AVPacketWrapper.h>
+#include <wrappers/AVCodec/AVPacketWrapper.h>
+#include <wrappers/AVFormat/AVFormatContextWrapper.h>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 class Demuxer
@@ -20,14 +20,14 @@ public:
 
   ResultAndLog openFile(std::filesystem::path path);
 
-  LibFFmpeg::AVFormatContextWrapper getFormatContext() const { return this->formatContext; }
+  avformat::AVFormatContextWrapper getFormatContext() const { return this->formatContext; }
 
-  AVPacketWrapper getNextPacket();
+  avcodec::AVPacketWrapper getNextPacket();
 
 private:
   std::shared_ptr<FFmpegLibrariesInterface> libraries;
 
-  LibFFmpeg::AVFormatContextWrapper formatContext;
+  avformat::AVFormatContextWrapper formatContext;
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

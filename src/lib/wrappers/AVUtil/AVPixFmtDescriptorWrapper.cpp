@@ -8,7 +8,7 @@
 
 using namespace std::rel_ops;
 
-namespace LibFFmpeg
+namespace ffmpeg::avutil
 {
 
 namespace
@@ -25,13 +25,13 @@ struct AVComponentDescriptor_54
 
 struct AVPixFmtDescriptor_54
 {
-  const char *             name;
+  const char              *name;
   uint8_t                  nb_components;
   uint8_t                  log2_chroma_w;
   uint8_t                  log2_chroma_h;
   uint8_t                  flags;
   AVComponentDescriptor_54 comp[4];
-  const char *             alias;
+  const char              *alias;
 };
 
 struct AVComponentDescriptor_55_56
@@ -50,24 +50,24 @@ struct AVComponentDescriptor_55_56
 
 struct AVPixFmtDescriptor_55
 {
-  const char *                name;
+  const char                 *name;
   uint8_t                     nb_components;
   uint8_t                     log2_chroma_w;
   uint8_t                     log2_chroma_h;
   uint64_t                    flags;
   AVComponentDescriptor_55_56 comp[4];
-  const char *                alias;
+  const char                 *alias;
 };
 
 struct AVPixFmtDescriptor_56
 {
-  const char *                name;
+  const char                 *name;
   uint8_t                     nb_components;
   uint8_t                     log2_chroma_w;
   uint8_t                     log2_chroma_h;
   uint64_t                    flags;
   AVComponentDescriptor_55_56 comp[4];
-  const char *                alias;
+  const char                 *alias;
 };
 
 struct AVComponentDescriptor_57
@@ -81,13 +81,13 @@ struct AVComponentDescriptor_57
 
 struct AVPixFmtDescriptor_57_58
 {
-  const char *             name;
+  const char              *name;
   uint8_t                  nb_components;
   uint8_t                  log2_chroma_w;
   uint8_t                  log2_chroma_h;
   uint64_t                 flags;
   AVComponentDescriptor_57 comp[4];
-  const char *             alias;
+  const char              *alias;
 };
 
 AVPixFmtDescriptorWrapper::Flags parseFlags(const uint8_t flagsValue)
@@ -122,7 +122,7 @@ AVPixFmtDescriptorWrapper::Flags parseFlags(const uint64_t flagsValue)
 
 } // namespace
 
-AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(AVPixFmtDescriptor *   descriptor,
+AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(AVPixFmtDescriptor    *descriptor,
                                                      const LibraryVersions &libraryVersions)
 {
   if (libraryVersions.avutil.major == 54)
@@ -246,4 +246,4 @@ bool AVPixFmtDescriptorWrapper::operator==(const AVPixFmtDescriptorWrapper &othe
   return true;
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avutil

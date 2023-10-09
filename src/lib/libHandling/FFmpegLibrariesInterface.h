@@ -15,7 +15,7 @@
 
 #include <filesystem>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 struct LibraryInfo
@@ -62,4 +62,4 @@ private:
   friend class FFmpegLibrariesInterfaceBuilder;
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

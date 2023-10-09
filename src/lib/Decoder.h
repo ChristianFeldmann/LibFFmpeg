@@ -8,7 +8,7 @@
 
 #include <libHandling/FFmpegLibrariesInterface.h>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 class Decoder
@@ -20,4 +20,4 @@ private:
   std::shared_ptr<FFmpegLibrariesInterface> libraries;
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

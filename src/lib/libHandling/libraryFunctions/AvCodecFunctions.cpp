@@ -8,7 +8,7 @@
 
 #include "Functions.h"
 
-namespace LibFFmpeg::functions
+namespace ffmpeg::functions
 {
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibraryLoader &lib,
@@ -98,4 +98,4 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibrary
   return functions;
 }
 
-} // namespace LibFFmpeg::functions
+} // namespace ffmpeg::functions

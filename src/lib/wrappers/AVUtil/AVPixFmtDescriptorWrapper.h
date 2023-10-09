@@ -8,7 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avutil
 {
 
 class AVPixFmtDescriptorWrapper
@@ -72,4 +72,4 @@ public:
   bool operator==(const AVPixFmtDescriptorWrapper &a);
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avutil

@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 class AVCodecWrapper
@@ -39,4 +39,4 @@ private:
   LibraryVersions libraryVersions;
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

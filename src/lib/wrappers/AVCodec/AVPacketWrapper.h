@@ -8,7 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 // AVPacket is part of avcodec. The definition is different for different major versions of avcodec.
@@ -17,10 +17,10 @@ namespace LibFFmpeg
 // since its size is used in other structures (e.g. AVStream).
 typedef struct AVPacket_56
 {
-  AVBufferRef *     buf;
+  AVBufferRef      *buf;
   int64_t           pts;
   int64_t           dts;
-  uint8_t *         data;
+  uint8_t          *data;
   int               size;
   int               stream_index;
   int               flags;
@@ -28,16 +28,16 @@ typedef struct AVPacket_56
   int               side_data_elems;
   int               duration;
   void (*destruct)(struct AVPacket *);
-  void *  priv;
+  void   *priv;
   int64_t pos;
 } AVPacket_56;
 
 typedef struct AVPacket_57_58
 {
-  AVBufferRef *     buf;
+  AVBufferRef      *buf;
   int64_t           pts;
   int64_t           dts;
-  uint8_t *         data;
+  uint8_t          *data;
   int               size;
   int               stream_index;
   int               flags;
@@ -50,10 +50,10 @@ typedef struct AVPacket_57_58
 
 typedef struct AVPacket_59_60
 {
-  AVBufferRef *     buf;
+  AVBufferRef      *buf;
   int64_t           pts;
   int64_t           dts;
-  uint8_t *         data;
+  uint8_t          *data;
   int               size;
   int               stream_index;
   int               flags;
@@ -61,8 +61,8 @@ typedef struct AVPacket_59_60
   int               side_data_elems;
   int64_t           duration;
   int64_t           pos;
-  void *            opaque;
-  AVBufferRef *     opaque_ref;
+  void             *opaque;
+  AVBufferRef      *opaque_ref;
   AVRational        time_base;
 } AVPacket_59_60;
 
@@ -89,7 +89,7 @@ public:
   bool      getFlagKeyframe();
   bool      getFlagCorrupt();
   bool      getFlagDiscard();
-  uint8_t * getData();
+  uint8_t  *getData();
   int       getDataSize();
 
   explicit operator bool() const { return this->pkt != nullptr; };
@@ -98,10 +98,10 @@ private:
   void update();
 
   // These are private. Use "update" to update them from the AVFormatContext
-  AVBufferRef *     buf{};
+  AVBufferRef      *buf{};
   int64_t           pts{};
   int64_t           dts{};
-  uint8_t *         data{};
+  uint8_t          *data{};
   int               size{};
   int               stream_index{};
   int               flags{};
@@ -112,8 +112,8 @@ private:
 
   ByteVector packetData{};
 
-  AVPacket *      pkt{};
+  AVPacket       *pkt{};
   LibraryVersions libraryVersions{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

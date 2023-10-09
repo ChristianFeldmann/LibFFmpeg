@@ -8,7 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avutil
 {
 
 class AVDictionaryWrapper
@@ -25,4 +25,4 @@ private:
   AVDictionary *dict{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avutil

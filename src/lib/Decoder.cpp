@@ -6,7 +6,7 @@
 
 #include "Decoder.h"
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 Decoder::Decoder(std::shared_ptr<FFmpegLibrariesInterface> libraries)
@@ -14,4 +14,4 @@ Decoder::Decoder(std::shared_ptr<FFmpegLibrariesInterface> libraries)
   this->libraries = libraries;
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

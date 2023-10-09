@@ -6,15 +6,16 @@
 
 #include "AVCodecParametersWrapper.h"
 
-#include "Functions.h"
-namespace LibFFmpeg
+#include <wrappers/Functions.h>
+
+namespace ffmpeg::avformat
 {
 
 namespace
 {
 
 // AVCodecParameters is part of avcodec.
-typedef struct AVCodecParameters_57_58_59_60
+struct AVCodecParameters_57_58_59_60
 {
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
@@ -39,7 +40,7 @@ typedef struct AVCodecParameters_57_58_59_60
   int                           video_delay;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVCodecParameters_57_58_59_60;
+};
 
 } // namespace
 
@@ -272,4 +273,4 @@ void AVCodecParametersWrapper::update()
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avformat

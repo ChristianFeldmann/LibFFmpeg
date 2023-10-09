@@ -9,7 +9,7 @@
 #include <iomanip>
 #include <iostream>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 std::string timestampToString(int64_t timestamp, AVRational timebase)
@@ -65,4 +65,4 @@ std::ostream &operator<<(std::ostream &stream, const Version &version)
   return stream;
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

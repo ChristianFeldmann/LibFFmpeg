@@ -6,9 +6,9 @@
 
 #include "AVCodecContextWrapper.h"
 
-#include "Functions.h"
+#include <wrappers/Functions.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 namespace
@@ -795,4 +795,4 @@ void AVCodecContextWrapper::update()
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

@@ -8,7 +8,7 @@
 
 #include "FFMpegLibrariesTypes.h"
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 struct MotionVector
@@ -30,4 +30,4 @@ struct MotionVector
 std::vector<MotionVector>
 parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, const size_t dataSize);
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

@@ -8,7 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int inputDataSize)
@@ -24,4 +24,4 @@ inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int input
   return data;
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

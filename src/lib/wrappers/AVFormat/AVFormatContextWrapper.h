@@ -6,16 +6,15 @@
 
 #pragma once
 
-#include "AVDictionaryWrapper.h"
-#include "AVInputFormatWrapper.h"
-#include "AVPacketWrapper.h"
-#include "AVStreamWrapper.h"
-
 #include <libHandling/FFmpegLibrariesInterface.h>
+#include <wrappers/AVCodec/AVPacketWrapper.h>
+#include <wrappers/AVFormat/AVInputFormatWrapper.h>
+#include <wrappers/AVFormat/AVStreamWrapper.h>
+#include <wrappers/AVUtil/AVDictionaryWrapper.h>
 
 #include <memory>
 
-namespace LibFFmpeg
+namespace ffmpeg::avformat
 {
 
 class AVFormatContextWrapper
@@ -28,12 +27,12 @@ public:
 
   explicit operator bool() const;
 
-  unsigned int         getNbStreams();
-  AVStreamWrapper      getStream(int idx);
-  AVInputFormatWrapper getInputFormat();
-  int64_t              getStartTime();
-  int64_t              getDuration();
-  AVDictionaryWrapper  getMetadata();
+  unsigned int                getNbStreams();
+  AVStreamWrapper             getStream(int idx);
+  AVInputFormatWrapper        getInputFormat();
+  int64_t                     getStartTime();
+  int64_t                     getDuration();
+  avutil::AVDictionaryWrapper getMetadata();
 
 private:
   // Update all private values from the AVFormatContext
@@ -53,20 +52,20 @@ private:
   int                          max_delay{0};
   int                          flags{0};
 
-  int64_t             probesize{0};
-  int64_t             max_analyze_duration{0};
-  std::string         key{};
-  unsigned int        nb_programs{0};
-  AVCodecID           video_codec_id{AV_CODEC_ID_NONE};
-  AVCodecID           audio_codec_id{AV_CODEC_ID_NONE};
-  AVCodecID           subtitle_codec_id{AV_CODEC_ID_NONE};
-  unsigned int        max_index_size{0};
-  unsigned int        max_picture_buffer{0};
-  unsigned int        nb_chapters{0};
-  AVDictionaryWrapper metadata;
+  int64_t                     probesize{0};
+  int64_t                     max_analyze_duration{0};
+  std::string                 key{};
+  unsigned int                nb_programs{0};
+  AVCodecID                   video_codec_id{AV_CODEC_ID_NONE};
+  AVCodecID                   audio_codec_id{AV_CODEC_ID_NONE};
+  AVCodecID                   subtitle_codec_id{AV_CODEC_ID_NONE};
+  unsigned int                max_index_size{0};
+  unsigned int                max_picture_buffer{0};
+  unsigned int                nb_chapters{0};
+  avutil::AVDictionaryWrapper metadata;
 
   AVFormatContext                          *formatContext{nullptr};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avformat

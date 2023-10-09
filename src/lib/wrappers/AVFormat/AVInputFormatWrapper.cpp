@@ -6,7 +6,7 @@
 
 #include "AVInputFormatWrapper.h"
 
-namespace LibFFmpeg
+namespace ffmpeg::avformat
 {
 
 namespace
@@ -61,4 +61,4 @@ void AVInputFormatWrapper::update()
   }
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avformat

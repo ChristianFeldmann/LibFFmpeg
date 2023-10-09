@@ -7,7 +7,7 @@
 #include "AVCodecWrapper.h"
 #include <stdexcept>
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 namespace
@@ -160,4 +160,4 @@ uint8_t AVCodecWrapper::getMaxLowres() const
   CAST_POINTER_AND_RETURN_MEMBER(max_lowres);
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

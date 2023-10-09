@@ -7,33 +7,34 @@
 #include "AVFrameSideDataWrapper.h"
 #include <stdexcept>
 
-namespace LibFFmpeg
+namespace ffmpeg::avutil
 {
 
 namespace
 {
 
+// Part of AVUtil
 typedef struct AVFrameSideData_54_55_56
 {
   enum AVFrameSideDataType type;
-  uint8_t *                data;
+  uint8_t                 *data;
   int                      size;
-  AVDictionary *           metadata;
-  AVBufferRef *            buf;
+  AVDictionary            *metadata;
+  AVBufferRef             *buf;
 } AVFrameSideData_54_55_56;
 
 typedef struct AVFrameSideData_57_58
 {
   enum AVFrameSideDataType type;
-  uint8_t *                data;
+  uint8_t                 *data;
   size_t                   size;
-  AVDictionary *           metadata;
-  AVBufferRef *            buf;
+  AVDictionary            *metadata;
+  AVBufferRef             *buf;
 } AVFrameSideData_57_58;
 
 } // namespace
 
-AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData *      sideData,
+AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData       *sideData,
                                                const LibraryVersions &libraryVersions)
     : sideData(sideData), libraryVersions(libraryVersions)
 {
@@ -69,4 +70,4 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avutil

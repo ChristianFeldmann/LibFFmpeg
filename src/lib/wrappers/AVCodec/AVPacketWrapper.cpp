@@ -6,7 +6,7 @@
 
 #include "AVPacketWrapper.h"
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 AVPacketWrapper::AVPacketWrapper(AVPacket *packet, const LibraryVersions &libraryVersions)
@@ -258,4 +258,4 @@ void AVPacketWrapper::update()
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 struct LibrariesLoadingResult
@@ -39,4 +39,4 @@ private:
   std::weak_ptr<FFmpegLibrariesInterface> lastLoadedLibraries{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

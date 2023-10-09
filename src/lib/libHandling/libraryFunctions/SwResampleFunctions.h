@@ -9,7 +9,7 @@
 #include <common/FFMpegLibrariesTypes.h>
 #include <libHandling/SharedLibraryLoader.h>
 
-namespace LibFFmpeg::functions
+namespace ffmpeg::functions
 {
 
 struct SwResampleFunctions
@@ -20,4 +20,4 @@ struct SwResampleFunctions
 std::optional<SwResampleFunctions> tryBindSwResampleFunctionsFromLibrary(SharedLibraryLoader &lib,
                                                                          Log &                log);
 
-} // namespace LibFFmpeg::functions
+} // namespace ffmpeg::functions

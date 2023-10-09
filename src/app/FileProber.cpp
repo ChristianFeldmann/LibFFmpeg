@@ -11,7 +11,7 @@
 
 const auto FILE_NAME = std::string("testFile.webm");
 
-void printOutLog(const LibFFmpeg::Log &log)
+void printOutLog(const ffmpeg::Log &log)
 {
   std::cout << "\n ---- Log -----\n";
   for (const auto &logLine : log)
@@ -20,7 +20,7 @@ void printOutLog(const LibFFmpeg::Log &log)
 
 int main(int argc, char const *argv[])
 {
-  const auto loadingResult = LibFFmpeg::FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  const auto loadingResult = ffmpeg::FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
 
   if (!loadingResult.librariesInterface)
   {
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
   else
     std::cout << "Successfully loaded ffmpeg libraries.\n";
 
-  LibFFmpeg::Demuxer demuxer(loadingResult.librariesInterface);
+  ffmpeg::Demuxer demuxer(loadingResult.librariesInterface);
   const auto [openSuccessfull, openingLog] = demuxer.openFile(FILE_NAME);
 
   if (!openSuccessfull)

@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-namespace LibFFmpeg::functions
+namespace ffmpeg::functions
 {
 
 template <typename T>
@@ -37,4 +37,4 @@ std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string>
                                                   const std::string               libraryName,
                                                   Log &                           log);
 
-} // namespace LibFFmpeg::functions
+} // namespace ffmpeg::functions

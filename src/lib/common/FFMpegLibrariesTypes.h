@@ -18,7 +18,7 @@
  * from the FFmpeg public API headers. Please see (www.ffmpeg.org).
  */
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 struct Size
@@ -406,4 +406,4 @@ struct LibraryVersions
 
 std::string timestampToString(int64_t timestamp, AVRational timebase);
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

@@ -8,7 +8,7 @@
 
 #include <libHandling/FFmpegLibrariesInterface.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avformat
 {
 
 class AVInputFormatWrapper
@@ -37,4 +37,4 @@ private:
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avformat

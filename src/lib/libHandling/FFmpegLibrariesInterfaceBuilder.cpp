@@ -6,7 +6,7 @@
 
 #include "FFmpegLibrariesInterfaceBuilder.h"
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
@@ -64,4 +64,4 @@ FFmpegLibrariesInterfaceBuilder &FFmpegLibrariesInterfaceBuilder::withForcedRelo
   return *this;
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

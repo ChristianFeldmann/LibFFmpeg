@@ -6,7 +6,7 @@
 
 #include "Demuxer.h"
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 Demuxer::Demuxer(std::shared_ptr<FFmpegLibrariesInterface> libraries)
@@ -24,15 +24,15 @@ ResultAndLog Demuxer::openFile(std::filesystem::path path)
     return {false, log};
   }
 
-  this->formatContext = LibFFmpeg::AVFormatContextWrapper(this->libraries);
+  this->formatContext = ffmpeg::avformat::AVFormatContextWrapper(this->libraries);
   const auto result   = this->formatContext.openFile(path);
 
   return result;
 }
 
-AVPacketWrapper Demuxer::getNextPacket()
+avcodec::AVPacketWrapper Demuxer::getNextPacket()
 {
   return {};
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

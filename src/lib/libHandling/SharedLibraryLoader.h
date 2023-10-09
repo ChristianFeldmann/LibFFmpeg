@@ -19,7 +19,7 @@
 #include <dlfcn.h>
 #endif
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 class SharedLibraryLoader
@@ -61,4 +61,4 @@ private:
   std::filesystem::path libraryPath;
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

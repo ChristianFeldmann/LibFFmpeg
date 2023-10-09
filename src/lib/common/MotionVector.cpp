@@ -7,7 +7,7 @@
 #include "MotionVector.h"
 #include <stdexcept>
 
-namespace LibFFmpeg
+namespace ffmpeg
 {
 
 namespace
@@ -93,4 +93,4 @@ parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, con
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg

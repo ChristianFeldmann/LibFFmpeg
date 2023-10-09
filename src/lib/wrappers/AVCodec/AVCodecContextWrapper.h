@@ -8,7 +8,7 @@
 
 #include <libHandling/FFmpegLibrariesInterface.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avcodec
 {
 
 class AVCodecContextWrapper
@@ -119,4 +119,4 @@ private:
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avcodec

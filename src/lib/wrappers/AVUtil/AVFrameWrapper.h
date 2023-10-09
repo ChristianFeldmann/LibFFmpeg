@@ -8,7 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 
-namespace LibFFmpeg
+namespace ffmpeg::avutil
 {
 
 class AVFrameWrapper
@@ -19,9 +19,9 @@ public:
 
   void clear();
 
-  uint8_t *     getData(int component);
+  uint8_t      *getData(int component);
   int           getLineSize(int component);
-  AVFrame *     getFrame() const;
+  AVFrame      *getFrame() const;
   int           getWidth();
   int           getHeight();
   Size          getSize();
@@ -36,7 +36,7 @@ private:
   void update();
 
   // These are private. Use "update" to update them from the AVFormatContext
-  uint8_t *     data[AV_NUM_DATA_POINTERS]{};
+  uint8_t      *data[AV_NUM_DATA_POINTERS]{};
   int           linesize[AV_NUM_DATA_POINTERS]{};
   int           width{};
   int           height{};
@@ -53,8 +53,8 @@ private:
   int           quality{};
   AVDictionary *metadata{};
 
-  AVFrame *       frame{};
+  AVFrame        *frame{};
   LibraryVersions libraryVersions{};
 };
 
-} // namespace LibFFmpeg
+} // namespace ffmpeg::avutil
