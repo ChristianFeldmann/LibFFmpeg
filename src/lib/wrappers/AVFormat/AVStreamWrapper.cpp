@@ -8,6 +8,8 @@
 
 #include <wrappers/AVCodec/AVPacketWrapper.h>
 
+#include "CastFormatClasses.h"
+
 namespace ffmpeg::avformat
 {
 
@@ -15,7 +17,7 @@ namespace
 {
 
 // AVStream is part of AVFormat
-typedef struct AVStream_56
+struct AVStream_56
 {
   int                  index;
   int                  id;
@@ -35,17 +37,17 @@ typedef struct AVStream_56
   AVPacketSideData    *side_data;
   int                  nb_side_data;
   int                  event_flags;
-} AVStream_56;
+};
 
-typedef struct AVProbeData_57
+struct AVProbeData_57
 {
   const char    *filename;
   unsigned char *buf;
   int            buf_size;
   const char    *mime_type;
-} AVProbeData_57;
+};
 
-typedef struct AVStream_57
+struct AVStream_57
 {
   int                  index;
   int                  id;
@@ -129,9 +131,9 @@ typedef struct AVStream_57
   struct FFFrac     *priv_pts;
   AVStreamInternal  *internal;
   AVCodecParameters *codecpar;
-} AVStream_57;
+};
 
-typedef struct AVStream_58
+struct AVStream_58
 {
   int                  index;
   int                  id;
@@ -155,9 +157,9 @@ typedef struct AVStream_58
   AVCodecParameters   *codecpar;
 
   // All field following this line are not part of the public API and may change/be removed.
-} AVStream_58;
+};
 
-typedef struct AVStream_59
+struct AVStream_59
 {
   int                  index;
   int                  id;
@@ -178,9 +180,9 @@ typedef struct AVStream_59
   AVRational           r_frame_rate;
   AVCodecParameters   *codecpar;
   int                  pts_wrap_bits;
-} AVStream_59;
+};
 
-typedef struct AVStream_60
+struct AVStream_60
 {
   const AVClass       *av_class;
   int                  index;
@@ -202,43 +204,46 @@ typedef struct AVStream_60
   int                  event_flags;
   AVRational           r_frame_rate;
   int                  pts_wrap_bits;
-} AVStream_60;
+};
 
 } // namespace
 
-AVStreamWrapper::AVStreamWrapper(AVStream                                 *avStream,
+AVStreamWrapper::AVStreamWrapper(AVStream                                 *stream,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : stream(stream), librariesInterface(librariesInterface)
 {
-  this->stream             = avStream;
-  this->librariesInterface = librariesInterface;
-  this->update();
 }
 
-AVMediaType AVStreamWrapper::getCodecType()
+AVMediaType AVStreamWrapper::getCodecType() const
 {
-  this->update();
-  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
-    return this->codec.getCodecType();
-  return this->codecpar.getCodecType();
+  if (const auto codecParameters = this->getCodecParameters())
+    return codecParameters.getCodecType();
+
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getCodecType();
+
+  return {AVMEDIA_TYPE_UNKNOWN};
 }
 
-std::string AVStreamWrapper::getCodecTypeName()
+std::string AVStreamWrapper::getCodecTypeName() const
 {
-  auto type = this->codecpar.getCodecType();
+  const auto codecParameters = this->getCodecParameters();
+  if (!codecParameters)
+    return {};
 
-  switch (type)
+  switch (codecParameters.getCodecType())
   {
-  case -1:
+  case AVMEDIA_TYPE_UNKNOWN:
     return "Unknown";
-  case 0:
+  case AVMEDIA_TYPE_VIDEO:
     return "Video";
-  case 1:
+  case AVMEDIA_TYPE_AUDIO:
     return "Audio";
-  case 2:
+  case AVMEDIA_TYPE_DATA:
     return "Data";
-  case 3:
+  case AVMEDIA_TYPE_SUBTITLE:
     return "Subtitle";
-  case 4:
+  case AVMEDIA_TYPE_ATTACHMENT:
     return "Attachment";
 
   default:
@@ -246,178 +251,143 @@ std::string AVStreamWrapper::getCodecTypeName()
   }
 }
 
-AVCodecID AVStreamWrapper::getCodecID()
+AVCodecID AVStreamWrapper::getCodecID() const
 {
-  this->update();
-  if (this->stream == nullptr)
-    return AV_CODEC_ID_NONE;
+  if (const auto codecParameters = this->getCodecParameters())
+    return codecParameters.getCodecID();
 
-  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
-    return this->codec.getCodecID();
-  else
-    return this->codecpar.getCodecID();
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getCodecID();
+
+  return {AV_CODEC_ID_NONE};
 }
 
-avcodec::AVCodecContextWrapper &AVStreamWrapper::getCodec()
+AVRational AVStreamWrapper::getAverageFrameRate() const
 {
-  this->update();
-  return this->codec;
+  AVRational frameRate;
+  CAST_AVFORMAT_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
+                           AVStream,
+                           this->stream,
+                           frameRate,
+                           avg_frame_rate);
+  return frameRate;
+}
+
+AVRational AVStreamWrapper::getTimeBase() const
+{
+  AVRational timebase;
+  CAST_AVFORMAT_GET_MEMBER(
+      this->librariesInterface->getLibrariesVersion(), AVStream, this->stream, timebase, time_base);
+
+  if (timebase.den != 0 && timebase.num != 0)
+    return timebase;
+
+  // The stream time_base seems not to be set. Try the time_base in the codec.
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getTimeBase();
+
+  return {};
+}
+
+Size AVStreamWrapper::getFrameSize() const
+{
+  if (const auto codecParameters = this->getCodecParameters())
+    return codecParameters.getSize();
+
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getSize();
+
+  return {};
+}
+
+AVColorSpace AVStreamWrapper::getColorspace() const
+{
+  if (const auto codecParameters = this->getCodecParameters())
+    return codecParameters.getColorspace();
+
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getColorspace();
+
+  return {};
+}
+
+AVPixelFormat AVStreamWrapper::getPixelFormat() const
+{
+  if (const auto codecParameters = this->getCodecParameters())
+    return codecParameters.getPixelFormat();
+
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getPixelFormat();
+
+  return {AV_PIX_FMT_NONE};
+}
+
+ByteVector AVStreamWrapper::getExtradata() const
+{
+  if (const auto codecParameters = this->getCodecParameters())
+    return codecParameters.getExtradata();
+
+  if (const auto codecContext = this->getCodecContext())
+    return codecContext.getExtradata();
+
+  return {};
+}
+
+int AVStreamWrapper::getIndex() const
+{
+  int index;
+  CAST_AVFORMAT_GET_MEMBER(
+      this->librariesInterface->getLibrariesVersion(), AVStream, this->stream, index, index);
+  return index;
+}
+
+avcodec::AVCodecContextWrapper AVStreamWrapper::getCodecContext() const
+{
+  const auto version = this->librariesInterface->getLibrariesVersion().avformat.major;
+  if (version == 56)
+  {
+    const auto p = reinterpret_cast<AVStream_56 *>(this->stream);
+    return avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
+  }
+  if (version == 57)
+  {
+    const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
+    return avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
+  }
+  if (version == 58)
+  {
+    const auto p = reinterpret_cast<AVStream_58 *>(this->stream);
+    return avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
+  }
+
+  return {};
 };
 
-AVRational AVStreamWrapper::getAvgFrameRate()
+AVCodecParametersWrapper AVStreamWrapper::getCodecParameters() const
 {
-  this->update();
-  return this->avg_frame_rate;
-}
-
-AVRational AVStreamWrapper::getTimeBase()
-{
-  this->update();
-  if (this->time_base.den == 0 || this->time_base.num == 0)
-    // The stream time_base seems not to be set. Try the time_base in the codec.
-    return this->codec.getTimeBase();
-  return this->time_base;
-}
-
-Size AVStreamWrapper::getFrameSize()
-{
-  this->update();
-  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
-    return this->codec.getSize();
-  return this->codecpar.getSize();
-}
-
-AVColorSpace AVStreamWrapper::getColorspace()
-{
-  this->update();
-  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
-    return this->codec.getColorspace();
-  return this->codecpar.getColorspace();
-}
-
-AVPixelFormat AVStreamWrapper::getPixelFormat()
-{
-  this->update();
-  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
-    return this->codec.getPixelFormat();
-  return this->codecpar.getPixelFormat();
-}
-
-ByteVector AVStreamWrapper::getExtradata()
-{
-  this->update();
-  if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56 || !this->codecpar)
-    return this->codec.getExtradata();
-  return this->codecpar.getExtradata();
-}
-
-int AVStreamWrapper::getIndex()
-{
-  this->update();
-  return this->index;
-}
-
-AVCodecParametersWrapper AVStreamWrapper::getCodecpar()
-{
-  this->update();
-  return this->codecpar;
-}
-
-void AVStreamWrapper::update()
-{
-  if (this->stream == nullptr)
-    return;
-
-  // Copy values from the source pointer
-  if (this->librariesInterface->getLibrariesVersion().avformat.major == 56)
+  const auto version = this->librariesInterface->getLibrariesVersion().avformat.major;
+  if (version == 57)
   {
-    auto p                    = reinterpret_cast<AVStream_56 *>(this->stream);
-    this->index               = p->index;
-    this->id                  = p->id;
-    this->codec               = avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
-    this->time_base           = p->time_base;
-    this->start_time          = p->start_time;
-    this->duration            = p->duration;
-    this->nb_frames           = p->nb_frames;
-    this->disposition         = p->nb_frames;
-    this->discard             = p->discard;
-    this->sample_aspect_ratio = p->sample_aspect_ratio;
-    this->avg_frame_rate      = p->avg_frame_rate;
-    this->nb_side_data        = p->nb_side_data;
-    this->event_flags         = p->event_flags;
+    const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
+    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)
+  if (version == 58)
   {
-    auto p                    = reinterpret_cast<AVStream_57 *>(this->stream);
-    this->index               = p->index;
-    this->id                  = p->id;
-    this->codec               = avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
-    this->time_base           = p->time_base;
-    this->start_time          = p->start_time;
-    this->duration            = p->duration;
-    this->nb_frames           = p->nb_frames;
-    this->disposition         = p->nb_frames;
-    this->discard             = p->discard;
-    this->sample_aspect_ratio = p->sample_aspect_ratio;
-    this->avg_frame_rate      = p->avg_frame_rate;
-    this->nb_side_data        = p->nb_side_data;
-    this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    const auto p = reinterpret_cast<AVStream_58 *>(this->stream);
+    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)
+  if (version == 59)
   {
-    auto p                    = reinterpret_cast<AVStream_58 *>(this->stream);
-    this->index               = p->index;
-    this->id                  = p->id;
-    this->codec               = avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
-    this->time_base           = p->time_base;
-    this->start_time          = p->start_time;
-    this->duration            = p->duration;
-    this->nb_frames           = p->nb_frames;
-    this->disposition         = p->nb_frames;
-    this->discard             = p->discard;
-    this->sample_aspect_ratio = p->sample_aspect_ratio;
-    this->avg_frame_rate      = p->avg_frame_rate;
-    this->nb_side_data        = p->nb_side_data;
-    this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    const auto p = reinterpret_cast<AVStream_59 *>(this->stream);
+    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)
+  if (version == 60)
   {
-    auto p                    = reinterpret_cast<AVStream_59 *>(this->stream);
-    this->index               = p->index;
-    this->id                  = p->id;
-    this->time_base           = p->time_base;
-    this->start_time          = p->start_time;
-    this->duration            = p->duration;
-    this->nb_frames           = p->nb_frames;
-    this->disposition         = p->nb_frames;
-    this->discard             = p->discard;
-    this->sample_aspect_ratio = p->sample_aspect_ratio;
-    this->avg_frame_rate      = p->avg_frame_rate;
-    this->nb_side_data        = p->nb_side_data;
-    this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    const auto p = reinterpret_cast<AVStream_60 *>(this->stream);
+    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
   }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)
-  {
-    auto p                    = reinterpret_cast<AVStream_60 *>(this->stream);
-    this->index               = p->index;
-    this->id                  = p->id;
-    this->time_base           = p->time_base;
-    this->start_time          = p->start_time;
-    this->duration            = p->duration;
-    this->nb_frames           = p->nb_frames;
-    this->disposition         = p->nb_frames;
-    this->discard             = p->discard;
-    this->sample_aspect_ratio = p->sample_aspect_ratio;
-    this->avg_frame_rate      = p->avg_frame_rate;
-    this->nb_side_data        = p->nb_side_data;
-    this->event_flags         = p->event_flags;
-    this->codecpar            = AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+
+  return {};
 }
 
 } // namespace ffmpeg::avformat

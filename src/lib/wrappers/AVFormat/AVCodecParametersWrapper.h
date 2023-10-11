@@ -16,15 +16,15 @@ public:
   AVCodecParametersWrapper() = default;
   AVCodecParametersWrapper(AVCodecParameters                        *p,
                            std::shared_ptr<FFmpegLibrariesInterface> libraries);
-  explicit operator bool() const { return this->param != nullptr; }
+  explicit operator bool() const { return this->codecParameters != nullptr; }
 
-  AVMediaType   getCodecType();
-  AVCodecID     getCodecID();
-  ByteVector    getExtradata();
-  Size          getSize();
-  AVColorSpace  getColorspace();
-  AVPixelFormat getPixelFormat();
-  Ratio         getSampleAspectRatio();
+  AVMediaType   getCodecType() const;
+  AVCodecID     getCodecID() const;
+  ByteVector    getExtradata() const;
+  Size          getSize() const;
+  AVColorSpace  getColorspace() const;
+  AVPixelFormat getPixelFormat() const;
+  Ratio         getSampleAspectRatio() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
@@ -37,35 +37,10 @@ public:
   void setProfileLevel(int profile, int level);
   void setSampleAspectRatio(int num, int den);
 
-  AVCodecParameters *getCodecParameters() const { return this->param; }
+  AVCodecParameters *getCodecParameters() const { return this->codecParameters; }
 
 private:
-  // Update all private values from the AVCodecParameters
-  void update();
-
-  // These are private. Use "update" to update them from the AVCodecParameters
-  AVMediaType                   codec_type{};
-  AVCodecID                     codec_id{};
-  uint32_t                      codec_tag{};
-  ByteVector                    extradata{};
-  int                           format{};
-  int64_t                       bit_rate{};
-  int                           bits_per_coded_sample{};
-  int                           bits_per_raw_sample{};
-  int                           profile{};
-  int                           level{};
-  int                           width{};
-  int                           height{};
-  AVRational                    sample_aspect_ratio{};
-  AVFieldOrder                  field_order{};
-  AVColorRange                  color_range{};
-  AVColorPrimaries              color_primaries{};
-  AVColorTransferCharacteristic color_trc{};
-  AVColorSpace                  color_space{};
-  AVChromaLocation              chroma_location{};
-  int                           video_delay{};
-
-  AVCodecParameters                        *param{};
+  AVCodecParameters                        *codecParameters{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;
 };
 

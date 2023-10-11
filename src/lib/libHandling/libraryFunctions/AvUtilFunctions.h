@@ -17,7 +17,8 @@ struct AvUtilFunctions
   std::function<unsigned()>            avutil_version;
   std::function<AVFrame *()>           av_frame_alloc;
   std::function<void(AVFrame **frame)> av_frame_free;
-  std::function<void(size_t size)>     av_mallocz;
+  std::function<void *(size_t size)>   av_mallocz;
+  std::function<void(void *ptr)>       av_freep;
   std::function<int(AVDictionary **pm, const char *key, const char *value, int flags)> av_dict_set;
   std::function<AVDictionaryEntry *(
       AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags)>
@@ -33,6 +34,6 @@ struct AvUtilFunctions
 };
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                 Log &                log);
+                                                                 Log                 &log);
 
 } // namespace ffmpeg::functions

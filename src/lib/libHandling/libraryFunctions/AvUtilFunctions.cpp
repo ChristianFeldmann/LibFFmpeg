@@ -25,6 +25,7 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(SharedLibraryLo
   lib.tryResolveFunction(functions.av_frame_alloc, "av_frame_alloc");
   lib.tryResolveFunction(functions.av_frame_free, "av_frame_free");
   lib.tryResolveFunction(functions.av_mallocz, "av_mallocz");
+  lib.tryResolveFunction(functions.av_freep, "av_freep");
   lib.tryResolveFunction(functions.av_dict_set, "av_dict_set");
   lib.tryResolveFunction(functions.av_dict_get, "av_dict_get");
   lib.tryResolveFunction(functions.av_frame_get_side_data, "av_frame_get_side_data");
@@ -50,6 +51,7 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(SharedLibraryLo
   checkForMissingFunctionAndLog(functions.av_frame_free, "av_frame_free", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_frame_free, "av_frame_free", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_mallocz, "av_mallocz", missingFunctions, log);
+  checkForMissingFunctionAndLog(functions.av_freep, "av_freep", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_dict_set, "av_dict_set", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_dict_get, "av_dict_get", missingFunctions, log);
   checkForMissingFunctionAndLog(
