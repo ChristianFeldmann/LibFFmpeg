@@ -168,7 +168,6 @@ AVFormatContextWrapper::AVFormatContextWrapper(
   this->librariesInterface = librariesInterface;
 }
 
-// This should go into a separate function. Maybe just in the demuxer.
 ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
 {
   Log log;
