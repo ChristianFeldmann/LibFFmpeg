@@ -6,29 +6,29 @@
 
 #pragma once
 
-#define CAST_AVUTIL_GET_MEMBER(libraryVersions, classPrefix, castFrom, variableToAssign, member)   \
+#define CAST_AVUTIL_GET_MEMBER(classPrefix, castFrom, variableToAssign, member)                    \
   {                                                                                                \
-    if (libraryVersions.avutil.major == 54)                                                        \
+    if (this->librariesInterface->getLibrariesVersion().avutil.major == 54)                        \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_54 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avutil.major == 55)                                                        \
+    if (this->librariesInterface->getLibrariesVersion().avutil.major == 55)                        \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_55 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avutil.major == 56)                                                        \
+    if (this->librariesInterface->getLibrariesVersion().avutil.major == 56)                        \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_56 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avutil.major == 57)                                                        \
+    if (this->librariesInterface->getLibrariesVersion().avutil.major == 57)                        \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_57 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avutil.major == 58)                                                        \
+    if (this->librariesInterface->getLibrariesVersion().avutil.major == 58)                        \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_58 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \

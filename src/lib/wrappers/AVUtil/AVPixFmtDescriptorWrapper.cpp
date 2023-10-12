@@ -115,40 +115,25 @@ AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(
 std::string AVPixFmtDescriptorWrapper::getName() const
 {
   const char *name;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVPixFmtDescriptor,
-                         this->pixelFormatDescriptor,
-                         name,
-                         name);
+  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, name, name);
   return std::string(name);
 }
 
 int AVPixFmtDescriptorWrapper::getNumberOfComponents() const
 {
   int numberComponents;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVPixFmtDescriptor,
-                         this->pixelFormatDescriptor,
-                         numberComponents,
-                         nb_components);
+  CAST_AVUTIL_GET_MEMBER(
+      AVPixFmtDescriptor, this->pixelFormatDescriptor, numberComponents, nb_components);
   return numberComponents;
 }
 
 AVPixFmtDescriptorWrapper::Shift AVPixFmtDescriptorWrapper::getShiftLumaToChroma() const
 {
   int width;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVPixFmtDescriptor,
-                         this->pixelFormatDescriptor,
-                         width,
-                         log2_chroma_w);
+  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, width, log2_chroma_w);
 
   int height;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVPixFmtDescriptor,
-                         this->pixelFormatDescriptor,
-                         height,
-                         log2_chroma_h);
+  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, height, log2_chroma_h);
 
   return {width, height};
 }
@@ -156,11 +141,7 @@ AVPixFmtDescriptorWrapper::Shift AVPixFmtDescriptorWrapper::getShiftLumaToChroma
 AVPixFmtDescriptorWrapper::Flags AVPixFmtDescriptorWrapper::getFlags() const
 {
   uint64_t flagsValue;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVPixFmtDescriptor,
-                         this->pixelFormatDescriptor,
-                         flagsValue,
-                         flags);
+  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, flagsValue, flags);
 
   return parseFlagsFromValue(flagsValue);
 }

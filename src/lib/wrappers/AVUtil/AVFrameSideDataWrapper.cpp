@@ -53,21 +53,19 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   if (this->sideData == nullptr)
     return {};
 
-  const auto version = this->librariesInterface->getLibrariesVersion();
-
   AVFrameSideDataType type;
-  CAST_AVUTIL_GET_MEMBER(version, AVFrameSideData, this->sideData, type, type);
+  CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, type, type);
 
   if (type != AV_FRAME_DATA_MOTION_VECTORS)
     return {};
 
   uint8_t *data;
-  CAST_AVUTIL_GET_MEMBER(version, AVFrameSideData, this->sideData, data, data);
+  CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, data, data);
 
   int size;
-  CAST_AVUTIL_GET_MEMBER(version, AVFrameSideData, this->sideData, size, size);
+  CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, size, size);
 
-  return parseMotionData(version, data, size);
+  return parseMotionData(this->librariesInterface->getLibrariesVersion(), data, size);
 }
 
 } // namespace ffmpeg::avutil

@@ -116,11 +116,7 @@ AVFrameWrapper::AVFrameWrapper(AVFrame                                  *frame,
 ByteVector AVFrameWrapper::getData(int component) const
 {
   uint8_t *dataPointer;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVFrame,
-                         this->frame,
-                         dataPointer,
-                         data[component]);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, dataPointer, data[component]);
 
   ByteVector data;
   // Data copying function
@@ -134,23 +130,17 @@ int AVFrameWrapper::getLineSize(int component) const
     return {};
 
   int linesize;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVFrame,
-                         this->frame,
-                         linesize,
-                         linesize[component]);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, linesize, linesize[component]);
   return linesize;
 }
 
 Size AVFrameWrapper::getSize() const
 {
   int width;
-  CAST_AVUTIL_GET_MEMBER(
-      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, width, width);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, width, width);
 
   int height;
-  CAST_AVUTIL_GET_MEMBER(
-      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, height, height);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, height, height);
 
   return {width, height};
 }
@@ -158,27 +148,21 @@ Size AVFrameWrapper::getSize() const
 int64_t AVFrameWrapper::getPTS() const
 {
   int pts;
-  CAST_AVUTIL_GET_MEMBER(
-      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, pts, pts);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, pts, pts);
   return pts;
 }
 
 AVPictureType AVFrameWrapper::getPictType() const
 {
   AVPictureType pictureType;
-  CAST_AVUTIL_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                         AVFrame,
-                         this->frame,
-                         pictureType,
-                         pict_type);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, pictureType, pict_type);
   return pictureType;
 }
 
 bool AVFrameWrapper::isKeyFrame() const
 {
   int keyframe;
-  CAST_AVUTIL_GET_MEMBER(
-      this->librariesInterface->getLibrariesVersion(), AVFrame, this->frame, keyframe, key_frame);
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, keyframe, key_frame);
   return keyframe == 1;
 }
 
