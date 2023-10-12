@@ -49,7 +49,11 @@ int main(int argc, char const *argv[])
   std::cout << "\nFile info:\n";
 
   std::cout << "  Format:\n";
-  std::cout << "    Name " << inputFormat.getName() << "\n";
+  std::cout << "    Name       : " << inputFormat.getName() << "\n";
+  std::cout << "    Long Name  : " << inputFormat.getLongName() << "\n";
+  std::cout << "    Flags      : " << to_string(inputFormat.getFlags()) << "\n";
+  std::cout << "    Extensions : " << inputFormat.getExtensions() << "\n";
+  std::cout << "    Mime Type  : " << inputFormat.getMimeType() << "\n";
 
   return 0;
 }
