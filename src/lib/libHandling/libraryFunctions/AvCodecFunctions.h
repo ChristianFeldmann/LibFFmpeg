@@ -20,8 +20,7 @@ struct AvCodecFunctions
                                               avcodec_open2;
   std::function<void(AVCodecContext **avctx)> avcodec_free_context;
   std::function<AVPacket *()>                 av_packet_alloc;
-  std::function<void(AVPacket **pkt)>         av_packet_free;
-  std::function<void(AVPacket *pkt)>          av_init_packet;
+  std::function<int(AVPacket *pkt, int size)> av_new_packet;
   std::function<void(AVPacket *pkt)>          av_packet_unref;
   std::function<void(AVCodecContext *avctx)>  avcodec_flush_buffers;
   std::function<unsigned()>                   avcodec_version;
@@ -39,6 +38,6 @@ struct AvCodecFunctions
 };
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                   Log &                log);
+                                                                   Log                 &log);
 
 } // namespace ffmpeg::functions

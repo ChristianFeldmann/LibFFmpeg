@@ -80,8 +80,9 @@ class AVPacketWrapper
 public:
   AVPacketWrapper() = default;
   AVPacketWrapper(AVPacket *packet, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVPacketWrapper(const ByteVector                         &data,
+                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  void setData(const ByteVector &data);
   void setTimestamps(const int64_t dts, const int64_t pts);
 
   AVPacket *getPacket() const { return this->packet; }

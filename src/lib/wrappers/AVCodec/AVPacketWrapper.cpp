@@ -10,6 +10,8 @@
 
 #include "CastCodecClasses.h"
 
+#include <cstring>
+
 namespace ffmpeg::avcodec
 {
 
@@ -19,9 +21,19 @@ AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packe
 {
 }
 
-void AVPacketWrapper::setData(const ByteVector &data)
+AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
+                                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : librariesInterface(librariesInterface)
 {
-  // Use av functions to create buffers
+  this->packet = this->librariesInterface->avcodec.av_packet_alloc();
+  if (this->packet == nullptr)
+    throw std::runtime_error("Unable to allocate new AVPacket");
+
+  const auto ret = this->librariesInterface->avcodec.av_new_packet(this->packet, data.size());
+
+  uint8_t *dataPointer;
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataPointer, data);
+  std::memcpy(dataPointer, data.data(), data.size());
 }
 
 void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)

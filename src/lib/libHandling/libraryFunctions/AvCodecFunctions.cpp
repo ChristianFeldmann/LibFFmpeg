@@ -12,7 +12,7 @@ namespace ffmpeg::functions
 {
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                   Log &                log)
+                                                                   Log                 &log)
 {
   if (!lib)
   {
@@ -27,8 +27,7 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibrary
   lib.tryResolveFunction(functions.avcodec_open2, "avcodec_open2");
   lib.tryResolveFunction(functions.avcodec_free_context, "avcodec_free_context");
   lib.tryResolveFunction(functions.av_packet_alloc, "av_packet_alloc");
-  lib.tryResolveFunction(functions.av_packet_free, "av_packet_free");
-  lib.tryResolveFunction(functions.av_init_packet, "av_init_packet");
+  lib.tryResolveFunction(functions.av_new_packet, "av_new_packet");
   lib.tryResolveFunction(functions.av_packet_unref, "av_packet_unref");
   lib.tryResolveFunction(functions.avcodec_flush_buffers, "avcodec_flush_buffers");
   lib.tryResolveFunction(functions.avcodec_version, "avcodec_version");
@@ -48,10 +47,9 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibrary
   checkForMissingFunctionAndLog(functions.avcodec_open2, "avcodec_open2", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.avcodec_free_context, "avcodec_free_context", missingFunctions, log);
+  checkForMissingFunctionAndLog(functions.av_new_packet, "av_new_packet", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.av_packet_alloc, "av_packet_alloc", missingFunctions, log);
-  checkForMissingFunctionAndLog(functions.av_packet_free, "av_packet_free", missingFunctions, log);
-  checkForMissingFunctionAndLog(functions.av_init_packet, "av_init_packet", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.av_packet_unref, "av_packet_unref", missingFunctions, log);
   checkForMissingFunctionAndLog(
