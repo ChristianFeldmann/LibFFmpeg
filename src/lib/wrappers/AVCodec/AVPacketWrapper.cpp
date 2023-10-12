@@ -13,8 +13,9 @@
 namespace ffmpeg::avcodec
 {
 
-AVPacketWrapper::AVPacketWrapper(AVPacket *packet, const LibraryVersions &libraryVersions)
-    : libraryVersions(libraryVersions), packet(packet)
+AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packet,
+                                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : packet(packet), librariesInterface(librariesInterface)
 {
 }
 
@@ -25,62 +26,42 @@ void AVPacketWrapper::setData(const ByteVector &data)
 
 void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)
 {
-  if (this->libraryVersions.avcodec.major == 56)
-  {
-    auto p = reinterpret_cast<AVPacket_56 *>(this->packet);
-    p->dts = dts;
-    p->pts = pts;
-  }
-  else if (this->libraryVersions.avcodec.major == 57 || //
-           this->libraryVersions.avcodec.major == 58)
-  {
-    auto p = reinterpret_cast<AVPacket_57 *>(this->packet);
-    p->dts = dts;
-    p->pts = pts;
-  }
-  else if (this->libraryVersions.avcodec.major == 59 || //
-           this->libraryVersions.avcodec.major == 60)
-  {
-    auto p = reinterpret_cast<AVPacket_59 *>(this->packet);
-    p->dts = dts;
-    p->pts = pts;
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet, dts, dts);
+  CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet, pts, pts);
 }
 
 int AVPacketWrapper::getStreamIndex() const
 {
   int index;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, index, stream_index);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, index, stream_index);
   return index;
 }
 
 int64_t AVPacketWrapper::getPTS() const
 {
   int pts;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, pts, pts);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, pts, pts);
   return pts;
 }
 
 int64_t AVPacketWrapper::getDTS() const
 {
   int dts;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, dts, dts);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dts, dts);
   return dts;
 }
 
 int64_t AVPacketWrapper::getDuration() const
 {
   int duration;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, duration, duration);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, duration, duration);
   return duration;
 }
 
 AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 {
   int flagsAsInt;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, flagsAsInt, flags);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, flagsAsInt, flags);
 
   Flags flags;
 
@@ -97,10 +78,10 @@ AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 ByteVector AVPacketWrapper::getData() const
 {
   uint8_t *data;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, data, data);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, data, data);
 
   int dataSize;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVPacket, this->packet, dataSize, size);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataSize, size);
 
   return copyDataFromRawArray(data, dataSize);
 }

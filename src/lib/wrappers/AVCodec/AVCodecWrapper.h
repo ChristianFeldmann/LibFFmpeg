@@ -7,7 +7,9 @@
 #pragma once
 
 #include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
 
+#include <memory>
 #include <vector>
 
 namespace ffmpeg::avcodec
@@ -17,7 +19,7 @@ class AVCodecWrapper
 {
 public:
   AVCodecWrapper() = default;
-  AVCodecWrapper(AVCodec *codec, const LibraryVersions &libraryVersions);
+  AVCodecWrapper(AVCodec *codec, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   explicit operator bool() const { return this->codec != nullptr; }
   AVCodec *getAVCodec() { return this->codec; }
@@ -35,8 +37,8 @@ public:
   uint8_t                     getMaxLowres() const;
 
 private:
-  AVCodec        *codec{nullptr};
-  LibraryVersions libraryVersions{};
+  AVCodec                                  *codec{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace ffmpeg::avcodec

@@ -402,51 +402,31 @@ AVCodecContextWrapper::AVCodecContextWrapper(
 AVMediaType AVCodecContextWrapper::getCodecType() const
 {
   AVMediaType type;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          type,
-                          codec_type);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, type, codec_type);
   return type;
 }
 
 AVCodecID AVCodecContextWrapper::getCodecID() const
 {
   AVCodecID id;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          id,
-                          codec_id);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, id, codec_id);
   return id;
 }
 
 AVPixelFormat AVCodecContextWrapper::getPixelFormat() const
 {
   AVPixelFormat pixelFormat;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          pixelFormat,
-                          pix_fmt);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, pixelFormat, pix_fmt);
   return pixelFormat;
 }
 
 Size AVCodecContextWrapper::getSize() const
 {
   int width;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          width,
-                          width);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, width, width);
 
   int height;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          height,
-                          height);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, height, height);
 
   return {width, height};
 }
@@ -454,40 +434,24 @@ Size AVCodecContextWrapper::getSize() const
 AVColorSpace AVCodecContextWrapper::getColorspace() const
 {
   AVColorSpace colorspace;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          colorspace,
-                          colorspace);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, colorspace, colorspace);
   return colorspace;
 }
 
 AVRational AVCodecContextWrapper::getTimeBase() const
 {
   AVRational timebase;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          timebase,
-                          time_base);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, timebase, time_base);
   return timebase;
 }
 
 ByteVector AVCodecContextWrapper::getExtradata() const
 {
   uint8_t *extradata;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          extradata,
-                          extradata);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, extradata, extradata);
 
   int extradataSize;
-  CAST_AVCODEC_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                          AVCodecContext,
-                          this->codecContext,
-                          extradataSize,
-                          extradata_size);
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, extradataSize, extradata_size);
 
   return copyDataFromRawArray(extradata, extradataSize);
 }

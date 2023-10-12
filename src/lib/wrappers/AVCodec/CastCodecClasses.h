@@ -6,32 +6,65 @@
 
 #pragma once
 
-#define CAST_AVCODEC_GET_MEMBER(libraryVersions, classPrefix, castFrom, variableToAssign, member)  \
+#define CAST_AVCODEC_GET_MEMBER(classPrefix, castFrom, variableToAssign, member)                   \
   {                                                                                                \
-    if (libraryVersions.avcodec.major == 56)                                                       \
+    if (this->librariesInterface->getLibrariesVersion().avcodec.major == 56)                       \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_56 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avcodec.major == 57)                                                       \
+    if (this->librariesInterface->getLibrariesVersion().avcodec.major == 57)                       \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_57 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avcodec.major == 58)                                                       \
+    if (this->librariesInterface->getLibrariesVersion().avcodec.major == 58)                       \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_58 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avcodec.major == 59)                                                       \
+    if (this->librariesInterface->getLibrariesVersion().avcodec.major == 59)                       \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_59 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (libraryVersions.avcodec.major == 60)                                                       \
+    if (this->librariesInterface->getLibrariesVersion().avcodec.major == 60)                       \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_60 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
+    }                                                                                              \
+    else                                                                                           \
+      throw std::runtime_error("Invalid library version");                                         \
+  }
+
+#define CAST_AVCODEC_SET_MEMBER(classPrefix, castFrom, member, variableToSet)                      \
+  {                                                                                                \
+    if (castFrom == nullptr)                                                                       \
+      throw std::runtime_error("Cast from nullptr");                                               \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 56)                      \
+    {                                                                                              \
+      const auto p = reinterpret_cast<classPrefix##_56 *>(castFrom);                               \
+      p->member    = variableToSet;                                                                \
+    }                                                                                              \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)                      \
+    {                                                                                              \
+      const auto p = reinterpret_cast<classPrefix##_57 *>(castFrom);                               \
+      p->member    = variableToSet;                                                                \
+    }                                                                                              \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)                      \
+    {                                                                                              \
+      const auto p = reinterpret_cast<classPrefix##_58 *>(castFrom);                               \
+      p->member    = variableToSet;                                                                \
+    }                                                                                              \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)                      \
+    {                                                                                              \
+      const auto p = reinterpret_cast<classPrefix##_59 *>(castFrom);                               \
+      p->member    = variableToSet;                                                                \
+    }                                                                                              \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)                      \
+    {                                                                                              \
+      const auto p = reinterpret_cast<classPrefix##_60 *>(castFrom);                               \
+      p->member    = variableToSet;                                                                \
     }                                                                                              \
     else                                                                                           \
       throw std::runtime_error("Invalid library version");                                         \

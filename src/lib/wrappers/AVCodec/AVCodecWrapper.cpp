@@ -71,86 +71,86 @@ template <typename T> std::vector<T> convertRawListToVec(const T *rawValues, T t
 
 } // namespace
 
-AVCodecWrapper::AVCodecWrapper(AVCodec *codec, const LibraryVersions &libraryVersions)
-    : codec(codec), libraryVersions(libraryVersions)
+AVCodecWrapper::AVCodecWrapper(AVCodec                                  *codec,
+                               std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : codec(codec), librariesInterface(librariesInterface)
 {
 }
 
 std::string AVCodecWrapper::getName() const
 {
   const char *name;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, name, name);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, name, name);
   return std::string(name);
 }
 
 std::string AVCodecWrapper::getLongName() const
 {
   const char *longName;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, longName, long_name);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, longName, long_name);
   return std::string(longName);
 }
 
 AVMediaType AVCodecWrapper::getMediaType() const
 {
   AVMediaType mediaType;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, mediaType, type);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, mediaType, type);
   return mediaType;
 }
 
 AVCodecID AVCodecWrapper::getCodecID() const
 {
   AVCodecID codecID;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, codecID, id);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, codecID, id);
   return codecID;
 }
 
 int AVCodecWrapper::getCapabilities() const
 {
   int capabilities;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, capabilities, capabilities);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, capabilities, capabilities);
   return capabilities;
 }
 
 std::vector<AVRational> AVCodecWrapper::getSupportedFramerates() const
 {
   const AVRational *rates;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, rates, supported_framerates);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, rates, supported_framerates);
   return convertRawListToVec(rates, AVRational({0, 0}));
 }
 
 std::vector<AVPixelFormat> AVCodecWrapper::getPixelFormats() const
 {
   const AVPixelFormat *formats;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, formats, pix_fmts);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, formats, pix_fmts);
   return convertRawListToVec(formats, AVPixelFormat(-1));
 }
 
 std::vector<int> AVCodecWrapper::getSupportedSamplerates() const
 {
   const int *rates;
-  CAST_AVCODEC_GET_MEMBER(
-      this->libraryVersions, AVCodec, this->codec, rates, supported_samplerates);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, rates, supported_samplerates);
   return convertRawListToVec(rates, 0);
 }
 
 std::vector<AVSampleFormat> AVCodecWrapper::getSampleFormats() const
 {
   const AVSampleFormat *formats;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, formats, sample_fmts);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, formats, sample_fmts);
   return convertRawListToVec(formats, AVSampleFormat(-1));
 }
 
 std::vector<uint64_t> AVCodecWrapper::getChannelLayouts() const
 {
   const uint64_t *layouts;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, layouts, channel_layouts);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, layouts, channel_layouts);
   return convertRawListToVec(layouts, uint64_t(0));
 }
 
 uint8_t AVCodecWrapper::getMaxLowres() const
 {
   uint8_t maxLowres;
-  CAST_AVCODEC_GET_MEMBER(this->libraryVersions, AVCodec, this->codec, maxLowres, max_lowres);
+  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, maxLowres, max_lowres);
   return maxLowres;
 }
 

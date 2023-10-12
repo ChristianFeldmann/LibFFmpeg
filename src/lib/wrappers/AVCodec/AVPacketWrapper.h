@@ -7,6 +7,9 @@
 #pragma once
 
 #include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
+
+#include <memory>
 
 namespace ffmpeg::avcodec
 {
@@ -76,7 +79,7 @@ class AVPacketWrapper
 {
 public:
   AVPacketWrapper() = default;
-  AVPacketWrapper(AVPacket *packet, const LibraryVersions &libraryVersions);
+  AVPacketWrapper(AVPacket *packet, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   void setData(const ByteVector &data);
   void setTimestamps(const int64_t dts, const int64_t pts);
@@ -100,8 +103,8 @@ public:
   explicit operator bool() const { return this->packet != nullptr; };
 
 private:
-  AVPacket       *packet{};
-  LibraryVersions libraryVersions{};
+  AVPacket                                 *packet{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace ffmpeg::avcodec
