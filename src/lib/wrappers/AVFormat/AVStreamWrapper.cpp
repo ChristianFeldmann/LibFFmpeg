@@ -265,19 +265,14 @@ AVCodecID AVStreamWrapper::getCodecID() const
 AVRational AVStreamWrapper::getAverageFrameRate() const
 {
   AVRational frameRate;
-  CAST_AVFORMAT_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                           AVStream,
-                           this->stream,
-                           frameRate,
-                           avg_frame_rate);
+  CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, frameRate, avg_frame_rate);
   return frameRate;
 }
 
 AVRational AVStreamWrapper::getTimeBase() const
 {
   AVRational timebase;
-  CAST_AVFORMAT_GET_MEMBER(
-      this->librariesInterface->getLibrariesVersion(), AVStream, this->stream, timebase, time_base);
+  CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, timebase, time_base);
 
   if (timebase.den != 0 && timebase.num != 0)
     return timebase;
@@ -336,8 +331,7 @@ ByteVector AVStreamWrapper::getExtradata() const
 int AVStreamWrapper::getIndex() const
 {
   int index;
-  CAST_AVFORMAT_GET_MEMBER(
-      this->librariesInterface->getLibrariesVersion(), AVStream, this->stream, index, index);
+  CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, index, index);
   return index;
 }
 

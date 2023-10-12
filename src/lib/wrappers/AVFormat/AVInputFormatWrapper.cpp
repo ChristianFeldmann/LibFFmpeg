@@ -6,13 +6,15 @@
 
 #include "AVInputFormatWrapper.h"
 
+#include "CastFormatClasses.h"
+
 namespace ffmpeg::avformat
 {
 
 namespace
 {
 
-typedef struct AVInputFormat_56_57_58_59_60
+struct AVInputFormat_56
 {
   const char                     *name;
   const char                     *long_name;
@@ -23,42 +25,26 @@ typedef struct AVInputFormat_56_57_58_59_60
   const char                     *mime_type;
 
   // There is more but it is not part of the public ABI
-} AVInputFormat_56_57_58_59_60;
+};
+
+typedef AVInputFormat_56 AVInputFormat_57;
+typedef AVInputFormat_56 AVInputFormat_58;
+typedef AVInputFormat_56 AVInputFormat_59;
+typedef AVInputFormat_56 AVInputFormat_60;
 
 } // namespace
 
 AVInputFormatWrapper::AVInputFormatWrapper(
-    AVInputFormat *avInputFormat, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    AVInputFormat *inputFormat, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : inputFormat(inputFormat), librariesInterface(librariesInterface)
 {
-  this->avInputFormat      = avInputFormat;
-  this->librariesInterface = librariesInterface;
-  this->update();
 }
 
-std::string AVInputFormatWrapper::getName()
+std::string AVInputFormatWrapper::getName() const
 {
-  this->update();
-  return this->name;
-}
-
-void AVInputFormatWrapper::update()
-{
-  if (this->avInputFormat == nullptr)
-    return;
-
-  if (this->librariesInterface->getLibrariesVersion().avformat.major == 56 || //
-      this->librariesInterface->getLibrariesVersion().avformat.major == 57 || //
-      this->librariesInterface->getLibrariesVersion().avformat.major == 58 || //
-      this->librariesInterface->getLibrariesVersion().avformat.major == 59 || //
-      this->librariesInterface->getLibrariesVersion().avformat.major == 60)
-  {
-    auto p           = reinterpret_cast<AVInputFormat_56_57_58_59_60 *>(this->avInputFormat);
-    this->name       = std::string(p->name);
-    this->long_name  = std::string(p->long_name);
-    this->flags      = p->flags;
-    this->extensions = std::string(p->extensions);
-    this->mime_type  = std::string(p->mime_type);
-  }
+  std::string name;
+  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, name, name);
+  return name;
 }
 
 } // namespace ffmpeg::avformat

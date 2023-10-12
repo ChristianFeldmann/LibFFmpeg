@@ -6,32 +6,31 @@
 
 #pragma once
 
-#define CAST_AVFORMAT_GET_MEMBER(                                                                  \
-    libraryVersions, classPrefix, castFrom, variableToGetInto, member)                             \
+#define CAST_AVFORMAT_GET_MEMBER(classPrefix, castFrom, variableToGetInto, member)                 \
   {                                                                                                \
     if (castFrom == nullptr)                                                                       \
       throw std::runtime_error("Cast from nullptr");                                               \
-    if (libraryVersions.avformat.major == 56)                                                      \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 56)                      \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_56 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (libraryVersions.avformat.major == 57)                                                      \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)                      \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_57 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (libraryVersions.avformat.major == 58)                                                      \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)                      \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_58 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (libraryVersions.avformat.major == 59)                                                      \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)                      \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_59 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (libraryVersions.avformat.major == 60)                                                      \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)                      \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_60 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \

@@ -18,6 +18,12 @@ namespace ffmpeg::avformat
 namespace
 {
 
+#define RETURN_IF_VERSION_TOO_OLD(returnValue)                                                     \
+  {                                                                                                \
+    if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56)                      \
+      return returnValue;                                                                          \
+  }
+
 /* This is a dummy class that is just here so that we can use the generic
  * CAST_AVFORMAT_GET_MEMBER and CAST_AVFORMAT_SET_MEMBER macros. In reality,
  * we will never do the cast to this struct.
@@ -80,93 +86,71 @@ AVCodecParametersWrapper::AVCodecParametersWrapper(
 
 AVMediaType AVCodecParametersWrapper::getCodecType() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return AVMEDIA_TYPE_UNKNOWN;
+  RETURN_IF_VERSION_TOO_OLD(AVMEDIA_TYPE_UNKNOWN);
 
   AVMediaType mediaType;
-  CAST_AVFORMAT_GET_MEMBER(
-      versions, AVCodecParameters, this->codecParameters, mediaType, codec_type);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, mediaType, codec_type);
   return mediaType;
 }
 
 AVCodecID AVCodecParametersWrapper::getCodecID() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return AV_CODEC_ID_NONE;
+  RETURN_IF_VERSION_TOO_OLD(AV_CODEC_ID_NONE);
 
   AVCodecID codecID;
-  CAST_AVFORMAT_GET_MEMBER(this->librariesInterface->getLibrariesVersion(),
-                           AVCodecParameters,
-                           this->codecParameters,
-                           codecID,
-                           codec_id);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, codecID, codec_id);
   return codecID;
 }
 
 ByteVector AVCodecParametersWrapper::getExtradata() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return {};
+  RETURN_IF_VERSION_TOO_OLD({});
 
   uint8_t *extradata;
-  CAST_AVFORMAT_GET_MEMBER(
-      versions, AVCodecParameters, this->codecParameters, extradata, extradata);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 
   int extradataSize;
-  CAST_AVFORMAT_GET_MEMBER(
-      versions, AVCodecParameters, this->codecParameters, extradataSize, extradata_size);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, extradataSize, extradata_size);
 
   return copyDataFromRawArray(extradata, extradataSize);
 }
 
 Size AVCodecParametersWrapper::getSize() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return {};
+  RETURN_IF_VERSION_TOO_OLD({});
 
   int width, height;
-  CAST_AVFORMAT_GET_MEMBER(versions, AVCodecParameters, this->codecParameters, width, width);
-  CAST_AVFORMAT_GET_MEMBER(versions, AVCodecParameters, this->codecParameters, height, height);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, width, width);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, height, height);
 
   return {width, height};
 }
 
 AVColorSpace AVCodecParametersWrapper::getColorspace() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return AVCOL_SPC_UNSPECIFIED;
+  RETURN_IF_VERSION_TOO_OLD(AVCOL_SPC_UNSPECIFIED);
 
   AVColorSpace colorspace;
-  CAST_AVFORMAT_GET_MEMBER(
-      versions, AVCodecParameters, this->codecParameters, colorspace, color_space);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, colorspace, color_space);
   return colorspace;
 }
 
 AVPixelFormat AVCodecParametersWrapper::getPixelFormat() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return AV_PIX_FMT_NONE;
+  RETURN_IF_VERSION_TOO_OLD(AV_PIX_FMT_NONE);
 
   int pixelFormat;
-  CAST_AVFORMAT_GET_MEMBER(versions, AVCodecParameters, this->codecParameters, pixelFormat, format);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, pixelFormat, format);
   return static_cast<AVPixelFormat>(pixelFormat);
 }
 
 Ratio AVCodecParametersWrapper::getSampleAspectRatio() const
 {
-  const auto versions = this->librariesInterface->getLibrariesVersion();
-  if (versions.avformat.major == 56)
-    return {};
+  RETURN_IF_VERSION_TOO_OLD({});
 
   AVRational sampleAspectRatio;
   CAST_AVFORMAT_GET_MEMBER(
-      versions, AVCodecParameters, this->codecParameters, sampleAspectRatio, sample_aspect_ratio);
+      AVCodecParameters, this->codecParameters, sampleAspectRatio, sample_aspect_ratio);
   return {sampleAspectRatio.num, sampleAspectRatio.den};
 }
 
@@ -222,8 +206,7 @@ void AVCodecParametersWrapper::setExtradata(const ByteVector &data)
 {
   uint8_t   *extradata{};
   const auto versions = this->librariesInterface->getLibrariesVersion();
-  CAST_AVFORMAT_GET_MEMBER(
-      versions, AVCodecParameters, this->codecParameters, extradata, extradata);
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 
   if (extradata != nullptr)
     this->librariesInterface->avutil.av_freep(&extradata);

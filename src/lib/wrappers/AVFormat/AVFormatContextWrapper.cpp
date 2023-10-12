@@ -7,6 +7,8 @@
 #include "AVFormatContextWrapper.h"
 #include "AVStreamWrapper.h"
 
+#include "CastFormatClasses.h"
+
 namespace ffmpeg::avformat
 {
 
@@ -15,7 +17,7 @@ namespace
 
 // AVFormatContext is part of avformat.
 // These functions give us version independent access to the structs.
-typedef struct AVFormatContext_56
+struct AVFormatContext_56
 {
   const AVClass         *av_class;
   struct AVInputFormat  *iformat;
@@ -48,9 +50,9 @@ typedef struct AVFormatContext_56
   AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVFormatContext_56;
+};
 
-typedef struct AVFormatContext_57
+struct AVFormatContext_57
 {
   const AVClass         *av_class;
   struct AVInputFormat  *iformat;
@@ -83,9 +85,9 @@ typedef struct AVFormatContext_57
   AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVFormatContext_57;
+};
 
-typedef struct AVFormatContext_58
+struct AVFormatContext_58
 {
   const AVClass         *av_class;
   struct AVInputFormat  *iformat;
@@ -119,9 +121,9 @@ typedef struct AVFormatContext_58
   AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVFormatContext_58;
+};
 
-typedef struct AVFormatContext_59_60
+struct AVFormatContext_59
 {
   const AVClass         *av_class;
   struct AVInputFormat  *iformat;
@@ -154,7 +156,9 @@ typedef struct AVFormatContext_59_60
   AVDictionary          *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
-} AVFormatContext_59_60;
+};
+
+typedef AVFormatContext_59 AVFormatContext_60;
 
 } // namespace
 
@@ -164,6 +168,7 @@ AVFormatContextWrapper::AVFormatContextWrapper(
   this->librariesInterface = librariesInterface;
 }
 
+// This should go into a separate function. Maybe just in the demuxer.
 ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
 {
   Log log;
@@ -194,7 +199,6 @@ ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
     return {false, log};
   }
 
-  this->update();
   return {true, log};
 }
 
@@ -203,165 +207,46 @@ AVFormatContextWrapper::operator bool() const
   return this->formatContext != nullptr;
 };
 
-unsigned AVFormatContextWrapper::getNbStreams()
+int AVFormatContextWrapper::getNumberStreams() const
 {
-  this->update();
-  return this->nb_streams;
+  unsigned numberStreams{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, numberStreams, nb_streams);
+  return static_cast<int>(numberStreams);
 }
 
-AVStreamWrapper AVFormatContextWrapper::getStream(int idx)
+AVStreamWrapper AVFormatContextWrapper::getStream(int idx) const
 {
-  this->update();
-  return this->streams[idx];
+  AVStream *streamPointer{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, streamPointer, streams[idx]);
+  return AVStreamWrapper(streamPointer, this->librariesInterface);
 }
 
-AVInputFormatWrapper AVFormatContextWrapper::getInputFormat()
+AVInputFormatWrapper AVFormatContextWrapper::getInputFormat() const
 {
-  this->update();
-  return this->iformat;
+  AVInputFormat *inputFormatPointer{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, inputFormatPointer, iformat);
+  return AVInputFormatWrapper(inputFormatPointer, this->librariesInterface);
 }
 
-int64_t AVFormatContextWrapper::getStartTime()
+int64_t AVFormatContextWrapper::getStartTime() const
 {
-  this->update();
-  return this->start_time;
+  int64_t startTime{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, startTime, start_time);
+  return startTime;
 }
 
-int64_t AVFormatContextWrapper::getDuration()
+int64_t AVFormatContextWrapper::getDuration() const
 {
-  this->update();
-  return this->duration;
+  int64_t duration{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, duration, duration);
+  return duration;
 }
 
-avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata()
+avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata() const
 {
-  this->update();
-  return this->metadata;
-}
-
-void AVFormatContextWrapper::update()
-{
-  if (this->formatContext == nullptr)
-    return;
-
-  this->streams.clear();
-
-  // Copy values from the source pointer
-  if (this->librariesInterface->getLibrariesVersion().avformat.major == 56)
-  {
-    auto p           = reinterpret_cast<AVFormatContext_56 *>(this->formatContext);
-    this->ctx_flags  = p->ctx_flags;
-    this->nb_streams = p->nb_streams;
-    for (unsigned i = 0; i < this->nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
-    this->filename             = std::string(p->filename);
-    this->start_time           = p->start_time;
-    this->duration             = p->duration;
-    this->bit_rate             = p->bit_rate;
-    this->packet_size          = p->packet_size;
-    this->max_delay            = p->max_delay;
-    this->flags                = p->flags;
-    this->probesize            = p->probesize;
-    this->max_analyze_duration = p->max_analyze_duration;
-    this->key                  = std::string((const char *)p->key, p->keylen);
-    this->nb_programs          = p->nb_programs;
-    this->video_codec_id       = p->video_codec_id;
-    this->audio_codec_id       = p->audio_codec_id;
-    this->subtitle_codec_id    = p->subtitle_codec_id;
-    this->max_index_size       = p->max_index_size;
-    this->max_picture_buffer   = p->max_picture_buffer;
-    this->nb_chapters          = p->nb_chapters;
-    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
-
-    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
-  }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)
-  {
-    auto p           = reinterpret_cast<AVFormatContext_57 *>(this->formatContext);
-    this->ctx_flags  = p->ctx_flags;
-    this->nb_streams = p->nb_streams;
-    for (unsigned i = 0; i < nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
-    this->filename             = std::string(p->filename);
-    this->start_time           = p->start_time;
-    this->duration             = p->duration;
-    this->bit_rate             = p->bit_rate;
-    this->packet_size          = p->packet_size;
-    this->max_delay            = p->max_delay;
-    this->flags                = p->flags;
-    this->probesize            = p->probesize;
-    this->max_analyze_duration = p->max_analyze_duration;
-    this->key                  = std::string((const char *)p->key, p->keylen);
-    this->nb_programs          = p->nb_programs;
-    this->video_codec_id       = p->video_codec_id;
-    this->audio_codec_id       = p->audio_codec_id;
-    this->subtitle_codec_id    = p->subtitle_codec_id;
-    this->max_index_size       = p->max_index_size;
-    this->max_picture_buffer   = p->max_picture_buffer;
-    this->nb_chapters          = p->nb_chapters;
-    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
-
-    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
-  }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)
-  {
-    auto p           = reinterpret_cast<AVFormatContext_58 *>(this->formatContext);
-    this->ctx_flags  = p->ctx_flags;
-    this->nb_streams = p->nb_streams;
-    for (unsigned i = 0; i < nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
-    this->filename             = std::string(p->filename);
-    this->start_time           = p->start_time;
-    this->duration             = p->duration;
-    this->bit_rate             = p->bit_rate;
-    this->packet_size          = p->packet_size;
-    this->max_delay            = p->max_delay;
-    this->flags                = p->flags;
-    this->probesize            = p->probesize;
-    this->max_analyze_duration = p->max_analyze_duration;
-    this->key                  = std::string((const char *)p->key, p->keylen);
-    this->nb_programs          = p->nb_programs;
-    this->video_codec_id       = p->video_codec_id;
-    this->audio_codec_id       = p->audio_codec_id;
-    this->subtitle_codec_id    = p->subtitle_codec_id;
-    this->max_index_size       = p->max_index_size;
-    this->max_picture_buffer   = p->max_picture_buffer;
-    this->nb_chapters          = p->nb_chapters;
-    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
-
-    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
-  }
-  else if (this->librariesInterface->getLibrariesVersion().avformat.major == 59 || //
-           this->librariesInterface->getLibrariesVersion().avformat.major == 60)
-  {
-    auto p           = reinterpret_cast<AVFormatContext_59_60 *>(this->formatContext);
-    this->ctx_flags  = p->ctx_flags;
-    this->nb_streams = p->nb_streams;
-    for (unsigned i = 0; i < nb_streams; i++)
-      this->streams.push_back(AVStreamWrapper(p->streams[i], this->librariesInterface));
-    this->filename             = std::string(p->url);
-    this->start_time           = p->start_time;
-    this->duration             = p->duration;
-    this->bit_rate             = p->bit_rate;
-    this->packet_size          = p->packet_size;
-    this->max_delay            = p->max_delay;
-    this->flags                = p->flags;
-    this->probesize            = p->probesize;
-    this->max_analyze_duration = p->max_analyze_duration;
-    this->key                  = std::string((const char *)p->key, p->keylen);
-    this->nb_programs          = p->nb_programs;
-    this->video_codec_id       = p->video_codec_id;
-    this->audio_codec_id       = p->audio_codec_id;
-    this->subtitle_codec_id    = p->subtitle_codec_id;
-    this->max_index_size       = p->max_index_size;
-    this->max_picture_buffer   = p->max_picture_buffer;
-    this->nb_chapters          = p->nb_chapters;
-    this->metadata             = avutil::AVDictionaryWrapper(p->metadata);
-
-    this->iformat = AVInputFormatWrapper(p->iformat, this->librariesInterface);
-  }
-  else
-    throw std::runtime_error("Invalid library version");
+  AVDictionary *metadata{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, metadata, metadata);
+  return avutil::AVDictionaryWrapper(metadata);
 }
 
 } // namespace ffmpeg::avformat

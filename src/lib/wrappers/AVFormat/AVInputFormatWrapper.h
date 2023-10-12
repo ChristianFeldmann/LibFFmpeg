@@ -15,25 +15,15 @@ class AVInputFormatWrapper
 {
 public:
   AVInputFormatWrapper() = default;
-  AVInputFormatWrapper(AVInputFormat                            *avInputFormat,
+  AVInputFormatWrapper(AVInputFormat                            *inputFormat,
                        std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  std::string getName();
+  std::string getName() const;
 
-  explicit operator bool() const { return this->avInputFormat != nullptr; };
+  explicit operator bool() const { return this->inputFormat != nullptr; };
 
 private:
-  // Update all private values from the AVCodecContext
-  void update();
-
-  // These are here for debugging purposes.
-  std::string name{};
-  std::string long_name{};
-  int         flags{};
-  std::string extensions{};
-  std::string mime_type{};
-
-  AVInputFormat                            *avInputFormat{};
+  AVInputFormat                            *inputFormat{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
