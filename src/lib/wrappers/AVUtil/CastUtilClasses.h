@@ -13,22 +13,22 @@
       const auto p     = reinterpret_cast<classPrefix##_54 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avutil.major == 55)                        \
+    else if (this->librariesInterface->getLibrariesVersion().avutil.major == 55)                   \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_55 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avutil.major == 56)                        \
+    else if (this->librariesInterface->getLibrariesVersion().avutil.major == 56)                   \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_56 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avutil.major == 57)                        \
+    else if (this->librariesInterface->getLibrariesVersion().avutil.major == 57)                   \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_57 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avutil.major == 58)                        \
+    else if (this->librariesInterface->getLibrariesVersion().avutil.major == 58)                   \
     {                                                                                              \
       const auto p     = reinterpret_cast<classPrefix##_58 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \

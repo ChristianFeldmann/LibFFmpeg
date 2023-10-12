@@ -15,22 +15,22 @@
       const auto p      = reinterpret_cast<classPrefix##_56 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)                 \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_57 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)                 \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_58 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)                 \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_59 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)                 \
     {                                                                                              \
       const auto p      = reinterpret_cast<classPrefix##_60 *>(castFrom);                          \
       variableToGetInto = p->member;                                                               \
@@ -48,22 +48,22 @@
       const auto p = reinterpret_cast<classPrefix##_56 *>(castFrom);                               \
       p->member    = variableToSet;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 57)                 \
     {                                                                                              \
       const auto p = reinterpret_cast<classPrefix##_57 *>(castFrom);                               \
       p->member    = variableToSet;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 58)                 \
     {                                                                                              \
       const auto p = reinterpret_cast<classPrefix##_58 *>(castFrom);                               \
       p->member    = variableToSet;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 59)                 \
     {                                                                                              \
       const auto p = reinterpret_cast<classPrefix##_59 *>(castFrom);                               \
       p->member    = variableToSet;                                                                \
     }                                                                                              \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)                      \
+    else if (this->librariesInterface->getLibrariesVersion().avformat.major == 60)                 \
     {                                                                                              \
       const auto p = reinterpret_cast<classPrefix##_60 *>(castFrom);                               \
       p->member    = variableToSet;                                                                \
