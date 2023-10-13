@@ -206,6 +206,23 @@ AVFormatContextWrapper::operator bool() const
   return this->formatContext != nullptr;
 };
 
+std::vector<AVStreamWrapper> AVFormatContextWrapper::getStreams() const
+{
+  unsigned numberStreams{};
+  CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, numberStreams, nb_streams);
+
+  std::vector<AVStreamWrapper> streams;
+
+  for (unsigned i = 0; i < numberStreams; ++i)
+  {
+    AVStream *streamPointer{};
+    CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, streamPointer, streams[i]);
+    streams.push_back(AVStreamWrapper(streamPointer, this->librariesInterface));
+  }
+
+  return streams;
+}
+
 int AVFormatContextWrapper::getNumberStreams() const
 {
   unsigned numberStreams{};

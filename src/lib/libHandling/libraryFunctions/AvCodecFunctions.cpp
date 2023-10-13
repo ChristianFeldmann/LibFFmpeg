@@ -33,6 +33,7 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibrary
   lib.tryResolveFunction(functions.avcodec_version, "avcodec_version");
   lib.tryResolveFunction(functions.avcodec_get_name, "avcodec_get_name");
   lib.tryResolveFunction(functions.avcodec_parameters_alloc, "avcodec_parameters_alloc");
+  lib.tryResolveFunction(functions.avcodec_descriptor_get, "avcodec_descriptor_get");
   lib.tryResolveFunction(functions.avcodec_send_packet, "avcodec_send_packet");
   lib.tryResolveFunction(functions.avcodec_receive_frame, "avcodec_receive_frame");
   lib.tryResolveFunction(functions.avcodec_parameters_to_context, "avcodec_parameters_to_context");
@@ -60,6 +61,8 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibrary
       functions.avcodec_get_name, "avcodec_get_name", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.avcodec_parameters_alloc, "avcodec_parameters_alloc", missingFunctions, log);
+  checkForMissingFunctionAndLog(
+      functions.avcodec_descriptor_get, "avcodec_descriptor_get", missingFunctions, log);
 
   std::vector<std::string> missingFunctionsNewApi;
 

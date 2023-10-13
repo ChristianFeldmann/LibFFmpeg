@@ -262,6 +262,14 @@ AVCodecID AVStreamWrapper::getCodecID() const
   return {AV_CODEC_ID_NONE};
 }
 
+avcodec::AVCodecDescriptorWrapper AVStreamWrapper::getCodecDescriptor() const
+{
+  const auto codecID = this->getCodecID();
+
+  const auto descriptor = this->librariesInterface->avcodec.avcodec_descriptor_get(codecID);
+  return avcodec::AVCodecDescriptorWrapper(descriptor);
+}
+
 AVRational AVStreamWrapper::getAverageFrameRate() const
 {
   AVRational frameRate;

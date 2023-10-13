@@ -11,6 +11,40 @@
 
 const auto FILE_NAME = std::string("testFile.webm");
 
+std::string to_string(ffmpeg::avcodec::AVCodecDescriptorWrapper::Properties properties)
+{
+  std::string str;
+  if (properties.intraOnly)
+    str += "Intra Only, ";
+  if (properties.lossy)
+    str += "Lossy, ";
+  if (properties.lossless)
+    str += "Lossless, ";
+  if (properties.reorder)
+    str += "Reorder, ";
+  if (properties.bitmapSub)
+    str += "Bitmap Subtitles, ";
+  if (properties.textSub)
+    str += "Text Subtitles, ";
+
+  if (str.empty())
+    return {};
+  return str.substr(0, str.length() - 2);
+}
+
+std::string to_string(const std::vector<std::string> stringVec)
+{
+  if (stringVec.empty())
+    return {};
+
+  std::ostringstream stream;
+  for (const auto &item : stringVec)
+    stream << item << ", ";
+
+  const auto outString = stream.str();
+  return outString.substr(0, outString.length() - 2);
+}
+
 void printOutLog(const ffmpeg::Log &log)
 {
   std::cout << "\n ---- Log -----\n";
@@ -54,9 +88,24 @@ int main(int argc, char const *argv[])
   std::cout << "    Flags      : " << to_string(inputFormat.getFlags()) << "\n";
   std::cout << "    Extensions : " << inputFormat.getExtensions() << "\n";
   std::cout << "    Mime Type  : " << inputFormat.getMimeType() << "\n";
-  std::cout << "    Mime Type  : " << inputFormat.getMimeType() << "\n";
   std::cout << "    Start time : " << formatContext.getStartTime() << "\n";
   std::cout << "    Duration   : " << formatContext.getDuration() << "\n";
+
+  for (const auto &stream : formatContext.getStreams())
+  {
+    std::cout << "  Streams " << stream.getIndex() << ":\n";
+    std::cout << "    Codec Type      : " << to_string(stream.getCodecType()) << "\n";
+    std::cout << "    Codec Type Name : " << stream.getCodecTypeName() << "\n";
+
+    std::cout << "    Codec Description:\n";
+    const auto codecDescriptor = stream.getCodecDescriptor();
+    std::cout << "      Media Type : " << to_string(codecDescriptor.getMediaType()) << "\n";
+    std::cout << "      Name       : " << codecDescriptor.getCodecName() << "\n";
+    std::cout << "      Long Name  : " << codecDescriptor.getLongName() << "\n";
+    std::cout << "      Properties : " << to_string(codecDescriptor.getProperties()) << "\n";
+    std::cout << "      Mime Types : " << to_string(codecDescriptor.getMimeTypes()) << "\n";
+    std::cout << "      Profiles   : " << to_string(codecDescriptor.getProfiles()) << "\n";
+  }
 
   return 0;
 }

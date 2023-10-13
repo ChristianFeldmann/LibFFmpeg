@@ -58,6 +58,7 @@ struct AVStream;
 struct AVProgram;
 struct AVChapter;
 struct AVPixFmtDescriptor;
+struct AVCodecDescriptor;
 
 #define AV_LOG_WARNING 24
 
@@ -161,6 +162,8 @@ enum AVMediaType
   AVMEDIA_TYPE_ATTACHMENT, ///< Opaque data information usually sparse
   AVMEDIA_TYPE_NB
 };
+
+std::string to_string(AVMediaType mediaType);
 
 enum AVFrameSideDataType
 {

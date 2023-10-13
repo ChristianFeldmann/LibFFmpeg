@@ -8,7 +8,7 @@
 
 #include <libHandling/FFmpegLibrariesInterface.h>
 #include <wrappers/AVCodec/AVCodecContextWrapper.h>
-#include <wrappers/AVCodec/AVCodecIDWrapper.h>
+#include <wrappers/AVCodec/AVCodecDescriptorWrapper.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
 
 #include <memory>
@@ -24,16 +24,17 @@ public:
 
   explicit operator bool() const { return this->stream != nullptr; };
 
-  AVMediaType   getCodecType() const;
-  std::string   getCodecTypeName() const;
-  AVCodecID     getCodecID() const;
-  AVRational    getAverageFrameRate() const;
-  AVRational    getTimeBase() const;
-  Size          getFrameSize() const;
-  AVColorSpace  getColorspace() const;
-  AVPixelFormat getPixelFormat() const;
-  ByteVector    getExtradata() const;
-  int           getIndex() const;
+  AVMediaType                       getCodecType() const;
+  std::string                       getCodecTypeName() const;
+  AVCodecID                         getCodecID() const;
+  avcodec::AVCodecDescriptorWrapper getCodecDescriptor() const;
+  AVRational                        getAverageFrameRate() const;
+  AVRational                        getTimeBase() const;
+  Size                              getFrameSize() const;
+  AVColorSpace                      getColorspace() const;
+  AVPixelFormat                     getPixelFormat() const;
+  ByteVector                        getExtradata() const;
+  int                               getIndex() const;
 
   avcodec::AVCodecContextWrapper getCodecContext() const;
   AVCodecParametersWrapper       getCodecParameters() const;

@@ -12,6 +12,28 @@
 namespace ffmpeg
 {
 
+std::string to_string(AVMediaType mediaType)
+{
+  switch (mediaType)
+  {
+  case AVMEDIA_TYPE_UNKNOWN:
+    return "Unknown";
+  case AVMEDIA_TYPE_VIDEO:
+    return "Video";
+  case AVMEDIA_TYPE_AUDIO:
+    return "Audio";
+  case AVMEDIA_TYPE_DATA:
+    return "Data";
+  case AVMEDIA_TYPE_SUBTITLE:
+    return "Subtitle";
+  case AVMEDIA_TYPE_ATTACHMENT:
+    return "Attachment";
+
+  default:
+    return "Unknown";
+  }
+}
+
 std::string timestampToString(int64_t timestamp, AVRational timebase)
 {
   auto absolutSeconds = static_cast<double>(timestamp) * static_cast<double>(timebase.num) /

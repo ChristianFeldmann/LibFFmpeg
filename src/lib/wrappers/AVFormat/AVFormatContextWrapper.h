@@ -27,12 +27,13 @@ public:
 
   explicit operator bool() const;
 
-  int                         getNumberStreams() const;
-  AVStreamWrapper             getStream(int idx) const;
-  AVInputFormatWrapper        getInputFormat() const;
-  int64_t                     getStartTime() const;
-  int64_t                     getDuration() const;
-  avutil::AVDictionaryWrapper getMetadata() const;
+  std::vector<AVStreamWrapper> getStreams() const;
+  int                          getNumberStreams() const;
+  AVStreamWrapper              getStream(int idx) const;
+  AVInputFormatWrapper         getInputFormat() const;
+  int64_t                      getStartTime() const;
+  int64_t                      getDuration() const;
+  avutil::AVDictionaryWrapper  getMetadata() const;
 
 private:
   AVFormatContext                          *formatContext{nullptr};
