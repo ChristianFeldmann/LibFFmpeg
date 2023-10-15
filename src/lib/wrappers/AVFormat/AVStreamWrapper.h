@@ -6,10 +6,12 @@
 
 #pragma once
 
+#include <common/ColorTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 #include <wrappers/AVCodec/AVCodecContextWrapper.h>
 #include <wrappers/AVCodec/AVCodecDescriptorWrapper.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
 #include <memory>
 
@@ -31,8 +33,8 @@ public:
   AVRational                        getAverageFrameRate() const;
   AVRational                        getTimeBase() const;
   Size                              getFrameSize() const;
-  AVColorSpace                      getColorspace() const;
-  AVPixelFormat                     getPixelFormat() const;
+  ColorSpace                        getColorspace() const;
+  avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
   ByteVector                        getExtradata() const;
   int                               getIndex() const;
 

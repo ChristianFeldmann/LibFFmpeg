@@ -6,7 +6,9 @@
 
 #pragma once
 
+#include <common/ColorTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
 namespace ffmpeg::avcodec
 {
@@ -22,13 +24,13 @@ public:
 
   AVCodecContext *getCodecContext() const { return this->codecContext; }
 
-  AVMediaType   getCodecType() const;
-  AVCodecID     getCodecID() const;
-  AVPixelFormat getPixelFormat() const;
-  Size          getSize() const;
-  AVColorSpace  getColorspace() const;
-  AVRational    getTimeBase() const;
-  ByteVector    getExtradata() const;
+  AVMediaType                       getCodecType() const;
+  AVCodecID                         getCodecID() const;
+  avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
+  Size                              getSize() const;
+  ColorSpace                        getColorspace() const;
+  AVRational                        getTimeBase() const;
+  ByteVector                        getExtradata() const;
 
 private:
   AVCodecContext                           *codecContext{};

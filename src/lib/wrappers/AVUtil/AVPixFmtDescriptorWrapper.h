@@ -7,6 +7,7 @@
 #pragma once
 
 #include <common/FFMpegLibrariesTypes.h>
+#include <common/InternalTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 
 #include <memory>
@@ -18,8 +19,8 @@ class AVPixFmtDescriptorWrapper
 {
 public:
   AVPixFmtDescriptorWrapper() = default;
-  AVPixFmtDescriptorWrapper(AVPixFmtDescriptor                       *pixelFormatDescriptor,
-                            std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVPixFmtDescriptorWrapper(const internal::AVPixelFormat                    avPixelFormat,
+                            const std::shared_ptr<FFmpegLibrariesInterface> &librariesInterface);
 
   /**
    * Amount to shift the luma width/height right to find the chroma width/height.
@@ -65,15 +66,11 @@ public:
     bool floatValues{};
   };
 
-  std::string                      getName() const;
-  int                              getNumberOfComponents() const;
-  Shift                            getShiftLumaToChroma() const;
-  Flags                            getFlags() const;
-  std::vector<ComponentDescriptor> getComponentDescriptors() const;
-
-private:
-  AVPixFmtDescriptor                       *pixelFormatDescriptor{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  std::string                      name{};
+  int                              numberOfComponents{};
+  Shift                            shiftLumaToChroma{};
+  Flags                            flags{};
+  std::vector<ComponentDescriptor> componentDescriptors;
 };
 
 } // namespace ffmpeg::avutil

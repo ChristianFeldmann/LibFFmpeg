@@ -6,6 +6,7 @@
 
 #include "AVCodecParametersWrapper.h"
 
+#include <common/InternalTypes.h>
 #include <wrappers/Functions.h>
 
 #include "CastFormatClasses.h"
@@ -30,17 +31,17 @@ namespace
  */
 struct AVCodecParameters_56
 {
-  AVMediaType  codec_type;
-  AVCodecID    codec_id;
-  uint8_t     *extradata;
-  int          extradata_size;
-  int          format;
-  int          profile;
-  int          level;
-  int          width;
-  int          height;
-  AVRational   sample_aspect_ratio;
-  AVColorSpace color_space;
+  AVMediaType            codec_type;
+  AVCodecID              codec_id;
+  uint8_t               *extradata;
+  int                    extradata_size;
+  int                    format;
+  int                    profile;
+  int                    level;
+  int                    width;
+  int                    height;
+  AVRational             sample_aspect_ratio;
+  internal::AVColorSpace color_space;
 };
 
 // AVCodecParameters is part of avcodec.
@@ -64,7 +65,7 @@ struct AVCodecParameters_57
   AVColorRange                  color_range;
   AVColorPrimaries              color_primaries;
   AVColorTransferCharacteristic color_trc;
-  AVColorSpace                  color_space;
+  internal::AVColorSpace        color_space;
   AVChromaLocation              chroma_location;
   int                           video_delay;
 
@@ -126,22 +127,26 @@ Size AVCodecParametersWrapper::getSize() const
   return {width, height};
 }
 
-AVColorSpace AVCodecParametersWrapper::getColorspace() const
+ColorSpace AVCodecParametersWrapper::getColorspace() const
 {
-  RETURN_IF_VERSION_TOO_OLD(AVCOL_SPC_UNSPECIFIED);
+  RETURN_IF_VERSION_TOO_OLD(ColorSpace::UNSPECIFIED);
 
-  AVColorSpace colorspace;
-  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, colorspace, color_space);
-  return colorspace;
+  internal::AVColorSpace avColorspace;
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, avColorspace, color_space);
+
+  return internal::toColorspace(avColorspace);
 }
 
-AVPixelFormat AVCodecParametersWrapper::getPixelFormat() const
+avutil::AVPixFmtDescriptorWrapper AVCodecParametersWrapper::getPixelFormat() const
 {
-  RETURN_IF_VERSION_TOO_OLD(AV_PIX_FMT_NONE);
+  RETURN_IF_VERSION_TOO_OLD({});
 
-  int pixelFormat;
-  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, pixelFormat, format);
-  return static_cast<AVPixelFormat>(pixelFormat);
+  int pixelFormatIndex;
+  CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, pixelFormatIndex, format);
+
+  const auto avPixelFormat = static_cast<internal::AVPixelFormat>(pixelFormatIndex);
+
+  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->librariesInterface);
 }
 
 Ratio AVCodecParametersWrapper::getSampleAspectRatio() const
@@ -184,7 +189,7 @@ void AVCodecParametersWrapper::setClearValues()
     p->color_range     = AVCOL_RANGE_UNSPECIFIED;
     p->color_primaries = AVCOL_PRI_UNSPECIFIED;
     p->color_trc       = AVCOL_TRC_UNSPECIFIED;
-    p->color_space     = AVCOL_SPC_UNSPECIFIED;
+    p->color_space     = internal::AVCOL_SPC_UNSPECIFIED;
     p->chroma_location = AVCHROMA_LOC_UNSPECIFIED;
     p->video_delay     = 0;
   }
@@ -232,9 +237,9 @@ void AVCodecParametersWrapper::setSize(Size size)
   CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, height, size.height);
 }
 
-void AVCodecParametersWrapper::setAVPixelFormat(AVPixelFormat format)
+void AVCodecParametersWrapper::setAVPixelFormat(avutil::AVPixFmtDescriptorWrapper format)
 {
-  CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, format, format);
+  // CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, format, format);
 }
 
 void AVCodecParametersWrapper::setProfileLevel(int profile, int level)

@@ -11,9 +11,11 @@
 #include <iomanip>
 #include <iostream>
 
+using namespace ffmpeg;
+
 const auto FILE_NAME = std::string("testFile.webm");
 
-std::string to_string(ffmpeg::avcodec::AVCodecDescriptorWrapper::Properties properties)
+std::string to_string(avcodec::AVCodecDescriptorWrapper::Properties properties)
 {
   std::string str;
   if (properties.intraOnly)
@@ -47,17 +49,17 @@ std::string to_string(const std::vector<std::string> stringVec)
   return outString.substr(0, outString.length() - 2);
 }
 
-std::string to_string(const ffmpeg::AVRational rational)
+std::string to_string(const AVRational rational)
 {
   return std::to_string(rational.num) + "/" + std::to_string(rational.den);
 }
 
-std::string to_string(const ffmpeg::Size size)
+std::string to_string(const Size size)
 {
   return std::to_string(size.width) + "x" + std::to_string(size.height);
 }
 
-std::string to_string(const ffmpeg::ByteVector &bytes)
+std::string to_string(const ByteVector &bytes)
 {
   std::ostringstream stream;
   for (const auto &byte : bytes)
@@ -65,7 +67,7 @@ std::string to_string(const ffmpeg::ByteVector &bytes)
   return stream.str();
 }
 
-void printOutLog(const ffmpeg::Log &log)
+void printOutLog(const Log &log)
 {
   std::cout << "\n ---- Log -----\n";
   for (const auto &logLine : log)
@@ -74,7 +76,7 @@ void printOutLog(const ffmpeg::Log &log)
 
 int main(int argc, char const *argv[])
 {
-  const auto loadingResult = ffmpeg::FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
 
   if (!loadingResult.librariesInterface)
   {
@@ -85,7 +87,7 @@ int main(int argc, char const *argv[])
   else
     std::cout << "Successfully loaded ffmpeg libraries.\n";
 
-  ffmpeg::Demuxer demuxer(loadingResult.librariesInterface);
+  Demuxer demuxer(loadingResult.librariesInterface);
   const auto [openSuccessfull, openingLog] = demuxer.openFile(FILE_NAME);
 
   if (!openSuccessfull)
@@ -129,8 +131,9 @@ int main(int argc, char const *argv[])
     std::cout << "    Average Framerate : " << to_string(stream.getAverageFrameRate()) << "\n";
     std::cout << "    Time Base         : " << to_string(stream.getTimeBase()) << "\n";
     std::cout << "    Frame Size        : " << to_string(stream.getFrameSize()) << "\n";
-    std::cout << "    Colorspace        : " << to_string(stream.getColorspace()) << "\n";
-    std::cout << "    Pixel Format      : " << to_string(stream.getPixelFormat()) << "\n";
+    std::cout << "    Colorspace        : " << colorSpaceMapper.getName(stream.getColorspace())
+              << " - " << colorSpaceMapper.getText(stream.getColorspace()) << "\n";
+    std::cout << "    Pixel Format      : " << stream.getPixelFormat().name << "\n";
     std::cout << "    Extradata         : " << to_string(stream.getExtradata()) << "\n";
   }
 

@@ -6,7 +6,9 @@
 
 #pragma once
 
+#include <common/ColorTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
 namespace ffmpeg::avformat
 {
@@ -18,13 +20,13 @@ public:
                            std::shared_ptr<FFmpegLibrariesInterface> libraries);
   explicit operator bool() const { return this->codecParameters != nullptr; }
 
-  AVMediaType   getCodecType() const;
-  AVCodecID     getCodecID() const;
-  ByteVector    getExtradata() const;
-  Size          getSize() const;
-  AVColorSpace  getColorspace() const;
-  AVPixelFormat getPixelFormat() const;
-  Ratio         getSampleAspectRatio() const;
+  AVMediaType                       getCodecType() const;
+  AVCodecID                         getCodecID() const;
+  ByteVector                        getExtradata() const;
+  Size                              getSize() const;
+  ColorSpace                        getColorspace() const;
+  avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
+  Ratio                             getSampleAspectRatio() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
@@ -33,7 +35,7 @@ public:
   void setAVCodecID(AVCodecID id);
   void setExtradata(const ByteVector &extradata);
   void setSize(Size size);
-  void setAVPixelFormat(AVPixelFormat f);
+  void setAVPixelFormat(avutil::AVPixFmtDescriptorWrapper descriptor);
   void setProfileLevel(int profile, int level);
   void setSampleAspectRatio(int num, int den);
 

@@ -106,91 +106,80 @@ AVPixFmtDescriptorWrapper::Flags parseFlagsFromValue(const uint64_t flagsValue)
 } // namespace
 
 AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(
-    AVPixFmtDescriptor                       *pixelFormatDescriptor,
-    std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : pixelFormatDescriptor(pixelFormatDescriptor), librariesInterface(librariesInterface)
+    const internal::AVPixelFormat                    avPixelFormat,
+    const std::shared_ptr<FFmpegLibrariesInterface> &librariesInterface)
 {
-}
-
-std::string AVPixFmtDescriptorWrapper::getName() const
-{
-  const char *name;
-  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, name, name);
-  return std::string(name);
-}
-
-int AVPixFmtDescriptorWrapper::getNumberOfComponents() const
-{
-  int numberComponents;
-  CAST_AVUTIL_GET_MEMBER(
-      AVPixFmtDescriptor, this->pixelFormatDescriptor, numberComponents, nb_components);
-  return numberComponents;
-}
-
-AVPixFmtDescriptorWrapper::Shift AVPixFmtDescriptorWrapper::getShiftLumaToChroma() const
-{
-  int width;
-  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, width, log2_chroma_w);
-
-  int height;
-  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, height, log2_chroma_h);
-
-  return {width, height};
-}
-
-AVPixFmtDescriptorWrapper::Flags AVPixFmtDescriptorWrapper::getFlags() const
-{
-  uint64_t flagsValue;
-  CAST_AVUTIL_GET_MEMBER(AVPixFmtDescriptor, this->pixelFormatDescriptor, flagsValue, flags);
-
-  return parseFlagsFromValue(flagsValue);
-}
-
-std::vector<AVPixFmtDescriptorWrapper::ComponentDescriptor>
-AVPixFmtDescriptorWrapper::getComponentDescriptors() const
-{
-  std::vector<ComponentDescriptor> descriptors;
-
-  const auto version = this->librariesInterface->getLibrariesVersion().avutil.major;
-
-  for (int component = 0; component < this->getNumberOfComponents(); ++component)
+  auto descriptor = librariesInterface->avutil.av_pix_fmt_desc_get(avPixelFormat);
+  if (descriptor == nullptr)
   {
-    ComponentDescriptor descriptor;
-
-    if (version == 54)
-    {
-      const auto p      = reinterpret_cast<AVPixFmtDescriptor_54 *>(this->pixelFormatDescriptor);
-      descriptor.plane  = p->comp[component].plane;
-      descriptor.step   = p->comp[component].step_minus1 + 1;
-      descriptor.offset = p->comp[component].offset_plus1 - 1;
-      descriptor.shift  = p->comp[component].shift;
-      descriptor.depth  = p->comp[component].depth_minus1 + 1;
-    }
-    if (version == 55 || version == 56)
-    {
-      const auto p      = reinterpret_cast<AVPixFmtDescriptor_55 *>(this->pixelFormatDescriptor);
-      descriptor.plane  = p->comp[component].plane;
-      descriptor.step   = p->comp[component].step;
-      descriptor.offset = p->comp[component].offset;
-      descriptor.shift  = p->comp[component].shift;
-      descriptor.depth  = p->comp[component].depth;
-    }
-    if (version == 57 || version == 58)
-    {
-      const auto p      = reinterpret_cast<AVPixFmtDescriptor_57 *>(this->pixelFormatDescriptor);
-      descriptor.plane  = p->comp[component].plane;
-      descriptor.step   = p->comp[component].step;
-      descriptor.offset = p->comp[component].offset;
-      descriptor.shift  = p->comp[component].shift;
-      descriptor.depth  = p->comp[component].depth;
-    }
-    else
-      throw std::runtime_error("Invalid library version");
-
-    descriptors.push_back(descriptor);
+    this->name = "None";
+    return;
   }
 
-  return descriptors;
+  const auto version = librariesInterface->getLibrariesVersion().avutil.major;
+
+  if (version == 54)
+  {
+    auto p                   = reinterpret_cast<const AVPixFmtDescriptor_54 *>(descriptor);
+    this->name               = std::string(p->name);
+    this->numberOfComponents = static_cast<int>(p->nb_components);
+    this->shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
+                                static_cast<int>(p->log2_chroma_h)};
+    this->flags              = parseFlagsFromValue(p->flags);
+
+    for (int i = 0; i < this->numberOfComponents; ++i)
+    {
+      ComponentDescriptor descriptor;
+      descriptor.plane  = p->comp[i].plane;
+      descriptor.step   = p->comp[i].step_minus1 + 1;
+      descriptor.offset = p->comp[i].offset_plus1 - 1;
+      descriptor.shift  = p->comp[i].shift;
+      descriptor.depth  = p->comp[i].depth_minus1 + 1;
+      this->componentDescriptors.push_back(descriptor);
+    }
+  }
+  else if (version == 55 || version == 56)
+  {
+    auto p                   = reinterpret_cast<const AVPixFmtDescriptor_55 *>(descriptor);
+    this->name               = std::string(p->name);
+    this->numberOfComponents = static_cast<int>(p->nb_components);
+    this->shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
+                                static_cast<int>(p->log2_chroma_h)};
+    this->flags              = parseFlagsFromValue(p->flags);
+
+    for (int i = 0; i < this->numberOfComponents; ++i)
+    {
+      ComponentDescriptor descriptor;
+      descriptor.plane  = p->comp[i].plane;
+      descriptor.step   = p->comp[i].step;
+      descriptor.offset = p->comp[i].offset;
+      descriptor.shift  = p->comp[i].shift;
+      descriptor.depth  = p->comp[i].depth;
+      this->componentDescriptors.push_back(descriptor);
+    }
+  }
+  else if (version == 57 || version == 58)
+  {
+    auto p                   = reinterpret_cast<const AVPixFmtDescriptor_57 *>(descriptor);
+    this->name               = std::string(p->name);
+    this->numberOfComponents = static_cast<int>(p->nb_components);
+    this->shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
+                                static_cast<int>(p->log2_chroma_h)};
+    this->flags              = parseFlagsFromValue(p->flags);
+
+    for (int i = 0; i < this->numberOfComponents; ++i)
+    {
+      ComponentDescriptor descriptor;
+      descriptor.plane  = p->comp[i].plane;
+      descriptor.step   = p->comp[i].step;
+      descriptor.offset = p->comp[i].offset;
+      descriptor.shift  = p->comp[i].shift;
+      descriptor.depth  = p->comp[i].depth;
+      this->componentDescriptors.push_back(descriptor);
+    }
+  }
+  else
+    throw std::runtime_error("Invalid library version");
 }
 
 } // namespace ffmpeg::avutil

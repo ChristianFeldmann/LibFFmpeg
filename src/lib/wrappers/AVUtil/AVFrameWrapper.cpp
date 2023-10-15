@@ -8,6 +8,8 @@
 
 #include "CastUtilClasses.h"
 
+#include <common/InternalTypes.h>
+
 #include <stdexcept>
 
 namespace ffmpeg::avutil
@@ -93,7 +95,7 @@ struct AVFrame_57
   enum AVColorRange                  color_range;
   enum AVColorPrimaries              color_primaries;
   enum AVColorTransferCharacteristic color_trc;
-  enum AVColorSpace                  colorspace;
+  internal::AVColorSpace             colorspace;
   enum AVChromaLocation              chroma_location;
   int64_t                            best_effort_timestamp;
   int64_t                            pkt_pos;

@@ -6,6 +6,7 @@
 
 #include "AVCodecContextWrapper.h"
 
+#include <common/InternalTypes.h>
 #include <wrappers/Functions.h>
 
 #include "CastCodecClasses.h"
@@ -44,7 +45,7 @@ struct AVCodecContext_56
   int                     width, height;
   int                     coded_width, coded_height;
   int                     gop_size;
-  AVPixelFormat           pix_fmt;
+  internal::AVPixelFormat pix_fmt;
   int                     me_method;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
@@ -52,7 +53,8 @@ struct AVCodecContext_56
                           int                    y,
                           int                    type,
                           int                    height);
-  AVPixelFormat (*get_format)(struct AVCodecContext *s, const enum AVPixelFormat *fmt);
+  internal::AVPixelFormat (*get_format)(struct AVCodecContext              *s,
+                                        const enum internal::AVPixelFormat *fmt);
   int                           max_b_frames;
   float                         b_quant_factor;
   int                           rc_strategy;
@@ -111,7 +113,7 @@ struct AVCodecContext_56
   int                           b_sensitivity;
   AVColorPrimaries              color_primaries;
   AVColorTransferCharacteristic color_trc;
-  AVColorSpace                  colorspace;
+  internal::AVColorSpace        colorspace;
   AVColorRange                  color_range;
   AVChromaLocation              chroma_sample_location;
 
@@ -145,7 +147,7 @@ struct AVCodecContext_57
   int                     width, height;
   int                     coded_width, coded_height;
   int                     gop_size;
-  AVPixelFormat           pix_fmt;
+  internal::AVPixelFormat pix_fmt;
   int                     me_method;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
@@ -153,7 +155,8 @@ struct AVCodecContext_57
                           int                    y,
                           int                    type,
                           int                    height);
-  AVPixelFormat (*get_format)(struct AVCodecContext *s, const AVPixelFormat *fmt);
+  internal::AVPixelFormat (*get_format)(struct AVCodecContext         *s,
+                                        const internal::AVPixelFormat *fmt);
   int                           max_b_frames;
   float                         b_quant_factor;
   int                           rc_strategy;
@@ -212,7 +215,7 @@ struct AVCodecContext_57
   int                           b_sensitivity;
   AVColorPrimaries              color_primaries;
   AVColorTransferCharacteristic color_trc;
-  AVColorSpace                  colorspace;
+  internal::AVColorSpace        colorspace;
   AVColorRange                  color_range;
   AVChromaLocation              chroma_sample_location;
 
@@ -221,37 +224,38 @@ struct AVCodecContext_57
 
 struct AVCodecContext_58
 {
-  const AVClass          *av_class;
-  int                     log_level_offset;
-  enum AVMediaType        codec_type;
-  const struct AVCodec   *codec;
-  enum AVCodecID          codec_id;
-  unsigned int            codec_tag;
-  void                   *priv_data;
-  struct AVCodecInternal *internal;
-  void                   *opaque;
-  int64_t                 bit_rate;
-  int                     bit_rate_tolerance;
-  int                     global_quality;
-  int                     compression_level;
-  int                     flags;
-  int                     flags2;
-  uint8_t                *extradata;
-  int                     extradata_size;
-  AVRational              time_base;
-  int                     ticks_per_frame;
-  int                     delay;
-  int                     width, height;
-  int                     coded_width, coded_height;
-  int                     gop_size;
-  enum AVPixelFormat      pix_fmt;
+  const AVClass               *av_class;
+  int                          log_level_offset;
+  enum AVMediaType             codec_type;
+  const struct AVCodec        *codec;
+  enum AVCodecID               codec_id;
+  unsigned int                 codec_tag;
+  void                        *priv_data;
+  struct AVCodecInternal      *internal;
+  void                        *opaque;
+  int64_t                      bit_rate;
+  int                          bit_rate_tolerance;
+  int                          global_quality;
+  int                          compression_level;
+  int                          flags;
+  int                          flags2;
+  uint8_t                     *extradata;
+  int                          extradata_size;
+  AVRational                   time_base;
+  int                          ticks_per_frame;
+  int                          delay;
+  int                          width, height;
+  int                          coded_width, coded_height;
+  int                          gop_size;
+  enum internal::AVPixelFormat pix_fmt;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
                           int                    height);
-  enum AVPixelFormat (*get_format)(struct AVCodecContext *s, const enum AVPixelFormat *fmt);
+  enum internal::AVPixelFormat (*get_format)(struct AVCodecContext              *s,
+                                             const enum internal::AVPixelFormat *fmt);
   int                                max_b_frames;
   float                              b_quant_factor;
   int                                b_frame_strategy;
@@ -301,7 +305,7 @@ struct AVCodecContext_58
   int                                b_sensitivity;
   enum AVColorPrimaries              color_primaries;
   enum AVColorTransferCharacteristic color_trc;
-  enum AVColorSpace                  colorspace;
+  internal::AVColorSpace             colorspace;
   enum AVColorRange                  color_range;
   enum AVChromaLocation              chroma_sample_location;
   int                                slices;
@@ -311,37 +315,38 @@ struct AVCodecContext_58
 
 struct AVCodecContext_59
 {
-  const AVClass          *av_class;
-  int                     log_level_offset;
-  enum AVMediaType        codec_type;
-  const struct AVCodec   *codec;
-  enum AVCodecID          codec_id;
-  unsigned int            codec_tag;
-  void                   *priv_data;
-  struct AVCodecInternal *internal;
-  void                   *opaque;
-  int64_t                 bit_rate;
-  int                     bit_rate_tolerance;
-  int                     global_quality;
-  int                     compression_level;
-  int                     flags;
-  int                     flags2;
-  uint8_t                *extradata;
-  int                     extradata_size;
-  AVRational              time_base;
-  int                     ticks_per_frame;
-  int                     delay;
-  int                     width, height;
-  int                     coded_width, coded_height;
-  int                     gop_size;
-  enum AVPixelFormat      pix_fmt;
+  const AVClass               *av_class;
+  int                          log_level_offset;
+  enum AVMediaType             codec_type;
+  const struct AVCodec        *codec;
+  enum AVCodecID               codec_id;
+  unsigned int                 codec_tag;
+  void                        *priv_data;
+  struct AVCodecInternal      *internal;
+  void                        *opaque;
+  int64_t                      bit_rate;
+  int                          bit_rate_tolerance;
+  int                          global_quality;
+  int                          compression_level;
+  int                          flags;
+  int                          flags2;
+  uint8_t                     *extradata;
+  int                          extradata_size;
+  AVRational                   time_base;
+  int                          ticks_per_frame;
+  int                          delay;
+  int                          width, height;
+  int                          coded_width, coded_height;
+  int                          gop_size;
+  enum internal::AVPixelFormat pix_fmt;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
                           int                    height);
-  enum AVPixelFormat (*get_format)(struct AVCodecContext *s, const enum AVPixelFormat *fmt);
+  enum internal::AVPixelFormat (*get_format)(struct AVCodecContext              *s,
+                                             const enum internal::AVPixelFormat *fmt);
   int                                max_b_frames;
   float                              b_quant_factor;
   float                              b_quant_offset;
@@ -381,7 +386,7 @@ struct AVCodecContext_59
   int                                mv0_threshold;
   enum AVColorPrimaries              color_primaries;
   enum AVColorTransferCharacteristic color_trc;
-  enum AVColorSpace                  colorspace;
+  internal::AVColorSpace             colorspace;
   enum AVColorRange                  color_range;
   enum AVChromaLocation              chroma_sample_location;
   int                                slices;
@@ -413,11 +418,11 @@ AVCodecID AVCodecContextWrapper::getCodecID() const
   return id;
 }
 
-AVPixelFormat AVCodecContextWrapper::getPixelFormat() const
+avutil::AVPixFmtDescriptorWrapper AVCodecContextWrapper::getPixelFormat() const
 {
-  AVPixelFormat pixelFormat;
-  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, pixelFormat, pix_fmt);
-  return pixelFormat;
+  internal::AVPixelFormat avPixelFormat;
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avPixelFormat, pix_fmt);
+  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->librariesInterface);
 }
 
 Size AVCodecContextWrapper::getSize() const
@@ -431,11 +436,11 @@ Size AVCodecContextWrapper::getSize() const
   return {width, height};
 }
 
-AVColorSpace AVCodecContextWrapper::getColorspace() const
+ColorSpace AVCodecContextWrapper::getColorspace() const
 {
-  AVColorSpace colorspace;
-  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, colorspace, colorspace);
-  return colorspace;
+  internal::AVColorSpace avColorspace;
+  CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avColorspace, colorspace);
+  return internal::toColorspace(avColorspace);
 }
 
 AVRational AVCodecContextWrapper::getTimeBase() const

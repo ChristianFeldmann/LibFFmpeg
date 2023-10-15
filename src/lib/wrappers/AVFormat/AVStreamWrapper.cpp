@@ -303,7 +303,7 @@ Size AVStreamWrapper::getFrameSize() const
   return {};
 }
 
-AVColorSpace AVStreamWrapper::getColorspace() const
+ColorSpace AVStreamWrapper::getColorspace() const
 {
   if (const auto codecParameters = this->getCodecParameters())
     return codecParameters.getColorspace();
@@ -314,7 +314,7 @@ AVColorSpace AVStreamWrapper::getColorspace() const
   return {};
 }
 
-AVPixelFormat AVStreamWrapper::getPixelFormat() const
+avutil::AVPixFmtDescriptorWrapper AVStreamWrapper::getPixelFormat() const
 {
   if (const auto codecParameters = this->getCodecParameters())
     return codecParameters.getPixelFormat();
@@ -322,7 +322,7 @@ AVPixelFormat AVStreamWrapper::getPixelFormat() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext.getPixelFormat();
 
-  return {AV_PIX_FMT_NONE};
+  return {};
 }
 
 ByteVector AVStreamWrapper::getExtradata() const

@@ -8,6 +8,7 @@
 
 #include <common/FFMpegLibrariesTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
 #include <memory>
 #include <vector>
@@ -24,17 +25,17 @@ public:
   explicit operator bool() const { return this->codec != nullptr; }
   AVCodec *getAVCodec() { return this->codec; }
 
-  std::string                 getName() const;
-  std::string                 getLongName() const;
-  AVMediaType                 getMediaType() const;
-  AVCodecID                   getCodecID() const;
-  int                         getCapabilities() const;
-  std::vector<AVRational>     getSupportedFramerates() const;
-  std::vector<AVPixelFormat>  getPixelFormats() const;
-  std::vector<int>            getSupportedSamplerates() const;
-  std::vector<AVSampleFormat> getSampleFormats() const;
-  std::vector<uint64_t>       getChannelLayouts() const;
-  uint8_t                     getMaxLowres() const;
+  std::string                                    getName() const;
+  std::string                                    getLongName() const;
+  AVMediaType                                    getMediaType() const;
+  AVCodecID                                      getCodecID() const;
+  int                                            getCapabilities() const;
+  std::vector<AVRational>                        getSupportedFramerates() const;
+  std::vector<avutil::AVPixFmtDescriptorWrapper> getPixelFormats() const;
+  std::vector<int>                               getSupportedSamplerates() const;
+  std::vector<AVSampleFormat>                    getSampleFormats() const;
+  std::vector<uint64_t>                          getChannelLayouts() const;
+  uint8_t                                        getMaxLowres() const;
 
 private:
   AVCodec                                  *codec{};
