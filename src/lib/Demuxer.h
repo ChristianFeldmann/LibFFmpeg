@@ -22,7 +22,7 @@ public:
 
   avformat::AVFormatContextWrapper getFormatContext() const { return this->formatContext; }
 
-  avcodec::AVPacketWrapper getNextPacket();
+  bool getNextPacket(avcodec::AVPacketWrapper &packet);
 
 private:
   std::shared_ptr<FFmpegLibrariesInterface> libraries;

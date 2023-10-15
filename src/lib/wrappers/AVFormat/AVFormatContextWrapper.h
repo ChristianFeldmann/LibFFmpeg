@@ -35,6 +35,8 @@ public:
   int64_t                      getDuration() const;
   avutil::AVDictionaryWrapper  getMetadata() const;
 
+  bool getNextPacket(avcodec::AVPacketWrapper &packet);
+
 private:
   AVFormatContext                          *formatContext{nullptr};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};

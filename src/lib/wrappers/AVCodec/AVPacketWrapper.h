@@ -14,6 +14,9 @@
 namespace ffmpeg::avcodec
 {
 
+namespace internal
+{
+
 // AVPacket is part of avcodec. The definition is different for different major versions of avcodec.
 // These are the version independent functions to retrive data from AVPacket.
 // The size of this struct is part of the public API and must be correct
@@ -73,15 +76,20 @@ struct AVPacket_59
 
 typedef AVPacket_59 AVPacket_60;
 
+} // namespace internal
+
 // A wrapper around the different versions of the AVPacket versions.
 // It also adds some functions like automatic deletion when it goes out of scope.
 class AVPacketWrapper
 {
 public:
   AVPacketWrapper() = default;
+  AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
   AVPacketWrapper(AVPacket *packet, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
   AVPacketWrapper(const ByteVector                         &data,
                   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+
+  void allocatePacket();
 
   void setTimestamps(const int64_t dts, const int64_t pts);
 

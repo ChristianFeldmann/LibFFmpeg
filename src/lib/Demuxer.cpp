@@ -30,9 +30,9 @@ ResultAndLog Demuxer::openFile(std::filesystem::path path)
   return result;
 }
 
-avcodec::AVPacketWrapper Demuxer::getNextPacket()
+bool Demuxer::getNextPacket(avcodec::AVPacketWrapper &packet)
 {
-  return {};
+  return this->formatContext.getNextPacket(packet);
 }
 
 } // namespace ffmpeg

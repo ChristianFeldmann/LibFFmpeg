@@ -21,6 +21,11 @@ AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packe
 {
 }
 
+AVPacketWrapper::AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : librariesInterface(librariesInterface)
+{
+}
+
 AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : librariesInterface(librariesInterface)
@@ -34,6 +39,15 @@ AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
   uint8_t *dataPointer;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataPointer, data);
   std::memcpy(dataPointer, data.data(), data.size());
+}
+
+void AVPacketWrapper::allocatePacket()
+{
+  if (this->packet != nullptr)
+    throw std::runtime_error("Packet already allocated");
+  this->packet = this->librariesInterface->avcodec.av_packet_alloc();
+  if (this->packet == nullptr)
+    throw std::runtime_error("Unable to allocate new AVPacket");
 }
 
 void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)

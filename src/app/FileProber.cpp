@@ -137,5 +137,19 @@ int main(int argc, char const *argv[])
     std::cout << "    Extradata         : " << to_string(stream.getExtradata()) << "\n";
   }
 
+  avcodec::AVPacketWrapper packet(loadingResult.librariesInterface);
+  packet.allocatePacket();
+
+  std::map<int, int> streamPacketCounters;
+  while (formatContext.getNextPacket(packet))
+  {
+    const auto streamIndex = packet.getStreamIndex();
+    streamPacketCounters[streamIndex]++;
+  }
+
+  std::cout << "  Packet counts:\n";
+  for (const auto [streamIndex, count] : streamPacketCounters)
+    std::cout << "    Stream " << streamIndex << " : " << count << "\n";
+
   return 0;
 }

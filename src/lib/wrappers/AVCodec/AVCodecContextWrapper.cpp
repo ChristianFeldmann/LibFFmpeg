@@ -14,7 +14,7 @@
 namespace ffmpeg::avcodec
 {
 
-namespace
+namespace internal
 {
 
 struct AVCodecContext_56
@@ -22,240 +22,240 @@ struct AVCodecContext_56
   const AVClass *av_class;
   int            log_level_offset;
 
-  AVMediaType             codec_type;
-  const struct AVCodec   *codec;
-  char                    codec_name[32];
-  AVCodecID               codec_id;
-  unsigned int            codec_tag;
-  unsigned int            stream_codec_tag;
-  void                   *priv_data;
-  struct AVCodecInternal *internal;
-  void                   *opaque;
-  int                     bit_rate;
-  int                     bit_rate_tolerance;
-  int                     global_quality;
-  int                     compression_level;
-  int                     flags;
-  int                     flags2;
-  uint8_t                *extradata;
-  int                     extradata_size;
-  AVRational              time_base;
-  int                     ticks_per_frame;
-  int                     delay;
-  int                     width, height;
-  int                     coded_width, coded_height;
-  int                     gop_size;
-  internal::AVPixelFormat pix_fmt;
-  int                     me_method;
+  AVMediaType                     codec_type;
+  const struct AVCodec           *codec;
+  char                            codec_name[32];
+  AVCodecID                       codec_id;
+  unsigned int                    codec_tag;
+  unsigned int                    stream_codec_tag;
+  void                           *priv_data;
+  struct AVCodecInternal         *internal;
+  void                           *opaque;
+  int                             bit_rate;
+  int                             bit_rate_tolerance;
+  int                             global_quality;
+  int                             compression_level;
+  int                             flags;
+  int                             flags2;
+  uint8_t                        *extradata;
+  int                             extradata_size;
+  AVRational                      time_base;
+  int                             ticks_per_frame;
+  int                             delay;
+  int                             width, height;
+  int                             coded_width, coded_height;
+  int                             gop_size;
+  ffmpeg::internal::AVPixelFormat pix_fmt;
+  int                             me_method;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
                           int                    height);
-  internal::AVPixelFormat (*get_format)(struct AVCodecContext              *s,
-                                        const enum internal::AVPixelFormat *fmt);
-  int                           max_b_frames;
-  float                         b_quant_factor;
-  int                           rc_strategy;
-  int                           b_frame_strategy;
-  float                         b_quant_offset;
-  int                           has_b_frames;
-  int                           mpeg_quant;
-  float                         i_quant_factor;
-  float                         i_quant_offset;
-  float                         lumi_masking;
-  float                         temporal_cplx_masking;
-  float                         spatial_cplx_masking;
-  float                         p_masking;
-  float                         dark_masking;
-  int                           slice_count;
-  int                           prediction_method;
-  int                          *slice_offset;
-  AVRational                    sample_aspect_ratio;
-  int                           me_cmp;
-  int                           me_sub_cmp;
-  int                           mb_cmp;
-  int                           ildct_cmp;
-  int                           dia_size;
-  int                           last_predictor_count;
-  int                           pre_me;
-  int                           me_pre_cmp;
-  int                           pre_dia_size;
-  int                           me_subpel_quality;
-  int                           dtg_active_format;
-  int                           me_range;
-  int                           intra_quant_bias;
-  int                           inter_quant_bias;
-  int                           slice_flags;
-  int                           xvmc_acceleration;
-  int                           mb_decision;
-  uint16_t                     *intra_matrix;
-  uint16_t                     *inter_matrix;
-  int                           scenechange_threshold;
-  int                           noise_reduction;
-  int                           me_threshold;
-  int                           mb_threshold;
-  int                           intra_dc_precision;
-  int                           skip_top;
-  int                           skip_bottom;
-  float                         border_masking;
-  int                           mb_lmin;
-  int                           mb_lmax;
-  int                           me_penalty_compensation;
-  int                           bidir_refine;
-  int                           brd_scale;
-  int                           keyint_min;
-  int                           refs;
-  int                           chromaoffset;
-  int                           scenechange_factor;
-  int                           mv0_threshold;
-  int                           b_sensitivity;
-  AVColorPrimaries              color_primaries;
-  AVColorTransferCharacteristic color_trc;
-  internal::AVColorSpace        colorspace;
-  AVColorRange                  color_range;
-  AVChromaLocation              chroma_sample_location;
+  ffmpeg::internal::AVPixelFormat (*get_format)(struct AVCodecContext                 *s,
+                                                const ffmpeg::internal::AVPixelFormat *fmt);
+  int                            max_b_frames;
+  float                          b_quant_factor;
+  int                            rc_strategy;
+  int                            b_frame_strategy;
+  float                          b_quant_offset;
+  int                            has_b_frames;
+  int                            mpeg_quant;
+  float                          i_quant_factor;
+  float                          i_quant_offset;
+  float                          lumi_masking;
+  float                          temporal_cplx_masking;
+  float                          spatial_cplx_masking;
+  float                          p_masking;
+  float                          dark_masking;
+  int                            slice_count;
+  int                            prediction_method;
+  int                           *slice_offset;
+  AVRational                     sample_aspect_ratio;
+  int                            me_cmp;
+  int                            me_sub_cmp;
+  int                            mb_cmp;
+  int                            ildct_cmp;
+  int                            dia_size;
+  int                            last_predictor_count;
+  int                            pre_me;
+  int                            me_pre_cmp;
+  int                            pre_dia_size;
+  int                            me_subpel_quality;
+  int                            dtg_active_format;
+  int                            me_range;
+  int                            intra_quant_bias;
+  int                            inter_quant_bias;
+  int                            slice_flags;
+  int                            xvmc_acceleration;
+  int                            mb_decision;
+  uint16_t                      *intra_matrix;
+  uint16_t                      *inter_matrix;
+  int                            scenechange_threshold;
+  int                            noise_reduction;
+  int                            me_threshold;
+  int                            mb_threshold;
+  int                            intra_dc_precision;
+  int                            skip_top;
+  int                            skip_bottom;
+  float                          border_masking;
+  int                            mb_lmin;
+  int                            mb_lmax;
+  int                            me_penalty_compensation;
+  int                            bidir_refine;
+  int                            brd_scale;
+  int                            keyint_min;
+  int                            refs;
+  int                            chromaoffset;
+  int                            scenechange_factor;
+  int                            mv0_threshold;
+  int                            b_sensitivity;
+  AVColorPrimaries               color_primaries;
+  AVColorTransferCharacteristic  color_trc;
+  ffmpeg::internal::AVColorSpace colorspace;
+  AVColorRange                   color_range;
+  AVChromaLocation               chroma_sample_location;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
 
 struct AVCodecContext_57
 {
-  const AVClass          *av_class;
-  int                     log_level_offset;
-  AVMediaType             codec_type;
-  const struct AVCodec   *codec;
-  char                    codec_name[32];
-  AVCodecID               codec_id;
-  unsigned int            codec_tag;
-  unsigned int            stream_codec_tag;
-  void                   *priv_data;
-  struct AVCodecInternal *internal;
-  void                   *opaque;
-  int64_t                 bit_rate;
-  int                     bit_rate_tolerance;
-  int                     global_quality;
-  int                     compression_level;
-  int                     flags;
-  int                     flags2;
-  uint8_t                *extradata;
-  int                     extradata_size;
-  AVRational              time_base;
-  int                     ticks_per_frame;
-  int                     delay;
-  int                     width, height;
-  int                     coded_width, coded_height;
-  int                     gop_size;
-  internal::AVPixelFormat pix_fmt;
-  int                     me_method;
+  const AVClass                  *av_class;
+  int                             log_level_offset;
+  AVMediaType                     codec_type;
+  const struct AVCodec           *codec;
+  char                            codec_name[32];
+  AVCodecID                       codec_id;
+  unsigned int                    codec_tag;
+  unsigned int                    stream_codec_tag;
+  void                           *priv_data;
+  struct AVCodecInternal         *internal;
+  void                           *opaque;
+  int64_t                         bit_rate;
+  int                             bit_rate_tolerance;
+  int                             global_quality;
+  int                             compression_level;
+  int                             flags;
+  int                             flags2;
+  uint8_t                        *extradata;
+  int                             extradata_size;
+  AVRational                      time_base;
+  int                             ticks_per_frame;
+  int                             delay;
+  int                             width, height;
+  int                             coded_width, coded_height;
+  int                             gop_size;
+  ffmpeg::internal::AVPixelFormat pix_fmt;
+  int                             me_method;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
                           int                    height);
-  internal::AVPixelFormat (*get_format)(struct AVCodecContext         *s,
-                                        const internal::AVPixelFormat *fmt);
-  int                           max_b_frames;
-  float                         b_quant_factor;
-  int                           rc_strategy;
-  int                           b_frame_strategy;
-  float                         b_quant_offset;
-  int                           has_b_frames;
-  int                           mpeg_quant;
-  float                         i_quant_factor;
-  float                         i_quant_offset;
-  float                         lumi_masking;
-  float                         temporal_cplx_masking;
-  float                         spatial_cplx_masking;
-  float                         p_masking;
-  float                         dark_masking;
-  int                           slice_count;
-  int                           prediction_method;
-  int                          *slice_offset;
-  AVRational                    sample_aspect_ratio;
-  int                           me_cmp;
-  int                           me_sub_cmp;
-  int                           mb_cmp;
-  int                           ildct_cmp;
-  int                           dia_size;
-  int                           last_predictor_count;
-  int                           pre_me;
-  int                           me_pre_cmp;
-  int                           pre_dia_size;
-  int                           me_subpel_quality;
-  int                           dtg_active_format;
-  int                           me_range;
-  int                           intra_quant_bias;
-  int                           inter_quant_bias;
-  int                           slice_flags;
-  int                           xvmc_acceleration;
-  int                           mb_decision;
-  uint16_t                     *intra_matrix;
-  uint16_t                     *inter_matrix;
-  int                           scenechange_threshold;
-  int                           noise_reduction;
-  int                           me_threshold;
-  int                           mb_threshold;
-  int                           intra_dc_precision;
-  int                           skip_top;
-  int                           skip_bottom;
-  float                         border_masking;
-  int                           mb_lmin;
-  int                           mb_lmax;
-  int                           me_penalty_compensation;
-  int                           bidir_refine;
-  int                           brd_scale;
-  int                           keyint_min;
-  int                           refs;
-  int                           chromaoffset;
-  int                           scenechange_factor;
-  int                           mv0_threshold;
-  int                           b_sensitivity;
-  AVColorPrimaries              color_primaries;
-  AVColorTransferCharacteristic color_trc;
-  internal::AVColorSpace        colorspace;
-  AVColorRange                  color_range;
-  AVChromaLocation              chroma_sample_location;
+  ffmpeg::internal::AVPixelFormat (*get_format)(struct AVCodecContext                 *s,
+                                                const ffmpeg::internal::AVPixelFormat *fmt);
+  int                            max_b_frames;
+  float                          b_quant_factor;
+  int                            rc_strategy;
+  int                            b_frame_strategy;
+  float                          b_quant_offset;
+  int                            has_b_frames;
+  int                            mpeg_quant;
+  float                          i_quant_factor;
+  float                          i_quant_offset;
+  float                          lumi_masking;
+  float                          temporal_cplx_masking;
+  float                          spatial_cplx_masking;
+  float                          p_masking;
+  float                          dark_masking;
+  int                            slice_count;
+  int                            prediction_method;
+  int                           *slice_offset;
+  AVRational                     sample_aspect_ratio;
+  int                            me_cmp;
+  int                            me_sub_cmp;
+  int                            mb_cmp;
+  int                            ildct_cmp;
+  int                            dia_size;
+  int                            last_predictor_count;
+  int                            pre_me;
+  int                            me_pre_cmp;
+  int                            pre_dia_size;
+  int                            me_subpel_quality;
+  int                            dtg_active_format;
+  int                            me_range;
+  int                            intra_quant_bias;
+  int                            inter_quant_bias;
+  int                            slice_flags;
+  int                            xvmc_acceleration;
+  int                            mb_decision;
+  uint16_t                      *intra_matrix;
+  uint16_t                      *inter_matrix;
+  int                            scenechange_threshold;
+  int                            noise_reduction;
+  int                            me_threshold;
+  int                            mb_threshold;
+  int                            intra_dc_precision;
+  int                            skip_top;
+  int                            skip_bottom;
+  float                          border_masking;
+  int                            mb_lmin;
+  int                            mb_lmax;
+  int                            me_penalty_compensation;
+  int                            bidir_refine;
+  int                            brd_scale;
+  int                            keyint_min;
+  int                            refs;
+  int                            chromaoffset;
+  int                            scenechange_factor;
+  int                            mv0_threshold;
+  int                            b_sensitivity;
+  AVColorPrimaries               color_primaries;
+  AVColorTransferCharacteristic  color_trc;
+  ffmpeg::internal::AVColorSpace colorspace;
+  AVColorRange                   color_range;
+  AVChromaLocation               chroma_sample_location;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
 
 struct AVCodecContext_58
 {
-  const AVClass               *av_class;
-  int                          log_level_offset;
-  enum AVMediaType             codec_type;
-  const struct AVCodec        *codec;
-  enum AVCodecID               codec_id;
-  unsigned int                 codec_tag;
-  void                        *priv_data;
-  struct AVCodecInternal      *internal;
-  void                        *opaque;
-  int64_t                      bit_rate;
-  int                          bit_rate_tolerance;
-  int                          global_quality;
-  int                          compression_level;
-  int                          flags;
-  int                          flags2;
-  uint8_t                     *extradata;
-  int                          extradata_size;
-  AVRational                   time_base;
-  int                          ticks_per_frame;
-  int                          delay;
-  int                          width, height;
-  int                          coded_width, coded_height;
-  int                          gop_size;
-  enum internal::AVPixelFormat pix_fmt;
+  const AVClass                  *av_class;
+  int                             log_level_offset;
+  enum AVMediaType                codec_type;
+  const struct AVCodec           *codec;
+  enum AVCodecID                  codec_id;
+  unsigned int                    codec_tag;
+  void                           *priv_data;
+  struct AVCodecInternal         *internal;
+  void                           *opaque;
+  int64_t                         bit_rate;
+  int                             bit_rate_tolerance;
+  int                             global_quality;
+  int                             compression_level;
+  int                             flags;
+  int                             flags2;
+  uint8_t                        *extradata;
+  int                             extradata_size;
+  AVRational                      time_base;
+  int                             ticks_per_frame;
+  int                             delay;
+  int                             width, height;
+  int                             coded_width, coded_height;
+  int                             gop_size;
+  ffmpeg::internal::AVPixelFormat pix_fmt;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
                           int                    height);
-  enum internal::AVPixelFormat (*get_format)(struct AVCodecContext              *s,
-                                             const enum internal::AVPixelFormat *fmt);
+  ffmpeg::internal::AVPixelFormat (*get_format)(struct AVCodecContext                 *s,
+                                                const ffmpeg::internal::AVPixelFormat *fmt);
   int                                max_b_frames;
   float                              b_quant_factor;
   int                                b_frame_strategy;
@@ -305,7 +305,7 @@ struct AVCodecContext_58
   int                                b_sensitivity;
   enum AVColorPrimaries              color_primaries;
   enum AVColorTransferCharacteristic color_trc;
-  internal::AVColorSpace             colorspace;
+  ffmpeg::internal::AVColorSpace     colorspace;
   enum AVColorRange                  color_range;
   enum AVChromaLocation              chroma_sample_location;
   int                                slices;
@@ -315,38 +315,38 @@ struct AVCodecContext_58
 
 struct AVCodecContext_59
 {
-  const AVClass               *av_class;
-  int                          log_level_offset;
-  enum AVMediaType             codec_type;
-  const struct AVCodec        *codec;
-  enum AVCodecID               codec_id;
-  unsigned int                 codec_tag;
-  void                        *priv_data;
-  struct AVCodecInternal      *internal;
-  void                        *opaque;
-  int64_t                      bit_rate;
-  int                          bit_rate_tolerance;
-  int                          global_quality;
-  int                          compression_level;
-  int                          flags;
-  int                          flags2;
-  uint8_t                     *extradata;
-  int                          extradata_size;
-  AVRational                   time_base;
-  int                          ticks_per_frame;
-  int                          delay;
-  int                          width, height;
-  int                          coded_width, coded_height;
-  int                          gop_size;
-  enum internal::AVPixelFormat pix_fmt;
+  const AVClass                  *av_class;
+  int                             log_level_offset;
+  enum AVMediaType                codec_type;
+  const struct AVCodec           *codec;
+  enum AVCodecID                  codec_id;
+  unsigned int                    codec_tag;
+  void                           *priv_data;
+  struct AVCodecInternal         *internal;
+  void                           *opaque;
+  int64_t                         bit_rate;
+  int                             bit_rate_tolerance;
+  int                             global_quality;
+  int                             compression_level;
+  int                             flags;
+  int                             flags2;
+  uint8_t                        *extradata;
+  int                             extradata_size;
+  AVRational                      time_base;
+  int                             ticks_per_frame;
+  int                             delay;
+  int                             width, height;
+  int                             coded_width, coded_height;
+  int                             gop_size;
+  ffmpeg::internal::AVPixelFormat pix_fmt;
   void (*draw_horiz_band)(struct AVCodecContext *s,
                           const AVFrame         *src,
                           int                    offset[AV_NUM_DATA_POINTERS],
                           int                    y,
                           int                    type,
                           int                    height);
-  enum internal::AVPixelFormat (*get_format)(struct AVCodecContext              *s,
-                                             const enum internal::AVPixelFormat *fmt);
+  ffmpeg::internal::AVPixelFormat (*get_format)(struct AVCodecContext                 *s,
+                                                const ffmpeg::internal::AVPixelFormat *fmt);
   int                                max_b_frames;
   float                              b_quant_factor;
   float                              b_quant_offset;
@@ -386,7 +386,7 @@ struct AVCodecContext_59
   int                                mv0_threshold;
   enum AVColorPrimaries              color_primaries;
   enum AVColorTransferCharacteristic color_trc;
-  internal::AVColorSpace             colorspace;
+  ffmpeg::internal::AVColorSpace     colorspace;
   enum AVColorRange                  color_range;
   enum AVChromaLocation              chroma_sample_location;
   int                                slices;
@@ -396,7 +396,7 @@ struct AVCodecContext_59
 
 typedef AVCodecContext_59 AVCodecContext_60;
 
-} // namespace
+} // namespace internal
 
 AVCodecContextWrapper::AVCodecContextWrapper(
     AVCodecContext *codecContext, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
@@ -420,7 +420,7 @@ AVCodecID AVCodecContextWrapper::getCodecID() const
 
 avutil::AVPixFmtDescriptorWrapper AVCodecContextWrapper::getPixelFormat() const
 {
-  internal::AVPixelFormat avPixelFormat;
+  ffmpeg::internal::AVPixelFormat avPixelFormat;
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avPixelFormat, pix_fmt);
   return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->librariesInterface);
 }
@@ -438,9 +438,9 @@ Size AVCodecContextWrapper::getSize() const
 
 ColorSpace AVCodecContextWrapper::getColorspace() const
 {
-  internal::AVColorSpace avColorspace;
+  ffmpeg::internal::AVColorSpace avColorspace;
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avColorspace, colorspace);
-  return internal::toColorspace(avColorspace);
+  return ffmpeg::internal::toColorspace(avColorspace);
 }
 
 AVRational AVCodecContextWrapper::getTimeBase() const

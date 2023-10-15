@@ -265,4 +265,11 @@ avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata() const
   return avutil::AVDictionaryWrapper(metadata);
 }
 
+bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)
+{
+  const auto ret =
+      this->librariesInterface->avformat.av_read_frame(this->formatContext, packet.getPacket());
+  return ret == 0;
+}
+
 } // namespace ffmpeg::avformat
