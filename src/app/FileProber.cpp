@@ -67,6 +67,20 @@ std::string to_string(const ByteVector &bytes)
   return stream.str();
 }
 
+std::string to_string(const avcodec::AVPacketWrapper::Flags &flags)
+{
+  std::string flagsString;
+  if (flags.keyframe)
+    flagsString += "Keyframe,";
+  if (flags.corrupt)
+    flagsString += "Corrupt,";
+  if (flags.discard)
+    flagsString += "Discard";
+  if (!flagsString.empty())
+    flagsString.pop_back();
+  return flagsString;
+}
+
 void printOutLog(const Log &log)
 {
   std::cout << "\n ---- Log -----\n";
@@ -74,8 +88,27 @@ void printOutLog(const Log &log)
     std::cout << logLine << "\n";
 }
 
+struct Settings
+{
+  bool showPackets{};
+};
+
+Settings parseCommandLineArguments(int argc, char const *argv[])
+{
+  Settings settings;
+  for (int i = 1; i < argc; ++i)
+  {
+    const auto argument = std::string(argv[i]);
+    if (argument == "-showAllPackets")
+      settings.showPackets = true;
+  }
+  return settings;
+}
+
 int main(int argc, char const *argv[])
 {
+  const auto settings = parseCommandLineArguments(argc, argv);
+
   const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
 
   if (!loadingResult.librariesInterface)
@@ -141,10 +174,23 @@ int main(int argc, char const *argv[])
   packet.allocatePacket();
 
   std::map<int, int> streamPacketCounters;
+  int                packetIndex = 0;
   while (formatContext.getNextPacket(packet))
   {
     const auto streamIndex = packet.getStreamIndex();
     streamPacketCounters[streamIndex]++;
+
+    if (settings.showPackets)
+    {
+      std::cout << "  Packet " << packetIndex << ": StreamIndex " << packet.getStreamIndex()
+                << " DTS " << packet.getDTS() << " PTS " << packet.getPTS() << " duration "
+                << packet.getDuration() << " dataSize " << packet.getDataSize();
+      const auto flags = to_string(packet.getFlags());
+      if (!flags.empty())
+        std::cout << " [" << to_string(packet.getFlags()) << "]";
+      std::cout << "\n";
+    }
+    packetIndex++;
   }
 
   std::cout << "  Packet counts:\n";

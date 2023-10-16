@@ -107,6 +107,7 @@ public:
   int64_t    getDTS() const;
   int64_t    getDuration() const;
   Flags      getFlags() const;
+  int        getDataSize() const;
   ByteVector getData() const;
 
   explicit operator bool() const { return this->packet != nullptr; };

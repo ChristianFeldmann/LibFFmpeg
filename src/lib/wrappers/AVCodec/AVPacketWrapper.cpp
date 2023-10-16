@@ -101,6 +101,13 @@ AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
   return flags;
 }
 
+int AVPacketWrapper::getDataSize() const
+{
+  int dataSize;
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataSize, size);
+  return dataSize;
+}
+
 ByteVector AVPacketWrapper::getData() const
 {
   uint8_t *data;
