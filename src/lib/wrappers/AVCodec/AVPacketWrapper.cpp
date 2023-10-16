@@ -15,7 +15,7 @@
 namespace ffmpeg::avcodec
 {
 
-AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packet,
+AVPacketWrapper::AVPacketWrapper(AVPacket *                                packet,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : packet(packet), librariesInterface(librariesInterface)
 {
@@ -26,7 +26,7 @@ AVPacketWrapper::AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> libra
 {
 }
 
-AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
+AVPacketWrapper::AVPacketWrapper(const ByteVector &                        data,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : librariesInterface(librariesInterface)
 {
@@ -34,7 +34,8 @@ AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
   if (this->packet == nullptr)
     throw std::runtime_error("Unable to allocate new AVPacket");
 
-  const auto ret = this->librariesInterface->avcodec.av_new_packet(this->packet, data.size());
+  const auto ret =
+      this->librariesInterface->avcodec.av_new_packet(this->packet, static_cast<int>(data.size()));
 
   uint8_t *dataPointer;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataPointer, data);
@@ -65,21 +66,21 @@ int AVPacketWrapper::getStreamIndex() const
 
 int64_t AVPacketWrapper::getPTS() const
 {
-  int pts;
+  int64_t pts;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, pts, pts);
   return pts;
 }
 
 int64_t AVPacketWrapper::getDTS() const
 {
-  int dts;
+  int64_t dts;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dts, dts);
   return dts;
 }
 
 int64_t AVPacketWrapper::getDuration() const
 {
-  int duration;
+  int64_t duration;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, duration, duration);
   return duration;
 }

@@ -33,7 +33,7 @@ struct AVCodecParameters_56
 {
   AVMediaType            codec_type;
   AVCodecID              codec_id;
-  uint8_t               *extradata;
+  uint8_t *              extradata;
   int                    extradata_size;
   int                    format;
   int                    profile;
@@ -50,7 +50,7 @@ struct AVCodecParameters_57
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
   uint32_t                      codec_tag;
-  uint8_t                      *extradata;
+  uint8_t *                     extradata;
   int                           extradata_size;
   int                           format;
   int64_t                       bit_rate;
@@ -79,7 +79,7 @@ typedef AVCodecParameters_57 AVCodecParameters_60;
 } // namespace
 
 AVCodecParametersWrapper::AVCodecParametersWrapper(
-    AVCodecParameters                        *codecParameters,
+    AVCodecParameters *                       codecParameters,
     std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : codecParameters(codecParameters), librariesInterface(librariesInterface)
 {
@@ -209,7 +209,7 @@ void AVCodecParametersWrapper::setAVCodecID(AVCodecID id)
 
 void AVCodecParametersWrapper::setExtradata(const ByteVector &data)
 {
-  uint8_t   *extradata{};
+  uint8_t *  extradata{};
   const auto versions = this->librariesInterface->getLibrariesVersion();
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 
@@ -228,7 +228,8 @@ void AVCodecParametersWrapper::setExtradata(const ByteVector &data)
   std::memcpy(extradata, data.data(), data.size());
 
   CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
-  CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, extradata_size, data.size());
+  CAST_AVFORMAT_SET_MEMBER(
+      AVCodecParameters, this->codecParameters, extradata_size, static_cast<int>(data.size()));
 }
 
 void AVCodecParametersWrapper::setSize(Size size)
