@@ -15,7 +15,7 @@ using namespace ffmpeg;
 
 const auto FILE_NAME = std::string("testFile.webm");
 
-std::string to_string(avcodec::AVCodecDescriptorWrapper::Properties properties)
+std::string to_string(const avcodec::AVCodecDescriptorWrapper::Properties &properties)
 {
   std::string str;
   if (properties.intraOnly)
@@ -36,7 +36,7 @@ std::string to_string(avcodec::AVCodecDescriptorWrapper::Properties properties)
   return str.substr(0, str.length() - 2);
 }
 
-std::string to_string(const std::vector<std::string> stringVec)
+std::string to_string(const std::vector<std::string> &stringVec)
 {
   if (stringVec.empty())
     return {};
