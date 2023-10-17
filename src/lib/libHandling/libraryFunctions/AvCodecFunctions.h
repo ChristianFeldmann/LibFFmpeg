@@ -36,7 +36,7 @@ struct AvCodecFunctions
   std::function<void()> avcodec_decode_video2;
 };
 
-std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                   Log                 &log);
+std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedLibraryLoader &lib,
+                                                                   Log &                      log);
 
 } // namespace ffmpeg::functions

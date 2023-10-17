@@ -11,8 +11,8 @@
 namespace ffmpeg::functions
 {
 
-std::optional<SwResampleFunctions> tryBindSwResampleFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                         Log &                log)
+std::optional<SwResampleFunctions>
+tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log)
 {
   if (!lib)
   {

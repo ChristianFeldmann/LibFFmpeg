@@ -17,8 +17,8 @@ namespace ffmpeg::functions
 {
 
 template <typename T>
-void checkForMissingFunctionAndLog(std::function<T> &        function,
-                                   std::string               name,
+void checkForMissingFunctionAndLog(const std::function<T> &  function,
+                                   const std::string &       name,
                                    std::vector<std::string> &missingFunctions,
                                    Log &                     log)
 {
@@ -31,7 +31,7 @@ void checkForMissingFunctionAndLog(std::function<T> &        function,
   }
 }
 
-std::string to_string(std::vector<std::string> strings);
+std::string to_string(const std::vector<std::string> &strings);
 
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
                                                   const std::string               libraryName,

@@ -26,7 +26,7 @@ struct AvFormatFunctions
   std::function<unsigned()> avformat_version;
 };
 
-std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                     Log &                log);
+std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
+                                                                     Log &log);
 
 } // namespace ffmpeg::functions

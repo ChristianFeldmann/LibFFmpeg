@@ -17,7 +17,7 @@ struct SwResampleFunctions
   std::function<unsigned()> swresample_version;
 };
 
-std::optional<SwResampleFunctions> tryBindSwResampleFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                         Log &                log);
+std::optional<SwResampleFunctions>
+tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log);
 
 } // namespace ffmpeg::functions

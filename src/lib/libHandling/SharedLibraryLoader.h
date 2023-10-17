@@ -28,7 +28,7 @@ public:
   SharedLibraryLoader() = default;
 
   void unload();
-  bool load(std::string absolutePathOrLibName);
+  bool load(const std::string_view absolutePathOrLibName);
 
   auto getLibraryPath() const { return this->libraryPath; }
 
@@ -36,15 +36,15 @@ public:
        operator bool() const { return this->isLoaded(); }
 
   template <typename T>
-  void tryResolveFunction(std::function<T> &function, const std::string &functionName) const
+  void tryResolveFunction(std::function<T> &function, const std::string_view functionName) const
   {
     if (!this->isLoaded() || functionName.empty())
       return;
 
 #if (defined(_WIN32) || defined(_WIN64))
-    const auto addr = GetProcAddress(this->libHandle, functionName.c_str());
+    const auto addr = GetProcAddress(this->libHandle, functionName.data());
 #else
-    const auto addr = dlsym(this->libHandle, functionName.c_str());
+    const auto addr = dlsym(this->libHandle, functionName.data());
 #endif
 
     if (addr != nullptr)

@@ -9,7 +9,7 @@
 namespace ffmpeg::functions
 {
 
-std::string to_string(std::vector<std::string> strings)
+std::string to_string(const std::vector<std::string> &strings)
 {
   std::ostringstream stream;
   for (auto it = strings.begin(); it != strings.end(); it++)

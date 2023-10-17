@@ -34,11 +34,11 @@ std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int ve
   return {};
 }
 
-bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
+bool tryLoadLibraryInPath(SharedLibraryLoader &        lib,
                           const std::filesystem::path &absoluteDirectoryPath,
-                          std::string                  libName,
-                          const Version               &version,
-                          Log                         &log)
+                          const std::string &          libName,
+                          const Version &              version,
+                          Log &                        log)
 {
   log.push_back("Trying to load library " + libName + " in path " + absoluteDirectoryPath.string());
 
@@ -72,8 +72,8 @@ bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
 
 bool checkLibraryVersion(const std::string &libName,
                          unsigned           ffmpegVersionOfLoadedLibrary,
-                         const Version     &expectedVersion,
-                         Log               &log)
+                         const Version &    expectedVersion,
+                         Log &              log)
 {
   const auto loadedVersion = Version::fromFFmpegVersion(ffmpegVersionOfLoadedLibrary);
   if (loadedVersion != expectedVersion)
@@ -142,8 +142,8 @@ FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::pa
 
 bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
     const std::filesystem::path &absoluteDirectoryPath,
-    const LibraryVersions       &libraryVersions,
-    Log                         &log)
+    const LibraryVersions &      libraryVersions,
+    Log &                        log)
 {
   // AVUtil
 
@@ -239,10 +239,9 @@ std::vector<LibraryInfo> FFmpegLibrariesInterface::getLibrariesInfo() const
 
   std::vector<LibraryInfo> infoPerLIbrary;
 
-  auto addLibraryInfo = [&infoPerLIbrary](const char                  *name,
+  auto addLibraryInfo = [&infoPerLIbrary](const char *                 name,
                                           const std::filesystem::path &path,
-                                          const unsigned               ffmpegVersion)
-  {
+                                          const unsigned               ffmpegVersion) {
     const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
     const auto version        = to_string(libraryVersion);
 

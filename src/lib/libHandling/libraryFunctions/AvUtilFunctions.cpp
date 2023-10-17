@@ -11,7 +11,8 @@
 namespace ffmpeg::functions
 {
 
-std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(SharedLibraryLoader &lib, Log &log)
+std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
+                                                                 Log &                      log)
 {
   if (!lib)
   {

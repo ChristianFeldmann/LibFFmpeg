@@ -34,7 +34,7 @@ struct AvUtilFunctions
   std::function<internal::AVPixelFormat(const AVPixFmtDescriptor *desc)>     av_pix_fmt_desc_get_id;
 };
 
-std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                 Log                 &log);
+std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
+                                                                 Log &                      log);
 
 } // namespace ffmpeg::functions

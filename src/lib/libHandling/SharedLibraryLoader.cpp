@@ -23,14 +23,14 @@ void SharedLibraryLoader::unload()
   this->libraryPath.clear();
 };
 
-bool SharedLibraryLoader::load(std::string absolutePathOrLibName)
+bool SharedLibraryLoader::load(const std::string_view absolutePathOrLibName)
 {
   this->unload();
 
 #if (defined(_WIN32) || defined(_WIN64))
-  this->libHandle = LoadLibraryA(absolutePathOrLibName.c_str());
+  this->libHandle = LoadLibraryA(absolutePathOrLibName.data());
 #else
-  this->libHandle = dlopen(absolutePathOrLibName.c_str(), RTLD_NOW | RTLD_LOCAL);
+  this->libHandle = dlopen(absolutePathOrLibName.data(), RTLD_NOW | RTLD_LOCAL);
 #endif
 
   return this->isLoaded();

@@ -11,8 +11,8 @@
 namespace ffmpeg::functions
 {
 
-std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(SharedLibraryLoader &lib,
-                                                                     Log                 &log)
+std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
+                                                                     Log &                      log)
 {
   if (!lib)
   {
