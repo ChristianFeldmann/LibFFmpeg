@@ -28,7 +28,7 @@ public:
   SharedLibraryLoader() = default;
 
   void unload();
-  bool load(const std::string_view absolutePathOrLibName);
+  bool load(const std::filesystem::path &absolutePathOrLibName);
 
   auto getLibraryPath() const { return this->libraryPath; }
 
@@ -59,6 +59,8 @@ private:
 #endif
 
   std::filesystem::path libraryPath;
+
+  void updateActuallyLoadedLibraryPath(const std::filesystem::path &libraryName);
 };
 
 } // namespace ffmpeg
