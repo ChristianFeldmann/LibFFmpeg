@@ -8,6 +8,7 @@
 #include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
 
 #include <cstddef>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 
@@ -90,7 +91,8 @@ void printOutLog(const Log &log)
 
 struct Settings
 {
-  bool showPackets{};
+  bool                  showPackets{};
+  std::filesystem::path libraryPath{};
 };
 
 Settings parseCommandLineArguments(int argc, char const *argv[])
@@ -101,6 +103,23 @@ Settings parseCommandLineArguments(int argc, char const *argv[])
     const auto argument = std::string(argv[i]);
     if (argument == "-showAllPackets")
       settings.showPackets = true;
+    if (argument == "-libPath")
+    {
+      i++;
+      if (i < argc)
+      {
+        const auto nextArgument = std::string(argv[i]);
+        const auto path         = std::filesystem::path(nextArgument);
+        const auto fileStatus   = std::filesystem::status(path);
+        if (fileStatus.type() == std::filesystem::file_type::not_found)
+          std::cout << "The given library path " << nextArgument
+                    << " could not be found. Ignoring the given path.";
+        else
+          settings.libraryPath = path;
+      }
+      else
+        std::cout << "Missing argument for parameter -libPath";
+    }
   }
   return settings;
 }
@@ -118,7 +137,16 @@ int main(int argc, char const *argv[])
     return 1;
   }
   else
+  {
     std::cout << "Successfully loaded ffmpeg libraries.\n";
+    std::cout << "\nLibraries info:\n";
+    for (const auto info : loadingResult.librariesInterface->getLibrariesInfo())
+    {
+      std::cout << "  " << info.name << ":\n";
+      std::cout << "    Path   : " << info.path << ":\n";
+      std::cout << "    Version: " << info.version << ":\n";
+    }
+  }
 
   Demuxer demuxer(loadingResult.librariesInterface);
   const auto [openSuccessfull, openingLog] = demuxer.openFile(FILE_NAME);
@@ -170,12 +198,9 @@ int main(int argc, char const *argv[])
     std::cout << "    Extradata         : " << to_string(stream.getExtradata()) << "\n";
   }
 
-  avcodec::AVPacketWrapper packet(loadingResult.librariesInterface);
-  packet.allocatePacket();
-
   std::map<int, int> streamPacketCounters;
   int                packetIndex = 0;
-  while (formatContext.getNextPacket(packet))
+  while (auto packet = demuxer.getNextPacket())
   {
     const auto streamIndex = packet.getStreamIndex();
     streamPacketCounters[streamIndex]++;

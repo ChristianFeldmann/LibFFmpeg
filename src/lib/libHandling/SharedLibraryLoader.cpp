@@ -33,7 +33,20 @@ bool SharedLibraryLoader::load(const std::string_view absolutePathOrLibName)
   this->libHandle = dlopen(absolutePathOrLibName.data(), RTLD_NOW | RTLD_LOCAL);
 #endif
 
-  return this->isLoaded();
+  if (this->libHandle == nullptr)
+    return false;
+
+#if (defined(_WIN32) || defined(_WIN64))
+  CHAR path[MAX_PATH] = {0};
+  GetModuleFileNameA(this->libHandle, path, MAX_PATH);
+  const auto realPath = std::string(path);
+  if (this->libraryPath.empty() && !realPath.empty())
+    this->libraryPath = realPath;
+#else
+    // Get path on linux
+#endif
+
+  return true;
 };
 
 } // namespace ffmpeg

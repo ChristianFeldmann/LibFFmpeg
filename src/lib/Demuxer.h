@@ -16,16 +16,22 @@ namespace ffmpeg
 class Demuxer
 {
 public:
-  Demuxer(std::shared_ptr<FFmpegLibrariesInterface> libraries);
+  Demuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  ResultAndLog openFile(std::filesystem::path path);
+  ResultAndLog openFile(const std::filesystem::path &path);
 
   avformat::AVFormatContextWrapper getFormatContext() const { return this->formatContext; }
 
-  bool getNextPacket(avcodec::AVPacketWrapper &packet);
+  /* Read the next packet from the bitstream and return it. If there are no more packets,
+   * the returned packet will be empty (bool(packet) == false). The overloaded function
+   * allows you to move a packet into the function which will be reused. This saves the allocation
+   * of a new packet.
+   */
+  avcodec::AVPacketWrapper getNextPacket();
+  avcodec::AVPacketWrapper getNextPacket(avcodec::AVPacketWrapper &&packet);
 
 private:
-  std::shared_ptr<FFmpegLibrariesInterface> libraries;
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;
 
   avformat::AVFormatContextWrapper formatContext;
 };

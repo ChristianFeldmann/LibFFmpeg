@@ -9,30 +9,41 @@
 namespace ffmpeg
 {
 
-Demuxer::Demuxer(std::shared_ptr<FFmpegLibrariesInterface> libraries)
+Demuxer::Demuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
 {
-  this->libraries = libraries;
+  this->librariesInterface = librariesInterface;
 }
 
-ResultAndLog Demuxer::openFile(std::filesystem::path path)
+ResultAndLog Demuxer::openFile(const std::filesystem::path &path)
 {
   Log log;
 
-  if (!this->libraries)
+  if (!this->librariesInterface)
   {
     log.push_back("Error. Libraries not loaded");
     return {false, log};
   }
 
-  this->formatContext = ffmpeg::avformat::AVFormatContextWrapper(this->libraries);
+  this->formatContext = ffmpeg::avformat::AVFormatContextWrapper(this->librariesInterface);
   const auto result   = this->formatContext.openFile(path);
 
   return result;
 }
 
-bool Demuxer::getNextPacket(avcodec::AVPacketWrapper &packet)
+avcodec::AVPacketWrapper Demuxer::getNextPacket()
 {
-  return this->formatContext.getNextPacket(packet);
+  avcodec::AVPacketWrapper packet(this->librariesInterface);
+  packet.allocatePacket();
+  if (!this->formatContext.getNextPacket(packet))
+    return {};
+  return packet;
+}
+
+avcodec::AVPacketWrapper Demuxer::getNextPacket(avcodec::AVPacketWrapper &&packet)
+{
+  if (!this->formatContext.getNextPacket(packet))
+    return {};
+  return std::move(packet);
 }
 
 } // namespace ffmpeg
