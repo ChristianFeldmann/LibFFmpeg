@@ -32,7 +32,7 @@ bool SharedLibraryLoader::load(const std::filesystem::path &absolutePathOrLibNam
   this->unload();
 
 #if (defined(_WIN32) || defined(_WIN64))
-  this->libHandle = LoadLibraryA(absolutePathOrLibName.data());
+  this->libHandle = LoadLibraryA(absolutePathOrLibName.string().data());
 #else
   this->libHandle = dlopen(absolutePathOrLibName.string().data(), RTLD_NOW | RTLD_LOCAL);
 #endif
