@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.14)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -20,7 +20,7 @@ add_subdirectory(src/app)
 
 if(ENABLE_TEST)
     message(STATUS "Enable building of unit tests")
-    #add_subdirectory(test)
+    add_subdirectory(test)
 else()
     message(STATUS "Not building unit tests")
 endif()
