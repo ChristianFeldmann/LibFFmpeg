@@ -30,3 +30,6 @@ jobs:
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
+
+    - name: Unit tests
+      run: ctest
