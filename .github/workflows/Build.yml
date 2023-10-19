@@ -24,11 +24,10 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
-      run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} -DENABLE_TEST=ON
+      run: cmake -B ${{ steps.strings.outputs.build-output-dir }} -S ${{ github.workspace }} -DENABLE_TEST=ON
 
     - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Unit tests
-      run: ctest
+      run: ctest --test-dir ${{ steps.strings.outputs.build-output-dir }}
