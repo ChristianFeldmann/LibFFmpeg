@@ -8,6 +8,7 @@
 
 #if (!defined(_WIN32) && !defined(_WIN64))
 #include <limits.h>
+#include <dlfcn.h>
 #endif
 
 namespace ffmpeg
