@@ -8,7 +8,6 @@
 
 #if (!defined(_WIN32) && !defined(_WIN64))
 #include <limits.h>
-#include <dlfcn.h>
 #endif
 
 namespace ffmpeg
@@ -53,10 +52,44 @@ void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::filesystem:
   if (0 == GetModuleFileNameA(this->libHandle, path, MAX_PATH))
     return;
   const auto realPath = std::filesystem::path(path);
+#elif (defined(__APPLE__))
+  // One of these may work. But I have to debug this on an actual mac.
+  // for (auto i = 0; i < _dyld_image_count(); ++i)
+  // {
+  //   const auto imageName = _dyld_get_image_name(i);
+  //   const auto probe_lib = jl_load_dynamic_library(image_name, JL_RTLD_DEFAULT);
+  //   void *probe_handle = probe_lib->handle;
+  //   uv_dlclose(probe_lib);
+
+  //   // If the handle is the same as what was passed in (modulo mode bits), return this image name
+  //   if (((intptr_t)handle & (-4)) == ((intptr_t)probe_handle & (-4)))
+  //     return image_name;
+  // }
+
+  // if (handle)
+  //   {
+  //       Dl_info info;
+
+  //       // Load binary path information from dladdr() API if available, else
+  //       // use the user provided path
+  //       if (dladdr(handle, &info) || !info.dli_fname)
+  //       {
+  //           return{ handle, libraryPath };
+  //       }
+  //       else
+  //       {
+  //           return{ handle, info.dli_fname };
+  //       }
+  //   }
+  //   else
+  //   {
+  //       throw std::runtime_error{ "Cannot load shared library " + std::string{ libraryPath } };
+  //   }
+  std::filesystem::path realPath;
 #else
-  char path[PATH_MAX] = {0};
-  const auto ret = dlinfo(this->libHandle, RTLD_DI_ORIGIN, &path);
-  const auto realPath = std::filesystem::path(path) / libraryName;
+  char       path[PATH_MAX] = {0};
+  const auto ret            = dlinfo(this->libHandle, RTLD_DI_ORIGIN, &path);
+  const auto realPath       = std::filesystem::path(path) / libraryName;
 #endif
 
   if (this->libraryPath.empty() && !realPath.empty())
