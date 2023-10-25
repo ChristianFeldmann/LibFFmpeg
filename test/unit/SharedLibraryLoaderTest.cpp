@@ -23,3 +23,19 @@ TEST(SharedLibraryLoader, DefaultValuesTest)
   EXPECT_FALSE(loader.load("libname", "/tmp"));
   EXPECT_FALSE(loader.load("nonexistingLibName", {}));
 }
+
+TEST(SharedLibraryLoader, OpenDummyLibrary)
+{
+  ffmpeg::SharedLibraryLoader loader;
+
+  const auto debugPath = std::filesystem::current_path();
+
+  EXPECT_TRUE(loader.load("dummyLib", std::filesystem::current_path()));
+
+  std::function<int()> getVersion;
+  loader.tryResolveFunction(getVersion, "getVersion");
+
+  EXPECT_TRUE(getVersion);
+
+  EXPECT_EQ(getVersion(), 7263);
+}
