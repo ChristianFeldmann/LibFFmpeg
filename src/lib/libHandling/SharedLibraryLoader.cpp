@@ -27,25 +27,30 @@ void SharedLibraryLoader::unload()
   this->libraryPath.clear();
 };
 
-bool SharedLibraryLoader::load(const std::filesystem::path &absolutePathOrLibName)
+bool SharedLibraryLoader::load(const std::string           &libraryName,
+                               const std::filesystem::path &libraryPath)
 {
   this->unload();
 
+  std::string filenameToOpen = libraryName;
+  if (!libraryPath.empty())
+    filenameToOpen = (libraryPath / libraryName).string();
+
 #if (defined(_WIN32) || defined(_WIN64))
-  this->libHandle = LoadLibraryA(absolutePathOrLibName.string().data());
+  this->libHandle = LoadLibraryA(filenameToOpen.c_str());
 #else
-  this->libHandle = dlopen(absolutePathOrLibName.string().data(), RTLD_NOW | RTLD_LOCAL);
+  this->libHandle = dlopen(filenameToOpen.c_str(), RTLD_NOW | RTLD_LOCAL);
 #endif
 
   if (this->libHandle == nullptr)
     return false;
 
-  this->updateActuallyLoadedLibraryPath(absolutePathOrLibName.filename());
+  this->updateActuallyLoadedLibraryPath(libraryName);
 
   return true;
 };
 
-void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::filesystem::path &libraryName)
+void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::string &libraryName)
 {
 #if (defined(_WIN32) || defined(_WIN64))
   CHAR path[MAX_PATH] = {0};

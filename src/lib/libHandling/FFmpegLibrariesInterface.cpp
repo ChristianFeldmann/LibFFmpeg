@@ -44,12 +44,9 @@ bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
 
   for (const auto &possibleLibName : getPossibleLibraryNames(libName, version.major))
   {
-    std::filesystem::path absolutePathOrLibName;
-    if (absoluteDirectoryPath.empty())
-      absolutePathOrLibName = possibleLibName;
-    else
+    const auto absolutePathOrLibName = absoluteDirectoryPath / possibleLibName;
+    if (!absoluteDirectoryPath.empty())
     {
-      absolutePathOrLibName = absoluteDirectoryPath / possibleLibName;
       const auto fileStatus = std::filesystem::status(absolutePathOrLibName);
 
       if (fileStatus.type() == std::filesystem::file_type::not_found)
@@ -60,7 +57,7 @@ bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
       }
     }
 
-    const auto success = lib.load(absolutePathOrLibName);
+    const auto success = lib.load(possibleLibName, absoluteDirectoryPath);
     log.push_back("Loading library " + absolutePathOrLibName.string() +
                   (success ? " succeded" : " failed"));
     if (success)

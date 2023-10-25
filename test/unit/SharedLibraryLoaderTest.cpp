@@ -19,7 +19,7 @@ TEST(SharedLibraryLoader, DefaultValuesTest)
   loader.tryResolveFunction(dummyFunctions, "NotResolvable");
   EXPECT_FALSE(dummyFunctions);
 
-  EXPECT_FALSE(loader.load("/somePathThatDoesNotExist"));
-  EXPECT_FALSE(loader.load("/tmp"));
-  EXPECT_FALSE(loader.load(""));
+  EXPECT_FALSE(loader.load("libname", "/somePathThatDoesNotExist"));
+  EXPECT_FALSE(loader.load("libname", "/tmp"));
+  EXPECT_FALSE(loader.load("nonexistingLibName", {}));
 }
