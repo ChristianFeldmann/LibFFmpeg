@@ -36,6 +36,5 @@ TEST(SharedLibraryLoader, OpenDummyLibrary)
   loader.tryResolveFunction(getVersion, "getVersion");
 
   EXPECT_TRUE(getVersion);
-
   EXPECT_EQ(getVersion(), 7263);
 }

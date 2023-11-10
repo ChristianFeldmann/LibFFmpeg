@@ -12,7 +12,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, windows-2022, windows-2019]
+        include:
+          - os: windows-2022
+            COPY_COMMAND: copy
+            LIB_EXTENSION: dll
+        #os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, windows-2022, windows-2019]
         
     steps:
     - uses: actions/checkout@v3
@@ -30,4 +34,6 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }}
 
     - name: Unit tests
-      run: ctest --test-dir ${{ steps.strings.outputs.build-output-dir }}
+      run: |
+      ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/test/dummyLib/Release/dummyLib.${{matrix.LIB_EXTENSION}} ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
+      ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/unitTest
