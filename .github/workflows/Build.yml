@@ -36,4 +36,5 @@ jobs:
     - name: Unit tests
       run: |
         ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/test/dummyLib/Release/dummyLib.${{matrix.LIB_EXTENSION}} ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
-        ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/unitTest
+        cd ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
+        unitTest
