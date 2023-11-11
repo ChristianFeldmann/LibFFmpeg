@@ -13,9 +13,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2022
-            COPY_COMMAND: copy
-            LIB_EXTENSION: dll
+          #- os: windows-2022
+          #  COPY_COMMAND: copy
+          #  LIB_EXTENSION: dll
+          - os: ubuntu-22.04
+            COPY_COMMAND: cp
+            LIB_EXTENSION: lib
+             
         #os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, windows-2022, windows-2019]
         
     steps:
