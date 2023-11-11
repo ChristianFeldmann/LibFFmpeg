@@ -18,7 +18,7 @@ jobs:
           #  LIB_EXTENSION: dll
           - os: ubuntu-22.04
             COPY_COMMAND: cp
-            LIB_EXTENSION: lib
+            LIB_EXTENSION: so
              
         #os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, windows-2022, windows-2019]
         
