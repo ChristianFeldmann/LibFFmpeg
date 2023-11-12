@@ -16,9 +16,11 @@ jobs:
           #- os: windows-2022
           #  COPY_COMMAND: copy
           #  DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
+          #  UNIT_TEST_PATH: test/unit/Release/
           - os: ubuntu-22.04
             COPY_COMMAND: cp
             DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
+            UNIT_TEST_PATH: test/unit/
              
         #os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, windows-2022, windows-2019]
         
@@ -39,6 +41,6 @@ jobs:
 
     - name: Unit tests
       run: |
-        ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.DUMMY_LIB_PATH}} ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
-        cd ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
+        ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.DUMMY_LIB_PATH}} ${{steps.strings.outputs.build-output-dir}}/${{UNIT_TEST_PATH}}
+        cd ${{steps.strings.outputs.build-output-dir}}/${{UNIT_TEST_PATH}}
         ./unitTest
