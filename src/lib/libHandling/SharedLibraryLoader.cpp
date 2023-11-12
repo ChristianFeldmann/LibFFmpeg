@@ -33,8 +33,13 @@ bool SharedLibraryLoader::load(const std::string           &libraryName,
   this->unload();
 
   std::string filenameToOpen = libraryName;
+#if (defined(__linux__))
+  // On linux, the library will not be found if we don't add the extension
+  if (libraryName.size() <= 3 || libraryName.substr(libraryName.size() - 3) != ".so")
+    filenameToOpen += ".so";
+#endif
   if (!libraryPath.empty())
-    filenameToOpen = (libraryPath / libraryName).string();
+    filenameToOpen = (libraryPath / filenameToOpen).string();
 
 #if (defined(_WIN32) || defined(_WIN64))
   this->libHandle = LoadLibraryA(filenameToOpen.c_str());

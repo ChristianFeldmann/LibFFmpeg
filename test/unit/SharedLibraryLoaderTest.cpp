@@ -30,7 +30,11 @@ TEST(SharedLibraryLoader, OpenDummyLibrary)
 
   const auto debugPath = std::filesystem::current_path();
 
+#if (defined(_WIN32) || defined(_WIN64))
   EXPECT_TRUE(loader.load("dummyLib", std::filesystem::current_path()));
+#else
+  EXPECT_TRUE(loader.load("libdummyLib", std::filesystem::current_path()));
+#endif
 
   std::function<int()> getVersion;
   loader.tryResolveFunction(getVersion, "getVersion");
