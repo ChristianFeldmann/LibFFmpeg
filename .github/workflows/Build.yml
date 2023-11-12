@@ -17,9 +17,13 @@ jobs:
           #  COPY_COMMAND: copy
           #  DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
           #  UNIT_TEST_PATH: test/unit/Release/
-          - os: ubuntu-22.04
+          # - os: ubuntu-22.04
+          #   COPY_COMMAND: cp
+          #   DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
+          #   UNIT_TEST_PATH: test/unit/
+          - os: macos-12
             COPY_COMMAND: cp
-            DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
+            DUMMY_LIB_PATH: test/dummyLib/libdummyLib.dylib
             UNIT_TEST_PATH: test/unit/
              
         #os: [ubuntu-20.04, ubuntu-22.04, macos-11, macos-12, macos-13, windows-2022, windows-2019]
