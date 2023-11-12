@@ -13,6 +13,24 @@
 namespace ffmpeg
 {
 
+namespace
+{
+
+std::string addLibraryExtensionIfNeeded(const std::string &libraryName)
+{
+  // On linux, the library will not be found if we don't add the extension
+#if (defined(__linux__))
+  if (libraryName.size() <= 3 || libraryName.substr(libraryName.size() - 3) != ".so")
+    return libraryName + ".so";
+#elif (defined(__APPLE__))
+  if (libraryName.size() <= 6 || libraryName.substr(libraryName.size() - 6) != ".dylib")
+    return libraryName + ".dylib";
+#endif
+  return libraryName;
+}
+
+} // namespace
+
 void SharedLibraryLoader::unload()
 {
   if (this->isLoaded())
@@ -32,12 +50,8 @@ bool SharedLibraryLoader::load(const std::string           &libraryName,
 {
   this->unload();
 
-  std::string filenameToOpen = libraryName;
-#if (defined(__linux__))
-  // On linux, the library will not be found if we don't add the extension
-  if (libraryName.size() <= 3 || libraryName.substr(libraryName.size() - 3) != ".so")
-    filenameToOpen += ".so";
-#endif
+  auto filenameToOpen = addLibraryExtensionIfNeeded(libraryName);
+
   if (!libraryPath.empty())
     filenameToOpen = (libraryPath / filenameToOpen).string();
 

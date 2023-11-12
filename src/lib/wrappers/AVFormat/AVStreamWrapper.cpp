@@ -222,7 +222,7 @@ AVMediaType AVStreamWrapper::getCodecType() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext.getCodecType();
 
-  return {AVMEDIA_TYPE_UNKNOWN};
+  return AVMEDIA_TYPE_UNKNOWN;
 }
 
 std::string AVStreamWrapper::getCodecTypeName() const
@@ -259,7 +259,7 @@ AVCodecID AVStreamWrapper::getCodecID() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext.getCodecID();
 
-  return {AV_CODEC_ID_NONE};
+  return AV_CODEC_ID_NONE;
 }
 
 avcodec::AVCodecDescriptorWrapper AVStreamWrapper::getCodecDescriptor() const
