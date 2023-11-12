@@ -41,6 +41,6 @@ jobs:
 
     - name: Unit tests
       run: |
-        ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.DUMMY_LIB_PATH}} ${{steps.strings.outputs.build-output-dir}}/${{UNIT_TEST_PATH}}
-        cd ${{steps.strings.outputs.build-output-dir}}/${{UNIT_TEST_PATH}}
+        ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.DUMMY_LIB_PATH}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.UNIT_TEST_PATH}}
+        cd ${{steps.strings.outputs.build-output-dir}}/${{matrix.UNIT_TEST_PATH}}
         ./unitTest
