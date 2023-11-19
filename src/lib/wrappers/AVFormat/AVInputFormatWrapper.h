@@ -34,12 +34,13 @@ struct AVInputFormatFlags
 };
 
 std::string to_string(const AVInputFormatFlags &flags);
+bool        operator==(const AVInputFormatFlags &lhs, const AVInputFormatFlags &rhs);
 
 class AVInputFormatWrapper
 {
 public:
   AVInputFormatWrapper() = default;
-  AVInputFormatWrapper(AVInputFormat                            *inputFormat,
+  AVInputFormatWrapper(AVInputFormat *                           inputFormat,
                        std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   std::string        getName() const;
@@ -51,7 +52,7 @@ public:
   explicit operator bool() const { return this->inputFormat != nullptr; };
 
 private:
-  AVInputFormat                            *inputFormat{};
+  AVInputFormat *                           inputFormat{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

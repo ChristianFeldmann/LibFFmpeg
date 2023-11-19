@@ -16,7 +16,7 @@ using namespace ffmpeg;
 
 const auto FILE_NAME = std::string("testFile.webm");
 
-std::string to_string(const avcodec::AVCodecDescriptorWrapper::Properties &properties)
+std::string to_string(const avcodec::AVCodecDescriptorProperties &properties)
 {
   std::string str;
   if (properties.intraOnly)

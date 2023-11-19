@@ -27,6 +27,11 @@ struct Size
   int height{};
 };
 
+inline bool operator==(const Size &lhs, const Size &rhs)
+{
+  return lhs.width == rhs.width && lhs.height == rhs.height;
+}
+
 struct Ratio
 {
   int num{};
@@ -86,12 +91,12 @@ struct AVCodecDescriptor;
 
 // Some error tags
 #define AVERROR_BSF_NOT_FOUND FFERRTAG(0xF8, 'B', 'S', 'F') ///< Bitstream filter not found
-#define AVERROR_BUG FFERRTAG('B', 'U', 'G', '!')            ///< Internal bug, also see AVERROR_BUG2
-#define AVERROR_BUFFER_TOO_SMALL FFERRTAG('B', 'U', 'F', 'S')   ///< Buffer too small
+#define AVERROR_BUG FFERRTAG('B', 'U', 'G', '!') ///< Internal bug, also see AVERROR_BUG2
+#define AVERROR_BUFFER_TOO_SMALL FFERRTAG('B', 'U', 'F', 'S') ///< Buffer too small
 #define AVERROR_DECODER_NOT_FOUND FFERRTAG(0xF8, 'D', 'E', 'C') ///< Decoder not found
 #define AVERROR_DEMUXER_NOT_FOUND FFERRTAG(0xF8, 'D', 'E', 'M') ///< Demuxer not found
 #define AVERROR_ENCODER_NOT_FOUND FFERRTAG(0xF8, 'E', 'N', 'C') ///< Encoder not found
-#define AVERROR_EOF FFERRTAG('E', 'O', 'F', ' ')                ///< End of file
+#define AVERROR_EOF FFERRTAG('E', 'O', 'F', ' ') ///< End of file
 #define AVERROR_EXIT                                                                               \
   FFERRTAG('E',                                                                                    \
            'X',                                                                                    \
@@ -101,16 +106,16 @@ struct AVCodecDescriptor;
 #define AVERROR_FILTER_NOT_FOUND FFERRTAG(0xF8, 'F', 'I', 'L') ///< Filter not found
 #define AVERROR_INVALIDDATA                                                                        \
   FFERRTAG('I', 'N', 'D', 'A') ///< Invalid data found when processing input
-#define AVERROR_MUXER_NOT_FOUND FFERRTAG(0xF8, 'M', 'U', 'X')  ///< Muxer not found
+#define AVERROR_MUXER_NOT_FOUND FFERRTAG(0xF8, 'M', 'U', 'X') ///< Muxer not found
 #define AVERROR_OPTION_NOT_FOUND FFERRTAG(0xF8, 'O', 'P', 'T') ///< Option not found
 #define AVERROR_PATCHWELCOME                                                                       \
   FFERRTAG('P', 'A', 'W', 'E') ///< Not yet implemented in FFmpeg, patches welcome
 #define AVERROR_PROTOCOL_NOT_FOUND FFERRTAG(0xF8, 'P', 'R', 'O') ///< Protocol not found
 
 #define AVSEEK_FLAG_BACKWARD 1 ///< seek backward
-#define AVSEEK_FLAG_BYTE 2     ///< seeking based on position in bytes
-#define AVSEEK_FLAG_ANY 4      ///< seek to any frame, even non-keyframes
-#define AVSEEK_FLAG_FRAME 8    ///< seeking based on frame number
+#define AVSEEK_FLAG_BYTE 2 ///< seeking based on position in bytes
+#define AVSEEK_FLAG_ANY 4 ///< seek to any frame, even non-keyframes
+#define AVSEEK_FLAG_FRAME 8 ///< seeking based on frame number
 
 #define AV_NOPTS_VALUE ((int64_t)UINT64_C(0x8000000000000000))
 
@@ -121,6 +126,12 @@ struct AVRational
     const auto a = int64_t(this->num) * int64_t(second.den);
     const auto b = int64_t(this->den) * int64_t(second.num);
     return a != b;
+  }
+  bool operator==(const AVRational &second) const
+  {
+    const auto a = int64_t(this->num) * int64_t(second.den);
+    const auto b = int64_t(this->den) * int64_t(second.num);
+    return a == b;
   }
 
   int num; ///< Numerator
@@ -325,7 +336,7 @@ enum AVFieldOrder
   AV_FIELD_BT, //< Bottom coded first, top displayed first
 };
 
-#define AV_PKT_FLAG_KEY 0x0001     ///< The packet contains a keyframe
+#define AV_PKT_FLAG_KEY 0x0001 ///< The packet contains a keyframe
 #define AV_PKT_FLAG_CORRUPT 0x0002 ///< The packet content is corrupted
 #define AV_PKT_FLAG_DISCARD 0x0004 ///< Not required for output and should be discarded
 

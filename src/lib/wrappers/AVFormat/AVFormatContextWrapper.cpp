@@ -19,14 +19,14 @@ namespace
 // These functions give us version independent access to the structs.
 struct AVFormatContext_56
 {
-  const AVClass         *av_class;
-  struct AVInputFormat  *iformat;
+  const AVClass *        av_class;
+  struct AVInputFormat * iformat;
   struct AVOutputFormat *oformat;
-  void                  *priv_data;
-  AVIOContext           *pb;
+  void *                 priv_data;
+  AVIOContext *          pb;
   int                    ctx_flags;
   unsigned int           nb_streams; //
-  AVStream             **streams;    //
+  AVStream **            streams;    //
   char                   filename[1024];
   int64_t                start_time;
   int64_t                duration; //
@@ -36,32 +36,32 @@ struct AVFormatContext_56
   int                    flags;
   unsigned int           probesize;
   int                    max_analyze_duration;
-  const uint8_t         *key;
+  const uint8_t *        key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram            **programs;
+  AVProgram **           programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter            **chapters;
-  AVDictionary          *metadata;
+  AVChapter **           chapters;
+  AVDictionary *         metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
 
 struct AVFormatContext_57
 {
-  const AVClass         *av_class;
-  struct AVInputFormat  *iformat;
+  const AVClass *        av_class;
+  struct AVInputFormat * iformat;
   struct AVOutputFormat *oformat;
-  void                  *priv_data;
-  AVIOContext           *pb;
+  void *                 priv_data;
+  AVIOContext *          pb;
   int                    ctx_flags;
   unsigned int           nb_streams;
-  AVStream             **streams;
+  AVStream **            streams;
   char                   filename[1024];
   int64_t                start_time;
   int64_t                duration;
@@ -71,34 +71,34 @@ struct AVFormatContext_57
   int                    flags;
   unsigned int           probesize;
   int                    max_analyze_duration;
-  const uint8_t         *key;
+  const uint8_t *        key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram            **programs;
+  AVProgram **           programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter            **chapters;
-  AVDictionary          *metadata;
+  AVChapter **           chapters;
+  AVDictionary *         metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
 
 struct AVFormatContext_58
 {
-  const AVClass         *av_class;
-  struct AVInputFormat  *iformat;
+  const AVClass *        av_class;
+  struct AVInputFormat * iformat;
   struct AVOutputFormat *oformat;
-  void                  *priv_data;
-  AVIOContext           *pb;
+  void *                 priv_data;
+  AVIOContext *          pb;
   int                    ctx_flags;
   unsigned int           nb_streams;
-  AVStream             **streams;
+  AVStream **            streams;
   char                   filename[1024];
-  char                  *url;
+  char *                 url;
   int64_t                start_time;
   int64_t                duration;
   int64_t                bit_rate;
@@ -107,33 +107,33 @@ struct AVFormatContext_58
   int                    flags;
   int64_t                probesize;
   int64_t                max_analyze_duration;
-  const uint8_t         *key;
+  const uint8_t *        key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram            **programs;
+  AVProgram **           programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter            **chapters;
-  AVDictionary          *metadata;
+  AVChapter **           chapters;
+  AVDictionary *         metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
 
 struct AVFormatContext_59
 {
-  const AVClass         *av_class;
-  struct AVInputFormat  *iformat;
+  const AVClass *        av_class;
+  struct AVInputFormat * iformat;
   struct AVOutputFormat *oformat;
-  void                  *priv_data;
-  AVIOContext           *pb;
+  void *                 priv_data;
+  AVIOContext *          pb;
   int                    ctx_flags;
   unsigned int           nb_streams;
-  AVStream             **streams;
-  char                  *url;
+  AVStream **            streams;
+  char *                 url;
   int64_t                start_time;
   int64_t                duration;
   int64_t                bit_rate;
@@ -142,18 +142,18 @@ struct AVFormatContext_59
   int                    flags;
   int64_t                probesize;
   int64_t                max_analyze_duration;
-  const uint8_t         *key;
+  const uint8_t *        key;
   int                    keylen;
   unsigned int           nb_programs;
-  AVProgram            **programs;
+  AVProgram **           programs;
   enum AVCodecID         video_codec_id;
   enum AVCodecID         audio_codec_id;
   enum AVCodecID         subtitle_codec_id;
   unsigned int           max_index_size;
   unsigned int           max_picture_buffer;
   unsigned int           nb_chapters;
-  AVChapter            **chapters;
-  AVDictionary          *metadata;
+  AVChapter **           chapters;
+  AVDictionary *         metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
@@ -262,7 +262,7 @@ avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata() const
 {
   AVDictionary *metadata{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, metadata, metadata);
-  return avutil::AVDictionaryWrapper(metadata);
+  return avutil::AVDictionaryWrapper(metadata, this->librariesInterface);
 }
 
 bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)

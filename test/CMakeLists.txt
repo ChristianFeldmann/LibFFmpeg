@@ -10,3 +10,4 @@ FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(dummyLib)
 add_subdirectory(unit)
+add_subdirectory(ffmpegTest)

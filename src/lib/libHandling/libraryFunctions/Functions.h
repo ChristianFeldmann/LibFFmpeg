@@ -31,7 +31,14 @@ void checkForMissingFunctionAndLog(const std::function<T> &  function,
   }
 }
 
-std::string to_string(const std::vector<std::string> &strings);
+enum class ConcatenationSymbol
+{
+  Comma,
+  Newline
+};
+
+std::string to_string(const std::vector<std::string> &strings,
+                      const ConcatenationSymbol concatenationSymbol = ConcatenationSymbol::Comma);
 
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
                                                   const std::string               libraryName,

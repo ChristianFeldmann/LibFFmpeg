@@ -175,7 +175,7 @@ AVDictionaryWrapper AVFrameWrapper::getMetadata() const
   if (version == 57 || version == 58)
   {
     const auto p = reinterpret_cast<AVFrame_57 *>(this->frame);
-    return AVDictionaryWrapper(p->metadata);
+    return AVDictionaryWrapper(p->metadata, this->librariesInterface);
   }
 
   return {};

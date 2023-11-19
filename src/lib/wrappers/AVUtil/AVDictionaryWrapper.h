@@ -7,22 +7,30 @@
 #pragma once
 
 #include <common/FFMpegLibrariesTypes.h>
+#include <libHandling/FFmpegLibrariesInterface.h>
+
+#include <map>
 
 namespace ffmpeg::avutil
 {
+
+using DictionaryMap = std::map<std::string, std::string>;
 
 class AVDictionaryWrapper
 {
 public:
   AVDictionaryWrapper() = default;
-  AVDictionaryWrapper(AVDictionary *dict) : dict(dict) {}
+  AVDictionaryWrapper(AVDictionary *                            dict,
+                      std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  void          setDictionary(AVDictionary *d) { this->dict = d; }
   explicit      operator bool() const { return this->dict != nullptr; }
   AVDictionary *getDictionary() const { return this->dict; }
 
+  DictionaryMap toMap() const;
+
 private:
-  AVDictionary *dict{};
+  AVDictionary *                            dict{};
+  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
 } // namespace ffmpeg::avutil

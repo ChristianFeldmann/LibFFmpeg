@@ -29,10 +29,10 @@ struct AVCodecDescriptor_56
 {
   enum AVCodecID          id;
   enum AVMediaType        type;
-  const char             *name;
-  const char             *long_name;
+  const char *            name;
+  const char *            long_name;
   int                     props;
-  const char *const      *mime_types;
+  const char *const *     mime_types;
   const struct AVProfile *profiles;
 };
 
@@ -48,6 +48,13 @@ struct AVProfile
 } AVProfile;
 
 } // namespace
+
+bool operator==(const AVCodecDescriptorProperties &lhs, const AVCodecDescriptorProperties &rhs)
+{
+  return (lhs.intraOnly == rhs.intraOnly && lhs.lossy == rhs.lossy &&
+          lhs.lossless == rhs.lossless && lhs.reorder == rhs.reorder &&
+          lhs.bitmapSub == rhs.bitmapSub && lhs.textSub == rhs.textSub);
+}
 
 AVCodecDescriptorWrapper::AVCodecDescriptorWrapper(const AVCodecDescriptor *codecDescriptor)
 {

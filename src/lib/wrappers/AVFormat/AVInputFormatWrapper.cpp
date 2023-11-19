@@ -16,13 +16,13 @@ namespace
 
 struct AVInputFormat_56
 {
-  const char                     *name;
-  const char                     *long_name;
+  const char *                    name;
+  const char *                    long_name;
   int                             flags;
-  const char                     *extensions;
+  const char *                    extensions;
   const struct AVCodecTag *const *codec_tag;
-  const AVClass                  *priv_class;
-  const char                     *mime_type;
+  const AVClass *                 priv_class;
+  const char *                    mime_type;
 
   // There is more but it is not part of the public ABI
 };
@@ -98,6 +98,19 @@ std::string to_string(const AVInputFormatFlags &flags)
   return fullString.substr(0, fullString.size() - 2);
 }
 
+bool operator==(const AVInputFormatFlags &lhs, const AVInputFormatFlags &rhs)
+{
+  return (lhs.noFile == rhs.noFile && lhs.needNumber == rhs.needNumber &&
+          lhs.experimental == rhs.experimental && lhs.showIDs == rhs.showIDs &&
+          lhs.globalHeaders == rhs.globalHeaders && lhs.noTiemstamps == rhs.noTiemstamps &&
+          lhs.genericIndex == rhs.genericIndex && lhs.tsDiscont == rhs.tsDiscont &&
+          lhs.variableFPS == rhs.variableFPS && lhs.noDimensions == rhs.noDimensions &&
+          lhs.noStreams == rhs.noStreams && lhs.noBinSearch == rhs.noBinSearch &&
+          lhs.noGenSearch == rhs.noGenSearch && lhs.noByteSeek == rhs.noByteSeek &&
+          lhs.allowFlush == rhs.allowFlush && lhs.tsNonStrict == rhs.tsNonStrict &&
+          lhs.tsNegative == rhs.tsNegative && lhs.seekToPTS == rhs.seekToPTS);
+}
+
 AVInputFormatWrapper::AVInputFormatWrapper(
     AVInputFormat *inputFormat, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : inputFormat(inputFormat), librariesInterface(librariesInterface)
@@ -106,16 +119,16 @@ AVInputFormatWrapper::AVInputFormatWrapper(
 
 std::string AVInputFormatWrapper::getName() const
 {
-  std::string name;
-  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, name, name);
-  return name;
+  const char *nameCStr{};
+  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, nameCStr, name);
+  return nameCStr == nullptr ? "" : std::string(nameCStr);
 }
 
 std::string AVInputFormatWrapper::getLongName() const
 {
-  std::string longName;
-  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, longName, long_name);
-  return longName;
+  const char *longNameCStr{};
+  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, longNameCStr, long_name);
+  return longNameCStr == nullptr ? "" : std::string(longNameCStr);
 }
 
 AVInputFormatFlags AVInputFormatWrapper::getFlags() const
@@ -147,16 +160,16 @@ AVInputFormatFlags AVInputFormatWrapper::getFlags() const
 
 std::string AVInputFormatWrapper::getExtensions() const
 {
-  std::string extensions;
-  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, extensions, extensions);
-  return extensions;
+  const char *extensionsCstr{};
+  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, extensionsCstr, extensions);
+  return extensionsCstr == nullptr ? "" : std::string(extensionsCstr);
 }
 
 std::string AVInputFormatWrapper::getMimeType() const
 {
-  std::string mimeType;
-  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, mimeType, mime_type);
-  return mimeType;
+  const char *mimeTypeCStr{};
+  CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, mimeTypeCStr, mime_type);
+  return mimeTypeCStr == nullptr ? "" : std::string(mimeTypeCStr);
 }
 
 } // namespace ffmpeg::avformat
