@@ -20,7 +20,9 @@ namespace ffmpeg::avformat
 class AVFormatContextWrapper
 {
 public:
-  AVFormatContextWrapper() = default;
+  AVFormatContextWrapper()                               = delete;
+  AVFormatContextWrapper(const AVFormatContextWrapper &) = delete;
+  AVFormatContextWrapper(AVFormatContextWrapper &&wrapper);
   AVFormatContextWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   ResultAndLog openFile(std::filesystem::path path);
@@ -38,7 +40,7 @@ public:
   bool getNextPacket(avcodec::AVPacketWrapper &packet);
 
 private:
-  AVFormatContext                          *formatContext{nullptr};
+  AVFormatContext *                         formatContext{nullptr};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

@@ -4,6 +4,7 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <Decoder.h>
 #include <Demuxer.h>
 #include <common/Functions.h>
 #include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
@@ -15,11 +16,32 @@
 
 using namespace ffmpeg;
 
+namespace
+{
+
 // Generated with
 // ffmpeg -y -f lavfi -i testsrc -f lavfi -i "sine=frequency=1000:duration=60" -f lavfi -i
 // "sine=frequency=600:duration=60" -filter_complex amerge -t 1 -pix_fmt yuv420p
 // TestFile_h264_aac_1s_320x240.mp4
 constexpr auto TEST_FILE_NAME = "TestFile_h264_aac_1s_320x240.mp4";
+
+std::shared_ptr<FFmpegLibrariesInterface> openLibraries()
+{
+  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  EXPECT_TRUE(loadingResult) << "Error loading libraries";
+  return loadingResult.librariesInterface;
+}
+
+Demuxer openTestFileInDemuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+{
+  Demuxer demuxer(librariesInterface);
+  const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
+  EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
+
+  return demuxer;
+}
+
+} // namespace
 
 TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 {
@@ -37,19 +59,14 @@ TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 
 TEST(FFmpegTest, CheckFormatAndStreamParameters)
 {
-  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
-  EXPECT_TRUE(loadingResult) << "Error loading libraries";
+  auto       demuxer       = openTestFileInDemuxer(openLibraries());
+  const auto formatContext = demuxer.getFormatContext();
 
-  Demuxer demuxer(loadingResult.librariesInterface);
-  const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
-  EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
+  EXPECT_EQ(formatContext->getStartTime(), 0);
+  EXPECT_EQ(formatContext->getDuration(), 1000000);
+  EXPECT_EQ(formatContext->getNumberStreams(), 2);
 
-  auto formatContext = demuxer.getFormatContext();
-  EXPECT_EQ(formatContext.getStartTime(), 0);
-  EXPECT_EQ(formatContext.getDuration(), 1000000);
-  EXPECT_EQ(formatContext.getNumberStreams(), 2);
-
-  const auto metadataMap = formatContext.getMetadata().toMap();
+  const auto metadataMap = formatContext->getMetadata().toMap();
   EXPECT_EQ(metadataMap.size(), 4);
   EXPECT_EQ(metadataMap.count("compatible_brands"), 1);
   EXPECT_EQ(metadataMap.at("compatible_brands"), "isomiso2avc1mp41");
@@ -60,7 +77,7 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(metadataMap.count("minor_version"), 1);
   EXPECT_EQ(metadataMap.at("minor_version"), "512");
 
-  const auto inputFormat = formatContext.getInputFormat();
+  const auto inputFormat = formatContext->getInputFormat();
   EXPECT_EQ(inputFormat.getName(), "mov,mp4,m4a,3gp,3g2,mj2");
   EXPECT_EQ(inputFormat.getLongName(), "QuickTime / MOV");
   EXPECT_EQ(inputFormat.getExtensions(), "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v");
@@ -72,7 +89,7 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   expectedFlags.seekToPTS  = true;
   EXPECT_EQ(flags, expectedFlags);
 
-  const auto &audioStream = formatContext.getStream(0);
+  const auto &audioStream = formatContext->getStream(0);
   EXPECT_EQ(audioStream.getCodecType(), AVMEDIA_TYPE_AUDIO);
   EXPECT_EQ(audioStream.getCodecTypeName(), "Audio");
 
@@ -96,7 +113,7 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioStream.getExtradata().size(), 5);
   EXPECT_EQ(audioStream.getIndex(), 0);
 
-  const auto &videoStream = formatContext.getStream(1);
+  const auto &videoStream = formatContext->getStream(1);
   EXPECT_EQ(videoStream.getCodecType(), AVMEDIA_TYPE_VIDEO);
   EXPECT_EQ(videoStream.getCodecTypeName(), "Video");
 
@@ -138,14 +155,8 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
 
 TEST(FFmpegTest, DemuxPackets)
 {
-  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
-  EXPECT_TRUE(loadingResult) << "Error loading libraries";
-
-  Demuxer demuxer(loadingResult.librariesInterface);
-  const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
-  EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
-
-  auto formatContext = demuxer.getFormatContext();
+  auto       demuxer       = openTestFileInDemuxer(openLibraries());
+  const auto formatContext = demuxer.getFormatContext();
 
   constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
                                                           461,  56,  36,  25, 419, 54,  29, 23, 339,
@@ -178,4 +189,11 @@ TEST(FFmpegTest, DemuxPackets)
 
   EXPECT_EQ(packetCountAudio, 45);
   EXPECT_EQ(packetCountVideo, 25);
+}
+
+TEST(FFmpegTest, DecodingTest)
+{
+  auto librariesInterface = openLibraries();
+  auto demuxer            = openTestFileInDemuxer(librariesInterface);
+  auto decoder            = Decoder(librariesInterface);
 }

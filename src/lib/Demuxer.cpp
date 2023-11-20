@@ -10,8 +10,15 @@ namespace ffmpeg
 {
 
 Demuxer::Demuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : formatContext(avformat::AVFormatContextWrapper(librariesInterface))
 {
   this->librariesInterface = librariesInterface;
+}
+
+Demuxer::Demuxer(Demuxer &&demuxer)
+    : librariesInterface(std::move(demuxer.librariesInterface)),
+      formatContext(std::move(demuxer.formatContext))
+{
 }
 
 ResultAndLog Demuxer::openFile(const std::filesystem::path &path)
@@ -24,8 +31,7 @@ ResultAndLog Demuxer::openFile(const std::filesystem::path &path)
     return {false, log};
   }
 
-  this->formatContext = ffmpeg::avformat::AVFormatContextWrapper(this->librariesInterface);
-  const auto result   = this->formatContext.openFile(path);
+  const auto result = this->formatContext.openFile(path);
 
   return result;
 }

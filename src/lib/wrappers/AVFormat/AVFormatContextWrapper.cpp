@@ -168,6 +168,12 @@ AVFormatContextWrapper::AVFormatContextWrapper(
   this->librariesInterface = librariesInterface;
 }
 
+AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContextWrapper &&wrapper)
+{
+  this->formatContext      = std::move(wrapper.formatContext);
+  this->librariesInterface = std::move(wrapper.librariesInterface);
+}
+
 ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
 {
   Log log;

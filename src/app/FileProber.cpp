@@ -160,8 +160,8 @@ int main(int argc, char const *argv[])
   else
     std::cout << "Successfully opened file " + FILE_NAME + ".\n";
 
-  auto       formatContext = demuxer.getFormatContext();
-  const auto inputFormat   = formatContext.getInputFormat();
+  const auto formatContext = demuxer.getFormatContext();
+  const auto inputFormat   = formatContext->getInputFormat();
 
   std::cout << "\nFile info:\n";
 
@@ -171,10 +171,10 @@ int main(int argc, char const *argv[])
   std::cout << "    Flags             : " << to_string(inputFormat.getFlags()) << "\n";
   std::cout << "    Extensions        : " << inputFormat.getExtensions() << "\n";
   std::cout << "    Mime Type         : " << inputFormat.getMimeType() << "\n";
-  std::cout << "    Start time        : " << formatContext.getStartTime() << "\n";
-  std::cout << "    Duration          : " << formatContext.getDuration() << "\n";
+  std::cout << "    Start time        : " << formatContext->getStartTime() << "\n";
+  std::cout << "    Duration          : " << formatContext->getDuration() << "\n";
 
-  for (const auto &stream : formatContext.getStreams())
+  for (const auto &stream : formatContext->getStreams())
   {
     std::cout << "  Streams " << stream.getIndex() << ":\n";
     std::cout << "    Codec Type        : " << to_string(stream.getCodecType()) << "\n";

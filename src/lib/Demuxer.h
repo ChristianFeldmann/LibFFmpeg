@@ -16,11 +16,14 @@ namespace ffmpeg
 class Demuxer
 {
 public:
+  Demuxer()                = delete;
+  Demuxer(const Demuxer &) = delete;
+  Demuxer(Demuxer &&demuxer);
   Demuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   ResultAndLog openFile(const std::filesystem::path &path);
 
-  avformat::AVFormatContextWrapper getFormatContext() const { return this->formatContext; }
+  avformat::AVFormatContextWrapper *getFormatContext() { return &this->formatContext; }
 
   /* Read the next packet from the bitstream and return it. If there are no more packets,
    * the returned packet will be empty (bool(packet) == false). The overloaded function
