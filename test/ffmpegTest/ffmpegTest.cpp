@@ -9,6 +9,8 @@
 #include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
 #include <libHandling/libraryFunctions/Functions.h>
 
+#include <array>
+
 #include <gtest/gtest.h>
 
 using namespace ffmpeg;
@@ -132,4 +134,48 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(videoStream.getPixelFormat().name, "yuv420p");
   EXPECT_EQ(videoStream.getExtradata().size(), 46);
   EXPECT_EQ(videoStream.getIndex(), 1);
+}
+
+TEST(FFmpegTest, DemuxPackets)
+{
+  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  EXPECT_TRUE(loadingResult) << "Error loading libraries";
+
+  Demuxer demuxer(loadingResult.librariesInterface);
+  const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
+  EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
+
+  auto formatContext = demuxer.getFormatContext();
+
+  constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
+                                                          461,  56,  36,  25, 419, 54,  29, 23, 339,
+                                                          50,   46,  287, 54, 30,  171, 141};
+  constexpr std::array<int, 45> expectedDataSizesAudio = {
+      343, 377, 258, 299, 304, 339, 316, 362, 353, 358, 385, 358, 348, 365, 358,
+      364, 369, 385, 339, 377, 348, 368, 370, 367, 353, 348, 397, 391, 410, 337,
+      372, 370, 372, 342, 431, 378, 370, 333, 355, 366, 355, 388, 412, 349, 7};
+
+  int packetCountAudio = 0;
+  int packetCountVideo = 0;
+  std::cerr << "Packet sizes: ";
+  while (auto packet = demuxer.getNextPacket())
+  {
+    EXPECT_TRUE(packet.getStreamIndex() == 0 || packet.getStreamIndex() == 1);
+    if (packet.getStreamIndex() == 0)
+    {
+      EXPECT_EQ(packet.getDataSize(), expectedDataSizesAudio.at(packetCountAudio));
+      ++packetCountAudio;
+    }
+    else if (packet.getStreamIndex() == 1)
+    {
+      EXPECT_EQ(packet.getDataSize(), expectedDataSizesVideo.at(packetCountVideo));
+      ++packetCountVideo;
+    }
+
+    if (packet.getStreamIndex() == 0)
+      std::cerr << packet.getDataSize() << ", ";
+  }
+
+  EXPECT_EQ(packetCountAudio, 45);
+  EXPECT_EQ(packetCountVideo, 25);
 }
