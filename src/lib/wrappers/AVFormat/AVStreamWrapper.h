@@ -38,12 +38,13 @@ public:
   ByteVector                        getExtradata() const;
   int                               getIndex() const;
 
-  avcodec::AVCodecContextWrapper getCodecContext() const;
-  AVCodecParametersWrapper       getCodecParameters() const;
+  AVCodecParametersWrapper getCodecParameters() const;
 
 private:
-  AVStream                                 *stream{};
+  AVStream *                                stream{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+
+  avcodec::AVCodecContextWrapper getCodecContext() const;
 };
 
 } // namespace ffmpeg::avformat

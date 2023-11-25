@@ -23,8 +23,8 @@ public:
   AVDictionaryWrapper(AVDictionary *                            dict,
                       std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  explicit      operator bool() const { return this->dict != nullptr; }
-  AVDictionary *getDictionary() const { return this->dict; }
+  explicit       operator bool() const { return this->dict != nullptr; }
+  AVDictionary * getDictionary() const { return this->dict; }
 
   DictionaryMap toMap() const;
 

@@ -11,7 +11,93 @@ namespace ffmpeg
 
 Decoder::Decoder(std::shared_ptr<FFmpegLibrariesInterface> libraries)
 {
+  if (!libraries)
+    throw std::runtime_error("Given libraries pointer is null");
   this->libraries = libraries;
+}
+
+Decoder::operator bool() const
+{
+  return this->decoderState != State::Error && this->decoderState != State::EndOfBitstream;
+};
+
+bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
+{
+  if (this->decoderState != State::NotOpened)
+    throw std::runtime_error("Decoder was already opened.");
+
+  const auto codecParameters = stream.getCodecParameters();
+
+  if (auto context =
+          avcodec::AVCodecContextWrapper::openContextForDecoding(codecParameters, this->libraries))
+    this->decoderContext = context.value();
+  else
+  {
+    this->decoderState = State::Error;
+    return false;
+  }
+
+  this->decoderState = State::NeedsMoreData;
+  return true;
+}
+
+Decoder::PushResult Decoder::pushPacket(const avcodec::AVPacketWrapper &packet)
+{
+  if (this->decoderState == State::NotOpened || this->decoderState == State::Error ||
+      this->decoderState == State::EndOfBitstream || this->flushing)
+    return PushResult::Error;
+
+  if (!packet)
+    return PushResult::Error;
+
+  if (this->decoderState == State::RetrieveFrames)
+    return PushResult::NotPushedPullFramesFirst;
+
+  const auto returnCode = this->libraries->avcodec.avcodec_send_packet(
+      this->decoderContext.getCodecContext(), packet.getPacket());
+
+  if (returnCode == 0)
+    return PushResult::Ok;
+  if (returnCode == AVERROR(EAGAIN))
+  {
+    this->decoderState = State::RetrieveFrames;
+    return PushResult::NotPushedPullFramesFirst;
+  }
+
+  this->decoderState = State::Error;
+  return PushResult::Error;
+}
+
+void Decoder::setFlushing()
+{
+  if (this->flushing)
+    throw std::runtime_error("Flushing was already set. Can not be set multiple times.");
+
+  this->flushing     = true;
+  this->decoderState = State::RetrieveFrames;
+}
+
+std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
+{
+  if (this->decoderState != State::RetrieveFrames)
+    return {};
+
+  avutil::AVFrameWrapper frame;
+
+  const auto returnCode = this->libraries->avcodec.avcodec_receive_frame(
+      this->decoderContext.getCodecContext(), frame.getFrame());
+
+  if (returnCode == 0)
+    return frame;
+
+  if (returnCode == AVERROR(EAGAIN))
+    this->decoderState = State::NeedsMoreData;
+  else if (returnCode == AVERROR_EOF)
+    this->decoderState = State::EndOfBitstream;
+  else
+    this->decoderState = State::Error;
+
+  return {};
 }
 
 } // namespace ffmpeg

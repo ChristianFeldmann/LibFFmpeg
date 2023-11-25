@@ -26,12 +26,9 @@ public:
   avformat::AVFormatContextWrapper *getFormatContext() { return &this->formatContext; }
 
   /* Read the next packet from the bitstream and return it. If there are no more packets,
-   * the returned packet will be empty (bool(packet) == false). The overloaded function
-   * allows you to move a packet into the function which will be reused. This saves the allocation
-   * of a new packet.
+   * the returned packet will be empty (bool(packet) == false).
    */
   avcodec::AVPacketWrapper getNextPacket();
-  avcodec::AVPacketWrapper getNextPacket(avcodec::AVPacketWrapper &&packet);
 
 private:
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;

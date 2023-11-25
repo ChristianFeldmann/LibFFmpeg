@@ -196,4 +196,65 @@ TEST(FFmpegTest, DecodingTest)
   auto librariesInterface = openLibraries();
   auto demuxer            = openTestFileInDemuxer(librariesInterface);
   auto decoder            = Decoder(librariesInterface);
+
+  const auto streamToDecode = 1;
+  const auto stream         = demuxer.getFormatContext()->getStream(streamToDecode);
+
+  decoder.openForDecoding(stream);
+
+  auto frameCounter = 0;
+
+  while (const auto packet = demuxer.getNextPacket())
+  {
+    if (packet.getStreamIndex() != streamToDecode)
+      continue;
+
+    EXPECT_EQ(decoder.getDecoderState(), Decoder::State::NeedsMoreData);
+
+    const auto debugS           = packet.getDataSize();
+    const auto packetDTS        = packet.getDTS();
+    const auto stremINdexPacket = packet.getStreamIndex();
+
+    auto result = decoder.pushPacket(packet);
+    ASSERT_NE(result, Decoder::PushResult::Error);
+
+    if (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
+    {
+      while (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
+      {
+        const auto frame = decoder.decodeNextFrame();
+        EXPECT_TRUE(frame);
+
+        EXPECT_EQ(frame->getSize(), Size({320, 240}));
+        // Check some more values
+
+        ++frameCounter;
+      }
+
+      const auto frame = decoder.decodeNextFrame();
+      EXPECT_FALSE(frame);
+    }
+
+    if (result == Decoder::PushResult::NotPushedPullFramesFirst)
+    {
+      result = decoder.pushPacket(packet);
+      EXPECT_EQ(result, Decoder::PushResult::Ok);
+    }
+  }
+
+  decoder.setFlushing();
+
+  EXPECT_EQ(decoder.getDecoderState(), Decoder::State::RetrieveFrames);
+  while (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
+  {
+    const auto frame = decoder.decodeNextFrame();
+    EXPECT_TRUE(frame);
+
+    EXPECT_EQ(frame->getSize(), Size({320, 240}));
+    // Check some more values
+
+    ++frameCounter;
+  }
+
+  EXPECT_EQ(decoder.getDecoderState(), Decoder::State::EndOfBitstream);
 }

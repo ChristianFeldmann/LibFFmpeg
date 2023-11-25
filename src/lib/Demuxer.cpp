@@ -45,11 +45,4 @@ avcodec::AVPacketWrapper Demuxer::getNextPacket()
   return packet;
 }
 
-avcodec::AVPacketWrapper Demuxer::getNextPacket(avcodec::AVPacketWrapper &&packet)
-{
-  if (!this->formatContext.getNextPacket(packet))
-    return {};
-  return std::move(packet);
-}
-
 } // namespace ffmpeg

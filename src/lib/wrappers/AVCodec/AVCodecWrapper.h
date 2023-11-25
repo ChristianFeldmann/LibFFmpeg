@@ -23,7 +23,7 @@ public:
   AVCodecWrapper(AVCodec *codec, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   explicit operator bool() const { return this->codec != nullptr; }
-  AVCodec *getAVCodec() { return this->codec; }
+  AVCodec *getAVCodec() const { return this->codec; }
 
   std::string                                    getName() const;
   std::string                                    getLongName() const;
@@ -38,7 +38,7 @@ public:
   uint8_t                                        getMaxLowres() const;
 
 private:
-  AVCodec                                  *codec{};
+  AVCodec *                                 codec{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 
