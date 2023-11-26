@@ -19,9 +19,9 @@ TEST(SharedLibraryLoader, DefaultValuesTest)
   loader.tryResolveFunction(dummyFunctions, "NotResolvable");
   EXPECT_FALSE(dummyFunctions);
 
-  EXPECT_FALSE(loader.load("libname", "/somePathThatDoesNotExist"));
-  EXPECT_FALSE(loader.load("libname", "/tmp"));
-  EXPECT_FALSE(loader.load("nonexistingLibName", {}));
+  EXPECT_FALSE(loader.load(std::filesystem::path("/nonexsitentPath")));
+  EXPECT_FALSE(loader.load(std::filesystem::path("/tmp/nonexistentlibrary.so")));
+  EXPECT_FALSE(loader.load(std::string("nonexistingLibName")));
 }
 
 TEST(SharedLibraryLoader, OpenDummyLibrary)
@@ -33,7 +33,7 @@ TEST(SharedLibraryLoader, OpenDummyLibrary)
 #if (defined(_WIN32) || defined(_WIN64))
   EXPECT_TRUE(loader.load("dummyLib", std::filesystem::current_path()));
 #else
-  EXPECT_TRUE(loader.load("libdummyLib", std::filesystem::current_path()));
+  EXPECT_TRUE(loader.load(std::filesystem::current_path() / "libdummyLib.so"));
 #endif
 
   std::function<int()> getVersion;

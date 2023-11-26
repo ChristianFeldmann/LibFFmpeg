@@ -36,6 +36,8 @@ public:
   std::vector<LibraryInfo> getLibrariesInfo() const;
   LibraryVersions          getLibrariesVersion() const { return this->libraryVersions; }
 
+  std::string_view getLogList() const { return this->logListFFmpeg; }
+
   functions::AvFormatFunctions   avformat{};
   functions::AvCodecFunctions    avcodec{};
   functions::AvUtilFunctions     avutil{};

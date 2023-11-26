@@ -29,11 +29,12 @@ public:
 
   void unload();
 
-  /* Load the library with the given name. If an absolute path is given, only that path will be
-   * searched for the given library. When just a libraryName is given, it depends on the platform
+  /* Load the library with the given name. If an absolute path is given, only that file will be
+   * opened. When just a libraryName is given, it depends on the platform
    * where the library is searched for.
    */
-  bool load(const std::string &libraryName, const std::filesystem::path &libraryPath);
+  bool load(const std::string &libraryName);
+  bool load(const std::filesystem::path &absolutePathToLibraryFile);
 
   auto getLibraryPath() const { return this->libraryPath; }
 

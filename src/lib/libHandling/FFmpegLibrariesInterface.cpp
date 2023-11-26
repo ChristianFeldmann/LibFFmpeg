@@ -57,7 +57,7 @@ bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
       }
     }
 
-    const auto success = lib.load(possibleLibName, absoluteDirectoryPath);
+    const auto success = lib.load(absolutePathOrLibName);
     log.push_back("Loading library " + absolutePathOrLibName.string() +
                   (success ? " succeded" : " failed"));
     if (success)
@@ -82,6 +82,14 @@ bool checkLibraryVersion(const std::string &libName,
   log.push_back("Version check for library " + libName + " successfull. Version " +
                 to_string(loadedVersion) + ".");
   return true;
+}
+
+std::filesystem::path getAbsolutePath(const std::filesystem::path &path)
+{
+  if (path == "." || path == "./")
+    return std::filesystem::current_path();
+
+  return std::filesystem::absolute(path);
 }
 
 // These FFmpeg versions are supported. The numbers indicate the major version of
@@ -111,7 +119,7 @@ FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::pa
       return {false, log};
     }
 
-    absoluteDirectoryPath = std::filesystem::absolute(path);
+    absoluteDirectoryPath = getAbsolutePath(path);
     log.push_back("Using absolute path " + absoluteDirectoryPath.string());
   }
 
@@ -120,7 +128,8 @@ FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::pa
     this->unloadAllLibraries();
     log.push_back("Unload libraries");
 
-    if (this->tryLoadLibrariesBindFunctionsAndCheckVersions(path, libraryVersions, log))
+    if (this->tryLoadLibrariesBindFunctionsAndCheckVersions(
+            absoluteDirectoryPath, libraryVersions, log))
     {
       log.push_back(
           "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used.");
@@ -133,7 +142,7 @@ FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::pa
   log.push_back(
       "We tried all supported versions in given path. Loading of ffmpeg libraries in path failed.");
 
-  return {true, log};
+  return {false, log};
 }
 
 bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(

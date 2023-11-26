@@ -20,7 +20,7 @@ std::string addLibraryExtensionIfNeeded(const std::string &libraryName)
 {
   // On linux, the library will not be found if we don't add the extension
 #if (defined(__linux__))
-  if (libraryName.size() <= 3 || libraryName.substr(libraryName.size() - 3) != ".so")
+  if (libraryName.find(".so") == std::string::npos)
     return libraryName + ".so";
 #elif (defined(__APPLE__))
   if (libraryName.size() <= 6 || libraryName.substr(libraryName.size() - 6) != ".dylib")
@@ -45,15 +45,11 @@ void SharedLibraryLoader::unload()
   this->libraryPath.clear();
 };
 
-bool SharedLibraryLoader::load(const std::string           &libraryName,
-                               const std::filesystem::path &libraryPath)
+bool SharedLibraryLoader::load(const std::string &libraryName)
 {
   this->unload();
 
   auto filenameToOpen = addLibraryExtensionIfNeeded(libraryName);
-
-  if (!libraryPath.empty())
-    filenameToOpen = (libraryPath / filenameToOpen).string();
 
 #if (defined(_WIN32) || defined(_WIN64))
   this->libHandle = LoadLibraryA(filenameToOpen.c_str());
@@ -65,9 +61,29 @@ bool SharedLibraryLoader::load(const std::string           &libraryName,
     return false;
 
   this->updateActuallyLoadedLibraryPath(libraryName);
-
   return true;
 };
+
+bool SharedLibraryLoader::load(const std::filesystem::path &absolutePathToLibraryFile)
+{
+  this->unload();
+
+  const auto fileStatus = std::filesystem::status(absolutePathToLibraryFile);
+  if (fileStatus.type() == std::filesystem::file_type::not_found)
+    return false;
+
+#if (defined(_WIN32) || defined(_WIN64))
+  this->libHandle = LoadLibraryA(absolutePathToLibraryFile.c_str());
+#else
+  this->libHandle = dlopen(absolutePathToLibraryFile.c_str(), RTLD_NOW | RTLD_LOCAL);
+#endif
+
+  if (this->libHandle == nullptr)
+    return false;
+
+  this->libraryPath = absolutePathToLibraryFile;
+  return true;
+}
 
 void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::string &libraryName)
 {

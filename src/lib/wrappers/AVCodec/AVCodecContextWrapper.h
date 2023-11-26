@@ -18,7 +18,7 @@ class AVCodecContextWrapper
 {
 public:
   AVCodecContextWrapper() = default;
-  AVCodecContextWrapper(AVCodecContext *                          codecContext,
+  AVCodecContextWrapper(AVCodecContext                           *codecContext,
                         std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   static std::optional<AVCodecContextWrapper>
@@ -38,7 +38,7 @@ public:
   ByteVector                        getExtradata() const;
 
 private:
-  AVCodecContext *                          codecContext{};
+  AVCodecContext                           *codecContext{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

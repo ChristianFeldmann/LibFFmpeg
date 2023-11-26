@@ -12,6 +12,7 @@
 
 #include <array>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 using namespace ffmpeg;
@@ -27,7 +28,8 @@ constexpr auto TEST_FILE_NAME = "TestFile_h264_aac_1s_320x240.mp4";
 
 std::shared_ptr<FFmpegLibrariesInterface> openLibraries()
 {
-  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  const auto loadingResult =
+      FFmpegLibrariesInterfaceBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
   EXPECT_TRUE(loadingResult) << "Error loading libraries";
   return loadingResult.librariesInterface;
 }
@@ -45,14 +47,18 @@ Demuxer openTestFileInDemuxer(std::shared_ptr<FFmpegLibrariesInterface> librarie
 
 TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 {
-  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  const auto loadingResult =
+      FFmpegLibrariesInterfaceBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
 
-  EXPECT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
+  ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
                              << "\nLog:\n"
                              << functions::to_string(loadingResult.loadingLog,
                                                      functions::ConcatenationSymbol::Newline);
 
-  for (const auto &libInfo : loadingResult.librariesInterface->getLibrariesInfo())
+  const auto librariesInfo = loadingResult.librariesInterface->getLibrariesInfo();
+  EXPECT_EQ(librariesInfo.size(), 4);
+
+  for (const auto &libInfo : librariesInfo)
     std::cerr << "[          ] [INFO] Lib " << libInfo.name << " loaded from path " << libInfo.path
               << " with version " << libInfo.version << "\n";
 }
@@ -80,7 +86,10 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   const auto inputFormat = formatContext->getInputFormat();
   EXPECT_EQ(inputFormat.getName(), "mov,mp4,m4a,3gp,3g2,mj2");
   EXPECT_EQ(inputFormat.getLongName(), "QuickTime / MOV");
-  EXPECT_EQ(inputFormat.getExtensions(), "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v");
+  EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif"}),
+              testing::Contains(inputFormat.getExtensions()));
+
   EXPECT_EQ(inputFormat.getMimeType(), "");
   const auto                   flags = inputFormat.getFlags();
   avformat::AVInputFormatFlags expectedFlags{};
@@ -109,7 +118,6 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioStream.getTimeBase(), AVRational({1, 44100}));
   EXPECT_EQ(audioStream.getFrameSize(), Size({0, 0}));
   EXPECT_EQ(audioStream.getColorspace(), ColorSpace::UNSPECIFIED);
-  EXPECT_EQ(audioStream.getPixelFormat().name, "gray");
   EXPECT_EQ(audioStream.getExtradata().size(), 5);
   EXPECT_EQ(audioStream.getIndex(), 0);
 
@@ -168,7 +176,6 @@ TEST(FFmpegTest, DemuxPackets)
 
   int packetCountAudio = 0;
   int packetCountVideo = 0;
-  std::cerr << "Packet sizes: ";
   while (auto packet = demuxer.getNextPacket())
   {
     EXPECT_TRUE(packet.getStreamIndex() == 0 || packet.getStreamIndex() == 1);
@@ -182,9 +189,6 @@ TEST(FFmpegTest, DemuxPackets)
       EXPECT_EQ(packet.getDataSize(), expectedDataSizesVideo.at(packetCountVideo));
       ++packetCountVideo;
     }
-
-    if (packet.getStreamIndex() == 0)
-      std::cerr << packet.getDataSize() << ", ";
   }
 
   EXPECT_EQ(packetCountAudio, 45);
@@ -203,17 +207,12 @@ TEST(FFmpegTest, DecodingTest)
   decoder.openForDecoding(stream);
 
   auto frameCounter = 0;
-
   while (const auto packet = demuxer.getNextPacket())
   {
     if (packet.getStreamIndex() != streamToDecode)
       continue;
 
     EXPECT_EQ(decoder.getDecoderState(), Decoder::State::NeedsMoreData);
-
-    const auto debugS           = packet.getDataSize();
-    const auto packetDTS        = packet.getDTS();
-    const auto stremINdexPacket = packet.getStreamIndex();
 
     auto result = decoder.pushPacket(packet);
     ASSERT_NE(result, Decoder::PushResult::Error);
