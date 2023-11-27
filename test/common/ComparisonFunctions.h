@@ -6,23 +6,15 @@
 
 #pragma once
 
+#include <wrappers/AVUtil/AVFrameWrapper.h>
+
 #include <string>
 #include <vector>
 
 namespace ffmpeg
 {
 
-inline bool areEqual(const std::vector<std::string> &lhs, const std::vector<std::string> &rhs)
-{
-  if (lhs.size() != rhs.size())
-    return false;
-
-  for (size_t i = 0; i < lhs.size(); ++i)
-  {
-    if (lhs.at(i) != rhs.at(i))
-      return false;
-  }
-  return true;
-}
+bool        areEqual(const std::vector<std::string> &lhs, const std::vector<std::string> &rhs);
+std::size_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame);
 
 } // namespace ffmpeg

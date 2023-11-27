@@ -91,4 +91,29 @@ AVMediaType toAVMediaType(const MediaType mediaType)
   }
 }
 
+PictureType toPictureType(const AVPictureType pictureType)
+{
+  switch (pictureType)
+  {
+  case AV_PICTURE_TYPE_NONE:
+    return PictureType::Undefined;
+  case AV_PICTURE_TYPE_I:
+    return PictureType::I;
+  case AV_PICTURE_TYPE_P:
+    return PictureType::P;
+  case AV_PICTURE_TYPE_B:
+    return PictureType::B;
+  case AV_PICTURE_TYPE_S:
+    return PictureType::S;
+  case AV_PICTURE_TYPE_SI:
+    return PictureType::SI;
+  case AV_PICTURE_TYPE_SP:
+    return PictureType::SP;
+  case AV_PICTURE_TYPE_BI:
+    return PictureType::BI;
+  default:
+    return PictureType::Undefined;
+  }
+}
+
 } // namespace ffmpeg::internal

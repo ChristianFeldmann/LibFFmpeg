@@ -28,4 +28,26 @@ const EnumMapper<MediaType> mediaTypeMapper({{MediaType::Unknown, "Unknown"},
                                              {MediaType::Subtitle, "Subtitle"},
                                              {MediaType::Attachment, "Attachment"}});
 
+enum class PictureType
+{
+  Undefined,
+  I,
+  P,
+  B,
+  S,
+  SI,
+  SP,
+  BI
+};
+
+const EnumMapper<PictureType>
+    PictureTypeMapper({{PictureType::Undefined, "Undefined"},
+                       {PictureType::I, "I-Frame", "Intra frame"},
+                       {PictureType::P, "P-Frame", "Predictively coded frame"},
+                       {PictureType::B, "B-Frame", "Bi-directionally predicttively coded frame"},
+                       {PictureType::S, "S-Frame", "S(GMC)-VOP MPEG4 frame"},
+                       {PictureType::SI, "SI-Frame", "Switching intra frame"},
+                       {PictureType::SP, "SP-Frame", "Switching predictively coded frame"},
+                       {PictureType::SI, "SI-Frame", "Switching bi-predictively coded frame"}});
+
 } // namespace ffmpeg

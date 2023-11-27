@@ -9,6 +9,7 @@
 #include "CastUtilClasses.h"
 
 #include <common/InternalTypes.h>
+#include <wrappers/Functions.h>
 
 #include <stdexcept>
 
@@ -21,6 +22,7 @@ namespace
 using ffmpeg::internal::AVBufferRef;
 using ffmpeg::internal::AVDictionary;
 using ffmpeg::internal::AVFrameSideData;
+using ffmpeg::internal::AVPictureType;
 
 struct AVFrame_54
 {
@@ -136,13 +138,26 @@ AVFrameWrapper::~AVFrameWrapper()
 
 ByteVector AVFrameWrapper::getData(int component) const
 {
+  if (component < 0 || component > AV_NUM_DATA_POINTERS)
+    return {};
+
   uint8_t *dataPointer;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, dataPointer, data[component]);
 
-  ByteVector data;
-  // Data copying function
+  int linesize;
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, linesize, linesize[component]);
 
-  return data;
+  int height;
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, height, height);
+
+  const auto pixelFormatDescriptor = this->getPixelFormatDescriptor();
+
+  bool isLuma = (component == 0);
+  if (!isLuma)
+    height = (height >> pixelFormatDescriptor.shiftLumaToChroma.heightShift);
+  const auto dataSize = linesize * height;
+
+  return copyDataFromRawArray(dataPointer, dataSize);
 }
 
 int AVFrameWrapper::getLineSize(int component) const
@@ -175,11 +190,11 @@ int64_t AVFrameWrapper::getPTS() const
   return pts;
 }
 
-AVPictureType AVFrameWrapper::getPictType() const
+PictureType AVFrameWrapper::getPictType() const
 {
   AVPictureType pictureType;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, pictureType, pict_type);
-  return pictureType;
+  return ffmpeg::internal::toPictureType(pictureType);
 }
 
 bool AVFrameWrapper::isKeyFrame() const
@@ -200,6 +215,15 @@ AVDictionaryWrapper AVFrameWrapper::getMetadata() const
   }
 
   return {};
+}
+
+AVPixFmtDescriptorWrapper AVFrameWrapper::getPixelFormatDescriptor() const
+{
+  int format;
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, format, format);
+
+  return AVPixFmtDescriptorWrapper(static_cast<ffmpeg::internal::AVPixelFormat>(format),
+                                   this->librariesInterface);
 }
 
 } // namespace ffmpeg::avutil

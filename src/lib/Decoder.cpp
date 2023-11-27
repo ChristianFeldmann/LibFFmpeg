@@ -73,8 +73,11 @@ void Decoder::setFlushing()
   if (this->flushing)
     throw std::runtime_error("Flushing was already set. Can not be set multiple times.");
 
+  const auto returnCode =
+      this->libraries->avcodec.avcodec_send_packet(this->decoderContext.getCodecContext(), nullptr);
+
   this->flushing     = true;
-  this->decoderState = State::RetrieveFrames;
+  this->decoderState = (returnCode == 0) ? State::RetrieveFrames : State::Error;
 }
 
 std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
@@ -93,7 +96,7 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
     return std::move(frame);
 
   if (returnCode == AVERROR(EAGAIN))
-    this->decoderState = State::NeedsMoreData;
+    this->decoderState = this->flushing ? State::EndOfBitstream : State::NeedsMoreData;
   else if (returnCode == AVERROR_EOF)
     this->decoderState = State::EndOfBitstream;
   else

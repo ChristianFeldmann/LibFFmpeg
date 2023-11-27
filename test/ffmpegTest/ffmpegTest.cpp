@@ -12,6 +12,7 @@
 #include <libHandling/libraryFunctions/Functions.h>
 
 #include <array>
+#include <functional>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -20,6 +21,11 @@ using namespace ffmpeg;
 
 namespace
 {
+
+constexpr std::size_t operator"" _sz(unsigned long long n)
+{
+  return n;
+}
 
 // Generated with
 // ffmpeg -y -f lavfi -i testsrc -f lavfi -i "sine=frequency=1000:duration=60" -f lavfi -i
@@ -204,7 +210,54 @@ TEST(FFmpegTest, DecodingTest)
 
   decoder.openForDecoding(stream);
 
-  auto frameCounter = 0;
+  auto totalFrameCounter = 0;
+
+  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]()
+  {
+    int framesDecodedInLoop = 0;
+    while (const auto frame = decoder.decodeNextFrame())
+    {
+      EXPECT_TRUE(frame);
+
+      EXPECT_EQ(frame->getPixelFormatDescriptor().name, "yuv420p");
+
+      EXPECT_EQ(frame->getSize(), Size({320, 240}));
+      EXPECT_EQ(frame->getLineSize(0), 320);
+      EXPECT_EQ(frame->getLineSize(1), 160);
+      EXPECT_EQ(frame->getLineSize(2), 160);
+
+      const auto absoluteFrameIndex = totalFrameCounter + framesDecodedInLoop;
+
+      constexpr std::array<PictureType, 25> expectedPictureTypes = {
+          PictureType::I, PictureType::B, PictureType::B, PictureType::B, PictureType::P,
+          PictureType::B, PictureType::B, PictureType::B, PictureType::P, PictureType::B,
+          PictureType::B, PictureType::B, PictureType::P, PictureType::B, PictureType::B,
+          PictureType::B, PictureType::P, PictureType::B, PictureType::B, PictureType::P,
+          PictureType::B, PictureType::B, PictureType::P, PictureType::P, PictureType::P};
+      EXPECT_EQ(frame->getPictType(), expectedPictureTypes.at(absoluteFrameIndex));
+
+      constexpr std::array<int64_t, 25> expectedPTSValues = {
+          0,    512,  1024, 1536, 2048, 2560, 3072, 3584,  4096,  4608,  5120,  5632, 6144,
+          6656, 7168, 7680, 8192, 8704, 9216, 9728, 10240, 10752, 11264, 11776, 12288};
+      EXPECT_EQ(frame->getPTS(), expectedPTSValues.at(absoluteFrameIndex));
+
+      constexpr std::array<std::size_t, 25> expectedFrameHashes = {
+          10335300354773531646_sz, 9598839882643808065_sz,  6359550546723864943_sz,
+          12130793413653774513_sz, 4628923352507498026_sz,  2858635716901433640_sz,
+          14970121357180727058_sz, 253752768086499004_sz,   5299985766580468689_sz,
+          3099208567159189892_sz,  2133379519116086084_sz,  2180065343928270602_sz,
+          2489343340331754166_sz,  5632195775965507548_sz,  3303234774067442630_sz,
+          12498746788431539799_sz, 14512385209203951550_sz, 18204733184941058056_sz,
+          10739588934149693643_sz, 14470189926003804569_sz, 9627428302243774942_sz,
+          11993285150246447462_sz, 15648684513962840504_sz, 15210735267164473200_sz,
+          1388011374301074777_sz};
+      EXPECT_EQ(calculateFrameDataHash(*frame), expectedFrameHashes.at(absoluteFrameIndex));
+
+      ++framesDecodedInLoop;
+    }
+    return framesDecodedInLoop;
+  };
+
   while (const auto packet = demuxer.getNextPacket())
   {
     if (packet.getStreamIndex() != streamToDecode)
@@ -217,21 +270,10 @@ TEST(FFmpegTest, DecodingTest)
 
     if (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
     {
-      while (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
-      {
-        const auto frame = decoder.decodeNextFrame();
-        EXPECT_TRUE(frame);
-
-        EXPECT_EQ(frame->getSize(), Size({320, 240}));
-        EXPECT_EQ(frame->getLineSize(0), 320);
-        //EXPECT_EQ(frame->getPictType(), );
-        // Check some more values
-
-        ++frameCounter;
-      }
-
-      const auto frame = decoder.decodeNextFrame();
-      EXPECT_FALSE(frame);
+      const auto framesDecoded = pullFramesFromDecoder();
+      EXPECT_GT(framesDecoded, 0);
+      totalFrameCounter += framesDecoded;
+      EXPECT_EQ(decoder.getDecoderState(), Decoder::State::NeedsMoreData);
     }
 
     if (result == Decoder::PushResult::NotPushedPullFramesFirst)
@@ -244,16 +286,10 @@ TEST(FFmpegTest, DecodingTest)
   decoder.setFlushing();
 
   EXPECT_EQ(decoder.getDecoderState(), Decoder::State::RetrieveFrames);
-  while (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
-  {
-    const auto frame = decoder.decodeNextFrame();
-    EXPECT_TRUE(frame);
-
-    EXPECT_EQ(frame->getSize(), Size({320, 240}));
-    // Check some more values
-
-    ++frameCounter;
-  }
-
+  const auto framesDecoded = pullFramesFromDecoder();
+  EXPECT_GT(framesDecoded, 0);
+  totalFrameCounter += framesDecoded;
   EXPECT_EQ(decoder.getDecoderState(), Decoder::State::EndOfBitstream);
+
+  EXPECT_EQ(totalFrameCounter, 25);
 }
