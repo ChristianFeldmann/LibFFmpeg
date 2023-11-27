@@ -16,6 +16,8 @@ namespace ffmpeg::avcodec
 namespace
 {
 
+using AVCodecDescriptor = ffmpeg::internal::AVCodecDescriptor;
+
 constexpr auto AV_CODEC_PROP_INTRA_ONLY = (1 << 0);
 constexpr auto AV_CODEC_PROP_LOSSY      = (1 << 1);
 constexpr auto AV_CODEC_PROP_LOSSLESS   = (1 << 2);
@@ -27,13 +29,13 @@ constexpr auto FF_PROFILE_UNKNOWN = -99;
 
 struct AVCodecDescriptor_56
 {
-  enum AVCodecID          id;
-  enum AVMediaType        type;
-  const char *            name;
-  const char *            long_name;
-  int                     props;
-  const char *const *     mime_types;
-  const struct AVProfile *profiles;
+  ffmpeg::internal::AVCodecID   id;
+  ffmpeg::internal::AVMediaType type;
+  const char                   *name;
+  const char                   *long_name;
+  int                           props;
+  const char *const            *mime_types;
+  const struct AVProfile       *profiles;
 };
 
 typedef AVCodecDescriptor_56 AVCodecDescriptor_57;
@@ -62,7 +64,7 @@ AVCodecDescriptorWrapper::AVCodecDescriptorWrapper(const AVCodecDescriptor *code
   if (p == nullptr)
     return;
 
-  this->mediaType = p->type;
+  this->mediaType = ffmpeg::internal::toMediaType(p->type);
   this->codecName = std::string(p->name);
   this->longName  = std::string(p->long_name);
 

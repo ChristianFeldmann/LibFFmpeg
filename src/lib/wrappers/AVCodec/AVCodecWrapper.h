@@ -20,17 +20,17 @@ class AVCodecWrapper
 {
 public:
   AVCodecWrapper() = default;
-  AVCodecWrapper(AVCodec *codec, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVCodecWrapper(ffmpeg::internal::AVCodec *codec, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   explicit operator bool() const { return this->codec != nullptr; }
-  AVCodec *getAVCodec() const { return this->codec; }
+  ffmpeg::internal::AVCodec *getAVCodec() const { return this->codec; }
 
   std::string                                    getName() const;
   std::string                                    getLongName() const;
-  AVMediaType                                    getMediaType() const;
-  AVCodecID                                      getCodecID() const;
+  MediaType                                      getMediaType() const;
+  ffmpeg::internal::AVCodecID                    getCodecID() const;
   int                                            getCapabilities() const;
-  std::vector<AVRational>                        getSupportedFramerates() const;
+  std::vector<Rational>                          getSupportedFramerates() const;
   std::vector<avutil::AVPixFmtDescriptorWrapper> getPixelFormats() const;
   std::vector<int>                               getSupportedSamplerates() const;
   std::vector<AVSampleFormat>                    getSampleFormats() const;
@@ -38,7 +38,7 @@ public:
   uint8_t                                        getMaxLowres() const;
 
 private:
-  AVCodec *                                 codec{};
+  ffmpeg::internal::AVCodec                                  *codec{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

@@ -22,16 +22,16 @@ class AVStreamWrapper
 {
 public:
   AVStreamWrapper() = default;
-  AVStreamWrapper(AVStream *stream, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVStreamWrapper(ffmpeg::internal::AVStream               *stream,
+                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   explicit operator bool() const { return this->stream != nullptr; };
 
-  AVMediaType                       getCodecType() const;
-  std::string                       getCodecTypeName() const;
-  AVCodecID                         getCodecID() const;
+  MediaType                         getCodecType() const;
+  ffmpeg::internal::AVCodecID       getCodecID() const;
   avcodec::AVCodecDescriptorWrapper getCodecDescriptor() const;
-  AVRational                        getAverageFrameRate() const;
-  AVRational                        getTimeBase() const;
+  Rational                          getAverageFrameRate() const;
+  Rational                          getTimeBase() const;
   Size                              getFrameSize() const;
   ColorSpace                        getColorspace() const;
   avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
@@ -41,7 +41,7 @@ public:
   AVCodecParametersWrapper getCodecParameters() const;
 
 private:
-  AVStream *                                stream{};
+  ffmpeg::internal::AVStream               *stream{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 
   avcodec::AVCodecContextWrapper getCodecContext() const;

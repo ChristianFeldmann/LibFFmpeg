@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <common/Types.h>
+#include <common/Version.h>
 #include <libHandling/SharedLibraryLoader.h>
 #include <libHandling/libraryFunctions/AVFormatFunctions.h>
 #include <libHandling/libraryFunctions/AvCodecFunctions.h>
@@ -38,10 +39,10 @@ public:
 
   std::string_view getLogList() const { return this->logListFFmpeg; }
 
-  functions::AvFormatFunctions   avformat{};
-  functions::AvCodecFunctions    avcodec{};
-  functions::AvUtilFunctions     avutil{};
-  functions::SwResampleFunctions swresample{};
+  internal::functions::AvFormatFunctions   avformat{};
+  internal::functions::AvCodecFunctions    avcodec{};
+  internal::functions::AvUtilFunctions     avutil{};
+  internal::functions::SwResampleFunctions swresample{};
 
 private:
   bool

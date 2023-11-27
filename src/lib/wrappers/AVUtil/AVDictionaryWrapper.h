@@ -20,16 +20,16 @@ class AVDictionaryWrapper
 {
 public:
   AVDictionaryWrapper() = default;
-  AVDictionaryWrapper(AVDictionary *                            dict,
+  AVDictionaryWrapper(ffmpeg::internal::AVDictionary           *dict,
                       std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  explicit       operator bool() const { return this->dict != nullptr; }
-  AVDictionary * getDictionary() const { return this->dict; }
+  explicit                        operator bool() const { return this->dict != nullptr; }
+  ffmpeg::internal::AVDictionary *getDictionary() const { return this->dict; }
 
   DictionaryMap toMap() const;
 
 private:
-  AVDictionary *                            dict{};
+  ffmpeg::internal::AVDictionary           *dict{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

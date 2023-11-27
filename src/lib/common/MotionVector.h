@@ -6,7 +6,9 @@
 
 #pragma once
 
-#include "FFMpegLibrariesTypes.h"
+#include <common/Version.h>
+
+#include <vector>
 
 namespace ffmpeg
 {

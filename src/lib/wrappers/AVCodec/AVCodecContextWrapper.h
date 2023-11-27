@@ -7,6 +7,7 @@
 #pragma once
 
 #include <common/ColorTypes.h>
+#include <common/Enums.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
@@ -18,7 +19,7 @@ class AVCodecContextWrapper
 {
 public:
   AVCodecContextWrapper() = default;
-  AVCodecContextWrapper(AVCodecContext                           *codecContext,
+  AVCodecContextWrapper(ffmpeg::internal::AVCodecContext         *codecContext,
                         std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   static std::optional<AVCodecContextWrapper>
@@ -27,18 +28,18 @@ public:
 
   explicit operator bool() const { return this->codecContext != nullptr; };
 
-  AVCodecContext *getCodecContext() const { return this->codecContext; }
+  ffmpeg::internal::AVCodecContext *getCodecContext() const { return this->codecContext; }
 
-  AVMediaType                       getCodecType() const;
-  AVCodecID                         getCodecID() const;
+  MediaType                         getCodecType() const;
+  ffmpeg::internal::AVCodecID       getCodecID() const;
   avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
   Size                              getSize() const;
   ColorSpace                        getColorspace() const;
-  AVRational                        getTimeBase() const;
+  Rational                          getTimeBase() const;
   ByteVector                        getExtradata() const;
 
 private:
-  AVCodecContext                           *codecContext{};
+  ffmpeg::internal::AVCodecContext         *codecContext{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

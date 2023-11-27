@@ -29,9 +29,9 @@ bool operator==(const AVCodecDescriptorProperties &lhs, const AVCodecDescriptorP
 class AVCodecDescriptorWrapper
 {
 public:
-  AVCodecDescriptorWrapper(const AVCodecDescriptor *codecDescriptor);
+  AVCodecDescriptorWrapper(const ffmpeg::internal::AVCodecDescriptor *codecDescriptor);
 
-  AVMediaType getMediaType() const { return this->mediaType; }
+  MediaType   getMediaType() const { return this->mediaType; }
   std::string getCodecName() const { return this->codecName; }
   std::string getLongName() const { return this->longName; }
 
@@ -40,7 +40,7 @@ public:
   std::vector<std::string>    getProfiles() const { return this->profiles; }
 
 private:
-  AVMediaType                 mediaType{AVMEDIA_TYPE_UNKNOWN};
+  MediaType                   mediaType{MediaType::Unknown};
   std::string                 codecName{};
   std::string                 longName{};
   AVCodecDescriptorProperties properties{};

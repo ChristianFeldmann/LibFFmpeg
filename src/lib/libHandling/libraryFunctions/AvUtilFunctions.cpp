@@ -6,13 +6,16 @@
 
 #include "AvUtilFunctions.h"
 
+#include <common/Functions.h>
+#include <common/Version.h>
+
 #include "Functions.h"
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 Log &                      log)
+                                                                 Log                       &log)
 {
   if (!lib)
   {
@@ -84,4 +87,4 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLib
   return functions;
 }
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

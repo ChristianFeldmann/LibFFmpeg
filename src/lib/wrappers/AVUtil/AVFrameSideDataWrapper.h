@@ -19,7 +19,7 @@ class AVFrameSideDataWrapper
 {
 public:
   AVFrameSideDataWrapper() = default;
-  AVFrameSideDataWrapper(AVFrameSideData                          *sideData,
+  AVFrameSideDataWrapper(ffmpeg::internal::AVFrameSideData        *sideData,
                          std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
   std::vector<MotionVector> getMotionVectors() const;
@@ -27,7 +27,7 @@ public:
   explicit operator bool() const { return sideData != nullptr; }
 
 private:
-  AVFrameSideData                          *sideData{};
+  ffmpeg::internal::AVFrameSideData        *sideData{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

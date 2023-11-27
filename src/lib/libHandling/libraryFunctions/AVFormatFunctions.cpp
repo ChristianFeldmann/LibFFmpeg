@@ -6,13 +6,16 @@
 
 #include "AVFormatFunctions.h"
 
+#include <common/Version.h>
+#include <common/Functions.h>
+
 #include "Functions.h"
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                     Log &                      log)
+                                                                     Log                       &log)
 {
   if (!lib)
   {
@@ -69,4 +72,4 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
   return functions;
 }
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

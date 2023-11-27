@@ -21,56 +21,7 @@
 namespace ffmpeg
 {
 
-struct Size
-{
-  int width{};
-  int height{};
-};
-
-inline bool operator==(const Size &lhs, const Size &rhs)
-{
-  return lhs.width == rhs.width && lhs.height == rhs.height;
-}
-
-struct Ratio
-{
-  int num{};
-  int den{};
-};
-
-using ByteVector   = std::vector<std::byte>;
-using Log          = std::vector<std::string>;
-using ResultAndLog = std::pair<bool, Log>;
-
-// Some structs/enums which actual definition does not interest us.
-struct AVFormatContext;
-struct AVClass;
-struct AVInputFormat;
-struct AVPacket;
-struct AVCodec;
-struct AVCodecContext;
-struct AVCodecParameters;
-struct AVDictionary;
-struct AVFrame;
-struct AVBufferRef;
-struct AVPacketSideData;
-struct AVIOContext;
-struct AVIndexEntry;
-struct AVStreamInternal;
-struct AVFrameSideData;
-struct AVMotionVector;
-struct AVStream;
-struct AVProgram;
-struct AVChapter;
-struct AVPixFmtDescriptor;
-struct AVCodecDescriptor;
-
 #define AV_LOG_WARNING 24
-
-// How to convert the avXXX_getVersion() int to major, minor and micro
-#define AV_VERSION_MAJOR(a) ((a) >> 16)
-#define AV_VERSION_MINOR(a) (((a)&0x00FF00) >> 8)
-#define AV_VERSION_MICRO(a) ((a)&0xFF)
 
 #define AV_NUM_DATA_POINTERS 8
 #define AV_TIME_BASE 1000000
@@ -91,12 +42,12 @@ struct AVCodecDescriptor;
 
 // Some error tags
 #define AVERROR_BSF_NOT_FOUND FFERRTAG(0xF8, 'B', 'S', 'F') ///< Bitstream filter not found
-#define AVERROR_BUG FFERRTAG('B', 'U', 'G', '!') ///< Internal bug, also see AVERROR_BUG2
-#define AVERROR_BUFFER_TOO_SMALL FFERRTAG('B', 'U', 'F', 'S') ///< Buffer too small
+#define AVERROR_BUG FFERRTAG('B', 'U', 'G', '!')            ///< Internal bug, also see AVERROR_BUG2
+#define AVERROR_BUFFER_TOO_SMALL FFERRTAG('B', 'U', 'F', 'S')   ///< Buffer too small
 #define AVERROR_DECODER_NOT_FOUND FFERRTAG(0xF8, 'D', 'E', 'C') ///< Decoder not found
 #define AVERROR_DEMUXER_NOT_FOUND FFERRTAG(0xF8, 'D', 'E', 'M') ///< Demuxer not found
 #define AVERROR_ENCODER_NOT_FOUND FFERRTAG(0xF8, 'E', 'N', 'C') ///< Encoder not found
-#define AVERROR_EOF FFERRTAG('E', 'O', 'F', ' ') ///< End of file
+#define AVERROR_EOF FFERRTAG('E', 'O', 'F', ' ')                ///< End of file
 #define AVERROR_EXIT                                                                               \
   FFERRTAG('E',                                                                                    \
            'X',                                                                                    \
@@ -106,49 +57,24 @@ struct AVCodecDescriptor;
 #define AVERROR_FILTER_NOT_FOUND FFERRTAG(0xF8, 'F', 'I', 'L') ///< Filter not found
 #define AVERROR_INVALIDDATA                                                                        \
   FFERRTAG('I', 'N', 'D', 'A') ///< Invalid data found when processing input
-#define AVERROR_MUXER_NOT_FOUND FFERRTAG(0xF8, 'M', 'U', 'X') ///< Muxer not found
+#define AVERROR_MUXER_NOT_FOUND FFERRTAG(0xF8, 'M', 'U', 'X')  ///< Muxer not found
 #define AVERROR_OPTION_NOT_FOUND FFERRTAG(0xF8, 'O', 'P', 'T') ///< Option not found
 #define AVERROR_PATCHWELCOME                                                                       \
   FFERRTAG('P', 'A', 'W', 'E') ///< Not yet implemented in FFmpeg, patches welcome
 #define AVERROR_PROTOCOL_NOT_FOUND FFERRTAG(0xF8, 'P', 'R', 'O') ///< Protocol not found
 
 #define AVSEEK_FLAG_BACKWARD 1 ///< seek backward
-#define AVSEEK_FLAG_BYTE 2 ///< seeking based on position in bytes
-#define AVSEEK_FLAG_ANY 4 ///< seek to any frame, even non-keyframes
-#define AVSEEK_FLAG_FRAME 8 ///< seeking based on frame number
+#define AVSEEK_FLAG_BYTE 2     ///< seeking based on position in bytes
+#define AVSEEK_FLAG_ANY 4      ///< seek to any frame, even non-keyframes
+#define AVSEEK_FLAG_FRAME 8    ///< seeking based on frame number
 
 #define AV_NOPTS_VALUE ((int64_t)UINT64_C(0x8000000000000000))
-
-struct AVRational
-{
-  bool operator!=(const AVRational &second) const
-  {
-    const auto a = int64_t(this->num) * int64_t(second.den);
-    const auto b = int64_t(this->den) * int64_t(second.num);
-    return a != b;
-  }
-  bool operator==(const AVRational &second) const
-  {
-    const auto a = int64_t(this->num) * int64_t(second.den);
-    const auto b = int64_t(this->den) * int64_t(second.num);
-    return a == b;
-  }
-
-  int num; ///< Numerator
-  int den; ///< Denominator
-};
 
 // The exact value of the fractional number is: 'val + num / den'. num is assumed to be 0 <= num <
 // den.
 struct AVFrac
 {
   int64_t val, num, den;
-};
-
-struct AVDictionaryEntry
-{
-  char *key;
-  char *value;
 };
 
 enum AVPictureType
@@ -161,60 +87,6 @@ enum AVPictureType
   AV_PICTURE_TYPE_SI,       ///< Switching Intra
   AV_PICTURE_TYPE_SP,       ///< Switching Predicted
   AV_PICTURE_TYPE_BI,       ///< BI type
-};
-
-enum AVMediaType
-{
-  AVMEDIA_TYPE_UNKNOWN = -1, ///< Usually treated as AVMEDIA_TYPE_DATA
-  AVMEDIA_TYPE_VIDEO,
-  AVMEDIA_TYPE_AUDIO,
-  AVMEDIA_TYPE_DATA, ///< Opaque data information usually continuous
-  AVMEDIA_TYPE_SUBTITLE,
-  AVMEDIA_TYPE_ATTACHMENT, ///< Opaque data information usually sparse
-  AVMEDIA_TYPE_NB
-};
-
-std::string to_string(AVMediaType mediaType);
-
-enum AVFrameSideDataType
-{
-  AV_FRAME_DATA_PANSCAN,
-  AV_FRAME_DATA_A53_CC,
-  AV_FRAME_DATA_STEREO3D,
-  AV_FRAME_DATA_MATRIXENCODING,
-  AV_FRAME_DATA_DOWNMIX_INFO,
-  AV_FRAME_DATA_REPLAYGAIN,
-  AV_FRAME_DATA_DISPLAYMATRIX,
-  AV_FRAME_DATA_AFD,
-  AV_FRAME_DATA_MOTION_VECTORS,
-  AV_FRAME_DATA_SKIP_SAMPLES,
-  AV_FRAME_DATA_AUDIO_SERVICE_TYPE,
-  // The ones below are new in avutil 55
-  AV_FRAME_DATA_MASTERING_DISPLAY_METADATA,
-  AV_FRAME_DATA_GOP_TIMECODE,
-  // These are new in FFmpeg 5
-  AV_FRAME_DATA_SPHERICAL,
-  AV_FRAME_DATA_CONTENT_LIGHT_LEVEL,
-  AV_FRAME_DATA_ICC_PROFILE,
-  AV_FRAME_DATA_S12M_TIMECODE,
-  AV_FRAME_DATA_DYNAMIC_HDR_PLUS,
-  AV_FRAME_DATA_REGIONS_OF_INTEREST,
-  AV_FRAME_DATA_VIDEO_ENC_PARAMS,
-  AV_FRAME_DATA_SEI_UNREGISTERED,
-  AV_FRAME_DATA_FILM_GRAIN_PARAMS,
-  AV_FRAME_DATA_DETECTION_BBOXES,
-  AV_FRAME_DATA_DOVI_RPU_BUFFER,
-  AV_FRAME_DATA_DOVI_METADATA
-};
-
-/* The order / numbering of the values in this enum changes depending on the libavcodec version
- * number or even how the library was compiled. The id for AV_CODEC_ID_NONE is always 0. Update In
- * ffmpeg 5, this was changed so that the AVCodecID list is fixed per version and does not change
- * depending on compilation.
- */
-enum AVCodecID
-{
-  AV_CODEC_ID_NONE = 0
 };
 
 enum AVColorPrimaries
@@ -336,7 +208,7 @@ enum AVFieldOrder
   AV_FIELD_BT, //< Bottom coded first, top displayed first
 };
 
-#define AV_PKT_FLAG_KEY 0x0001 ///< The packet contains a keyframe
+#define AV_PKT_FLAG_KEY 0x0001     ///< The packet contains a keyframe
 #define AV_PKT_FLAG_CORRUPT 0x0002 ///< The packet content is corrupted
 #define AV_PKT_FLAG_DISCARD 0x0004 ///< Not required for output and should be discarded
 
@@ -357,42 +229,5 @@ enum AVSampleFormat
   AV_SAMPLE_FMT_S64,  ///< signed 64 bits
   AV_SAMPLE_FMT_S64P, ///< signed 64 bits, planar
 };
-
-struct Version
-{
-  Version() = default;
-  Version(const int major) { this->major = major; }
-
-  constexpr bool operator!=(const Version &other) const
-  {
-    if (this->major != other.major)
-      return true;
-    if (this->minor && other.minor && this->minor.value() != other.minor.value())
-      return true;
-    if (this->micro && other.micro && this->micro.value() != other.micro.value())
-      return true;
-
-    return false;
-  }
-
-  static Version fromFFmpegVersion(const unsigned ffmpegVersion);
-
-  int                major{};
-  std::optional<int> minor{};
-  std::optional<int> micro{};
-};
-
-std::string   to_string(const Version &version);
-std::ostream &operator<<(std::ostream &stream, const Version &version);
-
-struct LibraryVersions
-{
-  Version avformat{};
-  Version avcodec{};
-  Version avutil{};
-  Version swresample{};
-};
-
-std::string timestampToString(int64_t timestamp, AVRational timebase);
 
 } // namespace ffmpeg

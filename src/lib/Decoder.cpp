@@ -82,13 +82,15 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
   if (this->decoderState != State::RetrieveFrames)
     return {};
 
-  avutil::AVFrameWrapper frame;
+  avutil::AVFrameWrapper frame(this->libraries);
 
   const auto returnCode = this->libraries->avcodec.avcodec_receive_frame(
       this->decoderContext.getCodecContext(), frame.getFrame());
 
+  const auto frameSize = frame.getSize();
+
   if (returnCode == 0)
-    return frame;
+    return std::move(frame);
 
   if (returnCode == AVERROR(EAGAIN))
     this->decoderState = State::NeedsMoreData;

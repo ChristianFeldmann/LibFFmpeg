@@ -6,30 +6,14 @@
 
 #include "Functions.h"
 
-namespace ffmpeg::functions
-{
+#include <common/Functions.h>
 
-std::string to_string(const std::vector<std::string> &strings,
-                      const ConcatenationSymbol       concatenationSymbol)
+namespace ffmpeg::internal::functions
 {
-  std::ostringstream stream;
-  for (auto it = strings.begin(); it != strings.end(); it++)
-  {
-    if (it != strings.begin())
-    {
-      if (concatenationSymbol == ConcatenationSymbol::Comma)
-        stream << ", ";
-      else if (concatenationSymbol == ConcatenationSymbol::Newline)
-        stream << "\n";
-    }
-    stream << (*it);
-  }
-  return stream.str();
-}
 
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
                                                   const std::string               libraryName,
-                                                  Log &                           log)
+                                                  Log                            &log)
 {
   if (missingFunctions.empty())
     return {};
@@ -40,4 +24,4 @@ std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string>
   return errorMessage;
 }
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

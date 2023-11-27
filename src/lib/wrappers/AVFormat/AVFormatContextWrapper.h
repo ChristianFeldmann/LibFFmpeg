@@ -40,7 +40,7 @@ public:
   bool getNextPacket(avcodec::AVPacketWrapper &packet);
 
 private:
-  AVFormatContext *                         formatContext{nullptr};
+  ffmpeg::internal::AVFormatContext        *formatContext{nullptr};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

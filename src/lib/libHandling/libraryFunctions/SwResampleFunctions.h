@@ -6,10 +6,10 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <common/Types.h>
 #include <libHandling/SharedLibraryLoader.h>
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 struct SwResampleFunctions
@@ -20,4 +20,4 @@ struct SwResampleFunctions
 std::optional<SwResampleFunctions>
 tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log);
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

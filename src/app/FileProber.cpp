@@ -50,9 +50,9 @@ std::string to_string(const std::vector<std::string> &stringVec)
   return outString.substr(0, outString.length() - 2);
 }
 
-std::string to_string(const AVRational rational)
+std::string to_string(const Rational rational)
 {
-  return std::to_string(rational.num) + "/" + std::to_string(rational.den);
+  return std::to_string(rational.numerator) + "/" + std::to_string(rational.denominator);
 }
 
 std::string to_string(const Size size)
@@ -177,12 +177,13 @@ int main(int argc, char const *argv[])
   for (const auto &stream : formatContext->getStreams())
   {
     std::cout << "  Streams " << stream.getIndex() << ":\n";
-    std::cout << "    Codec Type        : " << to_string(stream.getCodecType()) << "\n";
-    std::cout << "    Codec Type Name   : " << stream.getCodecTypeName() << "\n";
+    std::cout << "    Codec Type        : " << mediaTypeMapper.getName(stream.getCodecType())
+              << "\n";
 
     std::cout << "    Codec Description\n";
     const auto codecDescriptor = stream.getCodecDescriptor();
-    std::cout << "      Media Type      : " << to_string(codecDescriptor.getMediaType()) << "\n";
+    std::cout << "      Media Type      : "
+              << mediaTypeMapper.getName(codecDescriptor.getMediaType()) << "\n";
     std::cout << "      Name            : " << codecDescriptor.getCodecName() << "\n";
     std::cout << "      Long Name       : " << codecDescriptor.getLongName() << "\n";
     std::cout << "      Properties      : " << to_string(codecDescriptor.getProperties()) << "\n";

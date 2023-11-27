@@ -6,9 +6,11 @@
 
 #include "SwResampleFunctions.h"
 
+#include <common/Functions.h>
+
 #include "Functions.h"
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 std::optional<SwResampleFunctions>
@@ -40,4 +42,4 @@ tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log)
   return functions;
 }
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

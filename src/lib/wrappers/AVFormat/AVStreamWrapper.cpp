@@ -16,6 +16,18 @@ namespace ffmpeg::avformat
 namespace
 {
 
+using ffmpeg::internal::AVClass;
+using ffmpeg::internal::AVCodecContext;
+using ffmpeg::internal::AVCodecID;
+using ffmpeg::internal::AVCodecParameters;
+using ffmpeg::internal::AVDictionary;
+using ffmpeg::internal::AVPacketSideData;
+using ffmpeg::internal::AVRational;
+using ffmpeg::internal::AVStream;
+
+class AVIndexEntry;
+class AVStreamInternal;
+
 // AVStream is part of AVFormat
 struct AVStream_56
 {
@@ -214,7 +226,7 @@ AVStreamWrapper::AVStreamWrapper(AVStream                                 *strea
 {
 }
 
-AVMediaType AVStreamWrapper::getCodecType() const
+MediaType AVStreamWrapper::getCodecType() const
 {
   if (const auto codecParameters = this->getCodecParameters())
     return codecParameters.getCodecType();
@@ -222,33 +234,7 @@ AVMediaType AVStreamWrapper::getCodecType() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext.getCodecType();
 
-  return AVMEDIA_TYPE_UNKNOWN;
-}
-
-std::string AVStreamWrapper::getCodecTypeName() const
-{
-  const auto codecParameters = this->getCodecParameters();
-  if (!codecParameters)
-    return {};
-
-  switch (codecParameters.getCodecType())
-  {
-  case AVMEDIA_TYPE_UNKNOWN:
-    return "Unknown";
-  case AVMEDIA_TYPE_VIDEO:
-    return "Video";
-  case AVMEDIA_TYPE_AUDIO:
-    return "Audio";
-  case AVMEDIA_TYPE_DATA:
-    return "Data";
-  case AVMEDIA_TYPE_SUBTITLE:
-    return "Subtitle";
-  case AVMEDIA_TYPE_ATTACHMENT:
-    return "Attachment";
-
-  default:
-    return {};
-  }
+  return MediaType::Unknown;
 }
 
 AVCodecID AVStreamWrapper::getCodecID() const
@@ -259,7 +245,7 @@ AVCodecID AVStreamWrapper::getCodecID() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext.getCodecID();
 
-  return AV_CODEC_ID_NONE;
+  return ffmpeg::internal::AV_CODEC_ID_NONE;
 }
 
 avcodec::AVCodecDescriptorWrapper AVStreamWrapper::getCodecDescriptor() const
@@ -270,20 +256,20 @@ avcodec::AVCodecDescriptorWrapper AVStreamWrapper::getCodecDescriptor() const
   return avcodec::AVCodecDescriptorWrapper(descriptor);
 }
 
-AVRational AVStreamWrapper::getAverageFrameRate() const
+Rational AVStreamWrapper::getAverageFrameRate() const
 {
   AVRational frameRate;
   CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, frameRate, avg_frame_rate);
-  return frameRate;
+  return {frameRate.num, frameRate.den};
 }
 
-AVRational AVStreamWrapper::getTimeBase() const
+Rational AVStreamWrapper::getTimeBase() const
 {
   AVRational timebase;
   CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, timebase, time_base);
 
   if (timebase.den != 0 && timebase.num != 0)
-    return timebase;
+    return {timebase.num, timebase.den};
 
   // The stream time_base seems not to be set. Try the time_base in the codec.
   if (const auto codecContext = this->getCodecContext())

@@ -6,21 +6,21 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <common/Types.h>
 
 #include <functional>
 #include <sstream>
 #include <string>
 #include <vector>
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 template <typename T>
-void checkForMissingFunctionAndLog(const std::function<T> &  function,
-                                   const std::string &       name,
+void checkForMissingFunctionAndLog(const std::function<T>   &function,
+                                   const std::string        &name,
                                    std::vector<std::string> &missingFunctions,
-                                   Log &                     log)
+                                   Log                      &log)
 {
   if (function)
     log.push_back("Successfully resolved function " + name);
@@ -31,17 +31,8 @@ void checkForMissingFunctionAndLog(const std::function<T> &  function,
   }
 }
 
-enum class ConcatenationSymbol
-{
-  Comma,
-  Newline
-};
-
-std::string to_string(const std::vector<std::string> &strings,
-                      const ConcatenationSymbol concatenationSymbol = ConcatenationSymbol::Comma);
-
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
                                                   const std::string               libraryName,
-                                                  Log &                           log);
+                                                  Log                            &log);
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

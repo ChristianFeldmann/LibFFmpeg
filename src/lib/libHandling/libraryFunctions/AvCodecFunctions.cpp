@@ -7,12 +7,13 @@
 #include "AvCodecFunctions.h"
 
 #include "Functions.h"
+#include <common/Functions.h>
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                   Log &                      log)
+                                                                   Log                       &log)
 {
   if (!lib)
   {
@@ -99,4 +100,4 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   return functions;
 }
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

@@ -74,13 +74,13 @@ bool checkLibraryVersion(const std::string &libName,
   const auto loadedVersion = Version::fromFFmpegVersion(ffmpegVersionOfLoadedLibrary);
   if (loadedVersion != expectedVersion)
   {
-    log.push_back("Version of loaded " + libName + " library (" + to_string(loadedVersion) +
-                  ") is not the one we are trying to load (" + to_string(expectedVersion) + ")");
+    log.push_back("Version of loaded " + libName + " library (" + loadedVersion.toString() +
+                  ") is not the one we are trying to load (" + expectedVersion.toString() + ")");
     return false;
   }
 
   log.push_back("Version check for library " + libName + " successfull. Version " +
-                to_string(loadedVersion) + ".");
+                loadedVersion.toString() + ".");
   return true;
 }
 
@@ -156,7 +156,8 @@ bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
           this->libAvutil, absoluteDirectoryPath, "avutil", libraryVersions.avutil, log))
     return false;
 
-  if (const auto functions = functions::tryBindAVUtilFunctionsFromLibrary(this->libAvutil, log))
+  if (const auto functions =
+          internal::functions::tryBindAVUtilFunctionsFromLibrary(this->libAvutil, log))
     this->avutil = functions.value();
   else
     return false;
@@ -174,7 +175,7 @@ bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
     return false;
 
   if (const auto functions =
-          functions::tryBindSwResampleFunctionsFromLibrary(this->libSwresample, log))
+          internal::functions::tryBindSwResampleFunctionsFromLibrary(this->libSwresample, log))
     this->swresample = functions.value();
   else
     return false;
@@ -189,7 +190,8 @@ bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
           this->libAvcodec, absoluteDirectoryPath, "avcodec", libraryVersions.avcodec, log))
     return false;
 
-  if (const auto functions = functions::tryBindAVCodecFunctionsFromLibrary(this->libAvcodec, log))
+  if (const auto functions =
+          internal::functions::tryBindAVCodecFunctionsFromLibrary(this->libAvcodec, log))
     this->avcodec = functions.value();
   else
     return false;
@@ -204,7 +206,8 @@ bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
           this->libAvformat, absoluteDirectoryPath, "avformat", libraryVersions.avformat, log))
     return false;
 
-  if (const auto functions = functions::tryBindAVFormatFunctionsFromLibrary(this->libAvformat, log))
+  if (const auto functions =
+          internal::functions::tryBindAVFormatFunctionsFromLibrary(this->libAvformat, log))
     this->avformat = functions.value();
   else
     return false;
@@ -249,7 +252,7 @@ std::vector<LibraryInfo> FFmpegLibrariesInterface::getLibrariesInfo() const
                                           const unsigned               ffmpegVersion)
   {
     const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
-    const auto version        = to_string(libraryVersion);
+    const auto version        = libraryVersion.toString();
 
     infoPerLIbrary.push_back(LibraryInfo({name, path, version}));
   };

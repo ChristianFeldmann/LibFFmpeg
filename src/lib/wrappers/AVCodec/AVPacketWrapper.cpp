@@ -15,7 +15,9 @@
 namespace ffmpeg::avcodec
 {
 
-AVPacketWrapper::AVPacketWrapper(AVPacket *                                packet,
+using AVPacket = ffmpeg::internal::AVPacket;
+
+AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packet,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : packet(packet), librariesInterface(librariesInterface)
 {
@@ -26,7 +28,7 @@ AVPacketWrapper::AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> libra
 {
 }
 
-AVPacketWrapper::AVPacketWrapper(const ByteVector &                        data,
+AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : librariesInterface(librariesInterface)
 {

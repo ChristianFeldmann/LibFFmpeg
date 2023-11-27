@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
+#include <common/Types.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 #include <wrappers/AVUtil/AVDictionaryWrapper.h>
 
@@ -18,10 +18,13 @@ namespace ffmpeg::avutil
 class AVFrameWrapper
 {
 public:
-  AVFrameWrapper() = default;
-  AVFrameWrapper(AVFrame *frame, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVFrameWrapper()                       = delete;
+  AVFrameWrapper(const AVFrameWrapper &) = delete;
+  AVFrameWrapper(AVFrameWrapper &&frame);
+  AVFrameWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  ~AVFrameWrapper();
 
-  AVFrame *getFrame() const { return this->frame; }
+  ffmpeg::internal::AVFrame *getFrame() const { return this->frame; }
 
   ByteVector          getData(int component) const;
   int                 getLineSize(int component) const;
@@ -34,7 +37,7 @@ public:
   explicit operator bool() const { return this->frame != nullptr; }
 
 private:
-  AVFrame                                  *frame{};
+  ffmpeg::internal::AVFrame                *frame{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

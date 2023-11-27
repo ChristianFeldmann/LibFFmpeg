@@ -16,6 +16,11 @@ namespace ffmpeg::avutil
 namespace
 {
 
+using ffmpeg::internal::AVBufferRef;
+using ffmpeg::internal::AVDictionary;
+using ffmpeg::internal::AVFrameSideData;
+using ffmpeg::internal::AVFrameSideDataType;
+
 // Part of AVUtil
 struct AVFrameSideData_54
 {
@@ -56,7 +61,7 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   AVFrameSideDataType type;
   CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, type, type);
 
-  if (type != AV_FRAME_DATA_MOTION_VECTORS)
+  if (type != ffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS)
     return {};
 
   uint8_t *data;

@@ -18,44 +18,48 @@ namespace ffmpeg::avutil
 namespace
 {
 
+using ffmpeg::internal::AVBufferRef;
+using ffmpeg::internal::AVDictionary;
+using ffmpeg::internal::AVFrameSideData;
+
 struct AVFrame_54
 {
-  uint8_t *     data[AV_NUM_DATA_POINTERS];
-  int           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t **    extended_data;
-  int           width, height;
-  int           nb_samples;
-  int           format;
-  int           key_frame;
-  AVPictureType pict_type;
-  uint8_t *     base[AV_NUM_DATA_POINTERS];
-  AVRational    sample_aspect_ratio;
-  int64_t       pts;
-  int64_t       pkt_pts;
-  int64_t       pkt_dts;
-  int           coded_picture_number;
-  int           display_picture_number;
-  int           quality;
+  uint8_t                     *data[AV_NUM_DATA_POINTERS];
+  int                          linesize[AV_NUM_DATA_POINTERS];
+  uint8_t                    **extended_data;
+  int                          width, height;
+  int                          nb_samples;
+  int                          format;
+  int                          key_frame;
+  AVPictureType                pict_type;
+  uint8_t                     *base[AV_NUM_DATA_POINTERS];
+  ffmpeg::internal::AVRational sample_aspect_ratio;
+  int64_t                      pts;
+  int64_t                      pkt_pts;
+  int64_t                      pkt_dts;
+  int                          coded_picture_number;
+  int                          display_picture_number;
+  int                          quality;
   // Actually, there is more here, but the variables above are the only we need.
 };
 
 struct AVFrame_55
 {
-  uint8_t *     data[AV_NUM_DATA_POINTERS];
-  int           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t **    extended_data;
-  int           width, height;
-  int           nb_samples;
-  int           format;
-  int           key_frame;
-  AVPictureType pict_type;
-  AVRational    sample_aspect_ratio;
-  int64_t       pts;
-  int64_t       pkt_pts;
-  int64_t       pkt_dts;
-  int           coded_picture_number;
-  int           display_picture_number;
-  int           quality;
+  uint8_t                     *data[AV_NUM_DATA_POINTERS];
+  int                          linesize[AV_NUM_DATA_POINTERS];
+  uint8_t                    **extended_data;
+  int                          width, height;
+  int                          nb_samples;
+  int                          format;
+  int                          key_frame;
+  AVPictureType                pict_type;
+  ffmpeg::internal::AVRational sample_aspect_ratio;
+  int64_t                      pts;
+  int64_t                      pkt_pts;
+  int64_t                      pkt_dts;
+  int                          coded_picture_number;
+  int                          display_picture_number;
+  int                          quality;
   // Actually, there is more here, but the variables above are the only we need.
 };
 
@@ -63,22 +67,22 @@ typedef AVFrame_55 AVFrame_56;
 
 struct AVFrame_57
 {
-  uint8_t *                          data[AV_NUM_DATA_POINTERS];
+  uint8_t                           *data[AV_NUM_DATA_POINTERS];
   int                                linesize[AV_NUM_DATA_POINTERS];
-  uint8_t **                         extended_data;
+  uint8_t                          **extended_data;
   int                                width, height;
   int                                nb_samples;
   int                                format;
   int                                key_frame;
   AVPictureType                      pict_type;
-  AVRational                         sample_aspect_ratio;
+  ffmpeg::internal::AVRational       sample_aspect_ratio;
   int64_t                            pts;
   int64_t                            pkt_dts;
-  AVRational                         time_base;
+  ffmpeg::internal::AVRational       time_base;
   int                                coded_picture_number;
   int                                display_picture_number;
   int                                quality;
-  void *                             opaque;
+  void                              *opaque;
   int                                repeat_pict;
   int                                interlaced_frame;
   int                                top_field_first;
@@ -86,10 +90,10 @@ struct AVFrame_57
   int64_t                            reordered_opaque;
   int                                sample_rate;
   uint64_t                           channel_layout;
-  AVBufferRef *                      buf[AV_NUM_DATA_POINTERS];
-  AVBufferRef **                     extended_buf;
+  AVBufferRef                       *buf[AV_NUM_DATA_POINTERS];
+  AVBufferRef                      **extended_buf;
   int                                nb_extended_buf;
-  AVFrameSideData **                 side_data;
+  AVFrameSideData                  **side_data;
   int                                nb_side_data;
   int                                flags;
   enum AVColorRange                  color_range;
@@ -100,7 +104,7 @@ struct AVFrame_57
   int64_t                            best_effort_timestamp;
   int64_t                            pkt_pos;
   int64_t                            pkt_duration;
-  AVDictionary *                     metadata;
+  AVDictionary                      *metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
@@ -109,10 +113,25 @@ typedef AVFrame_57 AVFrame_58;
 
 } // namespace
 
-AVFrameWrapper::AVFrameWrapper(AVFrame *                                 frame,
-                               std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : frame(frame), librariesInterface(librariesInterface)
+AVFrameWrapper::AVFrameWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    : librariesInterface(librariesInterface)
 {
+  this->frame = this->librariesInterface->avutil.av_frame_alloc();
+  if (this->frame == nullptr)
+    throw std::runtime_error("Error allocating AVFrame");
+}
+
+AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&frame)
+{
+  this->frame              = frame.frame;
+  frame.frame              = nullptr;
+  this->librariesInterface = std::move(frame.librariesInterface);
+}
+
+AVFrameWrapper::~AVFrameWrapper()
+{
+  if (this->frame != nullptr)
+    this->librariesInterface->avutil.av_frame_free(&this->frame);
 }
 
 ByteVector AVFrameWrapper::getData(int component) const
@@ -138,6 +157,8 @@ int AVFrameWrapper::getLineSize(int component) const
 
 Size AVFrameWrapper::getSize() const
 {
+  const auto p = reinterpret_cast<AVFrame_58 *>(this->frame);
+
   int width;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, width, width);
 

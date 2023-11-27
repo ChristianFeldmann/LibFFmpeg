@@ -19,6 +19,11 @@ namespace ffmpeg::avformat
 namespace
 {
 
+using ffmpeg::internal::AVCodecID;
+using ffmpeg::internal::AVCodecParameters;
+using ffmpeg::internal::AVMediaType;
+using ffmpeg::internal::AVRational;
+
 #define RETURN_IF_VERSION_TOO_OLD(returnValue)                                                     \
   {                                                                                                \
     if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56)                      \
@@ -33,7 +38,7 @@ struct AVCodecParameters_56
 {
   AVMediaType            codec_type;
   AVCodecID              codec_id;
-  uint8_t *              extradata;
+  uint8_t               *extradata;
   int                    extradata_size;
   int                    format;
   int                    profile;
@@ -50,7 +55,7 @@ struct AVCodecParameters_57
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
   uint32_t                      codec_tag;
-  uint8_t *                     extradata;
+  uint8_t                      *extradata;
   int                           extradata_size;
   int                           format;
   int64_t                       bit_rate;
@@ -79,24 +84,24 @@ typedef AVCodecParameters_57 AVCodecParameters_60;
 } // namespace
 
 AVCodecParametersWrapper::AVCodecParametersWrapper(
-    AVCodecParameters *                       codecParameters,
+    AVCodecParameters                        *codecParameters,
     std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
     : codecParameters(codecParameters), librariesInterface(librariesInterface)
 {
 }
 
-AVMediaType AVCodecParametersWrapper::getCodecType() const
+MediaType AVCodecParametersWrapper::getCodecType() const
 {
-  RETURN_IF_VERSION_TOO_OLD(AVMEDIA_TYPE_UNKNOWN);
+  RETURN_IF_VERSION_TOO_OLD(MediaType::Unknown);
 
   AVMediaType mediaType;
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, mediaType, codec_type);
-  return mediaType;
+  return ffmpeg::internal::toMediaType(mediaType);
 }
 
 AVCodecID AVCodecParametersWrapper::getCodecID() const
 {
-  RETURN_IF_VERSION_TOO_OLD(AV_CODEC_ID_NONE);
+  RETURN_IF_VERSION_TOO_OLD(ffmpeg::internal::AV_CODEC_ID_NONE);
 
   AVCodecID codecID;
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, codecID, codec_id);
@@ -149,7 +154,7 @@ avutil::AVPixFmtDescriptorWrapper AVCodecParametersWrapper::getPixelFormat() con
   return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->librariesInterface);
 }
 
-Ratio AVCodecParametersWrapper::getSampleAspectRatio() const
+Rational AVCodecParametersWrapper::getSampleAspectRatio() const
 {
   RETURN_IF_VERSION_TOO_OLD({});
 
@@ -166,8 +171,8 @@ void AVCodecParametersWrapper::setClearValues()
   if (version == 57 || version == 58 || version == 59 || version == 60)
   {
     auto p                   = reinterpret_cast<AVCodecParameters_57 *>(this->codecParameters);
-    p->codec_type            = AVMEDIA_TYPE_UNKNOWN;
-    p->codec_id              = AV_CODEC_ID_NONE;
+    p->codec_type            = ffmpeg::internal::AVMEDIA_TYPE_UNKNOWN;
+    p->codec_id              = ffmpeg::internal::AV_CODEC_ID_NONE;
     p->codec_tag             = 0;
     p->extradata             = nullptr;
     p->extradata_size        = 0;
@@ -197,9 +202,10 @@ void AVCodecParametersWrapper::setClearValues()
     throw std::runtime_error("Invalid library version");
 }
 
-void AVCodecParametersWrapper::setAVMediaType(AVMediaType type)
+void AVCodecParametersWrapper::setAVMediaType(MediaType type)
 {
-  CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, codec_type, type);
+  CAST_AVFORMAT_SET_MEMBER(
+      AVCodecParameters, this->codecParameters, codec_type, ffmpeg::internal::toAVMediaType(type));
 }
 
 void AVCodecParametersWrapper::setAVCodecID(AVCodecID id)
@@ -209,7 +215,7 @@ void AVCodecParametersWrapper::setAVCodecID(AVCodecID id)
 
 void AVCodecParametersWrapper::setExtradata(const ByteVector &data)
 {
-  uint8_t *  extradata{};
+  uint8_t   *extradata{};
   const auto versions = this->librariesInterface->getLibrariesVersion();
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 

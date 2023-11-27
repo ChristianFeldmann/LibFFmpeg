@@ -14,15 +14,18 @@ namespace ffmpeg::avformat
 namespace
 {
 
+using ffmpeg::internal::AVClass;
+using ffmpeg::internal::AVInputFormat;
+
 struct AVInputFormat_56
 {
-  const char *                    name;
-  const char *                    long_name;
+  const char                     *name;
+  const char                     *long_name;
   int                             flags;
-  const char *                    extensions;
+  const char                     *extensions;
   const struct AVCodecTag *const *codec_tag;
-  const AVClass *                 priv_class;
-  const char *                    mime_type;
+  const AVClass                  *priv_class;
+  const char                     *mime_type;
 
   // There is more but it is not part of the public ABI
 };

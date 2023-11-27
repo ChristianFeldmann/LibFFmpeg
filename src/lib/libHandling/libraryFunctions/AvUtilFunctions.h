@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
 #include <common/InternalTypes.h>
+#include <common/Types.h>
 #include <libHandling/SharedLibraryLoader.h>
 
-namespace ffmpeg::functions
+namespace ffmpeg::internal::functions
 {
 
 struct AvUtilFunctions
@@ -24,7 +24,7 @@ struct AvUtilFunctions
   std::function<AVDictionaryEntry *(
       AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags)>
       av_dict_get;
-  std::function<AVFrameSideData *(const AVFrame *frame, AVFrameSideDataType type)>
+  std::function<AVFrameSideData *(const AVFrame *frame, ffmpeg::internal::AVFrameSideDataType type)>
                                                                              av_frame_get_side_data;
   std::function<AVDictionary *(const AVFrame *frame)>                        av_frame_get_metadata;
   std::function<void(void (*callback)(void *, int, const char *, va_list))>  av_log_set_callback;
@@ -35,6 +35,6 @@ struct AvUtilFunctions
 };
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 Log &                      log);
+                                                                 Log                       &log);
 
-} // namespace ffmpeg::functions
+} // namespace ffmpeg::internal::functions

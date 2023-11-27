@@ -23,16 +23,16 @@ namespace internal
 // since its size is used in other structures (e.g. AVStream).
 struct AVPacket_56
 {
-  AVBufferRef      *buf;
-  int64_t           pts;
-  int64_t           dts;
-  uint8_t          *data;
-  int               size;
-  int               stream_index;
-  int               flags;
-  AVPacketSideData *side_data;
-  int               side_data_elems;
-  int               duration;
+  ffmpeg::internal::AVBufferRef      *buf;
+  int64_t                             pts;
+  int64_t                             dts;
+  uint8_t                            *data;
+  int                                 size;
+  int                                 stream_index;
+  int                                 flags;
+  ffmpeg::internal::AVPacketSideData *side_data;
+  int                                 side_data_elems;
+  int                                 duration;
   void (*destruct)(struct AVPacket *);
   void   *priv;
   int64_t pos;
@@ -40,38 +40,38 @@ struct AVPacket_56
 
 struct AVPacket_57
 {
-  AVBufferRef      *buf;
-  int64_t           pts;
-  int64_t           dts;
-  uint8_t          *data;
-  int               size;
-  int               stream_index;
-  int               flags;
-  AVPacketSideData *side_data;
-  int               side_data_elems;
-  int64_t           duration;
-  int64_t           pos;
-  int64_t           convergence_duration;
+  ffmpeg::internal::AVBufferRef      *buf;
+  int64_t                             pts;
+  int64_t                             dts;
+  uint8_t                            *data;
+  int                                 size;
+  int                                 stream_index;
+  int                                 flags;
+  ffmpeg::internal::AVPacketSideData *side_data;
+  int                                 side_data_elems;
+  int64_t                             duration;
+  int64_t                             pos;
+  int64_t                             convergence_duration;
 };
 
 typedef AVPacket_57 AVPacket_58;
 
 struct AVPacket_59
 {
-  AVBufferRef      *buf;
-  int64_t           pts;
-  int64_t           dts;
-  uint8_t          *data;
-  int               size;
-  int               stream_index;
-  int               flags;
-  AVPacketSideData *side_data;
-  int               side_data_elems;
-  int64_t           duration;
-  int64_t           pos;
-  void             *opaque;
-  AVBufferRef      *opaque_ref;
-  AVRational        time_base;
+  ffmpeg::internal::AVBufferRef      *buf;
+  int64_t                             pts;
+  int64_t                             dts;
+  uint8_t                            *data;
+  int                                 size;
+  int                                 stream_index;
+  int                                 flags;
+  ffmpeg::internal::AVPacketSideData *side_data;
+  int                                 side_data_elems;
+  int64_t                             duration;
+  int64_t                             pos;
+  void                               *opaque;
+  ffmpeg::internal::AVBufferRef      *opaque_ref;
+  ffmpeg::internal::AVRational        time_base;
 };
 
 typedef AVPacket_59 AVPacket_60;
@@ -85,7 +85,8 @@ class AVPacketWrapper
 public:
   AVPacketWrapper() = default;
   AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
-  AVPacketWrapper(AVPacket *packet, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVPacketWrapper(ffmpeg::internal::AVPacket               *packet,
+                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
   AVPacketWrapper(const ByteVector                         &data,
                   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
@@ -93,7 +94,7 @@ public:
 
   void setTimestamps(const int64_t dts, const int64_t pts);
 
-  AVPacket *getPacket() const { return this->packet; }
+  ffmpeg::internal::AVPacket *getPacket() const { return this->packet; }
 
   struct Flags
   {
@@ -113,7 +114,7 @@ public:
   explicit operator bool() const { return this->packet != nullptr; };
 
 private:
-  AVPacket                                 *packet{};
+  ffmpeg::internal::AVPacket               *packet{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

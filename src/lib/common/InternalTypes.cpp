@@ -49,4 +49,46 @@ ColorSpace toColorspace(const AVColorSpace colorspace)
   }
 }
 
+MediaType toMediaType(const AVMediaType mediaType)
+{
+  switch (mediaType)
+  {
+  case AVMEDIA_TYPE_UNKNOWN:
+    return MediaType::Unknown;
+  case AVMEDIA_TYPE_VIDEO:
+    return MediaType::Video;
+  case AVMEDIA_TYPE_AUDIO:
+    return MediaType::Audio;
+  case AVMEDIA_TYPE_DATA:
+    return MediaType::Data;
+  case AVMEDIA_TYPE_SUBTITLE:
+    return MediaType::Subtitle;
+  case AVMEDIA_TYPE_ATTACHMENT:
+    return MediaType::Attachment;
+  default:
+    return MediaType::Unknown;
+  }
+}
+
+AVMediaType toAVMediaType(const MediaType mediaType)
+{
+  switch (mediaType)
+  {
+  case MediaType::Unknown:
+    return AVMEDIA_TYPE_UNKNOWN;
+  case MediaType::Video:
+    return AVMEDIA_TYPE_VIDEO;
+  case MediaType::Audio:
+    return AVMEDIA_TYPE_AUDIO;
+  case MediaType::Data:
+    return AVMEDIA_TYPE_DATA;
+  case MediaType::Subtitle:
+    return AVMEDIA_TYPE_SUBTITLE;
+  case MediaType::Attachment:
+    return AVMEDIA_TYPE_ATTACHMENT;
+  default:
+    return AVMEDIA_TYPE_UNKNOWN;
+  }
+}
+
 } // namespace ffmpeg::internal

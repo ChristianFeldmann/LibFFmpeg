@@ -6,6 +6,7 @@
 
 #include <Decoder.h>
 #include <Demuxer.h>
+#include <common/ComparisonFunctions.h>
 #include <common/Functions.h>
 #include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
 #include <libHandling/libraryFunctions/Functions.h>
@@ -52,8 +53,7 @@ TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 
   ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
                              << "\nLog:\n"
-                             << functions::to_string(loadingResult.loadingLog,
-                                                     functions::ConcatenationSymbol::Newline);
+                             << to_string(loadingResult.loadingLog, ConcatenationSymbol::Newline);
 
   const auto librariesInfo = loadingResult.librariesInterface->getLibrariesInfo();
   EXPECT_EQ(librariesInfo.size(), 4);
@@ -99,11 +99,10 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(flags, expectedFlags);
 
   const auto &audioStream = formatContext->getStream(0);
-  EXPECT_EQ(audioStream.getCodecType(), AVMEDIA_TYPE_AUDIO);
-  EXPECT_EQ(audioStream.getCodecTypeName(), "Audio");
+  EXPECT_EQ(audioStream.getCodecType(), MediaType::Audio);
 
   const auto audioCodecDescriptor = audioStream.getCodecDescriptor();
-  EXPECT_EQ(audioCodecDescriptor.getMediaType(), AVMEDIA_TYPE_AUDIO);
+  EXPECT_EQ(audioCodecDescriptor.getMediaType(), MediaType::Audio);
   EXPECT_EQ(audioCodecDescriptor.getCodecName(), "aac");
   EXPECT_EQ(audioCodecDescriptor.getLongName(), "AAC (Advanced Audio Coding)");
   avcodec::AVCodecDescriptorProperties expectedAudioProperties{};
@@ -114,19 +113,18 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioCodecDescriptor.getProfiles().size(), 8);
   EXPECT_TRUE(areEqual(audioCodecDescriptor.getProfiles(),
                        {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
-  EXPECT_EQ(audioStream.getAverageFrameRate(), AVRational({24, 1}));
-  EXPECT_EQ(audioStream.getTimeBase(), AVRational({1, 44100}));
+  EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
+  EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
   EXPECT_EQ(audioStream.getFrameSize(), Size({0, 0}));
   EXPECT_EQ(audioStream.getColorspace(), ColorSpace::UNSPECIFIED);
   EXPECT_EQ(audioStream.getExtradata().size(), 5);
   EXPECT_EQ(audioStream.getIndex(), 0);
 
   const auto &videoStream = formatContext->getStream(1);
-  EXPECT_EQ(videoStream.getCodecType(), AVMEDIA_TYPE_VIDEO);
-  EXPECT_EQ(videoStream.getCodecTypeName(), "Video");
+  EXPECT_EQ(videoStream.getCodecType(), MediaType::Video);
 
   const auto videoCodecDescriptor = videoStream.getCodecDescriptor();
-  EXPECT_EQ(videoCodecDescriptor.getMediaType(), AVMEDIA_TYPE_VIDEO);
+  EXPECT_EQ(videoCodecDescriptor.getMediaType(), MediaType::Video);
   EXPECT_EQ(videoCodecDescriptor.getCodecName(), "h264");
   EXPECT_EQ(videoCodecDescriptor.getLongName(), "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
   avcodec::AVCodecDescriptorProperties expectedVideoProperties{};
@@ -152,8 +150,8 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
                         "CAVLC 4:4:4",
                         "Multiview High",
                         "Stereo High"}));
-  EXPECT_EQ(videoStream.getAverageFrameRate(), AVRational({25, 1}));
-  EXPECT_EQ(videoStream.getTimeBase(), AVRational({1, 12800}));
+  EXPECT_EQ(videoStream.getAverageFrameRate(), Rational({25, 1}));
+  EXPECT_EQ(videoStream.getTimeBase(), Rational({1, 12800}));
   EXPECT_EQ(videoStream.getFrameSize(), Size({320, 240}));
   EXPECT_EQ(videoStream.getColorspace(), ColorSpace::UNSPECIFIED);
   EXPECT_EQ(videoStream.getPixelFormat().name, "yuv420p");
@@ -225,6 +223,8 @@ TEST(FFmpegTest, DecodingTest)
         EXPECT_TRUE(frame);
 
         EXPECT_EQ(frame->getSize(), Size({320, 240}));
+        EXPECT_EQ(frame->getLineSize(0), 320);
+        //EXPECT_EQ(frame->getPictType(), );
         // Check some more values
 
         ++frameCounter;

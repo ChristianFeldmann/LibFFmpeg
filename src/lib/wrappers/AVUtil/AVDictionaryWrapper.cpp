@@ -9,6 +9,9 @@
 namespace ffmpeg::avutil
 {
 
+using ffmpeg::internal::AVDictionary;
+using ffmpeg::internal::AVDictionaryEntry;
+
 constexpr auto AV_DICT_IGNORE_SUFFIX = 2;
 
 AVDictionaryWrapper::AVDictionaryWrapper(

@@ -7,6 +7,8 @@
 #pragma once
 
 #include <common/ColorTypes.h>
+#include <common/InternalTypes.h>
+#include <common/Types.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
@@ -16,33 +18,33 @@ class AVCodecParametersWrapper
 {
 public:
   AVCodecParametersWrapper() = default;
-  AVCodecParametersWrapper(AVCodecParameters                        *p,
+  AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters      *p,
                            std::shared_ptr<FFmpegLibrariesInterface> libraries);
   explicit operator bool() const { return this->codecParameters != nullptr; }
 
-  AVMediaType                       getCodecType() const;
-  AVCodecID                         getCodecID() const;
+  MediaType                         getCodecType() const;
+  ffmpeg::internal::AVCodecID       getCodecID() const;
   ByteVector                        getExtradata() const;
   Size                              getSize() const;
   ColorSpace                        getColorspace() const;
   avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
-  Ratio                             getSampleAspectRatio() const;
+  Rational                          getSampleAspectRatio() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
 
-  void setAVMediaType(AVMediaType type);
-  void setAVCodecID(AVCodecID id);
+  void setAVMediaType(MediaType type);
+  void setAVCodecID(ffmpeg::internal::AVCodecID id);
   void setExtradata(const ByteVector &extradata);
   void setSize(Size size);
   void setAVPixelFormat(avutil::AVPixFmtDescriptorWrapper descriptor);
   void setProfileLevel(int profile, int level);
   void setSampleAspectRatio(int num, int den);
 
-  AVCodecParameters *getCodecParameters() const { return this->codecParameters; }
+  ffmpeg::internal::AVCodecParameters *getCodecParameters() const { return this->codecParameters; }
 
 private:
-  AVCodecParameters                        *codecParameters{};
+  ffmpeg::internal::AVCodecParameters      *codecParameters{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;
 };
 
