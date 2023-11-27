@@ -15,10 +15,14 @@
 namespace ffmpeg::avcodec
 {
 
+using ffmpeg::internal::AVChromaLocation;
 using ffmpeg::internal::AVClass;
 using ffmpeg::internal::AVCodecContext;
 using ffmpeg::internal::AVCodecID;
+using ffmpeg::internal::AVColorPrimaries;
+using ffmpeg::internal::AVColorRange;
 using ffmpeg::internal::AVColorSpace;
+using ffmpeg::internal::AVColorTransferCharacteristic;
 using ffmpeg::internal::AVDictionary;
 using ffmpeg::internal::AVFrame;
 using ffmpeg::internal::AVMediaType;

@@ -7,6 +7,7 @@
 #include <Decoder.h>
 #include <Demuxer.h>
 #include <common/ComparisonFunctions.h>
+#include <common/Error.h>
 #include <common/Functions.h>
 #include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
 #include <libHandling/libraryFunctions/Functions.h>
@@ -201,6 +202,8 @@ TEST(FFmpegTest, DemuxPackets)
 
 TEST(FFmpegTest, DecodingTest)
 {
+  const auto errorCode = toReturnCode(526789);
+
   auto librariesInterface = openLibraries();
   auto demuxer            = openTestFileInDemuxer(librariesInterface);
   auto decoder            = Decoder(librariesInterface);

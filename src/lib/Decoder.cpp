@@ -6,6 +6,8 @@
 
 #include "Decoder.h"
 
+#include <common/Error.h>
+
 namespace ffmpeg
 {
 
@@ -53,12 +55,12 @@ Decoder::PushResult Decoder::pushPacket(const avcodec::AVPacketWrapper &packet)
   if (this->decoderState == State::RetrieveFrames)
     return PushResult::NotPushedPullFramesFirst;
 
-  const auto returnCode = this->libraries->avcodec.avcodec_send_packet(
-      this->decoderContext.getCodecContext(), packet.getPacket());
+  const auto returnCode = toReturnCode(this->libraries->avcodec.avcodec_send_packet(
+      this->decoderContext.getCodecContext(), packet.getPacket()));
 
-  if (returnCode == 0)
+  if (returnCode == ReturnCode::Ok)
     return PushResult::Ok;
-  if (returnCode == AVERROR(EAGAIN))
+  if (returnCode == ReturnCode::TryAgain)
   {
     this->decoderState = State::RetrieveFrames;
     return PushResult::NotPushedPullFramesFirst;
@@ -87,17 +89,17 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
 
   avutil::AVFrameWrapper frame(this->libraries);
 
-  const auto returnCode = this->libraries->avcodec.avcodec_receive_frame(
-      this->decoderContext.getCodecContext(), frame.getFrame());
+  const auto returnCode = toReturnCode(this->libraries->avcodec.avcodec_receive_frame(
+      this->decoderContext.getCodecContext(), frame.getFrame()));
 
   const auto frameSize = frame.getSize();
 
-  if (returnCode == 0)
+  if (returnCode == ReturnCode::Ok)
     return std::move(frame);
 
-  if (returnCode == AVERROR(EAGAIN))
+  if (returnCode == ReturnCode::TryAgain)
     this->decoderState = this->flushing ? State::EndOfBitstream : State::NeedsMoreData;
-  else if (returnCode == AVERROR_EOF)
+  else if (returnCode == ReturnCode::EndOfFile)
     this->decoderState = State::EndOfBitstream;
   else
     this->decoderState = State::Error;

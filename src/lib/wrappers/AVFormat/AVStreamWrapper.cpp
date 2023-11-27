@@ -21,9 +21,12 @@ using ffmpeg::internal::AVCodecContext;
 using ffmpeg::internal::AVCodecID;
 using ffmpeg::internal::AVCodecParameters;
 using ffmpeg::internal::AVDictionary;
+using ffmpeg::internal::AVDiscard;
+using ffmpeg::internal::AVFrac;
 using ffmpeg::internal::AVPacketSideData;
 using ffmpeg::internal::AVRational;
 using ffmpeg::internal::AVStream;
+using ffmpeg::internal::AVStreamParseType;
 
 class AVIndexEntry;
 class AVStreamInternal;
@@ -35,13 +38,13 @@ struct AVStream_56
   int                            id;
   AVCodecContext                *codec;
   void                          *priv_data;
-  struct AVFrac                  pts;
+  AVFrac                         pts;
   AVRational                     time_base;
   int64_t                        start_time;
   int64_t                        duration;
   int64_t                        nb_frames;
   int                            disposition;
-  enum AVDiscard                 discard;
+  AVDiscard                      discard;
   AVRational                     sample_aspect_ratio;
   AVDictionary                  *metadata;
   AVRational                     avg_frame_rate;
@@ -65,13 +68,13 @@ struct AVStream_57
   int                            id;
   AVCodecContext                *codec; // Deprecated. Might be removed in the next major version.
   void                          *priv_data;
-  struct AVFrac                  pts; // Deprecated. Might be removed in the next major version.
+  AVFrac                         pts; // Deprecated. Might be removed in the next major version.
   AVRational                     time_base;
   int64_t                        start_time;
   int64_t                        duration;
   int64_t                        nb_frames;
   int                            disposition;
-  enum AVDiscard                 discard;
+  AVDiscard                      discard;
   AVRational                     sample_aspect_ratio;
   AVDictionary                  *metadata;
   AVRational                     avg_frame_rate;
@@ -106,7 +109,7 @@ struct AVStream_57
   int                          last_IP_duration;
   int                          probe_packets;
   int                          codec_info_nb_frames;
-  enum AVStreamParseType       need_parsing;
+  AVStreamParseType            need_parsing;
   struct AVCodecParserContext *parser;
   struct AVPacketList         *last_in_packet_buffer;
   AVProbeData_57               probe_data;
@@ -156,7 +159,7 @@ struct AVStream_58
   int64_t                        duration;
   int64_t                        nb_frames;
   int                            disposition;
-  enum AVDiscard                 discard;
+  AVDiscard                      discard;
   AVRational                     sample_aspect_ratio;
   AVDictionary                  *metadata;
   AVRational                     avg_frame_rate;
@@ -181,7 +184,7 @@ struct AVStream_59
   int64_t                        duration;
   int64_t                        nb_frames;
   int                            disposition;
-  enum AVDiscard                 discard;
+  AVDiscard                      discard;
   AVRational                     sample_aspect_ratio;
   AVDictionary                  *metadata;
   AVRational                     avg_frame_rate;
@@ -206,7 +209,7 @@ struct AVStream_60
   int64_t                        duration;
   int64_t                        nb_frames;
   int                            disposition;
-  enum AVDiscard                 discard;
+  AVDiscard                      discard;
   AVRational                     sample_aspect_ratio;
   AVDictionary                  *metadata;
   AVRational                     avg_frame_rate;

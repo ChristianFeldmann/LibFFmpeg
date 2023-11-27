@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
 #include <common/InternalTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 

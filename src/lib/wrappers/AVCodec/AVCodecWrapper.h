@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
 #include <libHandling/FFmpegLibrariesInterface.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
@@ -20,9 +19,10 @@ class AVCodecWrapper
 {
 public:
   AVCodecWrapper() = default;
-  AVCodecWrapper(ffmpeg::internal::AVCodec *codec, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVCodecWrapper(ffmpeg::internal::AVCodec                *codec,
+                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
 
-  explicit operator bool() const { return this->codec != nullptr; }
+  explicit                   operator bool() const { return this->codec != nullptr; }
   ffmpeg::internal::AVCodec *getAVCodec() const { return this->codec; }
 
   std::string                                    getName() const;
@@ -33,12 +33,12 @@ public:
   std::vector<Rational>                          getSupportedFramerates() const;
   std::vector<avutil::AVPixFmtDescriptorWrapper> getPixelFormats() const;
   std::vector<int>                               getSupportedSamplerates() const;
-  std::vector<AVSampleFormat>                    getSampleFormats() const;
+  std::vector<ffmpeg::internal::AVSampleFormat>  getSampleFormats() const;
   std::vector<uint64_t>                          getChannelLayouts() const;
   uint8_t                                        getMaxLowres() const;
 
 private:
-  ffmpeg::internal::AVCodec                                  *codec{};
+  ffmpeg::internal::AVCodec                *codec{};
   std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
 };
 

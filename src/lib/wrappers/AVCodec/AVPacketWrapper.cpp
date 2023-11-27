@@ -15,7 +15,16 @@
 namespace ffmpeg::avcodec
 {
 
+namespace
+{
+
 using ffmpeg::internal::AVPacket;
+
+constexpr auto AV_PKT_FLAG_KEY     = 0x0001; ///< The packet contains a keyframe
+constexpr auto AV_PKT_FLAG_CORRUPT = 0x0002; ///< The packet content is corrupted
+constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and should be discarded
+
+} // namespace
 
 AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packet,
                                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)

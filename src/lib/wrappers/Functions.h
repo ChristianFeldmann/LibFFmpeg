@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <common/FFMpegLibrariesTypes.h>
-
 namespace ffmpeg
 {
 

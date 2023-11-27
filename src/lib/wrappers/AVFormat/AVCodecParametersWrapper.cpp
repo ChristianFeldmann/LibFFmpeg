@@ -19,10 +19,17 @@ namespace ffmpeg::avformat
 namespace
 {
 
+using ffmpeg::internal::AVChromaLocation;
 using ffmpeg::internal::AVCodecID;
 using ffmpeg::internal::AVCodecParameters;
+using ffmpeg::internal::AVColorPrimaries;
+using ffmpeg::internal::AVColorRange;
+using ffmpeg::internal::AVColorTransferCharacteristic;
+using ffmpeg::internal::AVFieldOrder;
 using ffmpeg::internal::AVMediaType;
 using ffmpeg::internal::AVRational;
+
+constexpr std::size_t AV_INPUT_BUFFER_PADDING_SIZE = 32;
 
 #define RETURN_IF_VERSION_TOO_OLD(returnValue)                                                     \
   {                                                                                                \
@@ -190,12 +197,12 @@ void AVCodecParametersWrapper::setClearValues()
       ratio.den              = 1;
       p->sample_aspect_ratio = ratio;
     }
-    p->field_order     = AV_FIELD_UNKNOWN;
-    p->color_range     = AVCOL_RANGE_UNSPECIFIED;
-    p->color_primaries = AVCOL_PRI_UNSPECIFIED;
-    p->color_trc       = AVCOL_TRC_UNSPECIFIED;
+    p->field_order     = internal::AV_FIELD_UNKNOWN;
+    p->color_range     = internal::AVCOL_RANGE_UNSPECIFIED;
+    p->color_primaries = internal::AVCOL_PRI_UNSPECIFIED;
+    p->color_trc       = internal::AVCOL_TRC_UNSPECIFIED;
     p->color_space     = internal::AVCOL_SPC_UNSPECIFIED;
-    p->chroma_location = AVCHROMA_LOC_UNSPECIFIED;
+    p->chroma_location = internal::AVCHROMA_LOC_UNSPECIFIED;
     p->video_delay     = 0;
   }
   else
