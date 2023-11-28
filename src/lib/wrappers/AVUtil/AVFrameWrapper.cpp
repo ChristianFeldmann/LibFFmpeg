@@ -6,6 +6,7 @@
 
 #include "AVFrameWrapper.h"
 
+#include "AVFrameWrapperInternal.h"
 #include "CastUtilClasses.h"
 
 #include <common/InternalTypes.h>
@@ -19,112 +20,16 @@ namespace ffmpeg::avutil
 namespace
 {
 
-using ffmpeg::internal::AVBufferRef;
-using ffmpeg::internal::AVChromaLocation;
-using ffmpeg::internal::AVColorPrimaries;
-using ffmpeg::internal::AVColorRange;
-using ffmpeg::internal::AVColorSpace;
-using ffmpeg::internal::AVColorTransferCharacteristic;
 using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVFrameSideData;
 using ffmpeg::internal::AVPictureType;
 using ffmpeg::internal::AVRational;
 
-struct AVFrame_54
-{
-  uint8_t      *data[AV_NUM_DATA_POINTERS];
-  int           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t     **extended_data;
-  int           width, height;
-  int           nb_samples;
-  int           format;
-  int           key_frame;
-  AVPictureType pict_type;
-  uint8_t      *base[AV_NUM_DATA_POINTERS];
-  AVRational    sample_aspect_ratio;
-  int64_t       pts;
-  int64_t       pkt_pts;
-  int64_t       pkt_dts;
-  int           coded_picture_number;
-  int           display_picture_number;
-  int           quality;
-  // Actually, there is more here, but the variables above are the only we need.
-};
-
-struct AVFrame_55
-{
-  uint8_t      *data[AV_NUM_DATA_POINTERS];
-  int           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t     **extended_data;
-  int           width, height;
-  int           nb_samples;
-  int           format;
-  int           key_frame;
-  AVPictureType pict_type;
-  AVRational    sample_aspect_ratio;
-  int64_t       pts;
-  int64_t       pkt_pts;
-  int64_t       pkt_dts;
-  int           coded_picture_number;
-  int           display_picture_number;
-  int           quality;
-  // Actually, there is more here, but the variables above are the only we need.
-};
-
-typedef AVFrame_55 AVFrame_56;
-
-struct AVFrame_57
-{
-  uint8_t                      *data[AV_NUM_DATA_POINTERS];
-  int                           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t                     **extended_data;
-  int                           width, height;
-  int                           nb_samples;
-  int                           format;
-  int                           key_frame;
-  AVPictureType                 pict_type;
-  AVRational                    sample_aspect_ratio;
-  int64_t                       pts;
-  int64_t                       pkt_dts;
-  AVRational                    time_base;
-  int                           coded_picture_number;
-  int                           display_picture_number;
-  int                           quality;
-  void                         *opaque;
-  int                           repeat_pict;
-  int                           interlaced_frame;
-  int                           top_field_first;
-  int                           palette_has_changed;
-  int64_t                       reordered_opaque;
-  int                           sample_rate;
-  uint64_t                      channel_layout;
-  AVBufferRef                  *buf[AV_NUM_DATA_POINTERS];
-  AVBufferRef                 **extended_buf;
-  int                           nb_extended_buf;
-  AVFrameSideData             **side_data;
-  int                           nb_side_data;
-  int                           flags;
-  AVColorRange                  color_range;
-  AVColorPrimaries              color_primaries;
-  AVColorTransferCharacteristic color_trc;
-  AVColorSpace                  colorspace;
-  AVChromaLocation              chroma_location;
-  int64_t                       best_effort_timestamp;
-  int64_t                       pkt_pos;
-  int64_t                       pkt_duration;
-  AVDictionary                 *metadata;
-
-  // Actually, there is more here, but the variables above are the only we need.
-};
-
-typedef AVFrame_57 AVFrame_58;
-
 } // namespace
 
-AVFrameWrapper::AVFrameWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : librariesInterface(librariesInterface)
+AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : ffmpegLibraries(ffmpegLibraries)
 {
-  this->frame = this->librariesInterface->avutil.av_frame_alloc();
+  this->frame = this->ffmpegLibraries->avutil.av_frame_alloc();
   if (this->frame == nullptr)
     throw std::runtime_error("Error allocating AVFrame");
 }
@@ -133,13 +38,13 @@ AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&frame)
 {
   this->frame              = frame.frame;
   frame.frame              = nullptr;
-  this->librariesInterface = std::move(frame.librariesInterface);
+  this->ffmpegLibraries = std::move(frame.ffmpegLibraries);
 }
 
 AVFrameWrapper::~AVFrameWrapper()
 {
   if (this->frame != nullptr)
-    this->librariesInterface->avutil.av_frame_free(&this->frame);
+    this->ffmpegLibraries->avutil.av_frame_free(&this->frame);
 }
 
 ByteVector AVFrameWrapper::getData(int component) const
@@ -178,8 +83,6 @@ int AVFrameWrapper::getLineSize(int component) const
 
 Size AVFrameWrapper::getSize() const
 {
-  const auto p = reinterpret_cast<AVFrame_58 *>(this->frame);
-
   int width;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, width, width);
 
@@ -212,12 +115,12 @@ bool AVFrameWrapper::isKeyFrame() const
 
 AVDictionaryWrapper AVFrameWrapper::getMetadata() const
 {
-  const auto version = this->librariesInterface->getLibrariesVersion().avutil.major;
+  const auto version = this->ffmpegLibraries->getLibrariesVersion().avutil.major;
 
   if (version == 57 || version == 58)
   {
-    const auto p = reinterpret_cast<AVFrame_57 *>(this->frame);
-    return AVDictionaryWrapper(p->metadata, this->librariesInterface);
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_57 *>(this->frame);
+    return AVDictionaryWrapper(p->metadata, this->ffmpegLibraries);
   }
 
   return {};
@@ -229,7 +132,15 @@ AVPixFmtDescriptorWrapper AVFrameWrapper::getPixelFormatDescriptor() const
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, format, format);
 
   return AVPixFmtDescriptorWrapper(static_cast<ffmpeg::internal::AVPixelFormat>(format),
-                                   this->librariesInterface);
+                                   this->ffmpegLibraries);
+}
+
+Rational AVFrameWrapper::getSampleAspectRatio() const
+{
+  AVRational sampleAspectRatio;
+  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, sampleAspectRatio, sample_aspect_ratio);
+
+  return Rational({sampleAspectRatio.num, sampleAspectRatio.den});
 }
 
 } // namespace ffmpeg::avutil

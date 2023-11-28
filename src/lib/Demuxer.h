@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVCodec/AVPacketWrapper.h>
 #include <wrappers/AVFormat/AVFormatContextWrapper.h>
 
@@ -19,7 +19,7 @@ public:
   Demuxer()                = delete;
   Demuxer(const Demuxer &) = delete;
   Demuxer(Demuxer &&demuxer);
-  Demuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  Demuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   ResultAndLog openFile(const std::filesystem::path &path);
 
@@ -31,7 +31,7 @@ public:
   avcodec::AVPacketWrapper getNextPacket();
 
 private:
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
 
   avformat::AVFormatContextWrapper formatContext;
 };

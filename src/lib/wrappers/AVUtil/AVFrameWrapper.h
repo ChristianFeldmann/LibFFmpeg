@@ -7,7 +7,7 @@
 #pragma once
 
 #include <common/Types.h>
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVUtil/AVDictionaryWrapper.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
@@ -22,7 +22,7 @@ public:
   AVFrameWrapper()                       = delete;
   AVFrameWrapper(const AVFrameWrapper &) = delete;
   AVFrameWrapper(AVFrameWrapper &&frame);
-  AVFrameWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   ~AVFrameWrapper();
 
   ffmpeg::internal::AVFrame *getFrame() const { return this->frame; }
@@ -35,12 +35,13 @@ public:
   bool                      isKeyFrame() const;
   AVDictionaryWrapper       getMetadata() const;
   AVPixFmtDescriptorWrapper getPixelFormatDescriptor() const;
+  Rational                  getSampleAspectRatio() const;
 
   explicit operator bool() const { return this->frame != nullptr; }
 
 private:
-  ffmpeg::internal::AVFrame                *frame{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVFrame        *frame{};
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avutil

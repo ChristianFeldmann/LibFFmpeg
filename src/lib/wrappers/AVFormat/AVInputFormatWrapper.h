@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 
 namespace ffmpeg::avformat
 {
@@ -40,8 +40,8 @@ class AVInputFormatWrapper
 {
 public:
   AVInputFormatWrapper() = default;
-  AVInputFormatWrapper(ffmpeg::internal::AVInputFormat          *inputFormat,
-                       std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVInputFormatWrapper(ffmpeg::internal::AVInputFormat  *inputFormat,
+                       std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   std::string        getName() const;
   std::string        getLongName() const;
@@ -52,8 +52,8 @@ public:
   explicit operator bool() const { return this->inputFormat != nullptr; };
 
 private:
-  ffmpeg::internal::AVInputFormat          *inputFormat{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVInputFormat  *inputFormat{};
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avformat

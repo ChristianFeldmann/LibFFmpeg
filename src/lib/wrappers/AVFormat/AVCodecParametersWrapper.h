@@ -9,7 +9,7 @@
 #include <common/ColorTypes.h>
 #include <common/InternalTypes.h>
 #include <common/Types.h>
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
 namespace ffmpeg::avformat
@@ -18,8 +18,8 @@ class AVCodecParametersWrapper
 {
 public:
   AVCodecParametersWrapper() = default;
-  AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters      *p,
-                           std::shared_ptr<FFmpegLibrariesInterface> libraries);
+  AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters *p,
+                           std::shared_ptr<IFFmpegLibraries>    libraries);
   explicit operator bool() const { return this->codecParameters != nullptr; }
 
   MediaType                         getCodecType() const;
@@ -44,8 +44,8 @@ public:
   ffmpeg::internal::AVCodecParameters *getCodecParameters() const { return this->codecParameters; }
 
 private:
-  ffmpeg::internal::AVCodecParameters      *codecParameters{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface;
+  ffmpeg::internal::AVCodecParameters *codecParameters{};
+  std::shared_ptr<IFFmpegLibraries>    ffmpegLibraries;
 };
 
 } // namespace ffmpeg::avformat

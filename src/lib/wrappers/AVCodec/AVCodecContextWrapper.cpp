@@ -410,35 +410,35 @@ typedef AVCodecContext_59 AVCodecContext_60;
 } // namespace internal
 
 AVCodecContextWrapper::AVCodecContextWrapper(
-    AVCodecContext *codecContext, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : codecContext(codecContext), librariesInterface(librariesInterface)
+    AVCodecContext *codecContext, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : codecContext(codecContext), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
 std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecoding(
     const avformat::AVCodecParametersWrapper &codecParameters,
-    std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 {
   const auto decoderCodec =
-      librariesInterface->avcodec.avcodec_find_decoder(codecParameters.getCodecID());
+      ffmpegLibraries->avcodec.avcodec_find_decoder(codecParameters.getCodecID());
   if (decoderCodec == nullptr)
     return {};
 
-  auto codecContext = librariesInterface->avcodec.avcodec_alloc_context3(decoderCodec);
+  auto codecContext = ffmpegLibraries->avcodec.avcodec_alloc_context3(decoderCodec);
   if (codecContext == nullptr)
     return {};
 
-  auto ret = librariesInterface->avcodec.avcodec_parameters_to_context(
+  auto ret = ffmpegLibraries->avcodec.avcodec_parameters_to_context(
       codecContext, codecParameters.getCodecParameters());
   if (ret < 0)
     return {};
 
   AVDictionary *dictionary = nullptr;
-  ret = librariesInterface->avcodec.avcodec_open2(codecContext, decoderCodec, &dictionary);
+  ret = ffmpegLibraries->avcodec.avcodec_open2(codecContext, decoderCodec, &dictionary);
   if (ret < 0)
     return {};
 
-  return AVCodecContextWrapper(codecContext, librariesInterface);
+  return AVCodecContextWrapper(codecContext, ffmpegLibraries);
 }
 
 MediaType AVCodecContextWrapper::getCodecType() const
@@ -459,7 +459,7 @@ avutil::AVPixFmtDescriptorWrapper AVCodecContextWrapper::getPixelFormat() const
 {
   ffmpeg::internal::AVPixelFormat avPixelFormat;
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avPixelFormat, pix_fmt);
-  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->librariesInterface);
+  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->ffmpegLibraries);
 }
 
 Size AVCodecContextWrapper::getSize() const

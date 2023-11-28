@@ -4,7 +4,7 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
-#include "FFmpegLibrariesInterface.h"
+#include "FFmpegLibraries.h"
 
 #include <cstdarg>
 
@@ -105,8 +105,7 @@ auto SupportedMajorLibraryVersionCombinations = {
 
 } // namespace
 
-ResultAndLog
-FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path)
+ResultAndLog FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path)
 {
   Log log;
 
@@ -145,7 +144,7 @@ FFmpegLibrariesInterface::tryLoadFFmpegLibrariesInPath(const std::filesystem::pa
   return {false, log};
 }
 
-bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
+bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
     const std::filesystem::path &absoluteDirectoryPath,
     const LibraryVersions       &libraryVersions,
     Log                         &log)
@@ -224,7 +223,7 @@ bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
   this->libraryVersions.swresample =
       Version::fromFFmpegVersion(this->swresample.swresample_version());
 
-  this->avutil.av_log_set_callback(&FFmpegLibrariesInterface::avLogCallback);
+  this->avutil.av_log_set_callback(&FFmpegLibraries::avLogCallback);
 
   if (this->libraryVersions.avformat.major < 59)
     this->avformat.av_register_all();
@@ -232,7 +231,7 @@ bool FFmpegLibrariesInterface::tryLoadLibrariesBindFunctionsAndCheckVersions(
   return true;
 }
 
-void FFmpegLibrariesInterface::unloadAllLibraries()
+void FFmpegLibraries::unloadAllLibraries()
 {
   this->libAvutil.unload();
   this->libSwresample.unload();
@@ -240,7 +239,7 @@ void FFmpegLibrariesInterface::unloadAllLibraries()
   this->libAvformat.unload();
 }
 
-std::vector<LibraryInfo> FFmpegLibrariesInterface::getLibrariesInfo() const
+std::vector<LibraryInfo> FFmpegLibraries::getLibrariesInfo() const
 {
   if (!this->libAvutil || !this->libSwresample || !this->libAvcodec || !this->libAvformat)
     return {};
@@ -266,9 +265,9 @@ std::vector<LibraryInfo> FFmpegLibrariesInterface::getLibrariesInfo() const
   return infoPerLIbrary;
 }
 
-std::string FFmpegLibrariesInterface::logListFFmpeg;
+std::string FFmpegLibraries::logListFFmpeg;
 
-void FFmpegLibrariesInterface::avLogCallback(void *, int level, const char *fmt, va_list vargs)
+void FFmpegLibraries::avLogCallback(void *, int level, const char *fmt, va_list vargs)
 {
   std::string message;
   va_list     vargs_copy;
@@ -277,7 +276,7 @@ void FFmpegLibrariesInterface::avLogCallback(void *, int level, const char *fmt,
   message.resize(len);
   vsnprintf(&message[0], len + 1, fmt, vargs);
 
-  FFmpegLibrariesInterface::logListFFmpeg.append("Level " + std::to_string(level) + message);
+  FFmpegLibraries::logListFFmpeg.append("Level " + std::to_string(level) + message);
 }
 
 } // namespace ffmpeg

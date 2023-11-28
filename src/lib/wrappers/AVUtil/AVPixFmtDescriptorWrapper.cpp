@@ -6,6 +6,7 @@
 
 #include "AVPixFmtDescriptorWrapper.h"
 
+#include "AVPixFmtDescriptorWrapperInternal.h"
 #include "CastUtilClasses.h"
 
 using namespace std::rel_ops;
@@ -15,77 +16,6 @@ namespace ffmpeg::avutil
 
 namespace
 {
-
-struct AVComponentDescriptor_54
-{
-  uint16_t plane : 2;
-  uint16_t step_minus1 : 3;
-  uint16_t offset_plus1 : 3;
-  uint16_t shift : 3;
-  uint16_t depth_minus1 : 4;
-};
-
-struct AVPixFmtDescriptor_54
-{
-  const char              *name;
-  uint8_t                  nb_components;
-  uint8_t                  log2_chroma_w;
-  uint8_t                  log2_chroma_h;
-  uint8_t                  flags;
-  AVComponentDescriptor_54 comp[4];
-  const char              *alias;
-};
-
-struct AVComponentDescriptor_55
-{
-  int plane;
-  int step;
-  int offset;
-  int shift;
-  int depth;
-
-  // deprectaed
-  int step_minus1;
-  int depth_minus1;
-  int offset_plus1;
-};
-
-typedef AVComponentDescriptor_55 AVComponentDescriptor_56;
-
-struct AVPixFmtDescriptor_55
-{
-  const char              *name;
-  uint8_t                  nb_components;
-  uint8_t                  log2_chroma_w;
-  uint8_t                  log2_chroma_h;
-  uint64_t                 flags;
-  AVComponentDescriptor_55 comp[4];
-  const char              *alias;
-};
-
-typedef AVPixFmtDescriptor_55 AVPixFmtDescriptor_56;
-
-struct AVComponentDescriptor_57
-{
-  int plane;
-  int step;
-  int offset;
-  int shift;
-  int depth;
-};
-
-struct AVPixFmtDescriptor_57
-{
-  const char              *name;
-  uint8_t                  nb_components;
-  uint8_t                  log2_chroma_w;
-  uint8_t                  log2_chroma_h;
-  uint64_t                 flags;
-  AVComponentDescriptor_57 comp[4];
-  const char              *alias;
-};
-
-typedef AVPixFmtDescriptor_57 AVPixFmtDescriptor_58;
 
 AVPixFmtDescriptorWrapper::Flags parseFlagsFromValue(const uint64_t flagsValue)
 {
@@ -107,21 +37,21 @@ AVPixFmtDescriptorWrapper::Flags parseFlagsFromValue(const uint64_t flagsValue)
 
 AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(
     const internal::AVPixelFormat                    avPixelFormat,
-    const std::shared_ptr<FFmpegLibrariesInterface> &librariesInterface)
+    const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)
 {
-  auto descriptor = librariesInterface->avutil.av_pix_fmt_desc_get(avPixelFormat);
+  auto descriptor = ffmpegLibraries->avutil.av_pix_fmt_desc_get(avPixelFormat);
   if (descriptor == nullptr)
   {
     this->name = "None";
     return;
   }
 
-  const auto version = librariesInterface->getLibrariesVersion().avutil.major;
+  const auto version = ffmpegLibraries->getLibrariesVersion().avutil.major;
 
   if (version == 54)
   {
-    auto p                   = reinterpret_cast<const AVPixFmtDescriptor_54 *>(descriptor);
-    this->name               = std::string(p->name);
+    auto p     = reinterpret_cast<const internal::avutil::AVPixFmtDescriptor_54 *>(descriptor);
+    this->name = std::string(p->name);
     this->numberOfComponents = static_cast<int>(p->nb_components);
     this->shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
                                 static_cast<int>(p->log2_chroma_h)};
@@ -140,8 +70,8 @@ AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(
   }
   else if (version == 55 || version == 56)
   {
-    auto p                   = reinterpret_cast<const AVPixFmtDescriptor_55 *>(descriptor);
-    this->name               = std::string(p->name);
+    auto p     = reinterpret_cast<const internal::avutil::AVPixFmtDescriptor_55 *>(descriptor);
+    this->name = std::string(p->name);
     this->numberOfComponents = static_cast<int>(p->nb_components);
     this->shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
                                 static_cast<int>(p->log2_chroma_h)};
@@ -160,8 +90,8 @@ AVPixFmtDescriptorWrapper::AVPixFmtDescriptorWrapper(
   }
   else if (version == 57 || version == 58)
   {
-    auto p                   = reinterpret_cast<const AVPixFmtDescriptor_57 *>(descriptor);
-    this->name               = std::string(p->name);
+    auto p     = reinterpret_cast<const internal::avutil::AVPixFmtDescriptor_57 *>(descriptor);
+    this->name = std::string(p->name);
     this->numberOfComponents = static_cast<int>(p->nb_components);
     this->shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
                                 static_cast<int>(p->log2_chroma_h)};

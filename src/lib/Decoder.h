@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVCodec/AVCodecContextWrapper.h>
 #include <wrappers/AVCodec/AVPacketWrapper.h>
 #include <wrappers/AVFormat/AVStreamWrapper.h>
@@ -18,7 +18,7 @@ namespace ffmpeg
 class Decoder
 {
 public:
-  Decoder(std::shared_ptr<FFmpegLibrariesInterface> libraries);
+  Decoder(std::shared_ptr<IFFmpegLibraries> libraries);
 
   explicit operator bool() const;
 
@@ -45,8 +45,8 @@ public:
   std::optional<avutil::AVFrameWrapper> decodeNextFrame();
 
 private:
-  std::shared_ptr<FFmpegLibrariesInterface> libraries;
-  avcodec::AVCodecContextWrapper            decoderContext{};
+  std::shared_ptr<IFFmpegLibraries> libraries;
+  avcodec::AVCodecContextWrapper    decoderContext{};
 
   State decoderState{State::NotOpened};
   bool  flushing{};

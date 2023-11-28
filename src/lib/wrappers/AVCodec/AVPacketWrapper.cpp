@@ -27,26 +27,26 @@ constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and sh
 } // namespace
 
 AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packet,
-                                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : packet(packet), librariesInterface(librariesInterface)
+                                 std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : packet(packet), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
-AVPacketWrapper::AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : librariesInterface(librariesInterface)
+AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : ffmpegLibraries(ffmpegLibraries)
 {
 }
 
 AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
-                                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : librariesInterface(librariesInterface)
+                                 std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : ffmpegLibraries(ffmpegLibraries)
 {
-  this->packet = this->librariesInterface->avcodec.av_packet_alloc();
+  this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
   if (this->packet == nullptr)
     throw std::runtime_error("Unable to allocate new AVPacket");
 
   const auto ret =
-      this->librariesInterface->avcodec.av_new_packet(this->packet, static_cast<int>(data.size()));
+      this->ffmpegLibraries->avcodec.av_new_packet(this->packet, static_cast<int>(data.size()));
 
   uint8_t *dataPointer;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataPointer, data);
@@ -57,7 +57,7 @@ void AVPacketWrapper::allocatePacket()
 {
   if (this->packet != nullptr)
     throw std::runtime_error("Packet already allocated");
-  this->packet = this->librariesInterface->avcodec.av_packet_alloc();
+  this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
   if (this->packet == nullptr)
     throw std::runtime_error("Unable to allocate new AVPacket");
 }

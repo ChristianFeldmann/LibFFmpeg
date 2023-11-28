@@ -172,15 +172,15 @@ typedef AVFormatContext_59 AVFormatContext_60;
 } // namespace
 
 AVFormatContextWrapper::AVFormatContextWrapper(
-    std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+    std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 {
-  this->librariesInterface = librariesInterface;
+  this->ffmpegLibraries = ffmpegLibraries;
 }
 
 AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContextWrapper &&wrapper)
 {
   this->formatContext      = std::move(wrapper.formatContext);
-  this->librariesInterface = std::move(wrapper.librariesInterface);
+  this->ffmpegLibraries = std::move(wrapper.ffmpegLibraries);
 }
 
 ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
@@ -193,20 +193,20 @@ ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
     return {false, log};
   }
 
-  auto ret = this->librariesInterface->avformat.avformat_open_input(
+  auto ret = this->ffmpegLibraries->avformat.avformat_open_input(
       &this->formatContext, path.string().c_str(), nullptr, nullptr);
   if (ret < 0)
   {
     log.push_back("Error opening file (avformat_open_input). Return code " + std::to_string(ret));
     return {false, log};
   }
-  if (this->librariesInterface == nullptr)
+  if (this->ffmpegLibraries == nullptr)
   {
     log.push_back("Error opening file (avformat_open_input). Nullptr returned.");
     return {false, log};
   }
 
-  ret = this->librariesInterface->avformat.avformat_find_stream_info(this->formatContext, nullptr);
+  ret = this->ffmpegLibraries->avformat.avformat_find_stream_info(this->formatContext, nullptr);
   if (ret < 0)
   {
     log.push_back("Error opening file (avformat_open_input). Return code " + std::to_string(ret));
@@ -232,7 +232,7 @@ std::vector<AVStreamWrapper> AVFormatContextWrapper::getStreams() const
   {
     AVStream *streamPointer{};
     CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, streamPointer, streams[i]);
-    streams.push_back(AVStreamWrapper(streamPointer, this->librariesInterface));
+    streams.push_back(AVStreamWrapper(streamPointer, this->ffmpegLibraries));
   }
 
   return streams;
@@ -249,14 +249,14 @@ AVStreamWrapper AVFormatContextWrapper::getStream(int idx) const
 {
   AVStream *streamPointer{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, streamPointer, streams[idx]);
-  return AVStreamWrapper(streamPointer, this->librariesInterface);
+  return AVStreamWrapper(streamPointer, this->ffmpegLibraries);
 }
 
 AVInputFormatWrapper AVFormatContextWrapper::getInputFormat() const
 {
   AVInputFormat *inputFormatPointer{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, inputFormatPointer, iformat);
-  return AVInputFormatWrapper(inputFormatPointer, this->librariesInterface);
+  return AVInputFormatWrapper(inputFormatPointer, this->ffmpegLibraries);
 }
 
 int64_t AVFormatContextWrapper::getStartTime() const
@@ -277,13 +277,13 @@ avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata() const
 {
   AVDictionary *metadata{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, metadata, metadata);
-  return avutil::AVDictionaryWrapper(metadata, this->librariesInterface);
+  return avutil::AVDictionaryWrapper(metadata, this->ffmpegLibraries);
 }
 
 bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)
 {
   const auto ret =
-      this->librariesInterface->avformat.av_read_frame(this->formatContext, packet.getPacket());
+      this->ffmpegLibraries->avformat.av_read_frame(this->formatContext, packet.getPacket());
   return ret == 0;
 }
 

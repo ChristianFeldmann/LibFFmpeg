@@ -4,12 +4,14 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
-#include "FFmpegLibrariesInterfaceBuilder.h"
+#include "FFmpegLibrariesBuilder.h"
+
+#include "FFmpegLibraries.h"
 
 namespace ffmpeg
 {
 
-LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
+LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
 {
   LibrariesLoadingResult result;
 
@@ -17,10 +19,10 @@ LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
     result.loadingLog.push_back("Library reload forced. Will skip cache check.");
   else
   {
-    if (auto cachedLibrariesInterface = this->lastLoadedLibraries.lock())
+    if (auto cachedFFmpegLibraries = this->lastLoadedLibraries.lock())
     {
       result.loadingLog.push_back("Cached libraries still loaded. Returning cached libraries.");
-      result.librariesInterface = cachedLibrariesInterface;
+      result.ffmpegLibraries = cachedFFmpegLibraries;
       return result;
     }
   }
@@ -32,7 +34,7 @@ LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
     this->searchPaths.push_back("");
   }
 
-  auto libraryInterface = std::make_shared<FFmpegLibrariesInterface>();
+  auto libraryInterface = std::make_shared<FFmpegLibraries>();
 
   for (const auto &path : this->searchPaths)
   {
@@ -43,7 +45,7 @@ LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
 
     if (success)
     {
-      result.librariesInterface = libraryInterface;
+      result.ffmpegLibraries = libraryInterface;
       return result;
     }
   }
@@ -51,14 +53,14 @@ LibrariesLoadingResult FFmpegLibrariesInterfaceBuilder::tryLoadingOfLibraries()
   return result;
 }
 
-FFmpegLibrariesInterfaceBuilder &FFmpegLibrariesInterfaceBuilder::withAdditionalSearchPaths(
+FFmpegLibrariesBuilder &FFmpegLibrariesBuilder::withAdditionalSearchPaths(
     const std::vector<std::filesystem::path> &additionalPath)
 {
   this->searchPaths.insert(this->searchPaths.begin(), additionalPath.begin(), additionalPath.end());
   return *this;
 }
 
-FFmpegLibrariesInterfaceBuilder &FFmpegLibrariesInterfaceBuilder::withForcedReload()
+FFmpegLibrariesBuilder &FFmpegLibrariesBuilder::withForcedReload()
 {
   this->forceReload = true;
   return *this;

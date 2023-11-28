@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 
 #include <memory>
 
@@ -83,11 +83,10 @@ class AVPacketWrapper
 {
 public:
   AVPacketWrapper() = default;
-  AVPacketWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
-  AVPacketWrapper(ffmpeg::internal::AVPacket               *packet,
-                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
-  AVPacketWrapper(const ByteVector                         &data,
-                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  AVPacketWrapper(ffmpeg::internal::AVPacket       *packet,
+                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  AVPacketWrapper(const ByteVector &data, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   void allocatePacket();
 
@@ -113,8 +112,8 @@ public:
   explicit operator bool() const { return this->packet != nullptr; };
 
 private:
-  ffmpeg::internal::AVPacket               *packet{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVPacket       *packet{};
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avcodec

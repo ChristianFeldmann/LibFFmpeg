@@ -9,7 +9,7 @@
 #include <common/ComparisonFunctions.h>
 #include <common/Error.h>
 #include <common/Functions.h>
-#include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
+#include <libHandling/FFmpegLibrariesBuilder.h>
 #include <libHandling/libraryFunctions/Functions.h>
 
 #include <array>
@@ -34,17 +34,17 @@ constexpr std::size_t operator"" _sz(unsigned long long n)
 // TestFile_h264_aac_1s_320x240.mp4
 constexpr auto TEST_FILE_NAME = "TestFile_h264_aac_1s_320x240.mp4";
 
-std::shared_ptr<FFmpegLibrariesInterface> openLibraries()
+std::shared_ptr<IFFmpegLibraries> openLibraries()
 {
   const auto loadingResult =
-      FFmpegLibrariesInterfaceBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
+      FFmpegLibrariesBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
   EXPECT_TRUE(loadingResult) << "Error loading libraries";
-  return loadingResult.librariesInterface;
+  return loadingResult.ffmpegLibraries;
 }
 
-Demuxer openTestFileInDemuxer(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
+Demuxer openTestFileInDemuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 {
-  Demuxer demuxer(librariesInterface);
+  Demuxer demuxer(ffmpegLibraries);
   const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
   EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
 
@@ -56,13 +56,13 @@ Demuxer openTestFileInDemuxer(std::shared_ptr<FFmpegLibrariesInterface> librarie
 TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 {
   const auto loadingResult =
-      FFmpegLibrariesInterfaceBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
+      FFmpegLibrariesBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
 
   ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
                              << "\nLog:\n"
                              << to_string(loadingResult.loadingLog, ConcatenationSymbol::Newline);
 
-  const auto librariesInfo = loadingResult.librariesInterface->getLibrariesInfo();
+  const auto librariesInfo = loadingResult.ffmpegLibraries->getLibrariesInfo();
   EXPECT_EQ(librariesInfo.size(), 4);
 
   for (const auto &libInfo : librariesInfo)
@@ -204,9 +204,9 @@ TEST(FFmpegTest, DecodingTest)
 {
   const auto errorCode = toReturnCode(526789);
 
-  auto librariesInterface = openLibraries();
-  auto demuxer            = openTestFileInDemuxer(librariesInterface);
-  auto decoder            = Decoder(librariesInterface);
+  auto ffmpegLibraries = openLibraries();
+  auto demuxer            = openTestFileInDemuxer(ffmpegLibraries);
+  auto decoder            = Decoder(ffmpegLibraries);
 
   const auto streamToDecode = 1;
   const auto stream         = demuxer.getFormatContext()->getStream(streamToDecode);
@@ -228,6 +228,7 @@ TEST(FFmpegTest, DecodingTest)
       EXPECT_EQ(frame->getLineSize(0), 320);
       EXPECT_EQ(frame->getLineSize(1), 160);
       EXPECT_EQ(frame->getLineSize(2), 160);
+      EXPECT_EQ(frame->getSampleAspectRatio(), Rational({1, 1}));
 
       const auto absoluteFrameIndex = totalFrameCounter + framesDecodedInLoop;
 

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVCodec/AVPacketWrapper.h>
 #include <wrappers/AVFormat/AVInputFormatWrapper.h>
 #include <wrappers/AVFormat/AVStreamWrapper.h>
@@ -23,7 +23,7 @@ public:
   AVFormatContextWrapper()                               = delete;
   AVFormatContextWrapper(const AVFormatContextWrapper &) = delete;
   AVFormatContextWrapper(AVFormatContextWrapper &&wrapper);
-  AVFormatContextWrapper(std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   ResultAndLog openFile(std::filesystem::path path);
 
@@ -40,8 +40,8 @@ public:
   bool getNextPacket(avcodec::AVPacketWrapper &packet);
 
 private:
-  ffmpeg::internal::AVFormatContext        *formatContext{nullptr};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVFormatContext *formatContext{nullptr};
+  std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avformat

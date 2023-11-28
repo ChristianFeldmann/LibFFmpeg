@@ -8,7 +8,7 @@
 
 #include <common/ColorTypes.h>
 #include <common/Enums.h>
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 
@@ -19,12 +19,12 @@ class AVCodecContextWrapper
 {
 public:
   AVCodecContextWrapper() = default;
-  AVCodecContextWrapper(ffmpeg::internal::AVCodecContext         *codecContext,
-                        std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVCodecContextWrapper(ffmpeg::internal::AVCodecContext *codecContext,
+                        std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   static std::optional<AVCodecContextWrapper>
   openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters,
-                         std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+                         std::shared_ptr<IFFmpegLibraries>         ffmpegLibraries);
 
   explicit operator bool() const { return this->codecContext != nullptr; };
 
@@ -39,8 +39,8 @@ public:
   ByteVector                        getExtradata() const;
 
 private:
-  ffmpeg::internal::AVCodecContext         *codecContext{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVCodecContext *codecContext{};
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avcodec

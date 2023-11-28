@@ -224,8 +224,8 @@ struct AVStream_60
 } // namespace
 
 AVStreamWrapper::AVStreamWrapper(AVStream                                 *stream,
-                                 std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : stream(stream), librariesInterface(librariesInterface)
+                                 std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : stream(stream), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
@@ -255,7 +255,7 @@ avcodec::AVCodecDescriptorWrapper AVStreamWrapper::getCodecDescriptor() const
 {
   const auto codecID = this->getCodecID();
 
-  const auto descriptor = this->librariesInterface->avcodec.avcodec_descriptor_get(codecID);
+  const auto descriptor = this->ffmpegLibraries->avcodec.avcodec_descriptor_get(codecID);
   return avcodec::AVCodecDescriptorWrapper(descriptor);
 }
 
@@ -334,21 +334,21 @@ int AVStreamWrapper::getIndex() const
 
 avcodec::AVCodecContextWrapper AVStreamWrapper::getCodecContext() const
 {
-  const auto version = this->librariesInterface->getLibrariesVersion().avformat.major;
+  const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
   if (version == 56)
   {
     const auto p = reinterpret_cast<AVStream_56 *>(this->stream);
-    return avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
+    return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
   }
   if (version == 57)
   {
     const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
-    return avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
+    return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
   }
   if (version == 58)
   {
     const auto p = reinterpret_cast<AVStream_58 *>(this->stream);
-    return avcodec::AVCodecContextWrapper(p->codec, this->librariesInterface);
+    return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
   }
 
   return {};
@@ -356,26 +356,26 @@ avcodec::AVCodecContextWrapper AVStreamWrapper::getCodecContext() const
 
 AVCodecParametersWrapper AVStreamWrapper::getCodecParameters() const
 {
-  const auto version = this->librariesInterface->getLibrariesVersion().avformat.major;
+  const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
   if (version == 57)
   {
     const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
-    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
   if (version == 58)
   {
     const auto p = reinterpret_cast<AVStream_58 *>(this->stream);
-    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
   if (version == 59)
   {
     const auto p = reinterpret_cast<AVStream_59 *>(this->stream);
-    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
   if (version == 60)
   {
     const auto p = reinterpret_cast<AVStream_60 *>(this->stream);
-    return AVCodecParametersWrapper(p->codecpar, this->librariesInterface);
+    return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
 
   return {};

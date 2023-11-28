@@ -7,7 +7,7 @@
 #pragma once
 
 #include <common/ColorTypes.h>
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVCodec/AVCodecContextWrapper.h>
 #include <wrappers/AVCodec/AVCodecDescriptorWrapper.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
@@ -22,8 +22,8 @@ class AVStreamWrapper
 {
 public:
   AVStreamWrapper() = default;
-  AVStreamWrapper(ffmpeg::internal::AVStream               *stream,
-                  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVStreamWrapper(ffmpeg::internal::AVStream       *stream,
+                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   explicit operator bool() const { return this->stream != nullptr; };
 
@@ -41,8 +41,8 @@ public:
   AVCodecParametersWrapper getCodecParameters() const;
 
 private:
-  ffmpeg::internal::AVStream               *stream{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVStream       *stream{};
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 
   avcodec::AVCodecContextWrapper getCodecContext() const;
 };

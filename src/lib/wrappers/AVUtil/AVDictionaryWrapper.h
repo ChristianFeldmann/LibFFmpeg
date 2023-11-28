@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 
 #include <map>
 
@@ -19,8 +19,8 @@ class AVDictionaryWrapper
 {
 public:
   AVDictionaryWrapper() = default;
-  AVDictionaryWrapper(ffmpeg::internal::AVDictionary           *dict,
-                      std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVDictionaryWrapper(ffmpeg::internal::AVDictionary   *dict,
+                      std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   explicit                        operator bool() const { return this->dict != nullptr; }
   ffmpeg::internal::AVDictionary *getDictionary() const { return this->dict; }
@@ -28,8 +28,8 @@ public:
   DictionaryMap toMap() const;
 
 private:
-  ffmpeg::internal::AVDictionary           *dict{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVDictionary   *dict{};
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avutil

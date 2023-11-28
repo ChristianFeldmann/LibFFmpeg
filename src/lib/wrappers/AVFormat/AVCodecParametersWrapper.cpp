@@ -33,7 +33,7 @@ constexpr std::size_t AV_INPUT_BUFFER_PADDING_SIZE = 32;
 
 #define RETURN_IF_VERSION_TOO_OLD(returnValue)                                                     \
   {                                                                                                \
-    if (this->librariesInterface->getLibrariesVersion().avformat.major <= 56)                      \
+    if (this->ffmpegLibraries->getLibrariesVersion().avformat.major <= 56)                      \
       return returnValue;                                                                          \
   }
 
@@ -92,8 +92,8 @@ typedef AVCodecParameters_57 AVCodecParameters_60;
 
 AVCodecParametersWrapper::AVCodecParametersWrapper(
     AVCodecParameters                        *codecParameters,
-    std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : codecParameters(codecParameters), librariesInterface(librariesInterface)
+    std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : codecParameters(codecParameters), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
@@ -158,7 +158,7 @@ avutil::AVPixFmtDescriptorWrapper AVCodecParametersWrapper::getPixelFormat() con
 
   const auto avPixelFormat = static_cast<internal::AVPixelFormat>(pixelFormatIndex);
 
-  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->librariesInterface);
+  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->ffmpegLibraries);
 }
 
 Rational AVCodecParametersWrapper::getSampleAspectRatio() const
@@ -173,7 +173,7 @@ Rational AVCodecParametersWrapper::getSampleAspectRatio() const
 
 void AVCodecParametersWrapper::setClearValues()
 {
-  const auto version = this->librariesInterface->getLibrariesVersion().avformat.major;
+  const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
 
   if (version == 57 || version == 58 || version == 59 || version == 60)
   {
@@ -223,14 +223,14 @@ void AVCodecParametersWrapper::setAVCodecID(AVCodecID id)
 void AVCodecParametersWrapper::setExtradata(const ByteVector &data)
 {
   uint8_t   *extradata{};
-  const auto versions = this->librariesInterface->getLibrariesVersion();
+  const auto versions = this->ffmpegLibraries->getLibrariesVersion();
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 
   if (extradata != nullptr)
-    this->librariesInterface->avutil.av_freep(&extradata);
+    this->ffmpegLibraries->avutil.av_freep(&extradata);
 
   extradata = static_cast<uint8_t *>(
-      this->librariesInterface->avutil.av_mallocz(data.size() + AV_INPUT_BUFFER_PADDING_SIZE));
+      this->ffmpegLibraries->avutil.av_mallocz(data.size() + AV_INPUT_BUFFER_PADDING_SIZE));
 
   if (extradata == nullptr)
   {

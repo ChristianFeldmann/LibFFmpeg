@@ -7,7 +7,7 @@
 #pragma once
 
 #include <common/InternalTypes.h>
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 
 #include <memory>
 
@@ -18,8 +18,8 @@ class AVPixFmtDescriptorWrapper
 {
 public:
   AVPixFmtDescriptorWrapper() = default;
-  AVPixFmtDescriptorWrapper(const internal::AVPixelFormat                    avPixelFormat,
-                            const std::shared_ptr<FFmpegLibrariesInterface> &librariesInterface);
+  AVPixFmtDescriptorWrapper(const internal::AVPixelFormat            avPixelFormat,
+                            const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries);
 
   /**
    * Amount to shift the luma width/height right to find the chroma width/height.

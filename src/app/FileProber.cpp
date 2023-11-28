@@ -5,7 +5,7 @@
  */
 
 #include <Demuxer.h>
-#include <libHandling/FFmpegLibrariesInterfaceBuilder.h>
+#include <libHandling/FFmpegLibrariesBuilder.h>
 
 #include <cstddef>
 #include <filesystem>
@@ -128,9 +128,9 @@ int main(int argc, char const *argv[])
 {
   const auto settings = parseCommandLineArguments(argc, argv);
 
-  const auto loadingResult = FFmpegLibrariesInterfaceBuilder().tryLoadingOfLibraries();
+  const auto loadingResult = FFmpegLibrariesBuilder().tryLoadingOfLibraries();
 
-  if (!loadingResult.librariesInterface)
+  if (!loadingResult.ffmpegLibraries)
   {
     std::cout << "Error when loading libraries: " << loadingResult.errorMessage << "\n";
     printOutLog(loadingResult.loadingLog);
@@ -140,7 +140,7 @@ int main(int argc, char const *argv[])
   {
     std::cout << "Successfully loaded ffmpeg libraries.\n";
     std::cout << "\nLibraries info:\n";
-    for (const auto info : loadingResult.librariesInterface->getLibrariesInfo())
+    for (const auto info : loadingResult.ffmpegLibraries->getLibrariesInfo())
     {
       std::cout << "  " << info.name << ":\n";
       std::cout << "    Path   : " << info.path << ":\n";
@@ -148,7 +148,7 @@ int main(int argc, char const *argv[])
     }
   }
 
-  Demuxer demuxer(loadingResult.librariesInterface);
+  Demuxer demuxer(loadingResult.ffmpegLibraries);
   const auto [openSuccessfull, openingLog] = demuxer.openFile(FILE_NAME);
 
   if (!openSuccessfull)

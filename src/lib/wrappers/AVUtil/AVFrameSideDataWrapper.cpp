@@ -6,6 +6,7 @@
 
 #include "AVFrameSideDataWrapper.h"
 
+#include "AVFrameSideDataWrapperInternal.h"
 #include "CastUtilClasses.h"
 
 #include <stdexcept>
@@ -16,40 +17,14 @@ namespace ffmpeg::avutil
 namespace
 {
 
-using ffmpeg::internal::AVBufferRef;
-using ffmpeg::internal::AVDictionary;
 using ffmpeg::internal::AVFrameSideData;
 using ffmpeg::internal::AVFrameSideDataType;
-
-// Part of AVUtil
-struct AVFrameSideData_54
-{
-  AVFrameSideDataType type;
-  uint8_t            *data;
-  int                 size;
-  AVDictionary       *metadata;
-  AVBufferRef        *buf;
-};
-
-typedef AVFrameSideData_54 AVFrameSideData_55;
-typedef AVFrameSideData_54 AVFrameSideData_56;
-
-struct AVFrameSideData_57
-{
-  AVFrameSideDataType type;
-  uint8_t            *data;
-  size_t              size;
-  AVDictionary       *metadata;
-  AVBufferRef        *buf;
-};
-
-typedef AVFrameSideData_57 AVFrameSideData_58;
 
 } // namespace
 
 AVFrameSideDataWrapper::AVFrameSideDataWrapper(
-    AVFrameSideData *sideData, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : sideData(sideData), librariesInterface(librariesInterface)
+    AVFrameSideData *sideData, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : sideData(sideData), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
@@ -70,7 +45,7 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   int size;
   CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, size, size);
 
-  return parseMotionData(this->librariesInterface->getLibrariesVersion(), data, size);
+  return parseMotionData(this->ffmpegLibraries->getLibrariesVersion(), data, size);
 }
 
 } // namespace ffmpeg::avutil

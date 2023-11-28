@@ -7,7 +7,7 @@
 #pragma once
 
 #include <common/MotionVector.h>
-#include <libHandling/FFmpegLibrariesInterface.h>
+#include <libHandling/IFFmpegLibraries.h>
 
 #include <memory>
 
@@ -18,16 +18,16 @@ class AVFrameSideDataWrapper
 {
 public:
   AVFrameSideDataWrapper() = default;
-  AVFrameSideDataWrapper(ffmpeg::internal::AVFrameSideData        *sideData,
-                         std::shared_ptr<FFmpegLibrariesInterface> librariesInterface);
+  AVFrameSideDataWrapper(ffmpeg::internal::AVFrameSideData *sideData,
+                         std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries);
 
   std::vector<MotionVector> getMotionVectors() const;
 
   explicit operator bool() const { return sideData != nullptr; }
 
 private:
-  ffmpeg::internal::AVFrameSideData        *sideData{};
-  std::shared_ptr<FFmpegLibrariesInterface> librariesInterface{};
+  ffmpeg::internal::AVFrameSideData *sideData{};
+  std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avutil

@@ -11,7 +11,7 @@
 namespace ffmpeg
 {
 
-Decoder::Decoder(std::shared_ptr<FFmpegLibrariesInterface> libraries)
+Decoder::Decoder(std::shared_ptr<IFFmpegLibraries> libraries)
 {
   if (!libraries)
     throw std::runtime_error("Given libraries pointer is null");

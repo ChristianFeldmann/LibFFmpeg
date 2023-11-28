@@ -88,8 +88,8 @@ template <typename T> std::vector<T> convertRawListToVec(const T *rawValues, T t
 } // namespace
 
 AVCodecWrapper::AVCodecWrapper(AVCodec                                  *codec,
-                               std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : codec(codec), librariesInterface(librariesInterface)
+                               std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : codec(codec), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
@@ -156,7 +156,7 @@ std::vector<avutil::AVPixFmtDescriptorWrapper> AVCodecWrapper::getPixelFormats()
   auto val = formatsPointer[i++];
   while (val != ffmpeg::internal::AVPixelFormat::AV_PIX_FMT_NONE)
   {
-    formats.push_back(avutil::AVPixFmtDescriptorWrapper(val, this->librariesInterface));
+    formats.push_back(avutil::AVPixFmtDescriptorWrapper(val, this->ffmpegLibraries));
     val = formatsPointer[i++];
   }
 

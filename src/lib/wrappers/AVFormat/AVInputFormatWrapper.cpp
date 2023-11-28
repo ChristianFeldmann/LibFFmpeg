@@ -115,8 +115,8 @@ bool operator==(const AVInputFormatFlags &lhs, const AVInputFormatFlags &rhs)
 }
 
 AVInputFormatWrapper::AVInputFormatWrapper(
-    AVInputFormat *inputFormat, std::shared_ptr<FFmpegLibrariesInterface> librariesInterface)
-    : inputFormat(inputFormat), librariesInterface(librariesInterface)
+    AVInputFormat *inputFormat, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : inputFormat(inputFormat), ffmpegLibraries(ffmpegLibraries)
 {
 }
 
