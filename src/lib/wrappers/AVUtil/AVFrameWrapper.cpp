@@ -36,8 +36,8 @@ AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries
 
 AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&frame)
 {
-  this->frame              = frame.frame;
-  frame.frame              = nullptr;
+  this->frame           = frame.frame;
+  frame.frame           = nullptr;
   this->ffmpegLibraries = std::move(frame.ffmpegLibraries);
 }
 

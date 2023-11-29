@@ -15,8 +15,8 @@ namespace ffmpeg
 
 struct Version
 {
-  Version() = default;
-  Version(const int major) { this->major = major; }
+  constexpr Version() = default;
+  constexpr Version(const int major) : major(major) {}
 
   bool operator!=(const Version &other) const;
 
