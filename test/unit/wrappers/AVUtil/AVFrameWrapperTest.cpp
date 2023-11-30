@@ -15,8 +15,16 @@
 namespace ffmpeg::avutil
 {
 
+namespace
+{
+
 using ffmpeg::internal::AVFrame;
+using internal::avutil::AVFrame_54;
+using internal::avutil::AVFrame_55;
+using internal::avutil::AVFrame_56;
 using internal::avutil::AVFrame_57;
+using internal::avutil::AVFrame_58;
+using ::testing::Return;
 
 template <typename T> AVFrame *avFrameTestAlloc()
 {
@@ -48,19 +56,18 @@ template <typename T> void setTestValuesInFrame(AVFrame *frame)
   castFrame->sample_aspect_ratio = {16, 9};
 }
 
-using ::testing::Return;
-
-TEST(Wrappers_AVUtil, Test_FFmpeg6)
+template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions &version)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(FFMPEG_VERSION_6));
 
-  ffmpegLibraries->avutil.av_frame_alloc = avFrameTestAlloc<AVFrame_57>;
-  ffmpegLibraries->avutil.av_frame_free  = avFrameFree<AVFrame_57>;
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+
+  ffmpegLibraries->avutil.av_frame_alloc = avFrameTestAlloc<AVFrameType>;
+  ffmpegLibraries->avutil.av_frame_free  = avFrameFree<AVFrameType>;
 
   AVFrameWrapper frame(ffmpegLibraries);
 
-  setTestValuesInFrame<AVFrame_57>(frame.getFrame());
+  setTestValuesInFrame<AVFrameType>(frame.getFrame());
 
   EXPECT_TRUE(frame);
   EXPECT_EQ(frame.getSize(), Size({320, 160}));
@@ -75,5 +82,52 @@ TEST(Wrappers_AVUtil, Test_FFmpeg6)
   // Todo: Getting data untested so far.
   // Todo: PixelFormatDescriptor not tested
 }
+
+} // namespace
+
+class AVFrameWrapperTest : public testing::TestWithParam<LibraryVersions>
+{
+public:
+  static std::string getName(const testing::TestParamInfo<AVFrameWrapperTest::ParamType> &info);
+};
+
+TEST_P(AVFrameWrapperTest, TestAVFrameWrapper)
+{
+  const auto version = GetParam();
+  switch (version.avutil.major)
+  {
+  case 54:
+    runAVFrameWrapperTest<AVFrame_54>(version);
+    break;
+  case 55:
+    runAVFrameWrapperTest<AVFrame_55>(version);
+    break;
+  case 56:
+    runAVFrameWrapperTest<AVFrame_56>(version);
+    break;
+  case 57:
+    runAVFrameWrapperTest<AVFrame_57>(version);
+    break;
+  case 58:
+    runAVFrameWrapperTest<AVFrame_58>(version);
+    break;
+  default:
+    break;
+  }
+}
+
+std::string
+AVFrameWrapperTest::getName(const testing::TestParamInfo<AVFrameWrapperTest::ParamType> &info)
+{
+  const auto version = info.param.ffmpegVersion;
+  auto       name    = "FFmpeg_" + ffmpegVersionMapper.getName(version);
+  std::replace(name.begin(), name.end(), '.', '_');
+  return name;
+}
+
+INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
+                         AVFrameWrapperTest,
+                         testing::ValuesIn(SupportedFFmpegVersions),
+                         AVFrameWrapperTest::getName);
 
 } // namespace ffmpeg::avutil

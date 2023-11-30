@@ -92,17 +92,6 @@ std::filesystem::path getAbsolutePath(const std::filesystem::path &path)
   return std::filesystem::absolute(path);
 }
 
-// These FFmpeg versions are supported. The numbers indicate the major version of
-// the following libraries in this order: avformat, avcodec, avutil, swresample
-// The versions are sorted from newest to oldest, so that we try to open the newest ones first.
-auto SupportedMajorLibraryVersionCombinations = {
-    LibraryVersions({Version(60), Version(60), Version(58), Version(4)}),
-    LibraryVersions({Version(59), Version(59), Version(57), Version(4)}),
-    LibraryVersions({Version(58), Version(58), Version(56), Version(3)}),
-    LibraryVersions({Version(57), Version(57), Version(55), Version(2)}),
-    LibraryVersions({Version(56), Version(56), Version(54), Version(1)}),
-};
-
 } // namespace
 
 ResultAndLog FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path)
@@ -122,7 +111,7 @@ ResultAndLog FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const std::filesystem
     log.push_back("Using absolute path " + absoluteDirectoryPath.string());
   }
 
-  for (const auto &libraryVersions : SupportedMajorLibraryVersionCombinations)
+  for (const auto &libraryVersions : SupportedFFmpegVersions)
   {
     this->unloadAllLibraries();
     log.push_back("Unload libraries");

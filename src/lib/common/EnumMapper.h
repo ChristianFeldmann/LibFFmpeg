@@ -77,11 +77,14 @@ public:
   };
   struct Entry
   {
-    Entry(T value, std::string name) : value(value), name(name) {}
-    Entry(T value, std::string name, std::string text) : value(value), name(name), text(text) {}
-    T           value;
-    std::string name;
-    std::string text;
+    Entry(const T &value, const std::string &name) : value(value), name(name) {}
+    Entry(const T &value, const std::string &name, std::string text)
+        : value(value), name(name), text(text)
+    {
+    }
+    T           value{};
+    std::string name{};
+    std::string text{};
   };
 
   using EntryVector = std::vector<Entry>;
@@ -89,7 +92,7 @@ public:
   EnumMapper() = default;
   EnumMapper(const EntryVector &entryVector) : entryVector(entryVector){};
 
-  std::optional<T> getValue(std::string name, StringType stringType = StringType::Name) const
+  std::optional<T> getValue(const std::string &name, StringType stringType = StringType::Name) const
   {
     if (stringType == StringType::NameOrIndex)
       if (auto index = toUnsigned(name))
@@ -105,25 +108,25 @@ public:
     return {};
   }
 
-  std::optional<T> getValueCaseInsensitive(std::string name,
-                                           StringType  stringType = StringType::Name) const
+  std::optional<T> getValueCaseInsensitive(const std::string &name,
+                                           StringType         stringType = StringType::Name) const
   {
     if (stringType == StringType::NameOrIndex)
       if (auto index = toUnsigned(name))
         return this->at(*index);
 
-    name = toLower(name);
+    const auto nameLower = toLower(name);
     for (const auto &entry : this->entryVector)
     {
-      if ((stringType == StringType::Name && toLower(entry.name) == name) ||
-          (stringType == StringType::NameOrIndex && toLower(entry.text) == name) ||
-          (stringType == StringType::Text && toLower(entry.text) == name))
+      if ((stringType == StringType::Name && toLower(entry.name) == nameLower) ||
+          (stringType == StringType::NameOrIndex && toLower(entry.text) == nameLower) ||
+          (stringType == StringType::Text && toLower(entry.text) == nameLower))
         return entry.value;
     }
     return {};
   }
 
-  std::string getName(T value) const
+  std::string getName(const T &value) const
   {
     for (const auto &entry : this->entryVector)
       if (entry.value == value)
@@ -132,7 +135,7 @@ public:
         "The given type T was not registered in the mapper. All possible enums must be mapped.");
   }
 
-  std::string getText(T value) const
+  std::string getText(const T &value) const
   {
     for (const auto &entry : this->entryVector)
       if (entry.value == value)
@@ -141,7 +144,7 @@ public:
         "The given type T was not registered in the mapper. All possible enums must be mapped.");
   }
 
-  size_t indexOf(T value) const
+  size_t indexOf(const T &value) const
   {
     for (size_t i = 0; i < this->entryVector.size(); i++)
       if (this->entryVector.at(i).value == value)
@@ -150,7 +153,7 @@ public:
         "The given type T was not registered in the mapper. All possible enums must be mapped.");
   }
 
-  std::optional<T> at(size_t index) const
+  std::optional<T> at(const size_t index) const
   {
     if (index >= this->entryVector.size())
       return {};

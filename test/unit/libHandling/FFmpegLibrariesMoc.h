@@ -14,9 +14,6 @@
 namespace ffmpeg
 {
 
-constexpr auto FFMPEG_VERSION_6 =
-    LibraryVersions({Version(60), Version(60), Version(58), Version(4)});
-
 class FFmpegLibrariesMock : public IFFmpegLibraries
 {
 public:
