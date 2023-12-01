@@ -22,8 +22,8 @@ using ffmpeg::internal::AVFrameSideDataType;
 
 } // namespace
 
-AVFrameSideDataWrapper::AVFrameSideDataWrapper(
-    AVFrameSideData *sideData, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData                  *sideData,
+                                               std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : sideData(sideData), ffmpegLibraries(ffmpegLibraries)
 {
 }

@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <common/MotionVector.h>
+#include "AVMotionVectorConversion.h"
+
 #include <libHandling/IFFmpegLibraries.h>
 
 #include <memory>
