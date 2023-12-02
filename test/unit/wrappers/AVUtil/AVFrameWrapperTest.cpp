@@ -7,6 +7,7 @@
 #include <common/InternalTypes.h>
 #include <wrappers/AVUtil/AVFrameWrapper.h>
 #include <wrappers/AVUtil/AVFrameWrapperInternal.h>
+#include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
 
@@ -87,47 +88,26 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
 
 class AVFrameWrapperTest : public testing::TestWithParam<LibraryVersions>
 {
-public:
-  static std::string getName(const testing::TestParamInfo<AVFrameWrapperTest::ParamType> &info);
 };
 
 TEST_P(AVFrameWrapperTest, TestAVFrameWrapper)
 {
   const auto version = GetParam();
-  switch (version.avutil.major)
-  {
-  case 54:
+  if (version.avutil.major == 54)
     runAVFrameWrapperTest<AVFrame_54>(version);
-    break;
-  case 55:
+  else if (version.avutil.major == 55)
     runAVFrameWrapperTest<AVFrame_55>(version);
-    break;
-  case 56:
+  else if (version.avutil.major == 56)
     runAVFrameWrapperTest<AVFrame_56>(version);
-    break;
-  case 57:
+  else if (version.avutil.major == 57)
     runAVFrameWrapperTest<AVFrame_57>(version);
-    break;
-  case 58:
+  else if (version.avutil.major == 58)
     runAVFrameWrapperTest<AVFrame_58>(version);
-    break;
-  default:
-    break;
-  }
-}
-
-std::string
-AVFrameWrapperTest::getName(const testing::TestParamInfo<AVFrameWrapperTest::ParamType> &info)
-{
-  const auto version = info.param.ffmpegVersion;
-  auto       name    = "FFmpeg_" + ffmpegVersionMapper.getName(version);
-  std::replace(name.begin(), name.end(), '.', '_');
-  return name;
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
                          AVFrameWrapperTest,
                          testing::ValuesIn(SupportedFFmpegVersions),
-                         AVFrameWrapperTest::getName);
+                         getNameWithFFmpegVersion);
 
 } // namespace ffmpeg::avutil

@@ -8,6 +8,7 @@
 #include <wrappers/AVUtil/AVFrameSideDataWrapper.h>
 #include <wrappers/AVUtil/AVFrameSideDataWrapperInternal.h>
 #include <wrappers/AVUtil/AVMotionVectorConversionInternal.h>
+#include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
 
@@ -56,7 +57,7 @@ template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummy
 }
 
 template <typename AVFrameSideDataType, typename MotionVectorType>
-void runAVFrameWrapperTest(const LibraryVersions &version)
+void runAVFrameSideDataWrapperTest(const LibraryVersions &version)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
@@ -112,48 +113,26 @@ void runAVFrameWrapperTest(const LibraryVersions &version)
 
 class AVFrameSideDataWrapperTest : public testing::TestWithParam<LibraryVersions>
 {
-public:
-  static std::string
-  getName(const testing::TestParamInfo<AVFrameSideDataWrapperTest::ParamType> &info);
 };
 
 TEST_P(AVFrameSideDataWrapperTest, TestGettingOfMotionVectors)
 {
   const auto version = GetParam();
-  switch (version.avutil.major)
-  {
-  case 54:
-    runAVFrameWrapperTest<AVFrameSideData_54, AVMotionVector_54>(version);
-    break;
-  case 55:
-    runAVFrameWrapperTest<AVFrameSideData_55, AVMotionVector_55_56_57_58>(version);
-    break;
-  case 56:
-    runAVFrameWrapperTest<AVFrameSideData_56, AVMotionVector_55_56_57_58>(version);
-    break;
-  case 57:
-    runAVFrameWrapperTest<AVFrameSideData_57, AVMotionVector_55_56_57_58>(version);
-    break;
-  case 58:
-    runAVFrameWrapperTest<AVFrameSideData_58, AVMotionVector_55_56_57_58>(version);
-    break;
-  default:
-    break;
-  }
-}
-
-std::string AVFrameSideDataWrapperTest::getName(
-    const testing::TestParamInfo<AVFrameSideDataWrapperTest::ParamType> &info)
-{
-  const auto version = info.param.ffmpegVersion;
-  auto       name    = "FFmpeg_" + ffmpegVersionMapper.getName(version);
-  std::replace(name.begin(), name.end(), '.', '_');
-  return name;
+  if (version.avutil.major == 54)
+    runAVFrameSideDataWrapperTest<AVFrameSideData_54, AVMotionVector_54>(version);
+  else if (version.avutil.major == 55)
+    runAVFrameSideDataWrapperTest<AVFrameSideData_55, AVMotionVector_55_56_57_58>(version);
+  else if (version.avutil.major == 56)
+    runAVFrameSideDataWrapperTest<AVFrameSideData_56, AVMotionVector_55_56_57_58>(version);
+  else if (version.avutil.major == 57)
+    runAVFrameSideDataWrapperTest<AVFrameSideData_57, AVMotionVector_55_56_57_58>(version);
+  else if (version.avutil.major == 58)
+    runAVFrameSideDataWrapperTest<AVFrameSideData_58, AVMotionVector_55_56_57_58>(version);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
                          AVFrameSideDataWrapperTest,
                          testing::ValuesIn(SupportedFFmpegVersions),
-                         AVFrameSideDataWrapperTest::getName);
+                         getNameWithFFmpegVersion);
 
 } // namespace ffmpeg::avutil
