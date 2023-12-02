@@ -59,7 +59,6 @@ template <typename T> void setTestValuesInFrame(AVFrame *frame)
 
 template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions &version)
 {
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
