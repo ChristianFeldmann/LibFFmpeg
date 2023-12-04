@@ -12,7 +12,7 @@
 
 #include <gtest/gtest.h>
 
-namespace ffmpeg::avutil
+namespace ffmpeg
 {
 
 static std::string getNameWithFFmpegVersion(const testing::TestParamInfo<LibraryVersions> &info)
@@ -23,4 +23,4 @@ static std::string getNameWithFFmpegVersion(const testing::TestParamInfo<Library
   return name;
 }
 
-} // namespace ffmpeg::avutil
+} // namespace ffmpeg
