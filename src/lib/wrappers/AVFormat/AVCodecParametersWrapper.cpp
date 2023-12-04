@@ -9,6 +9,7 @@
 #include <common/InternalTypes.h>
 #include <wrappers/Functions.h>
 
+#include "AVCodecParametersWrapperInternal.h"
 #include "CastFormatClasses.h"
 
 #include <cstring>
@@ -19,82 +20,34 @@ namespace ffmpeg::avformat
 namespace
 {
 
-using ffmpeg::internal::AVChromaLocation;
 using ffmpeg::internal::AVCodecID;
 using ffmpeg::internal::AVCodecParameters;
-using ffmpeg::internal::AVColorPrimaries;
-using ffmpeg::internal::AVColorRange;
-using ffmpeg::internal::AVColorTransferCharacteristic;
-using ffmpeg::internal::AVFieldOrder;
 using ffmpeg::internal::AVMediaType;
 using ffmpeg::internal::AVRational;
+using ffmpeg::internal::avformat::AVCodecParameters_56;
+using ffmpeg::internal::avformat::AVCodecParameters_57;
+using ffmpeg::internal::avformat::AVCodecParameters_58;
+using ffmpeg::internal::avformat::AVCodecParameters_59;
+using ffmpeg::internal::avformat::AVCodecParameters_60;
 
 constexpr std::size_t AV_INPUT_BUFFER_PADDING_SIZE = 32;
 
 #define RETURN_IF_VERSION_TOO_OLD(returnValue)                                                     \
   {                                                                                                \
-    if (this->ffmpegLibraries->getLibrariesVersion().avformat.major <= 56)                      \
+    if (this->ffmpegLibraries->getLibrariesVersion().avformat.major <= 56)                         \
       return returnValue;                                                                          \
   }
-
-/* This is a dummy class that is just here so that we can use the generic
- * CAST_AVFORMAT_GET_MEMBER and CAST_AVFORMAT_SET_MEMBER macros. In reality,
- * we will never do the cast to this struct.
- */
-struct AVCodecParameters_56
-{
-  AVMediaType            codec_type;
-  AVCodecID              codec_id;
-  uint8_t               *extradata;
-  int                    extradata_size;
-  int                    format;
-  int                    profile;
-  int                    level;
-  int                    width;
-  int                    height;
-  AVRational             sample_aspect_ratio;
-  internal::AVColorSpace color_space;
-};
-
-// AVCodecParameters is part of avcodec.
-struct AVCodecParameters_57
-{
-  AVMediaType                   codec_type;
-  AVCodecID                     codec_id;
-  uint32_t                      codec_tag;
-  uint8_t                      *extradata;
-  int                           extradata_size;
-  int                           format;
-  int64_t                       bit_rate;
-  int                           bits_per_coded_sample;
-  int                           bits_per_raw_sample;
-  int                           profile;
-  int                           level;
-  int                           width;
-  int                           height;
-  AVRational                    sample_aspect_ratio;
-  AVFieldOrder                  field_order;
-  AVColorRange                  color_range;
-  AVColorPrimaries              color_primaries;
-  AVColorTransferCharacteristic color_trc;
-  internal::AVColorSpace        color_space;
-  AVChromaLocation              chroma_location;
-  int                           video_delay;
-
-  // Actually, there is more here, but the variables above are the only we need.
-};
-
-typedef AVCodecParameters_57 AVCodecParameters_58;
-typedef AVCodecParameters_57 AVCodecParameters_59;
-typedef AVCodecParameters_57 AVCodecParameters_60;
 
 } // namespace
 
 AVCodecParametersWrapper::AVCodecParametersWrapper(
-    AVCodecParameters                        *codecParameters,
-    std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    AVCodecParameters *codecParameters, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codecParameters(codecParameters), ffmpegLibraries(ffmpegLibraries)
 {
+  if (codecParameters == nullptr)
+    throw std::runtime_error("Provided codec parameters pointer must not be null");
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
 MediaType AVCodecParametersWrapper::getCodecType() const

@@ -27,7 +27,8 @@ using internal::avformat::AVInputFormat_59;
 using internal::avformat::AVInputFormat_60;
 using ::testing::Return;
 
-template <typename AVInputFormatType> void runAVFrameWrapperTest(const LibraryVersions &version)
+template <typename AVInputFormatType>
+void runAVInputFormatWrapperTest(const LibraryVersions &version)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
@@ -100,15 +101,15 @@ TEST_P(AVInputFormatWrapperTest, TestAVInputFormatWrapper)
 {
   const auto version = GetParam();
   if (version.avformat.major == 56)
-    runAVFrameWrapperTest<AVInputFormat_56>(version);
+    runAVInputFormatWrapperTest<AVInputFormat_56>(version);
   else if (version.avformat.major == 57)
-    runAVFrameWrapperTest<AVInputFormat_57>(version);
+    runAVInputFormatWrapperTest<AVInputFormat_57>(version);
   else if (version.avformat.major == 58)
-    runAVFrameWrapperTest<AVInputFormat_58>(version);
+    runAVInputFormatWrapperTest<AVInputFormat_58>(version);
   else if (version.avformat.major == 59)
-    runAVFrameWrapperTest<AVInputFormat_59>(version);
+    runAVInputFormatWrapperTest<AVInputFormat_59>(version);
   else if (version.avformat.major == 60)
-    runAVFrameWrapperTest<AVInputFormat_60>(version);
+    runAVInputFormatWrapperTest<AVInputFormat_60>(version);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
