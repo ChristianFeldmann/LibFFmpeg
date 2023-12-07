@@ -29,9 +29,14 @@ bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
     throw std::runtime_error("Decoder was already opened.");
 
   const auto codecParameters = stream.getCodecParameters();
+  if (!codecParameters)
+  {
+    this->decoderState = State::Error;
+    return false;
+  }
 
   if (auto context =
-          avcodec::AVCodecContextWrapper::openContextForDecoding(codecParameters, this->libraries))
+          avcodec::AVCodecContextWrapper::openContextForDecoding(*codecParameters, this->libraries))
     this->decoderContext = context.value();
   else
   {
