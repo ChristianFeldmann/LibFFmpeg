@@ -55,7 +55,7 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
   EXPECT_TRUE(parameters.getExtradata().empty());
   EXPECT_EQ(parameters.getSize(), Size());
   EXPECT_EQ(parameters.getColorspace(), ColorSpace::UNSPECIFIED);
-  EXPECT_TRUE(parameters.getPixelFormat().name.empty());
+  EXPECT_EQ(parameters.getPixelFormat().name, "Unknown");
   EXPECT_EQ(parameters.getSampleAspectRatio(), Rational());
 }
 

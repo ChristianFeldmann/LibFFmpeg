@@ -75,6 +75,7 @@ void runAVInputFormatWrapperTest(const LibraryVersions &version)
 
 class AVInputFormatWrapperTest : public testing::TestWithParam<LibraryVersions>
 {
+  
 };
 
 TEST(AVInputFormatWrapperTest, shouldThrowIfLibraryNotSet)

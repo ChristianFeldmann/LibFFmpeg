@@ -8,6 +8,7 @@
 
 #include <wrappers/Functions.h>
 
+#include "AVPacketWrapperInternal.h"
 #include "CastCodecClasses.h"
 
 #include <cstring>
@@ -19,6 +20,11 @@ namespace
 {
 
 using ffmpeg::internal::AVPacket;
+using ffmpeg::internal::avcodec::AVPacket_56;
+using ffmpeg::internal::avcodec::AVPacket_57;
+using ffmpeg::internal::avcodec::AVPacket_58;
+using ffmpeg::internal::avcodec::AVPacket_59;
+using ffmpeg::internal::avcodec::AVPacket_60;
 
 constexpr auto AV_PKT_FLAG_KEY     = 0x0001; ///< The packet contains a keyframe
 constexpr auto AV_PKT_FLAG_CORRUPT = 0x0002; ///< The packet content is corrupted
@@ -26,7 +32,7 @@ constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and sh
 
 } // namespace
 
-AVPacketWrapper::AVPacketWrapper(AVPacket                                 *packet,
+AVPacketWrapper::AVPacketWrapper(AVPacket                         *packet,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : packet(packet), ffmpegLibraries(ffmpegLibraries)
 {
@@ -37,7 +43,7 @@ AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibrari
 {
 }
 
-AVPacketWrapper::AVPacketWrapper(const ByteVector                         &data,
+AVPacketWrapper::AVPacketWrapper(const ByteVector                 &data,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {

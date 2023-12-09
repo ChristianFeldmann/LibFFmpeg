@@ -65,7 +65,7 @@ public:
     bool floatValues{};
   };
 
-  std::string                      name{};
+  std::string                      name{"Unknown"};
   int                              numberOfComponents{};
   Shift                            shiftLumaToChroma{};
   Flags                            flags{};

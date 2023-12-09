@@ -17,10 +17,9 @@ namespace ffmpeg::avformat
 class AVCodecParametersWrapper
 {
 public:
-  AVCodecParametersWrapper() = default;
+  AVCodecParametersWrapper() = delete;
   AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters *p,
                            std::shared_ptr<IFFmpegLibraries>    libraries);
-  explicit operator bool() const { return this->codecParameters != nullptr; }
 
   MediaType                         getCodecType() const;
   ffmpeg::internal::AVCodecID       getCodecID() const;

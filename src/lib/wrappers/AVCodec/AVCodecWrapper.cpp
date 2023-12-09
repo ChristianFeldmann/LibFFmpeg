@@ -10,64 +10,23 @@
 
 #include <stdexcept>
 
+#include "AVCodecWrapperInternal.h"
 #include "CastCodecClasses.h"
 
 namespace ffmpeg::avcodec
 {
 
-using ffmpeg::internal::AVClass;
 using ffmpeg::internal::AVCodec;
 using ffmpeg::internal::AVCodecID;
 using ffmpeg::internal::AVMediaType;
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVRational;
 using ffmpeg::internal::AVSampleFormat;
-
-namespace internal
-{
-
-struct AVCodec_56
-{
-  const char           *name;
-  const char           *long_name;
-  AVMediaType           type;
-  AVCodecID             id;
-  int                   capabilities;
-  const AVRational     *supported_framerates;
-  const AVPixelFormat  *pix_fmts;
-  const int            *supported_samplerates;
-  const AVSampleFormat *sample_fmts;
-  const uint64_t       *channel_layouts;
-  uint8_t               max_lowres;
-  const AVClass        *priv_class;
-
-  // Actually, there is more here, but nothing more of the public API
-};
-
-typedef AVCodec_56 AVCodec_57;
-typedef AVCodec_56 AVCodec_58;
-
-struct AVCodec_59
-{
-  const char           *name;
-  const char           *long_name;
-  AVMediaType           type;
-  AVCodecID             id;
-  int                   capabilities;
-  uint8_t               max_lowres;
-  const AVRational     *supported_framerates;
-  const AVPixelFormat  *pix_fmts;
-  const int            *supported_samplerates;
-  const AVSampleFormat *sample_fmts;
-  const uint64_t       *channel_layouts;
-  const AVClass        *priv_class;
-
-  // Actually, there is more here, but nothing more of the public API
-};
-
-typedef AVCodec_59 AVCodec_60;
-
-} // namespace internal
+using ffmpeg::internal::avcodec::AVCodec_56;
+using ffmpeg::internal::avcodec::AVCodec_57;
+using ffmpeg::internal::avcodec::AVCodec_58;
+using ffmpeg::internal::avcodec::AVCodec_59;
+using ffmpeg::internal::avcodec::AVCodec_60;
 
 namespace
 {
@@ -87,8 +46,7 @@ template <typename T> std::vector<T> convertRawListToVec(const T *rawValues, T t
 
 } // namespace
 
-AVCodecWrapper::AVCodecWrapper(AVCodec                                  *codec,
-                               std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+AVCodecWrapper::AVCodecWrapper(AVCodec *codec, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codec(codec), ffmpegLibraries(ffmpegLibraries)
 {
 }
@@ -109,7 +67,7 @@ std::string AVCodecWrapper::getLongName() const
 
 MediaType AVCodecWrapper::getMediaType() const
 {
-  ffmpeg::internal::AVMediaType mediaType;
+  AVMediaType mediaType;
   CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, mediaType, type);
   return ffmpeg::internal::toMediaType(mediaType);
 }
@@ -130,7 +88,7 @@ int AVCodecWrapper::getCapabilities() const
 
 std::vector<Rational> AVCodecWrapper::getSupportedFramerates() const
 {
-  const ffmpeg::internal::AVRational *rates{};
+  const AVRational *rates{};
   CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, rates, supported_framerates);
 
   std::vector<Rational> framerates;
@@ -147,14 +105,14 @@ std::vector<Rational> AVCodecWrapper::getSupportedFramerates() const
 
 std::vector<avutil::AVPixFmtDescriptorWrapper> AVCodecWrapper::getPixelFormats() const
 {
-  const ffmpeg::internal::AVPixelFormat *formatsPointer;
+  const AVPixelFormat *formatsPointer;
   CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, formatsPointer, pix_fmts);
 
   std::vector<avutil::AVPixFmtDescriptorWrapper> formats;
 
   int  i   = 0;
   auto val = formatsPointer[i++];
-  while (val != ffmpeg::internal::AVPixelFormat::AV_PIX_FMT_NONE)
+  while (val != AVPixelFormat::AV_PIX_FMT_NONE)
   {
     formats.push_back(avutil::AVPixFmtDescriptorWrapper(val, this->ffmpegLibraries));
     val = formatsPointer[i++];

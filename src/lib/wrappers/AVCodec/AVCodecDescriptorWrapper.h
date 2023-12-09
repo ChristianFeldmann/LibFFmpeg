@@ -38,9 +38,11 @@ public:
   std::vector<std::string>    getMimeTypes() const { return this->mimeTypes; }
   std::vector<std::string>    getProfiles() const { return this->profiles; }
 
+  bool operator==(const AVCodecDescriptorWrapper &rhs) const;
+
 private:
   MediaType                   mediaType{MediaType::Unknown};
-  std::string                 codecName{};
+  std::string                 codecName{"Unknown"};
   std::string                 longName{};
   AVCodecDescriptorProperties properties{};
   std::vector<std::string>    mimeTypes;

@@ -27,6 +27,7 @@ public:
 
   explicit operator bool() const { return this->stream != nullptr; };
 
+  int                               getIndex() const;
   MediaType                         getCodecType() const;
   ffmpeg::internal::AVCodecID       getCodecID() const;
   avcodec::AVCodecDescriptorWrapper getCodecDescriptor() const;
@@ -36,9 +37,8 @@ public:
   ColorSpace                        getColorspace() const;
   avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
   ByteVector                        getExtradata() const;
-  int                               getIndex() const;
 
-  AVCodecParametersWrapper getCodecParameters() const;
+  std::optional<AVCodecParametersWrapper> getCodecParameters() const;
 
 private:
   ffmpeg::internal::AVStream       *stream{};

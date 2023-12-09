@@ -90,4 +90,11 @@ AVCodecDescriptorWrapper::AVCodecDescriptorWrapper(const AVCodecDescriptor *code
   }
 }
 
+bool AVCodecDescriptorWrapper::operator==(const AVCodecDescriptorWrapper &rhs) const
+{
+  return this->mediaType == rhs.mediaType && this->codecName == rhs.codecName &&
+         this->longName == rhs.longName && this->properties == rhs.properties &&
+         this->mimeTypes == rhs.mimeTypes && this->profiles == rhs.profiles;
+}
+
 } // namespace ffmpeg::avcodec

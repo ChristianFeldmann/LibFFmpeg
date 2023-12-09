@@ -147,6 +147,29 @@ class AVPixFmtDescriptorWrapperTest : public testing::TestWithParam<LibraryVersi
 {
 };
 
+TEST(AVPixFmtDescriptorWrapperTest, TestDefaultConstructor)
+{
+  AVPixFmtDescriptorWrapper wrapper;
+
+  EXPECT_EQ(wrapper.name, "Unknown");
+  EXPECT_EQ(wrapper.numberOfComponents, 0);
+  EXPECT_EQ(wrapper.shiftLumaToChroma.widthShift, 0);
+  EXPECT_EQ(wrapper.shiftLumaToChroma.heightShift, 0);
+
+  EXPECT_FALSE(wrapper.flags.bigEndian);
+  EXPECT_FALSE(wrapper.flags.pallette);
+  EXPECT_FALSE(wrapper.flags.bitwisePacked);
+  EXPECT_FALSE(wrapper.flags.hwAccelerated);
+  EXPECT_FALSE(wrapper.flags.planar);
+  EXPECT_FALSE(wrapper.flags.rgb);
+  EXPECT_FALSE(wrapper.flags.pseudoPallette);
+  EXPECT_FALSE(wrapper.flags.hasAlphaPlane);
+  EXPECT_FALSE(wrapper.flags.bayerPattern);
+  EXPECT_FALSE(wrapper.flags.floatValues);
+
+  EXPECT_EQ(wrapper.componentDescriptors.size(), 0);
+}
+
 TEST_P(AVPixFmtDescriptorWrapperTest, TestAVPixFmtDescriptorWrapper)
 {
   const auto version = GetParam();
