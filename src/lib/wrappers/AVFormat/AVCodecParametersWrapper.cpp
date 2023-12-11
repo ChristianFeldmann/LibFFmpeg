@@ -102,7 +102,7 @@ ColorSpace AVCodecParametersWrapper::getColorspace() const
   return internal::toColorspace(avColorspace);
 }
 
-avutil::AVPixFmtDescriptorWrapper AVCodecParametersWrapper::getPixelFormat() const
+avutil::PixelFormatDescriptor AVCodecParametersWrapper::getPixelFormat() const
 {
   RETURN_IF_VERSION_TOO_OLD({});
 
@@ -111,7 +111,7 @@ avutil::AVPixFmtDescriptorWrapper AVCodecParametersWrapper::getPixelFormat() con
 
   const auto avPixelFormat = static_cast<internal::AVPixelFormat>(pixelFormatIndex);
 
-  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->ffmpegLibraries);
+  return avutil::convertAVPixFmtDescriptor(avPixelFormat, this->ffmpegLibraries);
 }
 
 Rational AVCodecParametersWrapper::getSampleAspectRatio() const
@@ -204,7 +204,7 @@ void AVCodecParametersWrapper::setSize(Size size)
   CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, height, size.height);
 }
 
-void AVCodecParametersWrapper::setAVPixelFormat(avutil::AVPixFmtDescriptorWrapper format)
+void AVCodecParametersWrapper::setAVPixelFormat(avutil::PixelFormatDescriptor format)
 {
   // CAST_AVFORMAT_SET_MEMBER(AVCodecParameters, this->codecParameters, format, format);
 }

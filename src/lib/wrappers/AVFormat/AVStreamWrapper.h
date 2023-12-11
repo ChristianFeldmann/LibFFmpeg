@@ -11,7 +11,7 @@
 #include <wrappers/AVCodec/AVCodecContextWrapper.h>
 #include <wrappers/AVCodec/AVCodecDescriptorWrapper.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 #include <memory>
 
@@ -35,7 +35,7 @@ public:
   Rational                          getTimeBase() const;
   Size                              getFrameSize() const;
   ColorSpace                        getColorspace() const;
-  avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
+  avutil::PixelFormatDescriptor     getPixelFormat() const;
   ByteVector                        getExtradata() const;
 
   std::optional<AVCodecParametersWrapper> getCodecParameters() const;

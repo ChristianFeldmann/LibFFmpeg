@@ -9,7 +9,7 @@
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVUtil/AVDictionaryWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 #include <memory>
 
@@ -27,15 +27,15 @@ public:
 
   ffmpeg::internal::AVFrame *getFrame() const { return this->frame; }
 
-  ByteVector                getData(int component) const;
-  int                       getLineSize(int component) const;
-  Size                      getSize() const;
-  int64_t                   getPTS() const;
-  PictureType               getPictType() const;
-  bool                      isKeyFrame() const;
-  AVDictionaryWrapper       getMetadata() const;
-  AVPixFmtDescriptorWrapper getPixelFormatDescriptor() const;
-  Rational                  getSampleAspectRatio() const;
+  ByteVector            getData(int component) const;
+  int                   getLineSize(int component) const;
+  Size                  getSize() const;
+  int64_t               getPTS() const;
+  PictureType           getPictType() const;
+  bool                  isKeyFrame() const;
+  AVDictionaryWrapper   getMetadata() const;
+  PixelFormatDescriptor getPixelFormatDescriptor() const;
+  Rational              getSampleAspectRatio() const;
 
   explicit operator bool() const { return this->frame != nullptr; }
 

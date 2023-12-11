@@ -18,7 +18,7 @@ namespace ffmpeg::avutil
 class AVFrameSideDataWrapper
 {
 public:
-  AVFrameSideDataWrapper() = default;
+  AVFrameSideDataWrapper() = delete;
   AVFrameSideDataWrapper(ffmpeg::internal::AVFrameSideData *sideData,
                          std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries);
 

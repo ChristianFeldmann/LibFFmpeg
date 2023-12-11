@@ -7,7 +7,6 @@
 #include <common/InternalTypes.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapperInternal.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>

@@ -126,12 +126,12 @@ AVDictionaryWrapper AVFrameWrapper::getMetadata() const
   return {};
 }
 
-AVPixFmtDescriptorWrapper AVFrameWrapper::getPixelFormatDescriptor() const
+PixelFormatDescriptor AVFrameWrapper::getPixelFormatDescriptor() const
 {
   int format;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, format, format);
 
-  return AVPixFmtDescriptorWrapper(static_cast<ffmpeg::internal::AVPixelFormat>(format),
+  return convertAVPixFmtDescriptor(static_cast<ffmpeg::internal::AVPixelFormat>(format),
                                    this->ffmpegLibraries);
 }
 

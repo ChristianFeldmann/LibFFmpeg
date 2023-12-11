@@ -103,18 +103,18 @@ std::vector<Rational> AVCodecWrapper::getSupportedFramerates() const
   return framerates;
 }
 
-std::vector<avutil::AVPixFmtDescriptorWrapper> AVCodecWrapper::getPixelFormats() const
+std::vector<avutil::PixelFormatDescriptor> AVCodecWrapper::getPixelFormats() const
 {
   const AVPixelFormat *formatsPointer;
   CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, formatsPointer, pix_fmts);
 
-  std::vector<avutil::AVPixFmtDescriptorWrapper> formats;
+  std::vector<avutil::PixelFormatDescriptor> formats;
 
   int  i   = 0;
   auto val = formatsPointer[i++];
   while (val != AVPixelFormat::AV_PIX_FMT_NONE)
   {
-    formats.push_back(avutil::AVPixFmtDescriptorWrapper(val, this->ffmpegLibraries));
+    formats.push_back(avutil::convertAVPixFmtDescriptor(val, this->ffmpegLibraries));
     val = formatsPointer[i++];
   }
 

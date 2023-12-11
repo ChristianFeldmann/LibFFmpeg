@@ -122,7 +122,7 @@ ColorSpace AVStreamWrapper::getColorspace() const
   return ColorSpace::UNSPECIFIED;
 }
 
-avutil::AVPixFmtDescriptorWrapper AVStreamWrapper::getPixelFormat() const
+avutil::PixelFormatDescriptor AVStreamWrapper::getPixelFormat() const
 {
   if (const auto codecParameters = this->getCodecParameters())
     return codecParameters->getPixelFormat();

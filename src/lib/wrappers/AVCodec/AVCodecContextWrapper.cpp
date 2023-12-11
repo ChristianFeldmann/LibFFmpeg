@@ -7,7 +7,6 @@
 #include "AVCodecContextWrapper.h"
 
 #include <common/InternalTypes.h>
-#include <wrappers/AVUtil/AVDictionaryWrapper.h>
 #include <wrappers/Functions.h>
 
 #include "AVCodecContextWrapperInternal.h"
@@ -80,11 +79,11 @@ AVCodecID AVCodecContextWrapper::getCodecID() const
   return id;
 }
 
-avutil::AVPixFmtDescriptorWrapper AVCodecContextWrapper::getPixelFormat() const
+avutil::PixelFormatDescriptor AVCodecContextWrapper::getPixelFormat() const
 {
   AVPixelFormat avPixelFormat;
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avPixelFormat, pix_fmt);
-  return avutil::AVPixFmtDescriptorWrapper(avPixelFormat, this->ffmpegLibraries);
+  return avutil::convertAVPixFmtDescriptor(avPixelFormat, this->ffmpegLibraries);
 }
 
 Size AVCodecContextWrapper::getSize() const

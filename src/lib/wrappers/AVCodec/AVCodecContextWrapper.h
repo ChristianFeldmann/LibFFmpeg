@@ -10,7 +10,7 @@
 #include <common/Enums.h>
 #include <libHandling/IFFmpegLibraries.h>
 #include <wrappers/AVFormat/AVCodecParametersWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 namespace ffmpeg::avcodec
 {
@@ -30,13 +30,13 @@ public:
 
   ffmpeg::internal::AVCodecContext *getCodecContext() const { return this->codecContext; }
 
-  MediaType                         getCodecType() const;
-  ffmpeg::internal::AVCodecID       getCodecID() const;
-  avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
-  Size                              getSize() const;
-  ColorSpace                        getColorspace() const;
-  Rational                          getTimeBase() const;
-  ByteVector                        getExtradata() const;
+  MediaType                     getCodecType() const;
+  ffmpeg::internal::AVCodecID   getCodecID() const;
+  avutil::PixelFormatDescriptor getPixelFormat() const;
+  Size                          getSize() const;
+  ColorSpace                    getColorspace() const;
+  Rational                      getTimeBase() const;
+  ByteVector                    getExtradata() const;
 
 private:
   ffmpeg::internal::AVCodecContext *codecContext{};

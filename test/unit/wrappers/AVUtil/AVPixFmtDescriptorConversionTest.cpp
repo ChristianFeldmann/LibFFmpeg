@@ -5,8 +5,8 @@
  */
 
 #include <common/InternalTypes.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapperInternal.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorConversionInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
@@ -104,89 +104,89 @@ template <typename T> AVPixFmtDescriptor *getDescriptor(AVPixelFormat pix_fmt)
 }
 
 template <typename AVPixFmtDescriptorType>
-void runAVPixFmtDescriptorWrapperTest(const LibraryVersions &version)
+void runAVPixFmtDescriptorConversionTest(const LibraryVersions &version)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   ffmpegLibraries->avutil.av_pix_fmt_desc_get = getDescriptor<AVPixFmtDescriptorType>;
 
-  const auto                pixelFormat = static_cast<AVPixelFormat>(123);
-  AVPixFmtDescriptorWrapper wrapper(pixelFormat, ffmpegLibraries);
+  const auto pixelFormat = static_cast<AVPixelFormat>(123);
+  const auto format      = convertAVPixFmtDescriptor(pixelFormat, ffmpegLibraries);
 
-  EXPECT_EQ(wrapper.name, "Test");
-  EXPECT_EQ(wrapper.numberOfComponents, 3);
-  EXPECT_EQ(wrapper.shiftLumaToChroma.widthShift, 4);
-  EXPECT_EQ(wrapper.shiftLumaToChroma.heightShift, 5);
+  EXPECT_EQ(format.name, "Test");
+  EXPECT_EQ(format.numberOfComponents, 3);
+  EXPECT_EQ(format.shiftLumaToChroma.widthShift, 4);
+  EXPECT_EQ(format.shiftLumaToChroma.heightShift, 5);
 
-  EXPECT_TRUE(wrapper.flags.bigEndian);
-  EXPECT_FALSE(wrapper.flags.pallette);
-  EXPECT_FALSE(wrapper.flags.bitwisePacked);
-  EXPECT_FALSE(wrapper.flags.hwAccelerated);
-  EXPECT_TRUE(wrapper.flags.planar);
-  EXPECT_FALSE(wrapper.flags.rgb);
-  EXPECT_FALSE(wrapper.flags.pseudoPallette);
-  EXPECT_FALSE(wrapper.flags.hasAlphaPlane);
-  EXPECT_FALSE(wrapper.flags.bayerPattern);
-  EXPECT_FALSE(wrapper.flags.floatValues);
+  EXPECT_TRUE(format.flags.bigEndian);
+  EXPECT_FALSE(format.flags.pallette);
+  EXPECT_FALSE(format.flags.bitwisePacked);
+  EXPECT_FALSE(format.flags.hwAccelerated);
+  EXPECT_TRUE(format.flags.planar);
+  EXPECT_FALSE(format.flags.rgb);
+  EXPECT_FALSE(format.flags.pseudoPallette);
+  EXPECT_FALSE(format.flags.hasAlphaPlane);
+  EXPECT_FALSE(format.flags.bayerPattern);
+  EXPECT_FALSE(format.flags.floatValues);
 
-  EXPECT_EQ(wrapper.componentDescriptors.size(), 3);
+  EXPECT_EQ(format.componentDescriptors.size(), 3);
   for (int i = 0; i < 3; ++i)
   {
-    EXPECT_EQ(wrapper.componentDescriptors[i].plane, i);
-    EXPECT_EQ(wrapper.componentDescriptors[i].step, 4);
-    EXPECT_EQ(wrapper.componentDescriptors[i].offset, 3);
-    EXPECT_EQ(wrapper.componentDescriptors[i].shift, 4);
-    EXPECT_EQ(wrapper.componentDescriptors[i].depth, 6);
+    EXPECT_EQ(format.componentDescriptors[i].plane, i);
+    EXPECT_EQ(format.componentDescriptors[i].step, 4);
+    EXPECT_EQ(format.componentDescriptors[i].offset, 3);
+    EXPECT_EQ(format.componentDescriptors[i].shift, 4);
+    EXPECT_EQ(format.componentDescriptors[i].depth, 6);
   }
 }
 
 } // namespace
 
-class AVPixFmtDescriptorWrapperTest : public testing::TestWithParam<LibraryVersions>
+class AVPixFmtDescriptorConversionTest : public testing::TestWithParam<LibraryVersions>
 {
 };
 
-TEST(AVPixFmtDescriptorWrapperTest, TestDefaultConstructor)
+TEST(AVPixFmtDescriptorConversionTest, TestDefaultConstructor)
 {
-  AVPixFmtDescriptorWrapper wrapper;
+  PixelFormatDescriptor format;
 
-  EXPECT_EQ(wrapper.name, "Unknown");
-  EXPECT_EQ(wrapper.numberOfComponents, 0);
-  EXPECT_EQ(wrapper.shiftLumaToChroma.widthShift, 0);
-  EXPECT_EQ(wrapper.shiftLumaToChroma.heightShift, 0);
+  EXPECT_EQ(format.name, "Unknown");
+  EXPECT_EQ(format.numberOfComponents, 0);
+  EXPECT_EQ(format.shiftLumaToChroma.widthShift, 0);
+  EXPECT_EQ(format.shiftLumaToChroma.heightShift, 0);
 
-  EXPECT_FALSE(wrapper.flags.bigEndian);
-  EXPECT_FALSE(wrapper.flags.pallette);
-  EXPECT_FALSE(wrapper.flags.bitwisePacked);
-  EXPECT_FALSE(wrapper.flags.hwAccelerated);
-  EXPECT_FALSE(wrapper.flags.planar);
-  EXPECT_FALSE(wrapper.flags.rgb);
-  EXPECT_FALSE(wrapper.flags.pseudoPallette);
-  EXPECT_FALSE(wrapper.flags.hasAlphaPlane);
-  EXPECT_FALSE(wrapper.flags.bayerPattern);
-  EXPECT_FALSE(wrapper.flags.floatValues);
+  EXPECT_FALSE(format.flags.bigEndian);
+  EXPECT_FALSE(format.flags.pallette);
+  EXPECT_FALSE(format.flags.bitwisePacked);
+  EXPECT_FALSE(format.flags.hwAccelerated);
+  EXPECT_FALSE(format.flags.planar);
+  EXPECT_FALSE(format.flags.rgb);
+  EXPECT_FALSE(format.flags.pseudoPallette);
+  EXPECT_FALSE(format.flags.hasAlphaPlane);
+  EXPECT_FALSE(format.flags.bayerPattern);
+  EXPECT_FALSE(format.flags.floatValues);
 
-  EXPECT_EQ(wrapper.componentDescriptors.size(), 0);
+  EXPECT_EQ(format.componentDescriptors.size(), 0);
 }
 
-TEST_P(AVPixFmtDescriptorWrapperTest, TestAVPixFmtDescriptorWrapper)
+TEST_P(AVPixFmtDescriptorConversionTest, TestAVPixFmtDescriptorConversion)
 {
   const auto version = GetParam();
   if (version.avutil.major == 54)
-    runAVPixFmtDescriptorWrapperTest<AVPixFmtDescriptor_54>(version);
+    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_54>(version);
   else if (version.avutil.major == 55)
-    runAVPixFmtDescriptorWrapperTest<AVPixFmtDescriptor_55>(version);
+    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_55>(version);
   else if (version.avutil.major == 56)
-    runAVPixFmtDescriptorWrapperTest<AVPixFmtDescriptor_56>(version);
+    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_56>(version);
   else if (version.avutil.major == 57)
-    runAVPixFmtDescriptorWrapperTest<AVPixFmtDescriptor_57>(version);
+    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_57>(version);
   else if (version.avutil.major == 58)
-    runAVPixFmtDescriptorWrapperTest<AVPixFmtDescriptor_58>(version);
+    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_58>(version);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
-                         AVPixFmtDescriptorWrapperTest,
+                         AVPixFmtDescriptorConversionTest,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 

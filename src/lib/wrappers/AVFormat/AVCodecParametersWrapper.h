@@ -10,7 +10,7 @@
 #include <common/InternalTypes.h>
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorWrapper.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 namespace ffmpeg::avformat
 {
@@ -21,13 +21,13 @@ public:
   AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters *p,
                            std::shared_ptr<IFFmpegLibraries>    libraries);
 
-  MediaType                         getCodecType() const;
-  ffmpeg::internal::AVCodecID       getCodecID() const;
-  ByteVector                        getExtradata() const;
-  Size                              getSize() const;
-  ColorSpace                        getColorspace() const;
-  avutil::AVPixFmtDescriptorWrapper getPixelFormat() const;
-  Rational                          getSampleAspectRatio() const;
+  MediaType                     getCodecType() const;
+  ffmpeg::internal::AVCodecID   getCodecID() const;
+  ByteVector                    getExtradata() const;
+  Size                          getSize() const;
+  ColorSpace                    getColorspace() const;
+  avutil::PixelFormatDescriptor getPixelFormat() const;
+  Rational                      getSampleAspectRatio() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
@@ -36,7 +36,7 @@ public:
   void setAVCodecID(ffmpeg::internal::AVCodecID id);
   void setExtradata(const ByteVector &extradata);
   void setSize(Size size);
-  void setAVPixelFormat(avutil::AVPixFmtDescriptorWrapper descriptor);
+  void setAVPixelFormat(avutil::PixelFormatDescriptor descriptor);
   void setProfileLevel(int profile, int level);
   void setSampleAspectRatio(int num, int den);
 

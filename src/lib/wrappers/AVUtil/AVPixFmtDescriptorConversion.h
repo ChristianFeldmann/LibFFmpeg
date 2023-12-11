@@ -14,13 +14,8 @@
 namespace ffmpeg::avutil
 {
 
-class AVPixFmtDescriptorWrapper
+struct PixelFormatDescriptor
 {
-public:
-  AVPixFmtDescriptorWrapper() = default;
-  AVPixFmtDescriptorWrapper(const internal::AVPixelFormat            avPixelFormat,
-                            const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries);
-
   /**
    * Amount to shift the luma width/height right to find the chroma width/height.
    * For YV12 this is 1 for example.
@@ -71,5 +66,9 @@ public:
   Flags                            flags{};
   std::vector<ComponentDescriptor> componentDescriptors;
 };
+
+PixelFormatDescriptor
+convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat,
+                          const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries);
 
 } // namespace ffmpeg::avutil
