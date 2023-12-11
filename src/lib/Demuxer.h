@@ -25,10 +25,7 @@ public:
 
   avformat::AVFormatContextWrapper *getFormatContext() { return &this->formatContext; }
 
-  /* Read the next packet from the bitstream and return it. If there are no more packets,
-   * the returned packet will be empty (bool(packet) == false).
-   */
-  avcodec::AVPacketWrapper getNextPacket();
+  std::optional<avcodec::AVPacketWrapper> getNextPacket();
 
 private:
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;

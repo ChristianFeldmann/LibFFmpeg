@@ -183,15 +183,15 @@ TEST(FFmpegTest, DemuxPackets)
   int packetCountVideo = 0;
   while (auto packet = demuxer.getNextPacket())
   {
-    EXPECT_TRUE(packet.getStreamIndex() == 0 || packet.getStreamIndex() == 1);
-    if (packet.getStreamIndex() == 0)
+    EXPECT_TRUE(packet->getStreamIndex() == 0 || packet->getStreamIndex() == 1);
+    if (packet->getStreamIndex() == 0)
     {
-      EXPECT_EQ(packet.getDataSize(), expectedDataSizesAudio.at(packetCountAudio));
+      EXPECT_EQ(packet->getDataSize(), expectedDataSizesAudio.at(packetCountAudio));
       ++packetCountAudio;
     }
-    else if (packet.getStreamIndex() == 1)
+    else if (packet->getStreamIndex() == 1)
     {
-      EXPECT_EQ(packet.getDataSize(), expectedDataSizesVideo.at(packetCountVideo));
+      EXPECT_EQ(packet->getDataSize(), expectedDataSizesVideo.at(packetCountVideo));
       ++packetCountVideo;
     }
   }
@@ -205,8 +205,8 @@ TEST(FFmpegTest, DecodingTest)
   const auto errorCode = toReturnCode(526789);
 
   auto ffmpegLibraries = openLibraries();
-  auto demuxer            = openTestFileInDemuxer(ffmpegLibraries);
-  auto decoder            = Decoder(ffmpegLibraries);
+  auto demuxer         = openTestFileInDemuxer(ffmpegLibraries);
+  auto decoder         = Decoder(ffmpegLibraries);
 
   const auto streamToDecode = 1;
   const auto stream         = demuxer.getFormatContext()->getStream(streamToDecode);
@@ -264,12 +264,12 @@ TEST(FFmpegTest, DecodingTest)
 
   while (const auto packet = demuxer.getNextPacket())
   {
-    if (packet.getStreamIndex() != streamToDecode)
+    if (packet->getStreamIndex() != streamToDecode)
       continue;
 
     EXPECT_EQ(decoder.getDecoderState(), Decoder::State::NeedsMoreData);
 
-    auto result = decoder.pushPacket(packet);
+    auto result = decoder.pushPacket(*packet);
     ASSERT_NE(result, Decoder::PushResult::Error);
 
     if (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
@@ -282,7 +282,7 @@ TEST(FFmpegTest, DecodingTest)
 
     if (result == Decoder::PushResult::NotPushedPullFramesFirst)
     {
-      result = decoder.pushPacket(packet);
+      result = decoder.pushPacket(*packet);
       EXPECT_EQ(result, Decoder::PushResult::Ok);
     }
   }

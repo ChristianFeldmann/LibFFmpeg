@@ -36,7 +36,7 @@ ResultAndLog Demuxer::openFile(const std::filesystem::path &path)
   return result;
 }
 
-avcodec::AVPacketWrapper Demuxer::getNextPacket()
+std::optional<avcodec::AVPacketWrapper> Demuxer::getNextPacket()
 {
   avcodec::AVPacketWrapper packet(this->ffmpegLibraries);
   packet.allocatePacket();

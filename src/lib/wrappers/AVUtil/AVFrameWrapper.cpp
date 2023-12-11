@@ -113,7 +113,7 @@ bool AVFrameWrapper::isKeyFrame() const
   return keyframe == 1;
 }
 
-AVDictionaryWrapper AVFrameWrapper::getMetadata() const
+std::optional<AVDictionaryWrapper> AVFrameWrapper::getMetadata() const
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avutil.major;
 

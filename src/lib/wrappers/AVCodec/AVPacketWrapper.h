@@ -18,7 +18,7 @@ namespace ffmpeg::avcodec
 class AVPacketWrapper
 {
 public:
-  AVPacketWrapper() = default;
+  AVPacketWrapper() = delete;
   AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVPacketWrapper(ffmpeg::internal::AVPacket       *packet,
                   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);

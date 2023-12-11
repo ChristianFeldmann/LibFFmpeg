@@ -61,7 +61,7 @@ Decoder::PushResult Decoder::pushPacket(const avcodec::AVPacketWrapper &packet)
     return PushResult::NotPushedPullFramesFirst;
 
   const auto returnCode = toReturnCode(this->libraries->avcodec.avcodec_send_packet(
-      this->decoderContext.getCodecContext(), packet.getPacket()));
+      this->decoderContext->getCodecContext(), packet.getPacket()));
 
   if (returnCode == ReturnCode::Ok)
     return PushResult::Ok;
@@ -80,8 +80,8 @@ void Decoder::setFlushing()
   if (this->flushing)
     throw std::runtime_error("Flushing was already set. Can not be set multiple times.");
 
-  const auto returnCode =
-      this->libraries->avcodec.avcodec_send_packet(this->decoderContext.getCodecContext(), nullptr);
+  const auto returnCode = this->libraries->avcodec.avcodec_send_packet(
+      this->decoderContext->getCodecContext(), nullptr);
 
   this->flushing     = true;
   this->decoderState = (returnCode == 0) ? State::RetrieveFrames : State::Error;
@@ -95,7 +95,7 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
   avutil::AVFrameWrapper frame(this->libraries);
 
   const auto returnCode = toReturnCode(this->libraries->avcodec.avcodec_receive_frame(
-      this->decoderContext.getCodecContext(), frame.getFrame()));
+      this->decoderContext->getCodecContext(), frame.getFrame()));
 
   const auto frameSize = frame.getSize();
 

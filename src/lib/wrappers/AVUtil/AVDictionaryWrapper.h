@@ -18,7 +18,7 @@ using DictionaryMap = std::map<std::string, std::string>;
 class AVDictionaryWrapper
 {
 public:
-  AVDictionaryWrapper() = default;
+  AVDictionaryWrapper() = delete;
   AVDictionaryWrapper(ffmpeg::internal::AVDictionary   *dict,
                       std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 

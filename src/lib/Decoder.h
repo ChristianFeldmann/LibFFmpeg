@@ -45,8 +45,8 @@ public:
   std::optional<avutil::AVFrameWrapper> decodeNextFrame();
 
 private:
-  std::shared_ptr<IFFmpegLibraries> libraries;
-  avcodec::AVCodecContextWrapper    decoderContext{};
+  std::shared_ptr<IFFmpegLibraries>             libraries;
+  std::optional<avcodec::AVCodecContextWrapper> decoderContext{};
 
   State decoderState{State::NotOpened};
   bool  flushing{};

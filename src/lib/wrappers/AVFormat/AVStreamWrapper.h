@@ -21,7 +21,7 @@ namespace ffmpeg::avformat
 class AVStreamWrapper
 {
 public:
-  AVStreamWrapper() = default;
+  AVStreamWrapper() = delete;
   AVStreamWrapper(ffmpeg::internal::AVStream       *stream,
                   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
@@ -44,7 +44,7 @@ private:
   ffmpeg::internal::AVStream       *stream{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 
-  avcodec::AVCodecContextWrapper getCodecContext() const;
+  std::optional<avcodec::AVCodecContextWrapper> getCodecContext() const;
 };
 
 } // namespace ffmpeg::avformat

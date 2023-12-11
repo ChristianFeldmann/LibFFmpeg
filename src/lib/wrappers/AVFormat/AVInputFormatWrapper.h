@@ -39,7 +39,7 @@ bool        operator==(const AVInputFormatFlags &lhs, const AVInputFormatFlags &
 class AVInputFormatWrapper
 {
 public:
-  AVInputFormatWrapper() = default;
+  AVInputFormatWrapper() = delete;
   AVInputFormatWrapper(ffmpeg::internal::AVInputFormat  *inputFormat,
                        std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 

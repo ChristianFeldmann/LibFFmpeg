@@ -54,7 +54,7 @@ MediaType AVStreamWrapper::getCodecType() const
     return codecParameters->getCodecType();
 
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getCodecType();
+    return codecContext->getCodecType();
 
   return MediaType::Unknown;
 }
@@ -65,7 +65,7 @@ AVCodecID AVStreamWrapper::getCodecID() const
     return codecParameters->getCodecID();
 
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getCodecID();
+    return codecContext->getCodecID();
 
   return ffmpeg::internal::AV_CODEC_ID_NONE;
 }
@@ -95,7 +95,7 @@ Rational AVStreamWrapper::getTimeBase() const
 
   // The stream time_base seems not to be set. Try the time_base in the codec.
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getTimeBase();
+    return codecContext->getTimeBase();
 
   return {};
 }
@@ -106,7 +106,7 @@ Size AVStreamWrapper::getFrameSize() const
     return codecParameters->getSize();
 
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getSize();
+    return codecContext->getSize();
 
   return {};
 }
@@ -117,7 +117,7 @@ ColorSpace AVStreamWrapper::getColorspace() const
     return codecParameters->getColorspace();
 
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getColorspace();
+    return codecContext->getColorspace();
 
   return ColorSpace::UNSPECIFIED;
 }
@@ -128,7 +128,7 @@ avutil::PixelFormatDescriptor AVStreamWrapper::getPixelFormat() const
     return codecParameters->getPixelFormat();
 
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getPixelFormat();
+    return codecContext->getPixelFormat();
 
   return {};
 }
@@ -139,12 +139,12 @@ ByteVector AVStreamWrapper::getExtradata() const
     return codecParameters->getExtradata();
 
   if (const auto codecContext = this->getCodecContext())
-    return codecContext.getExtradata();
+    return codecContext->getExtradata();
 
   return {};
 }
 
-avcodec::AVCodecContextWrapper AVStreamWrapper::getCodecContext() const
+std::optional<avcodec::AVCodecContextWrapper> AVStreamWrapper::getCodecContext() const
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
   if (version == 56)

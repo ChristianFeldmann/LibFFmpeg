@@ -203,17 +203,17 @@ int main(int argc, char const *argv[])
   int                packetIndex = 0;
   while (auto packet = demuxer.getNextPacket())
   {
-    const auto streamIndex = packet.getStreamIndex();
+    const auto streamIndex = packet->getStreamIndex();
     streamPacketCounters[streamIndex]++;
 
     if (settings.showPackets)
     {
-      std::cout << "  Packet " << packetIndex << ": StreamIndex " << packet.getStreamIndex()
-                << " DTS " << packet.getDTS() << " PTS " << packet.getPTS() << " duration "
-                << packet.getDuration() << " dataSize " << packet.getDataSize();
-      const auto flags = to_string(packet.getFlags());
+      std::cout << "  Packet " << packetIndex << ": StreamIndex " << packet->getStreamIndex()
+                << " DTS " << packet->getDTS() << " PTS " << packet->getPTS() << " duration "
+                << packet->getDuration() << " dataSize " << packet->getDataSize();
+      const auto flags = to_string(packet->getFlags());
       if (!flags.empty())
-        std::cout << " [" << to_string(packet.getFlags()) << "]";
+        std::cout << " [" << to_string(packet->getFlags()) << "]";
       std::cout << "\n";
     }
     packetIndex++;
