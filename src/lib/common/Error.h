@@ -48,5 +48,6 @@ enum class ReturnCode
 };
 
 ReturnCode toReturnCode(const int returnValue);
+int        toAVError(const ReturnCode returnCode);
 
 } // namespace ffmpeg

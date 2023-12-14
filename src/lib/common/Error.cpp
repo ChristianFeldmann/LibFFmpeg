@@ -6,30 +6,46 @@
 
 #include "Error.h"
 
+#include <algorithm>
+#include <array>
+
 namespace ffmpeg
 {
 
 namespace
 {
 
-constexpr int makeErrorTag(unsigned char a, unsigned char b, unsigned char c, unsigned char d)
-{
-  return -(static_cast<int>(a) | (static_cast<int>(b) << 8) | (static_cast<int>(c) << 16) |
-           (static_cast<unsigned>(d) << 24));
-}
+using AVErrorToReturnCode = std::pair<int, ReturnCode>;
 
-// How to construct error tags
-#define MKTAG(a, b, c, d) ((a) | ((b) << 8) | ((c) << 16) | ((unsigned)(d) << 24))
-#define FFERRTAG(a, b, c, d) (-(int)MKTAG(a, b, c, d))
-
-#if EDOM > 0
-#define AVERROR(e) (-(e))
-#define AVUNERROR(e) (-(e))
-#else
-/* Some platforms have E* and errno already negated. */
-#define AVERROR(e) (e)
-#define AVUNERROR(e) (e)
-#endif
+constexpr std::array<AVErrorToReturnCode, 28> AVERRORToReturnCodeMap{
+    {{-11, ReturnCode::TryAgain},
+     {-1179861752, ReturnCode::BSFNotFound},
+     {-558323010, ReturnCode::Bug},
+     {-1397118274, ReturnCode::BufferTooSmall},
+     {-1128613112, ReturnCode::DecoderNotFound},
+     {-1296385272, ReturnCode::DemuxerNotFound},
+     {-1129203192, ReturnCode::EncoderNotFound},
+     {-541478725, ReturnCode::EndOfFile},
+     {-1414092869, ReturnCode::Exit},
+     {-542398533, ReturnCode::External},
+     {-1279870712, ReturnCode::FilterNotFound},
+     {-1094995529, ReturnCode::InvalidData},
+     {-1481985528, ReturnCode::MuxerNotFound},
+     {-1414549496, ReturnCode::OptionNotFound},
+     {-1163346256, ReturnCode::NotImplementedYet},
+     {-1330794744, ReturnCode::ProtocolNotFound},
+     {-1381258232, ReturnCode::StreamNotFound},
+     {-541545794, ReturnCode::Bug},
+     {-1313558101, ReturnCode::Unknown},
+     {-0x2bb2afa8, ReturnCode::Experimental},
+     {-0x636e6701, ReturnCode::InputChanged},
+     {-0x636e6702, ReturnCode::OutputChanged},
+     {-808465656, ReturnCode::HttpBadRequest},
+     {-825242872, ReturnCode::HttpUnauthorized},
+     {-858797304, ReturnCode::HttpForbidden},
+     {-875574520, ReturnCode::HttpNotFound},
+     {-1482175736, ReturnCode::HttpOther4xx},
+     {-1482175992, ReturnCode::HttpServerError}}};
 
 } // namespace
 
@@ -38,68 +54,30 @@ ReturnCode toReturnCode(const int returnValue)
   if (returnValue >= 0)
     return ReturnCode::Ok;
 
-  switch (returnValue)
-  {
-  case -11:
-    return ReturnCode::TryAgain;
-  case -1179861752:
-    return ReturnCode::BSFNotFound;
-  case -558323010:
-    return ReturnCode::Bug;
-  case -1397118274:
-    return ReturnCode::BufferTooSmall;
-  case -1128613112:
-    return ReturnCode::DecoderNotFound;
-  case -1296385272:
-    return ReturnCode::DemuxerNotFound;
-  case -1129203192:
-    return ReturnCode::EncoderNotFound;
-  case -541478725:
-    return ReturnCode::EndOfFile;
-  case -1414092869:
-    return ReturnCode::Exit;
-  case -542398533:
-    return ReturnCode::External;
-  case -1279870712:
-    return ReturnCode::FilterNotFound;
-  case -1094995529:
-    return ReturnCode::InvalidData;
-  case -1481985528:
-    return ReturnCode::MuxerNotFound;
-  case -1414549496:
-    return ReturnCode::OptionNotFound;
-  case -1163346256:
-    return ReturnCode::NotImplementedYet;
-  case -1330794744:
-    return ReturnCode::ProtocolNotFound;
-  case -1381258232:
-    return ReturnCode::StreamNotFound;
-  case -541545794:
-    return ReturnCode::Bug;
-  case -1313558101:
-    return ReturnCode::Unknown;
-  case -0x2bb2afa8:
-    return ReturnCode::Experimental;
-  case -0x636e6701:
-    return ReturnCode::InputChanged;
-  case -0x636e6702:
-    return ReturnCode::OutputChanged;
-  case -808465656:
-    return ReturnCode::HttpBadRequest;
-  case -825242872:
-    return ReturnCode::HttpUnauthorized;
-  case -858797304:
-    return ReturnCode::HttpForbidden;
-  case -875574520:
-    return ReturnCode::HttpNotFound;
-  case -1482175736:
-    return ReturnCode::HttpOther4xx;
-  case -1482175992:
-    return ReturnCode::HttpServerError;
+  const auto result = std::find_if(AVERRORToReturnCodeMap.begin(),
+                                   AVERRORToReturnCodeMap.end(),
+                                   [returnValue](AVErrorToReturnCode errorToReturnCode)
+                                   { return errorToReturnCode.first == returnValue; });
+  if (result != AVERRORToReturnCodeMap.end())
+    return result->second;
 
-  default:
-    return ReturnCode::Unknown;
-  }
+  return ReturnCode::Unknown;
+}
+
+int toAVError(const ReturnCode returnCode)
+{
+  if (returnCode == ReturnCode::Ok)
+    return 0;
+
+  const auto result = std::find_if(AVERRORToReturnCodeMap.begin(),
+                                   AVERRORToReturnCodeMap.end(),
+                                   [returnCode](AVErrorToReturnCode errorToReturnCode)
+                                   { return errorToReturnCode.second == returnCode; });
+  if (result != AVERRORToReturnCodeMap.end())
+    return result->first;
+
+  constexpr auto avErrorUnknown = -1313558101;
+  return avErrorUnknown;
 }
 
 } // namespace ffmpeg
