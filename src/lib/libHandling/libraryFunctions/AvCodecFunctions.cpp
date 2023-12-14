@@ -28,6 +28,7 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   lib.tryResolveFunction(functions.avcodec_open2, "avcodec_open2");
   lib.tryResolveFunction(functions.avcodec_free_context, "avcodec_free_context");
   lib.tryResolveFunction(functions.av_packet_alloc, "av_packet_alloc");
+  lib.tryResolveFunction(functions.av_packet_free, "av_packet_free");
   lib.tryResolveFunction(functions.av_new_packet, "av_new_packet");
   lib.tryResolveFunction(functions.av_packet_unref, "av_packet_unref");
   lib.tryResolveFunction(functions.avcodec_flush_buffers, "avcodec_flush_buffers");
@@ -52,6 +53,7 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   checkForMissingFunctionAndLog(functions.av_new_packet, "av_new_packet", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.av_packet_alloc, "av_packet_alloc", missingFunctions, log);
+  checkForMissingFunctionAndLog(functions.av_packet_free, "av_packet_free", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.av_packet_unref, "av_packet_unref", missingFunctions, log);
   checkForMissingFunctionAndLog(

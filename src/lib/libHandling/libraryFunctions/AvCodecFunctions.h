@@ -20,6 +20,7 @@ struct AvCodecFunctions
   std::function<int(AVCodecContext *, const AVCodec *, AVDictionary **)> avcodec_open2;
   std::function<void(AVCodecContext **)>                                 avcodec_free_context;
   std::function<AVPacket *()>                                            av_packet_alloc;
+  std::function<void(AVPacket **)>                                       av_packet_free;
   std::function<int(AVPacket *, int)>                                    av_new_packet;
   std::function<void(AVPacket *)>                                        av_packet_unref;
   std::function<void(AVCodecContext *)>                                  avcodec_flush_buffers;

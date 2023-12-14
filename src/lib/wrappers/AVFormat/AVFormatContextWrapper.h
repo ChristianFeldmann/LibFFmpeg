@@ -24,6 +24,7 @@ public:
   AVFormatContextWrapper(const AVFormatContextWrapper &) = delete;
   AVFormatContextWrapper(AVFormatContextWrapper &&wrapper);
   AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  ~AVFormatContextWrapper();
 
   ResultAndLog openFile(std::filesystem::path path);
 

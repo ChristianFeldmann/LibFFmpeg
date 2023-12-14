@@ -32,15 +32,12 @@ constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and sh
 
 } // namespace
 
-AVPacketWrapper::AVPacketWrapper(AVPacket                         *packet,
-                                 std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
-    : packet(packet), ffmpegLibraries(ffmpegLibraries)
-{
-}
-
 AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
+  this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
+  if (this->packet == nullptr)
+    throw std::runtime_error("Unable to allocate new AVPacket");
 }
 
 AVPacketWrapper::AVPacketWrapper(const ByteVector                 &data,
@@ -59,13 +56,10 @@ AVPacketWrapper::AVPacketWrapper(const ByteVector                 &data,
   std::memcpy(dataPointer, data.data(), data.size());
 }
 
-void AVPacketWrapper::allocatePacket()
+AVPacketWrapper::~AVPacketWrapper()
 {
-  if (this->packet != nullptr)
-    throw std::runtime_error("Packet already allocated");
-  this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
-  if (this->packet == nullptr)
-    throw std::runtime_error("Unable to allocate new AVPacket");
+  if (this->packet)
+    this->ffmpegLibraries->avcodec.av_packet_free(&this->packet);
 }
 
 void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)

@@ -20,11 +20,8 @@ class AVPacketWrapper
 public:
   AVPacketWrapper() = delete;
   AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
-  AVPacketWrapper(ffmpeg::internal::AVPacket       *packet,
-                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVPacketWrapper(const ByteVector &data, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
-
-  void allocatePacket();
+  ~AVPacketWrapper();
 
   void setTimestamps(const int64_t dts, const int64_t pts);
 

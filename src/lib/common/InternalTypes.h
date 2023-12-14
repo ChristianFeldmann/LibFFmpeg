@@ -32,9 +32,9 @@ class AVClass;
 class AVIOContext;
 class AVProgram;
 class AVChapter;
+class AVOutputFormat;
 
 #define AV_NUM_DATA_POINTERS 8
-
 
 /* These enums are only used internally. So far, these enums did not change between the FFmpeg
  * versions. If they ever do change, we will have to add a wrapper around them.
