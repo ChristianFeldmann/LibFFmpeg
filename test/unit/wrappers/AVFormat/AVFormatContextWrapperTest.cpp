@@ -56,119 +56,97 @@ constexpr auto TEST_DURATION            = 852;
 constexpr auto TEST_INPUT_FORMAT_NAME   = "TestName";
 constexpr auto TEST_EXPECTED_NR_PACKETS = 5;
 
-struct FFmpegCallbackCounters
-{
-  int formatOpenInputCount{};
-  int formatCloseInputCount{};
-  int findStreamInfoCount{};
-  int readFrameCount{};
-};
-FFmpegCallbackCounters ffmpegCallbackCounters{};
-
-void resetCallbackCounters()
-{
-  ffmpegCallbackCounters = {};
-}
-
-template <typename AVFormatContextType, typename AVInputFormatType>
-int formatOpenInput(AVFormatContext **ps,
-                    const char       *url,
-                    AVInputFormat    *fmt,
-                    AVDictionary    **options)
-{
-  EXPECT_EQ(std::string(url), "dummyFilePath");
-
-  auto format        = new AVFormatContextType;
-  format->nb_streams = 2;
-  format->streams    = new AVStream *[format->nb_streams];
-  *ps                = reinterpret_cast<AVFormatContext *>(format);
-
-  auto inputFormat  = new AVInputFormatType;
-  inputFormat->name = TEST_INPUT_FORMAT_NAME;
-  format->iformat   = reinterpret_cast<AVInputFormat *>(inputFormat);
-
-  format->start_time = TEST_START_TIME;
-  format->duration   = TEST_DURATION;
-
-  ffmpegCallbackCounters.formatOpenInputCount++;
-
-  return toAVError(ReturnCode::Ok);
-}
-
-template <typename AVFormatContextType> void formatCloseInput(AVFormatContext **formatContext)
-{
-  auto castFormatContext = reinterpret_cast<AVFormatContextType *>(*formatContext);
-  delete castFormatContext;
-  formatContext = nullptr;
-
-  ffmpegCallbackCounters.formatCloseInputCount++;
-}
-
-template <typename AVFormatContextType, typename AVStreamType>
-int findStreamInfo(AVFormatContext *formatContext, AVDictionary **options)
-{
-  auto videoStream   = new AVStreamType;
-  videoStream->index = 0;
-
-  auto audioStream   = new AVStreamType;
-  audioStream->index = 1;
-
-  auto concreteFormatContext        = reinterpret_cast<AVFormatContextType *>(formatContext);
-  concreteFormatContext->streams[0] = reinterpret_cast<AVStream *>(videoStream);
-  concreteFormatContext->streams[1] = reinterpret_cast<AVStream *>(audioStream);
-
-  ffmpegCallbackCounters.findStreamInfoCount++;
-
-  return toAVError(ReturnCode::Ok);
-}
-
-template <typename AVPacketType> int readFrame(AVFormatContext *s, AVPacket *pkt)
-{
-  ffmpegCallbackCounters.readFrameCount++;
-
-  if (ffmpegCallbackCounters.readFrameCount > TEST_EXPECTED_NR_PACKETS)
-    return toAVError(ReturnCode::EndOfFile);
-
-  auto packet = reinterpret_cast<AVPacketType *>(pkt);
-  packet->pts = ffmpegCallbackCounters.readFrameCount * 100;
-
-  return toAVError(ReturnCode::Ok);
-}
-
-template <typename AVPacketType> AVPacket *allocPacket()
-{
-  auto packet = new AVPacketType;
-  packet->pts = 0;
-  packet->dts = 0;
-  return reinterpret_cast<AVPacket *>(packet);
-}
-
-template <typename AVPacketType> void freePacket(AVPacket **pkt)
-{
-  auto actualPacket = reinterpret_cast<AVPacketType *>(*pkt);
-  delete actualPacket;
-  pkt = nullptr;
-}
-
 template <typename AVFormatContextType,
           typename AVStreamType,
           typename AVInputFormatType,
           typename AVPacketType>
 void runAVFormatContextWrapperTest(const LibraryVersions &version)
 {
-  resetCallbackCounters();
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
+  int formatOpenInputCount = 0;
   ffmpegLibraries->avformat.avformat_open_input =
-      formatOpenInput<AVFormatContextType, AVInputFormatType>;
-  ffmpegLibraries->avformat.avformat_close_input = formatCloseInput<AVFormatContextType>;
+      [&formatOpenInputCount](
+          AVFormatContext **ps, const char *url, AVInputFormat *fmt, AVDictionary **options)
+  {
+    EXPECT_EQ(std::string(url), "dummyFilePath");
+
+    auto format        = new AVFormatContextType;
+    format->nb_streams = 2;
+    format->streams    = new AVStream *[format->nb_streams];
+    *ps                = reinterpret_cast<AVFormatContext *>(format);
+
+    auto inputFormat  = new AVInputFormatType;
+    inputFormat->name = TEST_INPUT_FORMAT_NAME;
+    format->iformat   = reinterpret_cast<AVInputFormat *>(inputFormat);
+
+    format->start_time = TEST_START_TIME;
+    format->duration   = TEST_DURATION;
+
+    formatOpenInputCount++;
+
+    return toAVError(ReturnCode::Ok);
+  };
+
+  int formatCloseInputCount = 0;
+  ffmpegLibraries->avformat.avformat_close_input =
+      [&formatCloseInputCount](AVFormatContext **formatContext)
+  {
+    auto castFormatContext = reinterpret_cast<AVFormatContextType *>(*formatContext);
+    delete castFormatContext;
+    formatContext = nullptr;
+
+    formatCloseInputCount++;
+  };
+
+  int findStreamInfoCount = 0;
   ffmpegLibraries->avformat.avformat_find_stream_info =
-      findStreamInfo<AVFormatContextType, AVStreamType>;
-  ffmpegLibraries->avformat.av_read_frame  = readFrame<AVPacketType>;
-  ffmpegLibraries->avcodec.av_packet_alloc = allocPacket<AVPacketType>;
-  ffmpegLibraries->avcodec.av_packet_free  = freePacket<AVPacketType>;
+      [&findStreamInfoCount](AVFormatContext *formatContext, AVDictionary **options)
+  {
+    auto videoStream   = new AVStreamType;
+    videoStream->index = 0;
+
+    auto audioStream   = new AVStreamType;
+    audioStream->index = 1;
+
+    auto concreteFormatContext        = reinterpret_cast<AVFormatContextType *>(formatContext);
+    concreteFormatContext->streams[0] = reinterpret_cast<AVStream *>(videoStream);
+    concreteFormatContext->streams[1] = reinterpret_cast<AVStream *>(audioStream);
+
+    findStreamInfoCount++;
+
+    return toAVError(ReturnCode::Ok);
+  };
+
+  int readFrameCount                      = 0;
+  ffmpegLibraries->avformat.av_read_frame = [&readFrameCount](AVFormatContext *s, AVPacket *pkt)
+  {
+    readFrameCount++;
+
+    if (readFrameCount > TEST_EXPECTED_NR_PACKETS)
+      return toAVError(ReturnCode::EndOfFile);
+
+    auto packet = reinterpret_cast<AVPacketType *>(pkt);
+    packet->pts = readFrameCount * 100;
+
+    return toAVError(ReturnCode::Ok);
+  };
+
+  ffmpegLibraries->avcodec.av_packet_alloc = []()
+  {
+    auto packet = new AVPacketType;
+    packet->pts = 0;
+    packet->dts = 0;
+    return reinterpret_cast<AVPacket *>(packet);
+  };
+
+  ffmpegLibraries->avcodec.av_packet_free = [](AVPacket **pkt)
+  {
+    auto actualPacket = reinterpret_cast<AVPacketType *>(*pkt);
+    delete actualPacket;
+    pkt = nullptr;
+  };
 
   {
     AVFormatContextWrapper format(ffmpegLibraries);
@@ -209,12 +187,12 @@ void runAVFormatContextWrapperTest(const LibraryVersions &version)
     }
     EXPECT_FALSE(format.getNextPacket(packet));
 
-    EXPECT_EQ(ffmpegCallbackCounters.formatOpenInputCount, 1);
-    EXPECT_EQ(ffmpegCallbackCounters.findStreamInfoCount, 1);
-    EXPECT_EQ(ffmpegCallbackCounters.readFrameCount, 6);
+    EXPECT_EQ(formatOpenInputCount, 1);
+    EXPECT_EQ(findStreamInfoCount, 1);
+    EXPECT_EQ(readFrameCount, 6);
   }
 
-  EXPECT_EQ(ffmpegCallbackCounters.formatCloseInputCount, 1);
+  EXPECT_EQ(formatCloseInputCount, 1);
 }
 
 } // namespace
