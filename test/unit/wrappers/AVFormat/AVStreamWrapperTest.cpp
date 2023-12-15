@@ -109,11 +109,10 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
     codecContext.colorspace = AVCOL_SPC_FCC;
     codecContext.pix_fmt    = static_cast<AVPixelFormat>(444);
 
-    std::array<uint8_t, 3> rawExtradata      = {88, 99, 120};
-    std::vector<std::byte> expectedExtradata = {std::byte(88), std::byte(99), std::byte(120)};
+    std::array<uint8_t, 3> TEST_EXTRADATA = {88, 99, 120};
 
-    codecContext.extradata      = rawExtradata.data();
-    codecContext.extradata_size = rawExtradata.size();
+    codecContext.extradata      = TEST_EXTRADATA.data();
+    codecContext.extradata_size = TEST_EXTRADATA.size();
 
     stream.codec = reinterpret_cast<AVCodecContext *>(&codecContext);
 
@@ -127,7 +126,7 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
     EXPECT_EQ(streamWrapper.getTimeBase(), Rational({12, 44}));
     EXPECT_EQ(streamWrapper.getFrameSize(), Size({640, 480}));
     EXPECT_EQ(streamWrapper.getColorspace(), ColorSpace::FCC);
-    EXPECT_EQ(streamWrapper.getExtradata(), expectedExtradata);
+    EXPECT_EQ(streamWrapper.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
 
     EXPECT_FALSE(streamWrapper.getCodecParameters());
   }
@@ -164,11 +163,10 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   codecParameter.color_space = AVCOL_SPC_FCC;
   codecParameter.format      = 444;
 
-  std::array<uint8_t, 3> rawExtradata      = {88, 99, 120};
-  std::vector<std::byte> expectedExtradata = {std::byte(88), std::byte(99), std::byte(120)};
+  std::array<uint8_t, 3> TEST_EXTRADATA = {88, 99, 120};
 
-  codecParameter.extradata      = rawExtradata.data();
-  codecParameter.extradata_size = rawExtradata.size();
+  codecParameter.extradata      = TEST_EXTRADATA.data();
+  codecParameter.extradata_size = TEST_EXTRADATA.size();
 
   stream.codecpar = reinterpret_cast<AVCodecParameters *>(&codecParameter);
 
@@ -182,7 +180,7 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   EXPECT_EQ(streamWrapper.getTimeBase(), Rational({12, 44}));
   EXPECT_EQ(streamWrapper.getFrameSize(), Size({640, 480}));
   EXPECT_EQ(streamWrapper.getColorspace(), ColorSpace::FCC);
-  EXPECT_EQ(streamWrapper.getExtradata(), expectedExtradata);
+  EXPECT_EQ(streamWrapper.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
 
   EXPECT_TRUE(streamWrapper.getCodecParameters());
 }

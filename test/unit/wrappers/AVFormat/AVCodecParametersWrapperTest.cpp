@@ -66,15 +66,13 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
 
   ffmpegLibraries->avutil.av_pix_fmt_desc_get = getDescriptor;
 
-  std::array<uint8_t, 4> dummyExtradata     = {22, 56, 19, 22};
-  std::vector<std::byte> referenceExtradata = {
-      std::byte(22), std::byte(56), std::byte(19), std::byte(22)};
+  std::array<uint8_t, 4> TEST_EXTRADATA = {22, 56, 19, 22};
 
   AVCodecParametersType codecParameters;
   codecParameters.codec_type          = AVMEDIA_TYPE_AUDIO;
   codecParameters.codec_id            = static_cast<AVCodecID>(123);
-  codecParameters.extradata           = dummyExtradata.data();
-  codecParameters.extradata_size      = dummyExtradata.size();
+  codecParameters.extradata           = TEST_EXTRADATA.data();
+  codecParameters.extradata_size      = TEST_EXTRADATA.size();
   codecParameters.width               = 64;
   codecParameters.height              = 198;
   codecParameters.color_space         = AVCOL_SPC_SMPTE240M;
@@ -86,7 +84,7 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
 
   EXPECT_EQ(parameters.getCodecType(), MediaType::Audio);
   EXPECT_EQ(parameters.getCodecID(), static_cast<AVCodecID>(123));
-  EXPECT_EQ(parameters.getExtradata(), referenceExtradata);
+  EXPECT_EQ(parameters.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
   EXPECT_EQ(parameters.getSize(), Size({64, 198}));
   EXPECT_EQ(parameters.getColorspace(), ColorSpace::SMPTE240M);
   EXPECT_EQ(parameters.getPixelFormat().name, "None");
