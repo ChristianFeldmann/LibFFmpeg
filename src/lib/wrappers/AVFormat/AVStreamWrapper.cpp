@@ -150,17 +150,20 @@ std::optional<avcodec::AVCodecContextWrapper> AVStreamWrapper::getCodecContext()
   if (version == 56)
   {
     const auto p = reinterpret_cast<AVStream_56 *>(this->stream);
-    return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
+    if (p->codec != nullptr)
+      return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
   }
   if (version == 57)
   {
     const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
-    return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
+    if (p->codec != nullptr)
+      return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
   }
   if (version == 58)
   {
     const auto p = reinterpret_cast<AVStream_58 *>(this->stream);
-    return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
+    if (p->codec != nullptr)
+      return avcodec::AVCodecContextWrapper(p->codec, this->ffmpegLibraries);
   }
 
   return {};

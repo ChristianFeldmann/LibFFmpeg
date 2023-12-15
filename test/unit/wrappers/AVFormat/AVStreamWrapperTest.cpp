@@ -46,25 +46,17 @@ using internal::avformat::AVStream_59;
 using internal::avformat::AVStream_60;
 using ::testing::Return;
 
-const AVCodecDescriptor *getDescriptorExpectingNone(AVCodecID codecID)
-{
-  EXPECT_EQ(codecID, ffmpeg::internal::AV_CODEC_ID_NONE);
-  return nullptr;
-}
-
-const AVCodecDescriptor *getDescriptorExpecting234(AVCodecID codecID)
-{
-  EXPECT_EQ(codecID, static_cast<AVCodecID>(234));
-  return nullptr;
-}
-
 template <typename AVStreamType>
 void runAVStreamWrapperTestDefaultValues(const LibraryVersions &version)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avcodec.avcodec_descriptor_get = getDescriptorExpectingNone;
+  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID)
+  {
+    EXPECT_EQ(codecID, ffmpeg::internal::AV_CODEC_ID_NONE);
+    return nullptr;
+  };
 
   AVStreamType    stream;
   AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
@@ -88,7 +80,11 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avcodec.avcodec_descriptor_get = getDescriptorExpecting234;
+  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID)
+  {
+    EXPECT_EQ(codecID, static_cast<AVCodecID>(234));
+    return nullptr;
+  };
 
   AVStreamType stream;
   stream.index          = 22;
@@ -147,7 +143,11 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avcodec.avcodec_descriptor_get = getDescriptorExpecting234;
+  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID)
+  {
+    EXPECT_EQ(codecID, static_cast<AVCodecID>(234));
+    return nullptr;
+  };
 
   AVStreamType stream;
   stream.index          = 22;
