@@ -172,8 +172,11 @@ void runAVFormatContextWrapperTest(const LibraryVersions &version)
 
   {
     AVFormatContextWrapper format(ffmpegLibraries);
-    const auto             result = format.openFile("dummyFilePath");
+    auto                   result = format.openFile("dummyFilePath");
     EXPECT_TRUE(result.first);
+
+    result = format.openFile("anotherDummyFile");
+    EXPECT_FALSE(result.first);
 
     EXPECT_EQ(format.getStartTime(), TEST_START_TIME);
     EXPECT_EQ(format.getDuration(), TEST_DURATION);

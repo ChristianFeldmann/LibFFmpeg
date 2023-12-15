@@ -23,4 +23,13 @@ static std::string getNameWithFFmpegVersion(const testing::TestParamInfo<Library
   return name;
 }
 
+template <std::size_t SIZE>
+ByteVector dataArrayToByteVector(const std::array<uint8_t, SIZE> dataArray)
+{
+  ByteVector dataVector;
+  for (const auto value : dataArray)
+    dataVector.push_back(std::byte(value));
+  return dataVector;
+}
+
 } // namespace ffmpeg

@@ -35,6 +35,8 @@ constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and sh
 AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
   this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
   if (this->packet == nullptr)
     throw std::runtime_error("Unable to allocate new AVPacket");
