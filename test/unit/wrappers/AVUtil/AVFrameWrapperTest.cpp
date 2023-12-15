@@ -27,22 +27,6 @@ using internal::avutil::AVFrame_57;
 using internal::avutil::AVFrame_58;
 using ::testing::Return;
 
-template <typename T> AVFrame *avFrameTestAlloc()
-{
-  auto frame = new T;
-  return reinterpret_cast<AVFrame *>(frame);
-}
-
-template <typename T> void avFrameFree(AVFrame **frame)
-{
-  if (frame != nullptr && *frame != nullptr)
-  {
-    auto castFrame = reinterpret_cast<T *>(*frame);
-    delete (castFrame);
-    *frame = nullptr;
-  }
-}
-
 template <typename T> void setTestValuesInFrame(AVFrame *frame)
 {
   auto castFrame                 = reinterpret_cast<T *>(frame);
@@ -62,25 +46,49 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avutil.av_frame_alloc = avFrameTestAlloc<AVFrameType>;
-  ffmpegLibraries->avutil.av_frame_free  = avFrameFree<AVFrameType>;
+  int frameAllocCounter                  = 0;
+  ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]()
+  {
+    auto frame = new AVFrameType;
+    frameAllocCounter++;
+    return reinterpret_cast<AVFrame *>(frame);
+  };
 
-  AVFrameWrapper frame(ffmpegLibraries);
+  int frameFreeCounter                  = 0;
+  ffmpegLibraries->avutil.av_frame_free = [&frameFreeCounter](AVFrame **frame)
+  {
+    if (frame != nullptr && *frame != nullptr)
+    {
+      auto castFrame = reinterpret_cast<AVFrameType *>(*frame);
+      delete (castFrame);
+      *frame = nullptr;
+      frameFreeCounter++;
+    }
+  };
 
-  setTestValuesInFrame<AVFrameType>(frame.getFrame());
+  {
+    AVFrameWrapper frame(ffmpegLibraries);
+    EXPECT_EQ(frameAllocCounter, 1);
+    EXPECT_EQ(frameFreeCounter, 0);
 
-  EXPECT_TRUE(frame);
-  EXPECT_EQ(frame.getSize(), Size({320, 160}));
-  EXPECT_EQ(frame.getLineSize(0), 123);
-  EXPECT_EQ(frame.getLineSize(1), 223);
-  EXPECT_EQ(frame.getLineSize(2), 323);
-  EXPECT_EQ(frame.getPTS(), 1000);
-  EXPECT_EQ(frame.getPictType(), PictureType::P);
-  EXPECT_TRUE(frame.isKeyFrame());
-  EXPECT_EQ(frame.getSampleAspectRatio(), Rational({16, 9}));
+    setTestValuesInFrame<AVFrameType>(frame.getFrame());
 
-  // Todo: Getting data untested so far.
-  // Todo: PixelFormatDescriptor not tested
+    EXPECT_TRUE(frame);
+    EXPECT_EQ(frame.getSize(), Size({320, 160}));
+    EXPECT_EQ(frame.getLineSize(0), 123);
+    EXPECT_EQ(frame.getLineSize(1), 223);
+    EXPECT_EQ(frame.getLineSize(2), 323);
+    EXPECT_EQ(frame.getPTS(), 1000);
+    EXPECT_EQ(frame.getPictType(), PictureType::P);
+    EXPECT_TRUE(frame.isKeyFrame());
+    EXPECT_EQ(frame.getSampleAspectRatio(), Rational({16, 9}));
+
+    // Todo: Getting data untested so far.
+    // Todo: PixelFormatDescriptor not tested
+  }
+
+  EXPECT_EQ(frameAllocCounter, 1);
+  EXPECT_EQ(frameFreeCounter, 1);
 }
 
 } // namespace
