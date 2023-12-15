@@ -33,12 +33,6 @@ using internal::avformat::AVCodecParameters_59;
 using internal::avformat::AVCodecParameters_60;
 using ::testing::Return;
 
-AVPixFmtDescriptor *getDescriptor(AVPixelFormat pix_fmt)
-{
-  EXPECT_EQ(pix_fmt, 479);
-  return nullptr;
-}
-
 void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
 {
   // Version 65 does not have a codecParameters struct yet.
@@ -64,7 +58,11 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avutil.av_pix_fmt_desc_get = getDescriptor;
+  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [](AVPixelFormat pix_fmt)
+  {
+    EXPECT_EQ(pix_fmt, 479);
+    return nullptr;
+  };
 
   std::array<uint8_t, 4> TEST_EXTRADATA = {22, 56, 19, 22};
 
