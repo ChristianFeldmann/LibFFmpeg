@@ -8,6 +8,7 @@
 
 #include <wrappers/Functions.h>
 
+#include "AVCodecDescriptorWrapperInternal.h"
 #include "CastCodecClasses.h"
 
 namespace ffmpeg::avcodec
@@ -16,7 +17,8 @@ namespace ffmpeg::avcodec
 namespace
 {
 
-using AVCodecDescriptor = ffmpeg::internal::AVCodecDescriptor;
+using ffmpeg::internal::AVCodecDescriptor;
+using ffmpeg::internal::avcodec::AVCodecDescriptor_56;
 
 constexpr auto AV_CODEC_PROP_INTRA_ONLY = (1 << 0);
 constexpr auto AV_CODEC_PROP_LOSSY      = (1 << 1);
@@ -26,28 +28,6 @@ constexpr auto AV_CODEC_PROP_BITMAP_SUB = (1 << 16);
 constexpr auto AV_CODEC_PROP_TEXT_SUB   = (1 << 17);
 
 constexpr auto FF_PROFILE_UNKNOWN = -99;
-
-struct AVCodecDescriptor_56
-{
-  ffmpeg::internal::AVCodecID   id;
-  ffmpeg::internal::AVMediaType type;
-  const char                   *name;
-  const char                   *long_name;
-  int                           props;
-  const char *const            *mime_types;
-  const struct AVProfile       *profiles;
-};
-
-typedef AVCodecDescriptor_56 AVCodecDescriptor_57;
-typedef AVCodecDescriptor_56 AVCodecDescriptor_58;
-typedef AVCodecDescriptor_56 AVCodecDescriptor_59;
-typedef AVCodecDescriptor_56 AVCodecDescriptor_60;
-
-struct AVProfile
-{
-  int         profile;
-  const char *name;
-} AVProfile;
 
 } // namespace
 
@@ -62,7 +42,7 @@ AVCodecDescriptorWrapper::AVCodecDescriptorWrapper(const AVCodecDescriptor *code
 {
   const auto p = reinterpret_cast<const AVCodecDescriptor_56 *>(codecDescriptor);
   if (p == nullptr)
-    return;
+    throw std::runtime_error("Invalid avCodecDescriptor given");
 
   this->mediaType = ffmpeg::internal::toMediaType(p->type);
   this->codecName = std::string(p->name);

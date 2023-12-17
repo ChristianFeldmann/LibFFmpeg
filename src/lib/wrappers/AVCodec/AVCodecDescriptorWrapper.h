@@ -25,9 +25,15 @@ struct AVCodecDescriptorProperties
 
 bool operator==(const AVCodecDescriptorProperties &lhs, const AVCodecDescriptorProperties &rhs);
 
+/* The interface is a bit different on this class because it did not change since it was first
+ * created. So we do not need the version of the ffmpeg libraries to use this. If the struct is
+ * changed in the future, then we will have to add the libffmpeg shared pointer to the constructor.
+ */
+
 class AVCodecDescriptorWrapper
 {
 public:
+  AVCodecDescriptorWrapper() = delete;
   AVCodecDescriptorWrapper(const ffmpeg::internal::AVCodecDescriptor *codecDescriptor);
 
   MediaType   getMediaType() const { return this->mediaType; }
@@ -45,8 +51,8 @@ private:
   std::string                 codecName{"Unknown"};
   std::string                 longName{};
   AVCodecDescriptorProperties properties{};
-  std::vector<std::string>    mimeTypes;
-  std::vector<std::string>    profiles;
+  std::vector<std::string>    mimeTypes{};
+  std::vector<std::string>    profiles{};
 };
 
 } // namespace ffmpeg::avcodec
