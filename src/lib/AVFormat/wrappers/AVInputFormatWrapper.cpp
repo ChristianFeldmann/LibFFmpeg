@@ -11,6 +11,8 @@
 
 #include "CastFormatClasses.h"
 
+#include <sstream>
+
 namespace ffmpeg::avformat
 {
 
