@@ -13,14 +13,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #- os: windows-2022
-          #  COPY_COMMAND: copy
-          #  DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
-          #  UNIT_TEST_PATH: test/unit/Release/
-           - os: ubuntu-22.04
-             COPY_COMMAND: cp
-             DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
-             UNIT_TEST_PATH: test/unit/
+          - os: windows-2022
+            COPY_COMMAND: copy
+            DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
+            UNIT_TEST_PATH: test/unit/Release/
+          # - os: ubuntu-22.04
+          #   COPY_COMMAND: cp
+          #   DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
+          #   UNIT_TEST_PATH: test/unit/
           #- os: macos-12
           #  COPY_COMMAND: cp
           #  DUMMY_LIB_PATH: test/dummyLib/libdummyLib.dylib
