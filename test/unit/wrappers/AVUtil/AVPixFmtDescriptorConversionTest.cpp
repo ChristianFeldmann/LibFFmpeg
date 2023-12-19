@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversionInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>

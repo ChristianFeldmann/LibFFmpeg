@@ -6,8 +6,9 @@
 
 #pragma once
 
+#include <AVUtil/MediaType.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 #include <memory>
 #include <vector>
@@ -27,7 +28,7 @@ public:
 
   std::string                                   getName() const;
   std::string                                   getLongName() const;
-  MediaType                                     getMediaType() const;
+  avutil::MediaType                             getMediaType() const;
   ffmpeg::internal::AVCodecID                   getCodecID() const;
   int                                           getCapabilities() const;
   std::vector<Rational>                         getSupportedFramerates() const;

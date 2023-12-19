@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVUtil/wrappers/AVFrameWrapper.h>
+#include <AVUtil/wrappers/AVFrameWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVUtil/AVFrameWrapper.h>
-#include <wrappers/AVUtil/AVFrameWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>

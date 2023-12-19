@@ -6,8 +6,8 @@
 
 #include "AVCodecContextWrapper.h"
 
+#include <common/Functions.h>
 #include <common/InternalTypes.h>
-#include <wrappers/Functions.h>
 
 #include "AVCodecContextWrapperInternal.h"
 #include "CastCodecClasses.h"
@@ -65,11 +65,11 @@ std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecodi
   return AVCodecContextWrapper(codecContext, ffmpegLibraries);
 }
 
-MediaType AVCodecContextWrapper::getCodecType() const
+avutil::MediaType AVCodecContextWrapper::getCodecType() const
 {
   AVMediaType type;
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, type, codec_type);
-  return toMediaType(type);
+  return avutil::toMediaType(type);
 }
 
 AVCodecID AVCodecContextWrapper::getCodecID() const
@@ -97,11 +97,11 @@ Size AVCodecContextWrapper::getSize() const
   return {width, height};
 }
 
-ColorSpace AVCodecContextWrapper::getColorspace() const
+avutil::ColorSpace AVCodecContextWrapper::getColorspace() const
 {
   AVColorSpace avColorspace;
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avColorspace, colorspace);
-  return toColorspace(avColorspace);
+  return avutil::toColorspace(avColorspace);
 }
 
 Rational AVCodecContextWrapper::getTimeBase() const

@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <common/ColorTypes.h>
+#include <AVCodec/wrappers/AVCodecContextWrapper.h>
+#include <AVCodec/wrappers/AVCodecDescriptorWrapper.h>
+#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
+#include <AVUtil/ColorSpace.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVCodec/AVCodecContextWrapper.h>
-#include <wrappers/AVCodec/AVCodecDescriptorWrapper.h>
-#include <wrappers/AVFormat/AVCodecParametersWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 #include <memory>
 
@@ -28,13 +28,13 @@ public:
   explicit operator bool() const { return this->stream != nullptr; };
 
   int                               getIndex() const;
-  MediaType                         getCodecType() const;
+  avutil::MediaType                 getCodecType() const;
   ffmpeg::internal::AVCodecID       getCodecID() const;
   avcodec::AVCodecDescriptorWrapper getCodecDescriptor() const;
   Rational                          getAverageFrameRate() const;
   Rational                          getTimeBase() const;
   Size                              getFrameSize() const;
-  ColorSpace                        getColorspace() const;
+  avutil::ColorSpace                getColorspace() const;
   avutil::PixelFormatDescriptor     getPixelFormat() const;
   ByteVector                        getExtradata() const;
 

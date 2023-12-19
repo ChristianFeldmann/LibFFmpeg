@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <AVFormat/wrappers/AVInputFormatWrapper.h>
+#include <AVFormat/wrappers/AVStreamWrapper.h>
+#include <AVUtil/wrappers/AVDictionaryWrapper.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVCodec/AVPacketWrapper.h>
-#include <wrappers/AVFormat/AVInputFormatWrapper.h>
-#include <wrappers/AVFormat/AVStreamWrapper.h>
-#include <wrappers/AVUtil/AVDictionaryWrapper.h>
 
 #include <memory>
 

@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVCodec/wrappers/AVCodecDescriptorWrapper.h>
+#include <AVCodec/wrappers/AVCodecDescriptorWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVCodec/AVCodecDescriptorWrapper.h>
-#include <wrappers/AVCodec/AVCodecDescriptorWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
@@ -59,7 +59,7 @@ TEST_F(AVCodecDescriptorWrapperTest, TestParsing)
   rawDescriptor.mime_types                     = MIME_TYPES.data();
 
   AVCodecDescriptorWrapper descriptor(reinterpret_cast<AVCodecDescriptor *>(&rawDescriptor));
-  EXPECT_EQ(descriptor.getMediaType(), MediaType::Video);
+  EXPECT_EQ(descriptor.getMediaType(), avutil::MediaType::Video);
   EXPECT_EQ(descriptor.getCodecName(), TEST_NAME);
   EXPECT_EQ(descriptor.getLongName(), TEST_LONG_NAME);
 

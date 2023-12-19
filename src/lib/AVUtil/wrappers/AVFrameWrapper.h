@@ -6,10 +6,11 @@
 
 #pragma once
 
+#include <AVUtil/PictureType.h>
+#include <AVUtil/wrappers/AVDictionaryWrapper.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVUtil/AVDictionaryWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 #include <memory>
 
@@ -31,7 +32,7 @@ public:
   int                                getLineSize(int component) const;
   Size                               getSize() const;
   int64_t                            getPTS() const;
-  PictureType                        getPictType() const;
+  avutil::PictureType                getPictType() const;
   bool                               isKeyFrame() const;
   std::optional<AVDictionaryWrapper> getMetadata() const;
   PixelFormatDescriptor              getPixelFormatDescriptor() const;

@@ -9,8 +9,8 @@
 #include "AVFrameWrapperInternal.h"
 #include "CastUtilClasses.h"
 
+#include <common/Functions.h>
 #include <common/InternalTypes.h>
-#include <wrappers/Functions.h>
 
 #include <stdexcept>
 
@@ -99,11 +99,11 @@ int64_t AVFrameWrapper::getPTS() const
   return pts;
 }
 
-PictureType AVFrameWrapper::getPictType() const
+avutil::PictureType AVFrameWrapper::getPictType() const
 {
   AVPictureType pictureType;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, pictureType, pict_type);
-  return ffmpeg::internal::toPictureType(pictureType);
+  return ffmpeg::avutil::toPictureType(pictureType);
 }
 
 bool AVFrameWrapper::isKeyFrame() const

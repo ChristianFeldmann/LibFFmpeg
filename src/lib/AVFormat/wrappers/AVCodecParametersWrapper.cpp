@@ -6,8 +6,8 @@
 
 #include "AVCodecParametersWrapper.h"
 
+#include <common/Functions.h>
 #include <common/InternalTypes.h>
-#include <wrappers/Functions.h>
 
 #include "AVCodecParametersWrapperInternal.h"
 #include "CastFormatClasses.h"
@@ -50,13 +50,13 @@ AVCodecParametersWrapper::AVCodecParametersWrapper(
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
-MediaType AVCodecParametersWrapper::getCodecType() const
+avutil::MediaType AVCodecParametersWrapper::getCodecType() const
 {
-  RETURN_IF_VERSION_TOO_OLD(MediaType::Unknown);
+  RETURN_IF_VERSION_TOO_OLD(avutil::MediaType::Unknown);
 
   AVMediaType mediaType;
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, mediaType, codec_type);
-  return ffmpeg::internal::toMediaType(mediaType);
+  return ffmpeg::avutil::toMediaType(mediaType);
 }
 
 AVCodecID AVCodecParametersWrapper::getCodecID() const
@@ -92,14 +92,14 @@ Size AVCodecParametersWrapper::getSize() const
   return {width, height};
 }
 
-ColorSpace AVCodecParametersWrapper::getColorspace() const
+avutil::ColorSpace AVCodecParametersWrapper::getColorspace() const
 {
-  RETURN_IF_VERSION_TOO_OLD(ColorSpace::UNSPECIFIED);
+  RETURN_IF_VERSION_TOO_OLD(avutil::ColorSpace::UNSPECIFIED);
 
   internal::AVColorSpace avColorspace;
   CAST_AVFORMAT_GET_MEMBER(AVCodecParameters, this->codecParameters, avColorspace, color_space);
 
-  return internal::toColorspace(avColorspace);
+  return avutil::toColorspace(avColorspace);
 }
 
 avutil::PixelFormatDescriptor AVCodecParametersWrapper::getPixelFormat() const
@@ -162,10 +162,10 @@ void AVCodecParametersWrapper::setClearValues()
     throw std::runtime_error("Invalid library version");
 }
 
-void AVCodecParametersWrapper::setAVMediaType(MediaType type)
+void AVCodecParametersWrapper::setAVMediaType(avutil::MediaType type)
 {
   CAST_AVFORMAT_SET_MEMBER(
-      AVCodecParameters, this->codecParameters, codec_type, ffmpeg::internal::toAVMediaType(type));
+      AVCodecParameters, this->codecParameters, codec_type, ffmpeg::avutil::toAVMediaType(type));
 }
 
 void AVCodecParametersWrapper::setAVCodecID(AVCodecID id)

@@ -35,6 +35,34 @@ PixelFormatDescriptor::Flags parseFlagsFromValue(const uint64_t flagsValue)
 
 } // namespace
 
+bool PixelFormatDescriptor::Shift::operator==(const Shift &other) const
+{
+  return this->widthShift == other.widthShift && this->heightShift == other.heightShift;
+}
+
+bool PixelFormatDescriptor::ComponentDescriptor::operator==(const ComponentDescriptor &other) const
+{
+  return this->plane == other.plane && this->step == other.step && this->offset == other.offset &&
+         this->shift == other.shift && this->depth == other.depth;
+}
+
+bool PixelFormatDescriptor::Flags::operator==(const Flags &other) const
+{
+  return this->bigEndian == other.bigEndian && this->pallette == other.pallette &&
+         this->bitwisePacked == other.bitwisePacked && this->hwAccelerated == other.hwAccelerated &&
+         this->planar == other.planar && this->rgb == other.rgb &&
+         this->pseudoPallette == other.pseudoPallette &&
+         this->hasAlphaPlane == other.hasAlphaPlane && this->bayerPattern == other.bayerPattern &&
+         this->floatValues == other.floatValues;
+}
+
+bool PixelFormatDescriptor::operator==(const PixelFormatDescriptor &other) const
+{
+  return this->numberOfComponents == other.numberOfComponents &&
+         this->shiftLumaToChroma == other.shiftLumaToChroma && this->flags == other.flags &&
+         this->componentDescriptors == other.componentDescriptors;
+}
+
 PixelFormatDescriptor
 convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat,
                           const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)

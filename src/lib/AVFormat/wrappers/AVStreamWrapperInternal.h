@@ -6,8 +6,8 @@
 
 #pragma once
 
+#include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVCodec/AVPacketWrapperInternal.h>
 
 namespace ffmpeg::internal::avformat
 {

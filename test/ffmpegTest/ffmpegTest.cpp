@@ -20,6 +20,10 @@
 
 using namespace ffmpeg;
 
+using ffmpeg::avutil::ColorSpace;
+using ffmpeg::avutil::MediaType;
+using ffmpeg::avutil::PictureType;
+
 namespace
 {
 

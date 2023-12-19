@@ -32,4 +32,15 @@ ByteVector dataArrayToByteVector(const std::array<uint8_t, SIZE> dataArray)
   return dataVector;
 }
 
+template <typename Iter> std::vector<Rational> toRationalVector(Iter begin, Iter end)
+{
+  std::vector<Rational> rationals;
+  while (begin != end)
+  {
+    rationals.push_back(Rational({begin->num, begin->den}));
+    ++begin;
+  }
+  return rationals;
+}
+
 } // namespace ffmpeg

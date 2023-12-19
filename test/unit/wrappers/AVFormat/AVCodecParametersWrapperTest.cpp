@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
+#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVFormat/AVCodecParametersWrapper.h>
-#include <wrappers/AVFormat/AVCodecParametersWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
@@ -43,11 +43,11 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
                                       ffmpegLibraries);
 
-  EXPECT_EQ(parameters.getCodecType(), MediaType::Unknown);
+  EXPECT_EQ(parameters.getCodecType(), avutil::MediaType::Unknown);
   EXPECT_EQ(parameters.getCodecID(), ffmpeg::internal::AV_CODEC_ID_NONE);
   EXPECT_TRUE(parameters.getExtradata().empty());
   EXPECT_EQ(parameters.getSize(), Size());
-  EXPECT_EQ(parameters.getColorspace(), ColorSpace::UNSPECIFIED);
+  EXPECT_EQ(parameters.getColorspace(), avutil::ColorSpace::UNSPECIFIED);
   EXPECT_EQ(parameters.getPixelFormat().name, "Unknown");
   EXPECT_EQ(parameters.getSampleAspectRatio(), Rational());
 }
@@ -80,11 +80,11 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
                                       ffmpegLibraries);
 
-  EXPECT_EQ(parameters.getCodecType(), MediaType::Audio);
+  EXPECT_EQ(parameters.getCodecType(), avutil::MediaType::Audio);
   EXPECT_EQ(parameters.getCodecID(), static_cast<AVCodecID>(123));
   EXPECT_EQ(parameters.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
   EXPECT_EQ(parameters.getSize(), Size({64, 198}));
-  EXPECT_EQ(parameters.getColorspace(), ColorSpace::SMPTE240M);
+  EXPECT_EQ(parameters.getColorspace(), avutil::ColorSpace::SMPTE240M);
   EXPECT_EQ(parameters.getPixelFormat().name, "None");
   EXPECT_EQ(parameters.getSampleAspectRatio(), Rational({23, 88}));
 }

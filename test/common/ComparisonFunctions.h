@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <wrappers/AVUtil/AVFrameWrapper.h>
+#include <AVUtil/wrappers/AVFrameWrapper.h>
 
 #include <string>
 #include <vector>

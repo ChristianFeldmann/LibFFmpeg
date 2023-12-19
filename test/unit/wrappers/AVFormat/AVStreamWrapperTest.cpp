@@ -4,11 +4,11 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVCodec/wrappers/AVCodecContextWrapperInternal.h>
+#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
+#include <AVFormat/wrappers/AVStreamWrapper.h>
+#include <AVFormat/wrappers/AVStreamWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVCodec/AVCodecContextWrapperInternal.h>
-#include <wrappers/AVFormat/AVCodecParametersWrapperInternal.h>
-#include <wrappers/AVFormat/AVStreamWrapper.h>
-#include <wrappers/AVFormat/AVStreamWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
@@ -62,13 +62,13 @@ void runAVStreamWrapperTestDefaultValues(const LibraryVersions &version)
   AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
 
   EXPECT_EQ(streamWrapper.getIndex(), 0);
-  EXPECT_EQ(streamWrapper.getCodecType(), MediaType::Unknown);
+  EXPECT_EQ(streamWrapper.getCodecType(), avutil::MediaType::Unknown);
   EXPECT_EQ(streamWrapper.getCodecID(), ffmpeg::internal::AV_CODEC_ID_NONE);
   EXPECT_EQ(streamWrapper.getCodecDescriptor().getCodecName(), "Unknown");
   EXPECT_EQ(streamWrapper.getAverageFrameRate(), Rational({0, 0}));
   EXPECT_EQ(streamWrapper.getTimeBase(), Rational({0, 0}));
   EXPECT_EQ(streamWrapper.getFrameSize(), Size());
-  EXPECT_EQ(streamWrapper.getColorspace(), ColorSpace::UNSPECIFIED);
+  EXPECT_EQ(streamWrapper.getColorspace(), avutil::ColorSpace::UNSPECIFIED);
   EXPECT_EQ(streamWrapper.getPixelFormat().name, "Unknown");
   EXPECT_TRUE(streamWrapper.getExtradata().empty());
   EXPECT_FALSE(streamWrapper.getCodecParameters());
@@ -115,13 +115,13 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
     AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
 
     EXPECT_EQ(streamWrapper.getIndex(), 22);
-    EXPECT_EQ(streamWrapper.getCodecType(), MediaType::Audio);
+    EXPECT_EQ(streamWrapper.getCodecType(), avutil::MediaType::Audio);
     EXPECT_EQ(streamWrapper.getCodecID(), static_cast<AVCodecID>(234));
     EXPECT_EQ(streamWrapper.getCodecDescriptor().getCodecName(), "Unknown");
     EXPECT_EQ(streamWrapper.getAverageFrameRate(), Rational({13, 4}));
     EXPECT_EQ(streamWrapper.getTimeBase(), Rational({12, 44}));
     EXPECT_EQ(streamWrapper.getFrameSize(), Size({640, 480}));
-    EXPECT_EQ(streamWrapper.getColorspace(), ColorSpace::FCC);
+    EXPECT_EQ(streamWrapper.getColorspace(), avutil::ColorSpace::FCC);
     EXPECT_EQ(streamWrapper.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
 
     EXPECT_FALSE(streamWrapper.getCodecParameters());
@@ -173,13 +173,13 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
 
   EXPECT_EQ(streamWrapper.getIndex(), 22);
-  EXPECT_EQ(streamWrapper.getCodecType(), MediaType::Audio);
+  EXPECT_EQ(streamWrapper.getCodecType(), avutil::MediaType::Audio);
   EXPECT_EQ(streamWrapper.getCodecID(), static_cast<AVCodecID>(234));
   EXPECT_EQ(streamWrapper.getCodecDescriptor().getCodecName(), "Unknown");
   EXPECT_EQ(streamWrapper.getAverageFrameRate(), Rational({13, 4}));
   EXPECT_EQ(streamWrapper.getTimeBase(), Rational({12, 44}));
   EXPECT_EQ(streamWrapper.getFrameSize(), Size({640, 480}));
-  EXPECT_EQ(streamWrapper.getColorspace(), ColorSpace::FCC);
+  EXPECT_EQ(streamWrapper.getColorspace(), avutil::ColorSpace::FCC);
   EXPECT_EQ(streamWrapper.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
 
   EXPECT_TRUE(streamWrapper.getCodecParameters());

@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVUtil/wrappers/AVDictionaryWrapper.h>
 #include <common/InternalTypes.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
-#include <wrappers/AVUtil/AVDictionaryWrapper.h>
 
 #include <gtest/gtest.h>
 

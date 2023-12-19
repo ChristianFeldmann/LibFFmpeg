@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <common/ColorTypes.h>
-#include <common/Enums.h>
+#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
+#include <AVUtil/ColorSpace.h>
+#include <AVUtil/MediaType.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVFormat/AVCodecParametersWrapper.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 namespace ffmpeg::avcodec
 {
@@ -30,11 +30,11 @@ public:
 
   ffmpeg::internal::AVCodecContext *getCodecContext() const { return this->codecContext; }
 
-  MediaType                     getCodecType() const;
+  avutil::MediaType             getCodecType() const;
   ffmpeg::internal::AVCodecID   getCodecID() const;
   avutil::PixelFormatDescriptor getPixelFormat() const;
   Size                          getSize() const;
-  ColorSpace                    getColorspace() const;
+  avutil::ColorSpace            getColorspace() const;
   Rational                      getTimeBase() const;
   ByteVector                    getExtradata() const;
 

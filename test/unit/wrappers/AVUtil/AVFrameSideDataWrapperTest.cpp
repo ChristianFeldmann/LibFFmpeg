@@ -4,10 +4,10 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVUtil/wrappers/AVFrameSideDataWrapper.h>
+#include <AVUtil/wrappers/AVFrameSideDataWrapperInternal.h>
+#include <AVUtil/wrappers/AVMotionVectorConversionInternal.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
-#include <wrappers/AVUtil/AVFrameSideDataWrapper.h>
-#include <wrappers/AVUtil/AVFrameSideDataWrapperInternal.h>
-#include <wrappers/AVUtil/AVMotionVectorConversionInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>

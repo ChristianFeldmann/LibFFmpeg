@@ -6,7 +6,7 @@
 
 #include "AVStreamWrapper.h"
 
-#include <wrappers/AVCodec/AVPacketWrapper.h>
+#include <AVCodec/wrappers/AVPacketWrapper.h>
 
 #include "AVStreamWrapperInternal.h"
 #include "CastFormatClasses.h"
@@ -48,7 +48,7 @@ int AVStreamWrapper::getIndex() const
   return index;
 }
 
-MediaType AVStreamWrapper::getCodecType() const
+avutil::MediaType AVStreamWrapper::getCodecType() const
 {
   if (const auto codecParameters = this->getCodecParameters())
     return codecParameters->getCodecType();
@@ -56,7 +56,7 @@ MediaType AVStreamWrapper::getCodecType() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext->getCodecType();
 
-  return MediaType::Unknown;
+  return avutil::MediaType::Unknown;
 }
 
 AVCodecID AVStreamWrapper::getCodecID() const
@@ -111,7 +111,7 @@ Size AVStreamWrapper::getFrameSize() const
   return {};
 }
 
-ColorSpace AVStreamWrapper::getColorspace() const
+avutil::ColorSpace AVStreamWrapper::getColorspace() const
 {
   if (const auto codecParameters = this->getCodecParameters())
     return codecParameters->getColorspace();
@@ -119,7 +119,7 @@ ColorSpace AVStreamWrapper::getColorspace() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext->getColorspace();
 
-  return ColorSpace::UNSPECIFIED;
+  return avutil::ColorSpace::UNSPECIFIED;
 }
 
 avutil::PixelFormatDescriptor AVStreamWrapper::getPixelFormat() const

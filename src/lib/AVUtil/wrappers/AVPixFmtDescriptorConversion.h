@@ -25,8 +25,9 @@ struct PixelFormatDescriptor
    */
   struct Shift
   {
-    int widthShift{};
-    int heightShift{};
+    int  widthShift{};
+    int  heightShift{};
+    bool operator==(const Shift &other) const;
   };
 
   /**
@@ -39,11 +40,12 @@ struct PixelFormatDescriptor
    */
   struct ComponentDescriptor
   {
-    int plane{};  ///< which of the 4 planes contains the component
-    int step{};   ///< Number of elements between 2 horizontally consecutive pixels
-    int offset{}; ///< Number of elements before the component of the first pixel
-    int shift{};  ///< number of least significant bits that must be shifted away to get the value
-    int depth{};  ///< number of bits in the component
+    int  plane{};  ///< which of the 4 planes contains the component
+    int  step{};   ///< Number of elements between 2 horizontally consecutive pixels
+    int  offset{}; ///< Number of elements before the component of the first pixel
+    int  shift{};  ///< number of least significant bits that must be shifted away to get the value
+    int  depth{};  ///< number of bits in the component
+    bool operator==(const ComponentDescriptor &other) const;
   };
 
   struct Flags
@@ -58,6 +60,7 @@ struct PixelFormatDescriptor
     bool hasAlphaPlane{};
     bool bayerPattern{};
     bool floatValues{};
+    bool operator==(const Flags &other) const;
   };
 
   std::string                      name{"Unknown"};
@@ -65,6 +68,8 @@ struct PixelFormatDescriptor
   Shift                            shiftLumaToChroma{};
   Flags                            flags{};
   std::vector<ComponentDescriptor> componentDescriptors;
+
+  bool operator==(const PixelFormatDescriptor &other) const;
 };
 
 PixelFormatDescriptor

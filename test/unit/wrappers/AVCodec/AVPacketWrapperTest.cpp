@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVCodec/AVPacketWrapper.h>
-#include <wrappers/AVCodec/AVPacketWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>

@@ -6,9 +6,9 @@
 
 #pragma once
 
+#include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <AVFormat/wrappers/AVFormatContextWrapper.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVCodec/AVPacketWrapper.h>
-#include <wrappers/AVFormat/AVFormatContextWrapper.h>
 
 namespace ffmpeg
 {

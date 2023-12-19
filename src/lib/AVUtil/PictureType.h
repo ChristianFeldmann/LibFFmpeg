@@ -6,27 +6,11 @@
 
 #pragma once
 
-#include "EnumMapper.h"
+#include <common/EnumMapper.h>
+#include <common/InternalTypes.h>
 
-namespace ffmpeg
+namespace ffmpeg::avutil
 {
-
-enum class MediaType
-{
-  Unknown,
-  Video,
-  Audio,
-  Data,
-  Subtitle,
-  Attachment
-};
-
-const EnumMapper<MediaType> mediaTypeMapper({{MediaType::Unknown, "Unknown"},
-                                             {MediaType::Video, "Video"},
-                                             {MediaType::Audio, "Audio"},
-                                             {MediaType::Data, "Data"},
-                                             {MediaType::Subtitle, "Subtitle"},
-                                             {MediaType::Attachment, "Attachment"}});
 
 enum class PictureType
 {
@@ -50,4 +34,6 @@ const EnumMapper<PictureType>
                        {PictureType::SP, "SP-Frame", "Switching predictively coded frame"},
                        {PictureType::SI, "SI-Frame", "Switching bi-predictively coded frame"}});
 
-} // namespace ffmpeg
+PictureType toPictureType(const ffmpeg::internal::AVPictureType pictureType);
+
+} // namespace ffmpeg::avutil

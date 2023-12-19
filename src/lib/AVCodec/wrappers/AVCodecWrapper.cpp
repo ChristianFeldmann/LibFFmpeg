@@ -49,6 +49,10 @@ template <typename T> std::vector<T> convertRawListToVec(const T *rawValues, T t
 AVCodecWrapper::AVCodecWrapper(AVCodec *codec, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codec(codec), ffmpegLibraries(ffmpegLibraries)
 {
+  if (codec == nullptr)
+    throw std::runtime_error("Provided codec pointer must not be null");
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
 std::string AVCodecWrapper::getName() const
@@ -65,11 +69,11 @@ std::string AVCodecWrapper::getLongName() const
   return std::string(longName);
 }
 
-MediaType AVCodecWrapper::getMediaType() const
+avutil::MediaType AVCodecWrapper::getMediaType() const
 {
   AVMediaType mediaType;
   CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, mediaType, type);
-  return ffmpeg::internal::toMediaType(mediaType);
+  return ffmpeg::avutil::toMediaType(mediaType);
 }
 
 AVCodecID AVCodecWrapper::getCodecID() const

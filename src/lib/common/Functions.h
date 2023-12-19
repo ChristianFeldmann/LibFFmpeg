@@ -6,6 +6,9 @@
 
 #pragma once
 
+#include <common/Functions.h>
+#include <common/Types.h>
+
 #include <string>
 #include <vector>
 
@@ -20,5 +23,18 @@ enum class ConcatenationSymbol
 
 std::string to_string(const std::vector<std::string> &strings,
                       const ConcatenationSymbol concatenationSymbol = ConcatenationSymbol::Comma);
+
+inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int inputDataSize)
+{
+  if (inputDataSize <= 0)
+    return {};
+
+  ByteVector data;
+  data.resize(inputDataSize);
+
+  const auto inputDataAsBytes = reinterpret_cast<const std::byte *>(inputData);
+  std::copy(inputDataAsBytes, inputDataAsBytes + inputDataSize, data.begin());
+  return data;
+}
 
 } // namespace ffmpeg

@@ -4,14 +4,14 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <AVCodec/wrappers/AVPacketWrapperInternal.h>
+#include <AVFormat/wrappers/AVFormatContextWrapper.h>
+#include <AVFormat/wrappers/AVFormatContextWrapperInternal.h>
+#include <AVFormat/wrappers/AVInputFormatWrapperInternal.h>
+#include <AVFormat/wrappers/AVStreamWrapperInternal.h>
 #include <common/Error.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVCodec/AVPacketWrapper.h>
-#include <wrappers/AVCodec/AVPacketWrapperInternal.h>
-#include <wrappers/AVFormat/AVFormatContextWrapper.h>
-#include <wrappers/AVFormat/AVFormatContextWrapperInternal.h>
-#include <wrappers/AVFormat/AVInputFormatWrapperInternal.h>
-#include <wrappers/AVFormat/AVStreamWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>

@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <common/ColorTypes.h>
-#include <common/Enums.h>
+#include <stdint.h>
 
 namespace ffmpeg::internal
 {
@@ -140,8 +139,6 @@ enum AVChromaLocation
   AVCHROMA_LOC_BOTTOM      = 6
 };
 
-ColorSpace toColorspace(const AVColorSpace colorspace);
-
 enum AVMediaType
 {
   AVMEDIA_TYPE_UNKNOWN = -1, ///< Usually treated as AVMEDIA_TYPE_DATA
@@ -152,9 +149,6 @@ enum AVMediaType
   AVMEDIA_TYPE_ATTACHMENT, ///< Opaque data information usually sparse
   AVMEDIA_TYPE_NB
 };
-
-MediaType   toMediaType(const AVMediaType mediaType);
-AVMediaType toAVMediaType(const MediaType mediaType);
 
 enum AVPictureType
 {
@@ -167,8 +161,6 @@ enum AVPictureType
   AV_PICTURE_TYPE_SP,       ///< Switching Predicted
   AV_PICTURE_TYPE_BI,       ///< BI type
 };
-
-PictureType toPictureType(const AVPictureType pictureType);
 
 enum AVFrameSideDataType
 {

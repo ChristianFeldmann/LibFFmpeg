@@ -6,7 +6,7 @@
 
 #include "AVCodecDescriptorWrapper.h"
 
-#include <wrappers/Functions.h>
+#include <common/Functions.h>
 
 #include "AVCodecDescriptorWrapperInternal.h"
 #include "CastCodecClasses.h"
@@ -44,7 +44,7 @@ AVCodecDescriptorWrapper::AVCodecDescriptorWrapper(const AVCodecDescriptor *code
   if (p == nullptr)
     throw std::runtime_error("Invalid avCodecDescriptor given");
 
-  this->mediaType = ffmpeg::internal::toMediaType(p->type);
+  this->mediaType = ffmpeg::avutil::toMediaType(p->type);
   this->codecName = std::string(p->name);
   this->longName  = std::string(p->long_name);
 

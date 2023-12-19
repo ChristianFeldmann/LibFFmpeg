@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <AVUtil/MediaType.h>
 #include <libHandling/IFFmpegLibraries.h>
 
 #include <memory>
@@ -36,9 +37,9 @@ public:
   AVCodecDescriptorWrapper() = delete;
   AVCodecDescriptorWrapper(const ffmpeg::internal::AVCodecDescriptor *codecDescriptor);
 
-  MediaType   getMediaType() const { return this->mediaType; }
-  std::string getCodecName() const { return this->codecName; }
-  std::string getLongName() const { return this->longName; }
+  avutil::MediaType getMediaType() const { return this->mediaType; }
+  std::string       getCodecName() const { return this->codecName; }
+  std::string       getLongName() const { return this->longName; }
 
   AVCodecDescriptorProperties getProperties() const { return this->properties; }
   std::vector<std::string>    getMimeTypes() const { return this->mimeTypes; }
@@ -47,7 +48,7 @@ public:
   bool operator==(const AVCodecDescriptorWrapper &rhs) const;
 
 private:
-  MediaType                   mediaType{MediaType::Unknown};
+  avutil::MediaType           mediaType{avutil::MediaType::Unknown};
   std::string                 codecName{"Unknown"};
   std::string                 longName{};
   AVCodecDescriptorProperties properties{};

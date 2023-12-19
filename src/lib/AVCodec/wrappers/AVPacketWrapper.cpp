@@ -6,7 +6,7 @@
 
 #include "AVPacketWrapper.h"
 
-#include <wrappers/Functions.h>
+#include <common/Functions.h>
 
 #include "AVPacketWrapperInternal.h"
 #include "CastCodecClasses.h"

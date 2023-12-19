@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
+#include <AVFormat/wrappers/AVInputFormatWrapper.h>
+#include <AVFormat/wrappers/AVInputFormatWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/AVFormat/AVInputFormatWrapper.h>
-#include <wrappers/AVFormat/AVInputFormatWrapperInternal.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
@@ -75,7 +75,6 @@ void runAVInputFormatWrapperTest(const LibraryVersions &version)
 
 class AVInputFormatWrapperTest : public testing::TestWithParam<LibraryVersions>
 {
-  
 };
 
 TEST(AVInputFormatWrapperTest, shouldThrowIfLibraryNotSet)

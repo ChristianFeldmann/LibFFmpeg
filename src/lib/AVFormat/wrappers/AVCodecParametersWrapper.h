@@ -6,11 +6,12 @@
 
 #pragma once
 
-#include <common/ColorTypes.h>
+#include <AVUtil/ColorSpace.h>
+#include <AVUtil/MediaType.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <common/InternalTypes.h>
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVUtil/AVPixFmtDescriptorConversion.h>
 
 namespace ffmpeg::avformat
 {
@@ -21,18 +22,18 @@ public:
   AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters *p,
                            std::shared_ptr<IFFmpegLibraries>    libraries);
 
-  MediaType                     getCodecType() const;
+  avutil::MediaType             getCodecType() const;
   ffmpeg::internal::AVCodecID   getCodecID() const;
   ByteVector                    getExtradata() const;
   Size                          getSize() const;
-  ColorSpace                    getColorspace() const;
+  avutil::ColorSpace            getColorspace() const;
   avutil::PixelFormatDescriptor getPixelFormat() const;
   Rational                      getSampleAspectRatio() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
 
-  void setAVMediaType(MediaType type);
+  void setAVMediaType(avutil::MediaType type);
   void setAVCodecID(ffmpeg::internal::AVCodecID id);
   void setExtradata(const ByteVector &extradata);
   void setSize(Size size);

@@ -6,11 +6,11 @@
 
 #pragma once
 
+#include <AVCodec/wrappers/AVCodecContextWrapper.h>
+#include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <AVFormat/wrappers/AVStreamWrapper.h>
+#include <AVUtil/wrappers/AVFrameWrapper.h>
 #include <libHandling/IFFmpegLibraries.h>
-#include <wrappers/AVCodec/AVCodecContextWrapper.h>
-#include <wrappers/AVCodec/AVPacketWrapper.h>
-#include <wrappers/AVFormat/AVStreamWrapper.h>
-#include <wrappers/AVUtil/AVFrameWrapper.h>
 
 namespace ffmpeg
 {

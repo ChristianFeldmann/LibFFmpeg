@@ -177,13 +177,13 @@ int main(int argc, char const *argv[])
   for (const auto &stream : formatContext->getStreams())
   {
     std::cout << "  Streams " << stream.getIndex() << ":\n";
-    std::cout << "    Codec Type        : " << mediaTypeMapper.getName(stream.getCodecType())
-              << "\n";
+    std::cout << "    Codec Type        : "
+              << avutil::mediaTypeMapper.getName(stream.getCodecType()) << "\n";
 
     std::cout << "    Codec Description\n";
     const auto codecDescriptor = stream.getCodecDescriptor();
     std::cout << "      Media Type      : "
-              << mediaTypeMapper.getName(codecDescriptor.getMediaType()) << "\n";
+              << avutil::mediaTypeMapper.getName(codecDescriptor.getMediaType()) << "\n";
     std::cout << "      Name            : " << codecDescriptor.getCodecName() << "\n";
     std::cout << "      Long Name       : " << codecDescriptor.getLongName() << "\n";
     std::cout << "      Properties      : " << to_string(codecDescriptor.getProperties()) << "\n";
@@ -193,8 +193,9 @@ int main(int argc, char const *argv[])
     std::cout << "    Average Framerate : " << to_string(stream.getAverageFrameRate()) << "\n";
     std::cout << "    Time Base         : " << to_string(stream.getTimeBase()) << "\n";
     std::cout << "    Frame Size        : " << to_string(stream.getFrameSize()) << "\n";
-    std::cout << "    Colorspace        : " << colorSpaceMapper.getName(stream.getColorspace())
-              << " - " << colorSpaceMapper.getText(stream.getColorspace()) << "\n";
+    std::cout << "    Colorspace        : "
+              << avutil::colorSpaceMapper.getName(stream.getColorspace()) << " - "
+              << avutil::colorSpaceMapper.getText(stream.getColorspace()) << "\n";
     std::cout << "    Pixel Format      : " << stream.getPixelFormat().name << "\n";
     std::cout << "    Extradata         : " << to_string(stream.getExtradata()) << "\n";
   }
