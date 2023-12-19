@@ -32,6 +32,8 @@ TEST(SharedLibraryLoader, OpenDummyLibrary)
 
 #if (defined(_WIN32) || defined(_WIN64))
   EXPECT_TRUE(loader.load("dummyLib", std::filesystem::current_path()));
+#elif (defined(__APPLE__))
+  EXPECT_TRUE(loader.load(std::filesystem::current_path() / "libdummyLib.dylib"));
 #else
   EXPECT_TRUE(loader.load(std::filesystem::current_path() / "libdummyLib.so"));
 #endif
