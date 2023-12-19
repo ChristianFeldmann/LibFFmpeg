@@ -182,23 +182,26 @@ int main(int argc, char const *argv[])
               << avutil::mediaTypeMapper.getName(stream.getCodecType()) << "\n";
 
     std::cout << "    Codec Description\n";
-    const auto codecDescriptor = stream.getCodecDescriptor();
-    std::cout << "      Media Type      : "
-              << avutil::mediaTypeMapper.getName(codecDescriptor.getMediaType()) << "\n";
-    std::cout << "      Name            : " << codecDescriptor.getCodecName() << "\n";
-    std::cout << "      Long Name       : " << codecDescriptor.getLongName() << "\n";
-    std::cout << "      Properties      : " << to_string(codecDescriptor.getProperties()) << "\n";
-    std::cout << "      Mime Types      : " << to_string(codecDescriptor.getMimeTypes()) << "\n";
-    std::cout << "      Profiles        : " << to_string(codecDescriptor.getProfiles()) << "\n";
+    if (const auto codecDescriptor = stream.getCodecDescriptor())
+    {
+      std::cout << "      Media Type      : "
+                << avutil::mediaTypeMapper.getName(codecDescriptor->getMediaType()) << "\n";
+      std::cout << "      Name            : " << codecDescriptor->getCodecName() << "\n";
+      std::cout << "      Long Name       : " << codecDescriptor->getLongName() << "\n";
+      std::cout << "      Properties      : " << to_string(codecDescriptor->getProperties())
+                << "\n";
+      std::cout << "      Mime Types      : " << to_string(codecDescriptor->getMimeTypes()) << "\n";
+      std::cout << "      Profiles        : " << to_string(codecDescriptor->getProfiles()) << "\n";
 
-    std::cout << "    Average Framerate : " << to_string(stream.getAverageFrameRate()) << "\n";
-    std::cout << "    Time Base         : " << to_string(stream.getTimeBase()) << "\n";
-    std::cout << "    Frame Size        : " << to_string(stream.getFrameSize()) << "\n";
-    std::cout << "    Colorspace        : "
-              << avutil::colorSpaceMapper.getName(stream.getColorspace()) << " - "
-              << avutil::colorSpaceMapper.getText(stream.getColorspace()) << "\n";
-    std::cout << "    Pixel Format      : " << stream.getPixelFormat().name << "\n";
-    std::cout << "    Extradata         : " << to_string(stream.getExtradata()) << "\n";
+      std::cout << "    Average Framerate : " << to_string(stream.getAverageFrameRate()) << "\n";
+      std::cout << "    Time Base         : " << to_string(stream.getTimeBase()) << "\n";
+      std::cout << "    Frame Size        : " << to_string(stream.getFrameSize()) << "\n";
+      std::cout << "    Colorspace        : "
+                << avutil::colorSpaceMapper.getName(stream.getColorspace()) << " - "
+                << avutil::colorSpaceMapper.getText(stream.getColorspace()) << "\n";
+      std::cout << "    Pixel Format      : " << stream.getPixelFormat().name << "\n";
+      std::cout << "    Extradata         : " << to_string(stream.getExtradata()) << "\n";
+    }
   }
 
   std::map<int, int> streamPacketCounters;

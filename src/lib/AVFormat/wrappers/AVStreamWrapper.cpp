@@ -70,14 +70,6 @@ AVCodecID AVStreamWrapper::getCodecID() const
   return ffmpeg::internal::AV_CODEC_ID_NONE;
 }
 
-avcodec::AVCodecDescriptorWrapper AVStreamWrapper::getCodecDescriptor() const
-{
-  const auto codecID = this->getCodecID();
-
-  const auto descriptor = this->ffmpegLibraries->avcodec.avcodec_descriptor_get(codecID);
-  return avcodec::AVCodecDescriptorWrapper(descriptor);
-}
-
 Rational AVStreamWrapper::getAverageFrameRate() const
 {
   AVRational frameRate;
@@ -141,6 +133,17 @@ ByteVector AVStreamWrapper::getExtradata() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext->getExtradata();
 
+  return {};
+}
+
+std::optional<avcodec::AVCodecDescriptorWrapper> AVStreamWrapper::getCodecDescriptor() const
+{
+  const auto codecID = this->getCodecID();
+
+  const auto descriptor = this->ffmpegLibraries->avcodec.avcodec_descriptor_get(codecID);
+
+  if (descriptor)
+    return avcodec::AVCodecDescriptorWrapper(descriptor);
   return {};
 }
 

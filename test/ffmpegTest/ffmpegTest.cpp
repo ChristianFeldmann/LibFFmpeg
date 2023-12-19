@@ -113,16 +113,16 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioStream.getCodecType(), MediaType::Audio);
 
   const auto audioCodecDescriptor = audioStream.getCodecDescriptor();
-  EXPECT_EQ(audioCodecDescriptor.getMediaType(), MediaType::Audio);
-  EXPECT_EQ(audioCodecDescriptor.getCodecName(), "aac");
-  EXPECT_EQ(audioCodecDescriptor.getLongName(), "AAC (Advanced Audio Coding)");
+  EXPECT_EQ(audioCodecDescriptor->getMediaType(), MediaType::Audio);
+  EXPECT_EQ(audioCodecDescriptor->getCodecName(), "aac");
+  EXPECT_EQ(audioCodecDescriptor->getLongName(), "AAC (Advanced Audio Coding)");
   avcodec::AVCodecDescriptorProperties expectedAudioProperties{};
   expectedAudioProperties.intraOnly = true;
   expectedAudioProperties.lossy     = true;
-  EXPECT_EQ(audioCodecDescriptor.getProperties(), expectedAudioProperties);
-  EXPECT_EQ(audioCodecDescriptor.getMimeTypes().size(), 0);
-  EXPECT_EQ(audioCodecDescriptor.getProfiles().size(), 8);
-  EXPECT_TRUE(areEqual(audioCodecDescriptor.getProfiles(),
+  EXPECT_EQ(audioCodecDescriptor->getProperties(), expectedAudioProperties);
+  EXPECT_EQ(audioCodecDescriptor->getMimeTypes().size(), 0);
+  EXPECT_EQ(audioCodecDescriptor->getProfiles().size(), 8);
+  EXPECT_TRUE(areEqual(audioCodecDescriptor->getProfiles(),
                        {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
   EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
   EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
@@ -135,17 +135,17 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(videoStream.getCodecType(), MediaType::Video);
 
   const auto videoCodecDescriptor = videoStream.getCodecDescriptor();
-  EXPECT_EQ(videoCodecDescriptor.getMediaType(), MediaType::Video);
-  EXPECT_EQ(videoCodecDescriptor.getCodecName(), "h264");
-  EXPECT_EQ(videoCodecDescriptor.getLongName(), "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
+  EXPECT_EQ(videoCodecDescriptor->getMediaType(), MediaType::Video);
+  EXPECT_EQ(videoCodecDescriptor->getCodecName(), "h264");
+  EXPECT_EQ(videoCodecDescriptor->getLongName(), "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
   avcodec::AVCodecDescriptorProperties expectedVideoProperties{};
   expectedVideoProperties.lossy    = true;
   expectedVideoProperties.lossless = true;
   expectedVideoProperties.reorder  = true;
-  EXPECT_EQ(videoCodecDescriptor.getProperties(), expectedVideoProperties);
-  EXPECT_EQ(videoCodecDescriptor.getMimeTypes().size(), 0);
-  EXPECT_EQ(videoCodecDescriptor.getProfiles().size(), 15);
-  EXPECT_TRUE(areEqual(videoCodecDescriptor.getProfiles(),
+  EXPECT_EQ(videoCodecDescriptor->getProperties(), expectedVideoProperties);
+  EXPECT_EQ(videoCodecDescriptor->getMimeTypes().size(), 0);
+  EXPECT_EQ(videoCodecDescriptor->getProfiles().size(), 15);
+  EXPECT_TRUE(areEqual(videoCodecDescriptor->getProfiles(),
                        {"Baseline",
                         "Constrained Baseline",
                         "Main",
