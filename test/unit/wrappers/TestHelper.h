@@ -8,6 +8,7 @@
 
 #include <common/Version.h>
 
+#include <array>
 #include <string>
 
 #include <gtest/gtest.h>

@@ -13,6 +13,8 @@
 
 #include <gtest/gtest.h>
 
+#include <array>
+
 namespace ffmpeg::avformat
 {
 
