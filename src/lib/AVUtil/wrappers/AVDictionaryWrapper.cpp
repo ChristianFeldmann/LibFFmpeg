@@ -14,8 +14,8 @@ using ffmpeg::internal::AVDictionaryEntry;
 
 constexpr auto AV_DICT_IGNORE_SUFFIX = 2;
 
-AVDictionaryWrapper::AVDictionaryWrapper(
-    AVDictionary *dict, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+AVDictionaryWrapper::AVDictionaryWrapper(AVDictionary                     *dict,
+                                         std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : dict(dict), ffmpegLibraries(ffmpegLibraries)
 {
 }
@@ -28,9 +28,12 @@ DictionaryMap AVDictionaryWrapper::toMap() const
   DictionaryMap map;
 
   AVDictionaryEntry *entry{};
-  while (entry = this->ffmpegLibraries->avutil.av_dict_get(
-             this->dict, "", entry, AV_DICT_IGNORE_SUFFIX))
+  while (true)
   {
+    entry = this->ffmpegLibraries->avutil.av_dict_get(this->dict, "", entry, AV_DICT_IGNORE_SUFFIX);
+    if (entry == nullptr)
+      break;
+
     const auto key   = std::string(entry->key);
     const auto value = std::string(entry->value);
     if (!key.empty() || value.empty())
