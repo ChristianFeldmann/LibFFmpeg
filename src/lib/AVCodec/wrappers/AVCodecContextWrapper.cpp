@@ -33,10 +33,14 @@ namespace internal
 
 } // namespace internal
 
-AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext                   *codecContext,
+AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext *                  codecContext,
                                              std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codecContext(codecContext), ffmpegLibraries(ffmpegLibraries)
 {
+  if (codecContext == nullptr)
+    throw std::runtime_error("Provided codecContext pointer must not be null");
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
 std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecoding(

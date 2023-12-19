@@ -54,8 +54,7 @@ void runAVStreamWrapperTestDefaultValues(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID)
-  {
+  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID) {
     EXPECT_EQ(codecID, ffmpeg::internal::AV_CODEC_ID_NONE);
     return nullptr;
   };
@@ -82,8 +81,7 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID)
-  {
+  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID) {
     EXPECT_EQ(codecID, static_cast<AVCodecID>(234));
     return nullptr;
   };
@@ -110,7 +108,7 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
     std::array<uint8_t, 3> TEST_EXTRADATA = {88, 99, 120};
 
     codecContext.extradata      = TEST_EXTRADATA.data();
-    codecContext.extradata_size = TEST_EXTRADATA.size();
+    codecContext.extradata_size = static_cast<int>(TEST_EXTRADATA.size());
 
     stream.codec = reinterpret_cast<AVCodecContext *>(&codecContext);
 
@@ -145,8 +143,7 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID)
-  {
+  ffmpegLibraries->avcodec.avcodec_descriptor_get = [](AVCodecID codecID) {
     EXPECT_EQ(codecID, static_cast<AVCodecID>(234));
     return nullptr;
   };
@@ -168,7 +165,7 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   std::array<uint8_t, 3> TEST_EXTRADATA = {88, 99, 120};
 
   codecParameter.extradata      = TEST_EXTRADATA.data();
-  codecParameter.extradata_size = TEST_EXTRADATA.size();
+  codecParameter.extradata_size = static_cast<int>(TEST_EXTRADATA.size());
 
   stream.codecpar = reinterpret_cast<AVCodecParameters *>(&codecParameter);
 

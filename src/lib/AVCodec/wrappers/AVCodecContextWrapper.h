@@ -26,8 +26,7 @@ public:
   openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters,
                          std::shared_ptr<IFFmpegLibraries>         ffmpegLibraries);
 
-  explicit operator bool() const { return this->codecContext != nullptr; };
-
+  // Todo: Remove this and give this codec context pushPacket / pullFrame functions
   ffmpeg::internal::AVCodecContext *getCodecContext() const { return this->codecContext; }
 
   avutil::MediaType             getCodecType() const;
