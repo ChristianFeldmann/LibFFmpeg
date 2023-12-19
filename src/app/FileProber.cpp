@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 using namespace ffmpeg;
 
