@@ -32,6 +32,7 @@ class AVIOContext;
 class AVProgram;
 class AVChapter;
 class AVOutputFormat;
+class AVCodecInternal;
 
 #define AV_NUM_DATA_POINTERS 8
 

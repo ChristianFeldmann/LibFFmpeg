@@ -31,16 +31,17 @@ TEST(SharedLibraryLoader, OpenDummyLibrary)
   const auto debugPath = std::filesystem::current_path();
 
 #if (defined(_WIN32) || defined(_WIN64))
-  EXPECT_TRUE(loader.load("dummyLib", std::filesystem::current_path()));
+  const auto libraryName = "dummyLib";
 #elif (defined(__APPLE__))
-  EXPECT_TRUE(loader.load(std::filesystem::current_path() / "libdummyLib.dylib"));
+  const auto libraryName = "libdummyLib.dylib";
 #else
-  EXPECT_TRUE(loader.load(std::filesystem::current_path() / "libdummyLib.so"));
+  const auto libraryName = "libdummyLib.so";
 #endif
+  ASSERT_TRUE(loader.load(std::filesystem::current_path() / libraryName));
 
   std::function<int()> getVersion;
   loader.tryResolveFunction(getVersion, "getVersion");
 
-  EXPECT_TRUE(getVersion);
+  ASSERT_TRUE(getVersion);
   EXPECT_EQ(getVersion(), 7263);
 }

@@ -77,7 +77,7 @@ AVFormatContextWrapper::operator bool() const
 std::vector<AVStreamWrapper> AVFormatContextWrapper::getStreams() const
 {
   std::vector<AVStreamWrapper> streams;
-  for (unsigned i = 0; i < this->getNumberStreams(); ++i)
+  for (int i = 0; i < this->getNumberStreams(); ++i)
     streams.push_back(this->getStream(i));
   return streams;
 }

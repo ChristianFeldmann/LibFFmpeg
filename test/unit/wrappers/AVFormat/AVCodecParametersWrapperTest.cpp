@@ -60,8 +60,7 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [](AVPixelFormat pix_fmt)
-  {
+  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [](AVPixelFormat pix_fmt) {
     EXPECT_EQ(pix_fmt, 479);
     return nullptr;
   };

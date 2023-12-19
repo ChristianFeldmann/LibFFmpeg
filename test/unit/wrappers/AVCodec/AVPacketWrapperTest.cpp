@@ -53,7 +53,7 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
   };
 
   int packetAllocationCounter              = 0;
-  ffmpegLibraries->avcodec.av_packet_alloc = [&packetAllocationCounter, &TEST_DATA]()
+  ffmpegLibraries->avcodec.av_packet_alloc = [&]()
   {
     auto packet          = new AVPacketType;
     packet->stream_index = TEST_STREAM_INDEX;

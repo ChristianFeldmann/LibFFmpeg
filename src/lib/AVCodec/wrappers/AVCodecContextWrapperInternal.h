@@ -16,38 +16,38 @@ struct AVCodecContext_56
   const AVClass *av_class{};
   int            log_level_offset{};
 
-  AVMediaType             codec_type{};
-  const struct AVCodec   *codec{};
-  char                    codec_name[32]{};
-  AVCodecID               codec_id{};
-  unsigned int            codec_tag{};
-  unsigned int            stream_codec_tag{};
-  void                   *priv_data{};
-  struct AVCodecInternal *internal{};
-  void                   *opaque{};
-  int                     bit_rate{};
-  int                     bit_rate_tolerance{};
-  int                     global_quality{};
-  int                     compression_level{};
-  int                     flags{};
-  int                     flags2{};
-  uint8_t                *extradata{};
-  int                     extradata_size{};
-  AVRational              time_base{};
-  int                     ticks_per_frame{};
-  int                     delay{};
-  int                     width, height{};
-  int                     coded_width, coded_height{};
-  int                     gop_size{};
-  AVPixelFormat           pix_fmt{};
-  int                     me_method{};
-  void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame         *src,
-                          int                    offset[AV_NUM_DATA_POINTERS],
-                          int                    y,
-                          int                    type,
-                          int                    height);
-  AVPixelFormat (*get_format)(struct AVCodecContext *s, const AVPixelFormat *fmt);
+  AVMediaType      codec_type{};
+  const AVCodec *  codec{};
+  char             codec_name[32]{};
+  AVCodecID        codec_id{};
+  unsigned int     codec_tag{};
+  unsigned int     stream_codec_tag{};
+  void *           priv_data{};
+  AVCodecInternal *internal{};
+  void *           opaque{};
+  int              bit_rate{};
+  int              bit_rate_tolerance{};
+  int              global_quality{};
+  int              compression_level{};
+  int              flags{};
+  int              flags2{};
+  uint8_t *        extradata{};
+  int              extradata_size{};
+  AVRational       time_base{};
+  int              ticks_per_frame{};
+  int              delay{};
+  int              width, height{};
+  int              coded_width, coded_height{};
+  int              gop_size{};
+  AVPixelFormat    pix_fmt{};
+  int              me_method{};
+  void (*draw_horiz_band)(AVCodecContext *s,
+                          const AVFrame * src,
+                          int             offset[AV_NUM_DATA_POINTERS],
+                          int             y,
+                          int             type,
+                          int             height);
+  AVPixelFormat (*get_format)(AVCodecContext *s, const AVPixelFormat *fmt);
   int                           max_b_frames{};
   float                         b_quant_factor{};
   int                           rc_strategy{};
@@ -64,7 +64,7 @@ struct AVCodecContext_56
   float                         dark_masking{};
   int                           slice_count{};
   int                           prediction_method{};
-  int                          *slice_offset{};
+  int *                         slice_offset{};
   AVRational                    sample_aspect_ratio{};
   int                           me_cmp{};
   int                           me_sub_cmp{};
@@ -83,8 +83,8 @@ struct AVCodecContext_56
   int                           slice_flags{};
   int                           xvmc_acceleration{};
   int                           mb_decision{};
-  uint16_t                     *intra_matrix{};
-  uint16_t                     *inter_matrix{};
+  uint16_t *                    intra_matrix{};
+  uint16_t *                    inter_matrix{};
   int                           scenechange_threshold{};
   int                           noise_reduction{};
   int                           me_threshold{};
@@ -115,40 +115,40 @@ struct AVCodecContext_56
 
 struct AVCodecContext_57
 {
-  const AVClass          *av_class{};
-  int                     log_level_offset{};
-  AVMediaType             codec_type{};
-  const struct AVCodec   *codec{};
-  char                    codec_name[32]{};
-  AVCodecID               codec_id{};
-  unsigned int            codec_tag{};
-  unsigned int            stream_codec_tag{};
-  void                   *priv_data{};
-  struct AVCodecInternal *internal{};
-  void                   *opaque{};
-  int64_t                 bit_rate{};
-  int                     bit_rate_tolerance{};
-  int                     global_quality{};
-  int                     compression_level{};
-  int                     flags{};
-  int                     flags2{};
-  uint8_t                *extradata{};
-  int                     extradata_size{};
-  AVRational              time_base{};
-  int                     ticks_per_frame{};
-  int                     delay{};
-  int                     width, height{};
-  int                     coded_width, coded_height{};
-  int                     gop_size{};
-  AVPixelFormat           pix_fmt{};
-  int                     me_method{};
-  void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame         *src,
-                          int                    offset[AV_NUM_DATA_POINTERS],
-                          int                    y,
-                          int                    type,
-                          int                    height);
-  AVPixelFormat (*get_format)(struct AVCodecContext *s, const AVPixelFormat *fmt);
+  const AVClass *  av_class{};
+  int              log_level_offset{};
+  AVMediaType      codec_type{};
+  const AVCodec *  codec{};
+  char             codec_name[32]{};
+  AVCodecID        codec_id{};
+  unsigned int     codec_tag{};
+  unsigned int     stream_codec_tag{};
+  void *           priv_data{};
+  AVCodecInternal *internal{};
+  void *           opaque{};
+  int64_t          bit_rate{};
+  int              bit_rate_tolerance{};
+  int              global_quality{};
+  int              compression_level{};
+  int              flags{};
+  int              flags2{};
+  uint8_t *        extradata{};
+  int              extradata_size{};
+  AVRational       time_base{};
+  int              ticks_per_frame{};
+  int              delay{};
+  int              width, height{};
+  int              coded_width, coded_height{};
+  int              gop_size{};
+  AVPixelFormat    pix_fmt{};
+  int              me_method{};
+  void (*draw_horiz_band)(AVCodecContext *s,
+                          const AVFrame * src,
+                          int             offset[AV_NUM_DATA_POINTERS],
+                          int             y,
+                          int             type,
+                          int             height);
+  AVPixelFormat (*get_format)(AVCodecContext *s, const AVPixelFormat *fmt);
   int                           max_b_frames{};
   float                         b_quant_factor{};
   int                           rc_strategy{};
@@ -165,7 +165,7 @@ struct AVCodecContext_57
   float                         dark_masking{};
   int                           slice_count{};
   int                           prediction_method{};
-  int                          *slice_offset{};
+  int *                         slice_offset{};
   AVRational                    sample_aspect_ratio{};
   int                           me_cmp{};
   int                           me_sub_cmp{};
@@ -184,8 +184,8 @@ struct AVCodecContext_57
   int                           slice_flags{};
   int                           xvmc_acceleration{};
   int                           mb_decision{};
-  uint16_t                     *intra_matrix{};
-  uint16_t                     *inter_matrix{};
+  uint16_t *                    intra_matrix{};
+  uint16_t *                    inter_matrix{};
   int                           scenechange_threshold{};
   int                           noise_reduction{};
   int                           me_threshold{};
@@ -216,37 +216,37 @@ struct AVCodecContext_57
 
 struct AVCodecContext_58
 {
-  const AVClass          *av_class{};
-  int                     log_level_offset{};
-  AVMediaType             codec_type{};
-  const struct AVCodec   *codec{};
-  AVCodecID               codec_id{};
-  unsigned int            codec_tag{};
-  void                   *priv_data{};
-  struct AVCodecInternal *internal{};
-  void                   *opaque{};
-  int64_t                 bit_rate{};
-  int                     bit_rate_tolerance{};
-  int                     global_quality{};
-  int                     compression_level{};
-  int                     flags{};
-  int                     flags2{};
-  uint8_t                *extradata{};
-  int                     extradata_size{};
-  AVRational              time_base{};
-  int                     ticks_per_frame{};
-  int                     delay{};
-  int                     width, height{};
-  int                     coded_width, coded_height{};
-  int                     gop_size{};
-  AVPixelFormat           pix_fmt{};
-  void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame         *src,
-                          int                    offset[AV_NUM_DATA_POINTERS],
-                          int                    y,
-                          int                    type,
-                          int                    height);
-  AVPixelFormat (*get_format)(struct AVCodecContext *s, const AVPixelFormat *fmt);
+  const AVClass *  av_class{};
+  int              log_level_offset{};
+  AVMediaType      codec_type{};
+  const AVCodec *  codec{};
+  AVCodecID        codec_id{};
+  unsigned int     codec_tag{};
+  void *           priv_data{};
+  AVCodecInternal *internal{};
+  void *           opaque{};
+  int64_t          bit_rate{};
+  int              bit_rate_tolerance{};
+  int              global_quality{};
+  int              compression_level{};
+  int              flags{};
+  int              flags2{};
+  uint8_t *        extradata{};
+  int              extradata_size{};
+  AVRational       time_base{};
+  int              ticks_per_frame{};
+  int              delay{};
+  int              width, height{};
+  int              coded_width, coded_height{};
+  int              gop_size{};
+  AVPixelFormat    pix_fmt{};
+  void (*draw_horiz_band)(AVCodecContext *s,
+                          const AVFrame * src,
+                          int             offset[AV_NUM_DATA_POINTERS],
+                          int             y,
+                          int             type,
+                          int             height);
+  AVPixelFormat (*get_format)(AVCodecContext *s, const AVPixelFormat *fmt);
   int                           max_b_frames{};
   float                         b_quant_factor{};
   int                           b_frame_strategy{};
@@ -262,7 +262,7 @@ struct AVCodecContext_58
   float                         dark_masking{};
   int                           slice_count{};
   int                           prediction_method{};
-  int                          *slice_offset{};
+  int *                         slice_offset{};
   AVRational                    sample_aspect_ratio{};
   int                           me_cmp{};
   int                           me_sub_cmp{};
@@ -277,8 +277,8 @@ struct AVCodecContext_58
   int                           me_range{};
   int                           slice_flags{};
   int                           mb_decision{};
-  uint16_t                     *intra_matrix{};
-  uint16_t                     *inter_matrix{};
+  uint16_t *                    intra_matrix{};
+  uint16_t *                    inter_matrix{};
   int                           scenechange_threshold{};
   int                           noise_reduction{};
   int                           intra_dc_precision{};
@@ -306,37 +306,37 @@ struct AVCodecContext_58
 
 struct AVCodecContext_59
 {
-  const AVClass          *av_class{};
-  int                     log_level_offset{};
-  AVMediaType             codec_type{};
-  const struct AVCodec   *codec{};
-  AVCodecID               codec_id{};
-  unsigned int            codec_tag{};
-  void                   *priv_data{};
-  struct AVCodecInternal *internal{};
-  void                   *opaque{};
-  int64_t                 bit_rate{};
-  int                     bit_rate_tolerance{};
-  int                     global_quality{};
-  int                     compression_level{};
-  int                     flags{};
-  int                     flags2{};
-  uint8_t                *extradata{};
-  int                     extradata_size{};
-  AVRational              time_base{};
-  int                     ticks_per_frame{};
-  int                     delay{};
-  int                     width, height{};
-  int                     coded_width, coded_height{};
-  int                     gop_size{};
-  AVPixelFormat           pix_fmt{};
-  void (*draw_horiz_band)(struct AVCodecContext *s,
-                          const AVFrame         *src,
-                          int                    offset[AV_NUM_DATA_POINTERS],
-                          int                    y,
-                          int                    type,
-                          int                    height);
-  AVPixelFormat (*get_format)(struct AVCodecContext *s, const AVPixelFormat *fmt);
+  const AVClass *  av_class{};
+  int              log_level_offset{};
+  AVMediaType      codec_type{};
+  const AVCodec *  codec{};
+  AVCodecID        codec_id{};
+  unsigned int     codec_tag{};
+  void *           priv_data{};
+  AVCodecInternal *internal{};
+  void *           opaque{};
+  int64_t          bit_rate{};
+  int              bit_rate_tolerance{};
+  int              global_quality{};
+  int              compression_level{};
+  int              flags{};
+  int              flags2{};
+  uint8_t *        extradata{};
+  int              extradata_size{};
+  AVRational       time_base{};
+  int              ticks_per_frame{};
+  int              delay{};
+  int              width, height{};
+  int              coded_width, coded_height{};
+  int              gop_size{};
+  AVPixelFormat    pix_fmt{};
+  void (*draw_horiz_band)(AVCodecContext *s,
+                          const AVFrame * src,
+                          int             offset[AV_NUM_DATA_POINTERS],
+                          int             y,
+                          int             type,
+                          int             height);
+  AVPixelFormat (*get_format)(AVCodecContext *s, const AVPixelFormat *fmt);
   int                           max_b_frames{};
   float                         b_quant_factor{};
   float                         b_quant_offset{};
@@ -349,7 +349,7 @@ struct AVCodecContext_59
   float                         p_masking{};
   float                         dark_masking{};
   int                           slice_count{};
-  int                          *slice_offset{};
+  int *                         slice_offset{};
   AVRational                    sample_aspect_ratio{};
   int                           me_cmp{};
   int                           me_sub_cmp{};
@@ -363,8 +363,8 @@ struct AVCodecContext_59
   int                           me_range{};
   int                           slice_flags{};
   int                           mb_decision{};
-  uint16_t                     *intra_matrix{};
-  uint16_t                     *inter_matrix{};
+  uint16_t *                    intra_matrix{};
+  uint16_t *                    inter_matrix{};
   int                           intra_dc_precision{};
   int                           skip_top{};
   int                           skip_bottom{};
