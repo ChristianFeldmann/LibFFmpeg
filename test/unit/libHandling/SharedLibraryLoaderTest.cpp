@@ -31,7 +31,7 @@ TEST(SharedLibraryLoader, OpenDummyLibrary)
   const auto debugPath = std::filesystem::current_path();
 
 #if (defined(_WIN32) || defined(_WIN64))
-  const auto libraryName = "dummyLib";
+  const auto libraryName = "dummyLib.dll";
 #elif (defined(__APPLE__))
   const auto libraryName = "libdummyLib.dylib";
 #else
