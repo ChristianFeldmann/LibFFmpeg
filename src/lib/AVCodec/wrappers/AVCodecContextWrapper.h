@@ -6,10 +6,13 @@
 
 #pragma once
 
+#include <AVCodec/wrappers/AVPacketWrapper.h>
 #include <AVFormat/wrappers/AVCodecParametersWrapper.h>
 #include <AVUtil/ColorSpace.h>
 #include <AVUtil/MediaType.h>
+#include <AVUtil/wrappers/AVFrameWrapper.h>
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
+#include <common/Error.h>
 #include <libHandling/IFFmpegLibraries.h>
 
 namespace ffmpeg::avcodec
@@ -26,8 +29,15 @@ public:
   openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters,
                          std::shared_ptr<IFFmpegLibraries>         ffmpegLibraries);
 
-  // Todo: Remove this and give this codec context pushPacket / pullFrame functions
-  ffmpeg::internal::AVCodecContext *getCodecContext() const { return this->codecContext; }
+  ReturnCode sendPacket(const avcodec::AVPacketWrapper &packet);
+  ReturnCode sendFlushPacket();
+
+  struct RevieveFrameResult
+  {
+    std::optional<avutil::AVFrameWrapper> frame{};
+    ReturnCode                            returnCode{};
+  };
+  RevieveFrameResult revieveFrame();
 
   avutil::MediaType             getCodecType() const;
   ffmpeg::internal::AVCodecID   getCodecID() const;

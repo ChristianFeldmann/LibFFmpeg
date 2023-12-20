@@ -34,13 +34,14 @@ public:
   };
   State getDecoderState() const { return this->decoderState; }
 
-  enum class PushResult
+  enum class SendPacketResult
   {
     Ok,
-    NotPushedPullFramesFirst,
+    NotSentPullFramesFirst,
     Error
   };
-  PushResult                            pushPacket(const avcodec::AVPacketWrapper &packet);
+
+  SendPacketResult                      sendPacket(const avcodec::AVPacketWrapper &packet);
   void                                  setFlushing();
   std::optional<avutil::AVFrameWrapper> decodeNextFrame();
 

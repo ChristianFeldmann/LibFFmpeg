@@ -6,6 +6,7 @@
 
 #include "AVCodecContextWrapper.h"
 
+#include <common/Error.h>
 #include <common/Functions.h>
 #include <common/InternalTypes.h>
 
@@ -67,6 +68,32 @@ std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecodi
     return {};
 
   return AVCodecContextWrapper(codecContext, ffmpegLibraries);
+}
+
+ReturnCode AVCodecContextWrapper::sendPacket(const avcodec::AVPacketWrapper &packet)
+{
+  const auto avReturnCode =
+      this->ffmpegLibraries->avcodec.avcodec_send_packet(this->codecContext, packet.getPacket());
+  return toReturnCode(avReturnCode);
+}
+
+ReturnCode AVCodecContextWrapper::sendFlushPacket()
+{
+  const auto avReturnCode =
+      this->ffmpegLibraries->avcodec.avcodec_send_packet(this->codecContext, nullptr);
+  return toReturnCode(avReturnCode);
+}
+
+AVCodecContextWrapper::RevieveFrameResult AVCodecContextWrapper::revieveFrame()
+{
+  RevieveFrameResult result;
+  result.frame.emplace(this->ffmpegLibraries);
+
+  const auto avReturnCode = this->ffmpegLibraries->avcodec.avcodec_receive_frame(
+      this->codecContext, result.frame->getFrame());
+  result.returnCode = toReturnCode(avReturnCode);
+
+  return result;
 }
 
 avutil::MediaType AVCodecContextWrapper::getCodecType() const

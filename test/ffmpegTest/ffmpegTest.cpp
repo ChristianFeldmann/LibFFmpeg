@@ -219,8 +219,7 @@ TEST(FFmpegTest, DecodingTest)
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]()
-  {
+  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]() {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {
@@ -273,8 +272,8 @@ TEST(FFmpegTest, DecodingTest)
 
     EXPECT_EQ(decoder.getDecoderState(), Decoder::State::NeedsMoreData);
 
-    auto result = decoder.pushPacket(*packet);
-    ASSERT_NE(result, Decoder::PushResult::Error);
+    auto result = decoder.sendPacket(*packet);
+    ASSERT_NE(result, Decoder::SendPacketResult::Error);
 
     if (decoder.getDecoderState() == Decoder::State::RetrieveFrames)
     {
@@ -284,10 +283,10 @@ TEST(FFmpegTest, DecodingTest)
       EXPECT_EQ(decoder.getDecoderState(), Decoder::State::NeedsMoreData);
     }
 
-    if (result == Decoder::PushResult::NotPushedPullFramesFirst)
+    if (result == Decoder::SendPacketResult::NotSentPullFramesFirst)
     {
-      result = decoder.pushPacket(*packet);
-      EXPECT_EQ(result, Decoder::PushResult::Ok);
+      result = decoder.sendPacket(*packet);
+      EXPECT_EQ(result, Decoder::SendPacketResult::Ok);
     }
   }
 

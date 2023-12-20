@@ -48,31 +48,32 @@ bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
   return true;
 }
 
-Decoder::PushResult Decoder::pushPacket(const avcodec::AVPacketWrapper &packet)
+Decoder::SendPacketResult Decoder::sendPacket(const avcodec::AVPacketWrapper &packet)
 {
   if (this->decoderState == State::NotOpened || this->decoderState == State::Error ||
       this->decoderState == State::EndOfBitstream || this->flushing)
-    return PushResult::Error;
+    return SendPacketResult::Error;
 
   if (!packet)
-    return PushResult::Error;
+    return SendPacketResult::Error;
 
   if (this->decoderState == State::RetrieveFrames)
-    return PushResult::NotPushedPullFramesFirst;
+    return SendPacketResult::NotSentPullFramesFirst;
 
-  const auto returnCode = toReturnCode(this->libraries->avcodec.avcodec_send_packet(
-      this->decoderContext->getCodecContext(), packet.getPacket()));
+  const auto returnCode = this->decoderContext->sendPacket(packet);
 
-  if (returnCode == ReturnCode::Ok)
-    return PushResult::Ok;
   if (returnCode == ReturnCode::TryAgain)
   {
     this->decoderState = State::RetrieveFrames;
-    return PushResult::NotPushedPullFramesFirst;
+    return SendPacketResult::NotSentPullFramesFirst;
+  }
+  if (returnCode != ReturnCode::Ok)
+  {
+    this->decoderState = State::Error;
+    return SendPacketResult::Error;
   }
 
-  this->decoderState = State::Error;
-  return PushResult::Error;
+  return SendPacketResult::Ok;
 }
 
 void Decoder::setFlushing()
@@ -80,11 +81,10 @@ void Decoder::setFlushing()
   if (this->flushing)
     throw std::runtime_error("Flushing was already set. Can not be set multiple times.");
 
-  const auto returnCode = this->libraries->avcodec.avcodec_send_packet(
-      this->decoderContext->getCodecContext(), nullptr);
+  const auto returnCode = this->decoderContext->sendFlushPacket();
 
   this->flushing     = true;
-  this->decoderState = (returnCode == 0) ? State::RetrieveFrames : State::Error;
+  this->decoderState = (returnCode == ReturnCode::Ok) ? State::RetrieveFrames : State::Error;
 }
 
 std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
@@ -92,12 +92,7 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
   if (this->decoderState != State::RetrieveFrames)
     return {};
 
-  avutil::AVFrameWrapper frame(this->libraries);
-
-  const auto returnCode = toReturnCode(this->libraries->avcodec.avcodec_receive_frame(
-      this->decoderContext->getCodecContext(), frame.getFrame()));
-
-  const auto frameSize = frame.getSize();
+  auto [frame, returnCode] = this->decoderContext->revieveFrame();
 
   if (returnCode == ReturnCode::Ok)
     return std::move(frame);
