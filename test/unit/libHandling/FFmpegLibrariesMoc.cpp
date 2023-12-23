@@ -13,6 +13,8 @@ using internal::AVCodec;
 using internal::AVCodecContext;
 using internal::AVCodecDescriptor;
 using internal::AVCodecID;
+using internal::AVDictionary;
+using internal::AVDictionaryEntry;
 using internal::AVFrame;
 using internal::AVPacket;
 using internal::AVPixelFormat;
@@ -25,6 +27,10 @@ FFmpegLibrariesMock::FFmpegLibrariesMock()
   this->avutil.av_pix_fmt_desc_get = [this](AVPixelFormat pix_fmt) {
     return this->av_pix_fmt_desc_get_mock(pix_fmt);
   };
+  this->avutil.av_dict_get =
+      [this](AVDictionary *dictionray, const char *key, const AVDictionaryEntry *prev, int flags) {
+        return this->av_dict_get_moc(dictionray, key, prev, flags);
+      };
 
   this->avcodec.av_packet_alloc = [this]() { return this->av_packet_alloc_mock(); };
   this->avcodec.av_packet_free  = [this](AVPacket **packet) { this->av_packet_free_mock(packet); };
@@ -71,6 +77,33 @@ const AVPixFmtDescriptor *FFmpegLibrariesMock::av_pix_fmt_desc_get_mock(AVPixelF
     EXPECT_EQ(pix_fmt, this->functionChecks.avutilPixFmtDescGetExpectedFormat.value());
   ++this->functionCounters.avPixFmtDescGet;
   this->functionCallValues.avPixFmtDescGet.push_back(pix_fmt);
+  return nullptr;
+}
+
+AVDictionaryEntry *FFmpegLibrariesMock::av_dict_get_moc(AVDictionary *           dictionray,
+                                                        const char *             key,
+                                                        const AVDictionaryEntry *prev,
+                                                        int                      flags)
+{
+  constexpr auto AV_DICT_IGNORE_SUFFIX = 2;
+
+  ++this->functionCounters.avDictGet;
+
+  if (dictionray == nullptr || key == nullptr || flags != AV_DICT_IGNORE_SUFFIX)
+    return {};
+
+  auto castBack = reinterpret_cast<AVDictionaryEntry *>(dictionray);
+  if (prev == nullptr)
+    return castBack;
+
+  while (castBack->key != nullptr && castBack->value != nullptr)
+  {
+    const auto returnNext = (castBack == prev);
+    ++castBack;
+    if (returnNext)
+      return (castBack->key == nullptr) ? nullptr : castBack;
+  }
+
   return nullptr;
 }
 

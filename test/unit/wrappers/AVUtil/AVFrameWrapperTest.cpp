@@ -47,16 +47,14 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   int frameAllocCounter                  = 0;
-  ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]()
-  {
+  ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]() {
     auto frame = new AVFrameType;
     frameAllocCounter++;
     return reinterpret_cast<AVFrame *>(frame);
   };
 
   int frameFreeCounter                  = 0;
-  ffmpegLibraries->avutil.av_frame_free = [&frameFreeCounter](AVFrame **frame)
-  {
+  ffmpegLibraries->avutil.av_frame_free = [&frameFreeCounter](AVFrame **frame) {
     if (frame != nullptr && *frame != nullptr)
     {
       auto castFrame = reinterpret_cast<AVFrameType *>(*frame);

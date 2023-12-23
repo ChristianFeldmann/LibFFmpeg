@@ -35,6 +35,7 @@ public:
     int avFrameAlloc{};
     int avFrameFree{};
     int avPixFmtDescGet{};
+    int avDictGet{};
     int avPacketAlloc{};
     int avPacketFree{};
     int avcodecReceiveFrame{};
@@ -66,6 +67,10 @@ private:
   internal::AVFrame *                 av_frame_alloc_mock();
   void                                av_frame_free_mock(internal::AVFrame **frame);
   const internal::AVPixFmtDescriptor *av_pix_fmt_desc_get_mock(internal::AVPixelFormat pix_fmt);
+  internal::AVDictionaryEntry *       av_dict_get_moc(internal::AVDictionary *           dictionary,
+                                                      const char *                       key,
+                                                      const internal::AVDictionaryEntry *prev,
+                                                      int                                flags);
 
   // AVCodec
   internal::AVPacket *av_packet_alloc_mock();
