@@ -24,17 +24,17 @@ struct AvUtilFunctions
   std::function<AVDictionaryEntry *(
       AVDictionary *m, const char *key, const AVDictionaryEntry *prev, int flags)>
       av_dict_get;
-  std::function<AVFrameSideData *(const AVFrame *frame, ffmpeg::internal::AVFrameSideDataType type)>
-                                                                             av_frame_get_side_data;
-  std::function<AVDictionary *(const AVFrame *frame)>                        av_frame_get_metadata;
-  std::function<void(void (*callback)(void *, int, const char *, va_list))>  av_log_set_callback;
-  std::function<void(int level)>                                             av_log_set_level;
-  std::function<const AVPixFmtDescriptor *(internal::AVPixelFormat pix_fmt)> av_pix_fmt_desc_get;
-  std::function<const AVPixFmtDescriptor *(const AVPixFmtDescriptor *prev)>  av_pix_fmt_desc_next;
-  std::function<internal::AVPixelFormat(const AVPixFmtDescriptor *desc)>     av_pix_fmt_desc_get_id;
+  std::function<AVFrameSideData *(const AVFrame *frame, AVFrameSideDataType type)>
+                                                                            av_frame_get_side_data;
+  std::function<AVDictionary *(const AVFrame *frame)>                       av_frame_get_metadata;
+  std::function<void(void (*callback)(void *, int, const char *, va_list))> av_log_set_callback;
+  std::function<void(int level)>                                            av_log_set_level;
+  std::function<const AVPixFmtDescriptor *(AVPixelFormat pix_fmt)>          av_pix_fmt_desc_get;
+  std::function<const AVPixFmtDescriptor *(const AVPixFmtDescriptor *prev)> av_pix_fmt_desc_next;
+  std::function<AVPixelFormat(const AVPixFmtDescriptor *desc)>              av_pix_fmt_desc_get_id;
 };
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 Log                       &log);
+                                                                 Log &                      log);
 
 } // namespace ffmpeg::internal::functions

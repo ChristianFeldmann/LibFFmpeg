@@ -36,13 +36,6 @@ template <typename AVCodecType> void runAVCodecWrapperTest(const LibraryVersions
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  std::vector<AVPixelFormat> descriptionGetCalls;
-  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [&descriptionGetCalls](AVPixelFormat pix_fmt)
-  {
-    descriptionGetCalls.push_back(pix_fmt);
-    return nullptr;
-  };
-
   constexpr auto TEST_NAME         = "CodecNameTest";
   constexpr auto TEST_LONG_NAME    = "CodecLongNameTest";
   constexpr auto TEST_CODEC_ID     = static_cast<ffmpeg::internal::AVCodecID>(98);
@@ -78,7 +71,8 @@ template <typename AVCodecType> void runAVCodecWrapperTest(const LibraryVersions
   EXPECT_EQ(codec.getSupportedFramerates(),
             toRationalVector(rawFrameRates.begin(), rawFrameRates.end() - 1));
   EXPECT_EQ(codec.getPixelFormats().size(), 3);
-  EXPECT_EQ(descriptionGetCalls, std::vector(rawPixelFormats.begin(), rawPixelFormats.end() - 1));
+  EXPECT_EQ(ffmpegLibraries->functionCallValues.avPixFmtDescGet,
+            std::vector(rawPixelFormats.begin(), rawPixelFormats.end() - 1));
   EXPECT_EQ(codec.getSupportedSamplerates(),
             std::vector(rawSupportedSampleRates.begin(), rawSupportedSampleRates.end() - 1));
 }

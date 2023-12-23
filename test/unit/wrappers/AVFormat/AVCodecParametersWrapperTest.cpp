@@ -57,13 +57,12 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
 template <typename AVCodecParametersType>
 void runAVCodecParametersWrapperTest(const LibraryVersions &version)
 {
+  const auto TEST_PIXEL_FORMAT = static_cast<AVPixelFormat>(637);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [](AVPixelFormat pix_fmt) {
-    EXPECT_EQ(pix_fmt, 479);
-    return nullptr;
-  };
+  ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   std::array<uint8_t, 4> TEST_EXTRADATA = {22, 56, 19, 22};
 
@@ -75,7 +74,7 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
   codecParameters.width               = 64;
   codecParameters.height              = 198;
   codecParameters.color_space         = AVCOL_SPC_SMPTE240M;
-  codecParameters.format              = 479;
+  codecParameters.format              = TEST_PIXEL_FORMAT;
   codecParameters.sample_aspect_ratio = AVRational({23, 88});
 
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
@@ -88,6 +87,8 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
   EXPECT_EQ(parameters.getColorspace(), avutil::ColorSpace::SMPTE240M);
   EXPECT_EQ(parameters.getPixelFormat().name, "None");
   EXPECT_EQ(parameters.getSampleAspectRatio(), Rational({23, 88}));
+
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avPixFmtDescGet, 1);
 }
 
 } // namespace

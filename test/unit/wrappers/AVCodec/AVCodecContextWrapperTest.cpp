@@ -6,6 +6,8 @@
 
 #include <AVCodec/wrappers/AVCodecContextWrapper.h>
 #include <AVCodec/wrappers/AVCodecContextWrapperInternal.h>
+#include <AVCodec/wrappers/AVPacketWrapperInternal.h>
+#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
 #include <common/InternalTypes.h>
 #include <wrappers/TestHelper.h>
 
@@ -20,7 +22,10 @@ namespace ffmpeg::avcodec
 
 using ffmpeg::internal::AVCodecContext;
 using ffmpeg::internal::AVCodecID;
+using ffmpeg::internal::AVCodecParameters;
 using ffmpeg::internal::AVColorSpace;
+using ffmpeg::internal::AVFrame;
+using ffmpeg::internal::AVPacket;
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVRational;
 using ffmpeg::internal::avcodec::AVCodecContext_56;
@@ -28,6 +33,7 @@ using ffmpeg::internal::avcodec::AVCodecContext_57;
 using ffmpeg::internal::avcodec::AVCodecContext_58;
 using ffmpeg::internal::avcodec::AVCodecContext_59;
 using ffmpeg::internal::avcodec::AVCodecContext_60;
+using ffmpeg::internal::avcodec::AVPacket_56;
 using ::testing::Return;
 
 template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryVersions &version)
@@ -41,12 +47,7 @@ template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryV
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  int counterAvPixelFormatDescriptorGet       = 0;
-  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [&](AVPixelFormat pix_fmt) {
-    EXPECT_EQ(pix_fmt, TEST_PIXEL_FORMAT);
-    ++counterAvPixelFormatDescriptorGet;
-    return nullptr;
-  };
+  ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   AVCodecContextType codecContext;
   codecContext.codec_type = ffmpeg::internal::AVMEDIA_TYPE_ATTACHMENT;
@@ -66,13 +67,11 @@ template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryV
   EXPECT_EQ(wrapper.getCodecType(), avutil::MediaType::Attachment);
   EXPECT_EQ(wrapper.getCodecID(), TEST_CODEC_ID);
   EXPECT_EQ(wrapper.getPixelFormat().name, "None");
-  EXPECT_EQ(counterAvPixelFormatDescriptorGet, 1);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avPixFmtDescGet, 1);
   EXPECT_EQ(wrapper.getSize(), Size({TEST_WIDTH, TEST_HEIGHT}));
   EXPECT_EQ(wrapper.getColorspace(), avutil::ColorSpace::BT2020_NCL);
   EXPECT_EQ(wrapper.getTimeBase(), Rational({TEST_TIMEBASE.num, TEST_TIMEBASE.den}));
   EXPECT_EQ(wrapper.getExtradata(), dataArrayToByteVector(TEST_EXTRADATA));
-
-  // Todo: Test opening of files.
 }
 
 class AVCodecContextWrapperTest : public testing::TestWithParam<LibraryVersions>
@@ -89,10 +88,62 @@ TEST_F(AVCodecContextWrapperTest, ConstructorWithNullptrForCodecContextShouldThr
 TEST_F(AVCodecContextWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShouldThrow)
 {
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
-  AVCodecContext_56                 codecContext;
+  AVDummy                           codecContext;
   EXPECT_THROW(AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContext),
                                              ffmpegLibraries),
                std::runtime_error);
+}
+
+TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+
+  AVDummy               codecContextDummy;
+  AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContextDummy),
+                                ffmpegLibraries);
+
+  AVDummy                            codecParametersDummy;
+  avformat::AVCodecParametersWrapper codecParameters(
+      reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
+
+  wrapper.openContextForDecoding(codecParameters, ffmpegLibraries);
+}
+
+TEST_F(AVCodecContextWrapperTest, TestSendingPackets)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+
+  AVDummy               codecContext;
+  AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContext), ffmpegLibraries);
+
+  AVPacketWrapper packet(ffmpegLibraries);
+
+  wrapper.sendPacket(packet);
+  wrapper.sendPacket(packet);
+  wrapper.sendFlushPacket();
+
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecSendPacketNonNull, 2);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecSendPacketNull, 1);
+}
+
+TEST_F(AVCodecContextWrapperTest, TestRecievingFrames)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+
+  AVDummy               codecContext;
+  AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContext), ffmpegLibraries);
+
+  {
+    auto [frame, returnCode] = wrapper.revieveFrame();
+    EXPECT_EQ(returnCode, ReturnCode::Ok);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecReceiveFrame, 1);
+  }
+
+  {
+    auto [frame, returnCode] = wrapper.revieveFrame();
+    EXPECT_EQ(returnCode, ReturnCode::Ok);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecReceiveFrame, 2);
+  }
 }
 
 TEST_P(AVCodecContextWrapperTest, TestAVCodecContextWrapper)
