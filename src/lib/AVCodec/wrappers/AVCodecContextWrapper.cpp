@@ -34,7 +34,7 @@ namespace internal
 
 } // namespace internal
 
-AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext *                  codecContext,
+AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext                   *codecContext,
                                              std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codecContext(codecContext), ffmpegLibraries(ffmpegLibraries)
 {
@@ -42,6 +42,26 @@ AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext *                  c
     throw std::runtime_error("Provided codecContext pointer must not be null");
   if (!ffmpegLibraries)
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
+}
+
+AVCodecContextWrapper &
+AVCodecContextWrapper::operator=(const AVCodecContextWrapper &&codecContextWrapper)
+{
+  this->codecContext    = std::move(codecContextWrapper.codecContext);
+  this->ffmpegLibraries = std::move(codecContextWrapper.ffmpegLibraries);
+  return *this;
+}
+
+AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContextWrapper &&codecContextWrapper)
+{
+  this->codecContext    = std::move(codecContextWrapper.codecContext);
+  this->ffmpegLibraries = std::move(codecContextWrapper.ffmpegLibraries);
+}
+
+AVCodecContextWrapper::~AVCodecContextWrapper()
+{
+  if (this->codecContext)
+    this->ffmpegLibraries->avcodec.avcodec_free_context(&this->codecContext);
 }
 
 std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecoding(
@@ -53,21 +73,24 @@ std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecodi
   if (decoderCodec == nullptr)
     return {};
 
-  auto codecContext = ffmpegLibraries->avcodec.avcodec_alloc_context3(decoderCodec);
-  if (codecContext == nullptr)
+  auto codecContextPointer = ffmpegLibraries->avcodec.avcodec_alloc_context3(decoderCodec);
+  if (codecContextPointer == nullptr)
     return {};
 
+  auto codecContext = AVCodecContextWrapper(codecContextPointer, ffmpegLibraries);
+
   auto ret = ffmpegLibraries->avcodec.avcodec_parameters_to_context(
-      codecContext, codecParameters.getCodecParameters());
+      codecContext.codecContext, codecParameters.getCodecParameters());
   if (ret < 0)
     return {};
 
   AVDictionary *dictionary = nullptr;
-  ret = ffmpegLibraries->avcodec.avcodec_open2(codecContext, decoderCodec, &dictionary);
+  ret =
+      ffmpegLibraries->avcodec.avcodec_open2(codecContext.codecContext, decoderCodec, &dictionary);
   if (ret < 0)
     return {};
 
-  return AVCodecContextWrapper(codecContext, ffmpegLibraries);
+  return std::move(codecContext);
 }
 
 ReturnCode AVCodecContextWrapper::sendPacket(const avcodec::AVPacketWrapper &packet)

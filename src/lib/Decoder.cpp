@@ -37,7 +37,7 @@ bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
 
   if (auto context =
           avcodec::AVCodecContextWrapper::openContextForDecoding(*codecParameters, this->libraries))
-    this->decoderContext = context.value();
+    this->decoderContext = std::move(context);
   else
   {
     this->decoderState = State::Error;

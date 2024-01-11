@@ -20,6 +20,7 @@
 namespace ffmpeg::avcodec
 {
 
+using ffmpeg::internal::AVCodec;
 using ffmpeg::internal::AVCodecContext;
 using ffmpeg::internal::AVCodecID;
 using ffmpeg::internal::AVCodecParameters;
@@ -98,15 +99,20 @@ TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 
-  AVDummy               codecContextDummy;
-  AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContextDummy),
-                                ffmpegLibraries);
+  {
+    AVDummy               codecContextDummy;
+    AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContextDummy),
+                                  ffmpegLibraries);
 
-  AVDummy                            codecParametersDummy;
-  avformat::AVCodecParametersWrapper codecParameters(
-      reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
+    AVDummy                            codecParametersDummy;
+    avformat::AVCodecParametersWrapper codecParameters(
+        reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
 
-  wrapper.openContextForDecoding(codecParameters, ffmpegLibraries);
+    auto context = wrapper.openContextForDecoding(codecParameters, ffmpegLibraries);
+    EXPECT_TRUE(context);
+  }
+
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecAllocContext3, 1);
 }
 
 TEST_F(AVCodecContextWrapperTest, TestSendingPackets)

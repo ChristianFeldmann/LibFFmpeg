@@ -24,6 +24,11 @@ public:
   AVCodecContextWrapper() = delete;
   AVCodecContextWrapper(ffmpeg::internal::AVCodecContext *codecContext,
                         std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  AVCodecContextWrapper(const AVCodecContextWrapper &) = delete;
+  AVCodecContextWrapper &operator=(const AVCodecContextWrapper &&);
+  AVCodecContextWrapper &operator=(const AVCodecContextWrapper &) = delete;
+  AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
+  ~AVCodecContextWrapper();
 
   static std::optional<AVCodecContextWrapper>
   openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters,

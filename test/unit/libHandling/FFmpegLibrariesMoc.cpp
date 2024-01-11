@@ -13,6 +13,7 @@ using internal::AVCodec;
 using internal::AVCodecContext;
 using internal::AVCodecDescriptor;
 using internal::AVCodecID;
+using internal::AVCodecParameters;
 using internal::AVDictionary;
 using internal::AVDictionaryEntry;
 using internal::AVFrame;
@@ -24,25 +25,33 @@ FFmpegLibrariesMock::FFmpegLibrariesMock()
 {
   this->avutil.av_frame_alloc      = [this]() { return this->av_frame_alloc_mock(); };
   this->avutil.av_frame_free       = [this](AVFrame **frame) { this->av_frame_free_mock(frame); };
-  this->avutil.av_pix_fmt_desc_get = [this](AVPixelFormat pix_fmt) {
-    return this->av_pix_fmt_desc_get_mock(pix_fmt);
-  };
+  this->avutil.av_pix_fmt_desc_get = [this](AVPixelFormat pix_fmt)
+  { return this->av_pix_fmt_desc_get_mock(pix_fmt); };
   this->avutil.av_dict_get =
-      [this](AVDictionary *dictionray, const char *key, const AVDictionaryEntry *prev, int flags) {
-        return this->av_dict_get_moc(dictionray, key, prev, flags);
-      };
+      [this](AVDictionary *dictionray, const char *key, const AVDictionaryEntry *prev, int flags)
+  { return this->av_dict_get_moc(dictionray, key, prev, flags); };
 
   this->avcodec.av_packet_alloc = [this]() { return this->av_packet_alloc_mock(); };
   this->avcodec.av_packet_free  = [this](AVPacket **packet) { this->av_packet_free_mock(packet); };
-  this->avcodec.avcodec_receive_frame = [this](AVCodecContext *context, AVFrame *frame) {
-    return this->avcodec_receive_frame_mock(context, frame);
-  };
-  this->avcodec.avcodec_send_packet = [this](AVCodecContext *context, const AVPacket *packet) {
-    return this->avcodec_send_packet_mock(context, packet);
-  };
-  this->avcodec.avcodec_descriptor_get = [this](AVCodecID codecID) {
-    return this->avcodec_descriptor_get_mock(codecID);
-  };
+  this->avcodec.avcodec_receive_frame = [this](AVCodecContext *context, AVFrame *frame)
+  { return this->avcodec_receive_frame_mock(context, frame); };
+  this->avcodec.avcodec_send_packet = [this](AVCodecContext *context, const AVPacket *packet)
+  { return this->avcodec_send_packet_mock(context, packet); };
+  this->avcodec.avcodec_descriptor_get = [this](AVCodecID codecID)
+  { return this->avcodec_descriptor_get_mock(codecID); };
+  this->avcodec.avcodec_find_decoder = [this](AVCodecID codecID)
+  { return this->avcodec_find_decoder_mock(codecID); };
+  this->avcodec.avcodec_alloc_context3 = [this](const AVCodec *codec)
+  { return this->avcodec_alloc_context3_mock(codec); };
+  this->avcodec.avcodec_free_context = [this](AVCodecContext **codecContext)
+  { this->avcodec_free_context_mock(codecContext); };
+  this->avcodec.avcodec_parameters_to_context =
+      [this](AVCodecContext *codecContext, const AVCodecParameters *codecParameters)
+  { return this->avcodec_parameters_to_context_mock(codecContext, codecParameters); };
+  this->avcodec.avcodec_open2 = [this](internal::AVCodecContext *codecContext,
+                                       const internal::AVCodec  *codec,
+                                       internal::AVDictionary  **dict)
+  { return this->avcodec_open2_mock(codecContext, codec, dict); };
 }
 
 FFmpegLibrariesMock::~FFmpegLibrariesMock()
@@ -51,9 +60,11 @@ FFmpegLibrariesMock::~FFmpegLibrariesMock()
       << "Not all allocated frames were freed again";
   EXPECT_EQ(this->functionCounters.avPacketAlloc, this->functionCounters.avPacketFree)
       << "Not all allocated packets were freed again";
+  EXPECT_EQ(this->functionCounters.avcodecAllocContext3, this->functionCounters.avcodecFreeContext)
+      << "Not all allocated codec contexts were freed again";
 }
 
-internal::AVFrame *FFmpegLibrariesMock::av_frame_alloc_mock()
+AVFrame *FFmpegLibrariesMock::av_frame_alloc_mock()
 {
   auto frame = new AVDummy;
   ++this->functionCounters.avFrameAlloc;
@@ -80,8 +91,8 @@ const AVPixFmtDescriptor *FFmpegLibrariesMock::av_pix_fmt_desc_get_mock(AVPixelF
   return nullptr;
 }
 
-AVDictionaryEntry *FFmpegLibrariesMock::av_dict_get_moc(AVDictionary *           dictionray,
-                                                        const char *             key,
+AVDictionaryEntry *FFmpegLibrariesMock::av_dict_get_moc(AVDictionary            *dictionray,
+                                                        const char              *key,
                                                         const AVDictionaryEntry *prev,
                                                         int                      flags)
 {
@@ -163,6 +174,45 @@ AVCodec *FFmpegLibrariesMock::avcodec_find_decoder_mock(AVCodecID codecID)
     EXPECT_EQ(codecID, this->functionChecks.avcodecFindDecoderExpectedCodecID.value());
   ++this->functionCounters.avcodecFindDecoder;
   return reinterpret_cast<AVCodec *>(&this->avDummy);
+}
+
+internal::AVCodecContext *
+FFmpegLibrariesMock::avcodec_alloc_context3_mock(const internal::AVCodec *codec)
+{
+  EXPECT_NE(codec, nullptr);
+  ++this->functionCounters.avcodecAllocContext3;
+  auto dummyCodec = new AVDummy;
+  return reinterpret_cast<AVCodecContext *>(dummyCodec);
+}
+
+void FFmpegLibrariesMock::avcodec_free_context_mock(internal::AVCodecContext **codecContext)
+{
+  if (codecContext != nullptr && *codecContext != nullptr)
+  {
+    auto castCodecContext = reinterpret_cast<AVDummy *>(*codecContext);
+    delete (castCodecContext);
+    *codecContext = nullptr;
+    ++this->functionCounters.avPacketFree;
+  }
+}
+
+int FFmpegLibrariesMock::avcodec_parameters_to_context_mock(
+    internal::AVCodecContext *codecContext, const internal::AVCodecParameters *codecParameters)
+{
+  EXPECT_NE(codecContext, nullptr);
+  EXPECT_NE(codecParameters, nullptr);
+  ++this->functionCounters.avcodecParametersToContext;
+  return 0;
+}
+
+int FFmpegLibrariesMock::avcodec_open2_mock(internal::AVCodecContext *codecContext,
+                                            const internal::AVCodec  *codec,
+                                            internal::AVDictionary  **dictionary)
+{
+  EXPECT_NE(codecContext, nullptr);
+  EXPECT_NE(codec, nullptr);
+  ++this->functionCounters.avcodecOpen2;
+  return 0;
 }
 
 } // namespace ffmpeg
