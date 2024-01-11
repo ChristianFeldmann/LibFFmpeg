@@ -13,14 +13,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-2022
-            COPY_COMMAND: copy
-            DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
-            UNIT_TEST_PATH: test/unit/Release/
-          # - os: ubuntu-22.04
-          #   COPY_COMMAND: cp
-          #   DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
-          #   UNIT_TEST_PATH: test/unit/
+          # - os: windows-2022
+          #   COPY_COMMAND: copy
+          #   DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
+          #   UNIT_TEST_PATH: test/unit/Release/
+          - os: ubuntu-22.04
+            COPY_COMMAND: cp
+            DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
+            UNIT_TEST_PATH: test/unit/
+            FFMPEG_TEST_PATH: test/ffmpegTest/ffmpegTest
           #- os: macos-12
           #  COPY_COMMAND: cp
           #  DUMMY_LIB_PATH: test/dummyLib/libdummyLib.dylib
@@ -48,3 +49,27 @@ jobs:
         ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.DUMMY_LIB_PATH}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.UNIT_TEST_PATH}}
         cd ${{steps.strings.outputs.build-output-dir}}/${{matrix.UNIT_TEST_PATH}}
         ./unitTest
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: ${{matrix.FFMPEG_TEST_PATH}}
+        path: ${{steps.strings.outputs.build-output-dir}}/${{matrix.FFMPEG_TEST_PATH}}
+
+  testffmpeg:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: ffmpegTest
+        path: ffmpegTest
+
+    - uses: suisei-cn/actions-download-file@v1.3.0
+      name: Download the file
+      with:
+        url: ${{ secrets.AZURE_BLOB_ROOT_PATH }} "ffmpeg/ffmpeg6.0-ubuntu20.zip" ${{ secrets.SuperSecret }}
+        target: ${{ github.workspace }}
+
+    - name: runffmpegTest
+      run: |
+        ls
