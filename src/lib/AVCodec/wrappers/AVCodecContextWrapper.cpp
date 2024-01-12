@@ -42,25 +42,29 @@ AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext                   *c
     throw std::runtime_error("Provided codecContext pointer must not be null");
   if (!ffmpegLibraries)
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
+  this->codecContextOwnership = false;
 }
 
-AVCodecContextWrapper &
-AVCodecContextWrapper::operator=(const AVCodecContextWrapper &&codecContextWrapper)
+AVCodecContextWrapper &AVCodecContextWrapper::operator=(AVCodecContextWrapper &&codecContextWrapper)
 {
-  this->codecContext    = std::move(codecContextWrapper.codecContext);
-  this->ffmpegLibraries = std::move(codecContextWrapper.ffmpegLibraries);
+  this->codecContext               = codecContextWrapper.codecContext;
+  this->codecContextOwnership      = codecContextWrapper.codecContextOwnership;
+  codecContextWrapper.codecContext = nullptr;
+  this->ffmpegLibraries            = std::move(codecContextWrapper.ffmpegLibraries);
   return *this;
 }
 
 AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContextWrapper &&codecContextWrapper)
 {
-  this->codecContext    = std::move(codecContextWrapper.codecContext);
-  this->ffmpegLibraries = std::move(codecContextWrapper.ffmpegLibraries);
+  this->codecContext               = codecContextWrapper.codecContext;
+  this->codecContextOwnership      = codecContextWrapper.codecContextOwnership;
+  codecContextWrapper.codecContext = nullptr;
+  this->ffmpegLibraries            = std::move(codecContextWrapper.ffmpegLibraries);
 }
 
 AVCodecContextWrapper::~AVCodecContextWrapper()
 {
-  if (this->codecContext)
+  if (this->codecContext && this->codecContextOwnership)
     this->ffmpegLibraries->avcodec.avcodec_free_context(&this->codecContext);
 }
 
@@ -90,6 +94,7 @@ std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecodi
   if (ret < 0)
     return {};
 
+  codecContext.codecContextOwnership = true;
   return std::move(codecContext);
 }
 

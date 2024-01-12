@@ -25,7 +25,7 @@ public:
   AVCodecContextWrapper(ffmpeg::internal::AVCodecContext *codecContext,
                         std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVCodecContextWrapper(const AVCodecContextWrapper &) = delete;
-  AVCodecContextWrapper &operator=(const AVCodecContextWrapper &&);
+  AVCodecContextWrapper &operator=(AVCodecContextWrapper &&);
   AVCodecContextWrapper &operator=(const AVCodecContextWrapper &) = delete;
   AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
   ~AVCodecContextWrapper();
@@ -53,7 +53,15 @@ public:
   ByteVector                    getExtradata() const;
 
 private:
+  /* It depends on how the wrapper is created who has ownership of this.
+   * If the function openContextForDecoding is used, then this class has ownership. If the
+   * constructor with a raw pointer is called, then the ownership is not in this class. That is used
+   * for older FFmpeg versions where the AVStream has ownership of the codec. In newer versions,
+   * this is not the case anymore.
+   */
   ffmpeg::internal::AVCodecContext *codecContext{};
+  bool                              codecContextOwnership{};
+
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
