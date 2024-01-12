@@ -73,4 +73,4 @@ jobs:
     - name: runffmpegTest
       run: |
         ls -l
-        ffmpegTest
+        ./ffmpegTest
