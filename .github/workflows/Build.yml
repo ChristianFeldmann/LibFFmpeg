@@ -64,7 +64,9 @@ jobs:
         name: ffmpegTest.zip
 
     - name: Unzip ffmpegTest
-      run: unzip ffmpegTest.zip
+      run: |
+        ls -l
+        unzip ffmpegTest.zip
 
     - name: Download FFmpeg
       run: |
