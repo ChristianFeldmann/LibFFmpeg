@@ -100,19 +100,17 @@ TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 
   {
-    AVDummy               codecContextDummy;
-    AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContextDummy),
-                                  ffmpegLibraries);
-
     AVDummy                            codecParametersDummy;
     avformat::AVCodecParametersWrapper codecParameters(
         reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
 
-    auto context = wrapper.openContextForDecoding(codecParameters, ffmpegLibraries);
+    auto context = AVCodecContextWrapper::openContextForDecoding(codecParameters, ffmpegLibraries);
     EXPECT_TRUE(context);
   }
 
   EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecAllocContext3, 1);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecParametersToContext, 1);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecOpen2, 1);
 }
 
 TEST_F(AVCodecContextWrapperTest, TestSendingPackets)

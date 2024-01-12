@@ -192,7 +192,7 @@ void FFmpegLibrariesMock::avcodec_free_context_mock(internal::AVCodecContext **c
     auto castCodecContext = reinterpret_cast<AVDummy *>(*codecContext);
     delete (castCodecContext);
     *codecContext = nullptr;
-    ++this->functionCounters.avPacketFree;
+    ++this->functionCounters.avcodecFreeContext;
   }
 }
 
