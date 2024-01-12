@@ -21,7 +21,7 @@ jobs:
             COPY_COMMAND: cp
             DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
             UNIT_TEST_PATH: test/unit/
-            FFMPEG_TEST_PATH: test/ffmpegTest/ffmpegTest
+            FFMPEG_TEST_NAME: ffmpegTest
           #- os: macos-12
           #  COPY_COMMAND: cp
           #  DUMMY_LIB_PATH: test/dummyLib/libdummyLib.dylib
@@ -52,8 +52,8 @@ jobs:
 
     - uses: actions/upload-artifact@master
       with:
-        name: ${{matrix.FFMPEG_TEST_PATH}}
-        path: ${{steps.strings.outputs.build-output-dir}}/${{matrix.FFMPEG_TEST_PATH}}
+        name: ${{matrix.FFMPEG_TEST_NAME}}
+        path: ${{steps.strings.outputs.build-output-dir}}/test/ffmpegTest/${{matrix.FFMPEG_TEST_NAME}}
 
   testffmpeg:
     needs: build
