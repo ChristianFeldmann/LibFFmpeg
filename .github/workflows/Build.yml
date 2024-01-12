@@ -64,14 +64,11 @@ jobs:
         name: ffmpegTest
         path: ffmpegTest
 
-    - uses: suisei-cn/actions-download-file@v1.3.0
-      name: Download the file
-      with:
-        url: ${{ secrets.AZURE_BLOB_ROOT_PATH }} "ffmpeg/ffmpeg6.0-ubuntu20.zip" ${{ secrets.SuperSecret }}
-        target: ${{ github.workspace }}
-
-    - name: Unzip FFmpeg
-      run: unzip ffmpeg6.0-ubuntu20.zip
+    - name: Download FFmpeg
+      run: |
+        curl -L ${{ secrets.AZURE_BLOB_ROOT_PATH }}"ffmpeg/ffmpeg6.0-ubuntu20.zip"${{ secrets.SuperSecret }} -o ffmpeg6.0-ubuntu20.zip
+        ls -l
+        unzip ffmpeg6.0-ubuntu20.zip
 
     - name: runffmpegTest
       run: |
