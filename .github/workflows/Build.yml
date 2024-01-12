@@ -66,7 +66,7 @@ jobs:
 
     - name: Download FFmpeg
       run: |
-        curl -L ${{ secrets.AZURE_BLOB_ROOT_PATH }}"ffmpeg/ffmpeg6.0-ubuntu20.zip"${{ secrets.SuperSecret }} -o ffmpeg6.0-ubuntu20.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/ffmpeg6.0-ubuntu20.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg6.0-ubuntu20.zip
         ls -l
         unzip ffmpeg6.0-ubuntu20.zip
 
