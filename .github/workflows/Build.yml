@@ -70,6 +70,10 @@ jobs:
         url: ${{ secrets.AZURE_BLOB_ROOT_PATH }} "ffmpeg/ffmpeg6.0-ubuntu20.zip" ${{ secrets.SuperSecret }}
         target: ${{ github.workspace }}
 
+    - name: Unzip FFmpeg
+      run: unzip ffmpeg6.0-ubuntu20.zip
+
     - name: runffmpegTest
       run: |
-        ls
+        ls -l
+        ffmpegTest
