@@ -52,7 +52,7 @@ jobs:
 
     - uses: actions/upload-artifact@master
       with:
-        name: ${{matrix.FFMPEG_TEST_NAME}}
+        name: ${{matrix.FFMPEG_TEST_NAME}}.zip
         path: ${{steps.strings.outputs.build-output-dir}}/test/ffmpegTest/${{matrix.FFMPEG_TEST_NAME}}
 
   testffmpeg:
@@ -61,7 +61,10 @@ jobs:
     steps:
     - uses: actions/download-artifact@master
       with:
-        name: ffmpegTest
+        name: ffmpegTest.zip
+
+    - name: Unzip ffmpegTest
+      run: unzip ffmpegTest.zip
 
     - name: Download FFmpeg
       run: |
