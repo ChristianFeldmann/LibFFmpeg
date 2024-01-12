@@ -62,7 +62,6 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         name: ffmpegTest
-        path: ffmpegTest
 
     - name: Download FFmpeg
       run: |
