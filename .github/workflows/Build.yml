@@ -66,8 +66,8 @@ jobs:
     - name: Unzip ffmpegTest
       run: |
         ls -l
-        md5sum ffmpegTest.zip
         mv ffmpegTest ffmpegTest.zip
+        md5sum ffmpegTest.zip
         unzip ffmpegTest.zip
 
     - name: Download FFmpeg
