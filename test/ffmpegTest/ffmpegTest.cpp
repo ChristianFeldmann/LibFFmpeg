@@ -219,7 +219,8 @@ TEST(FFmpegTest, DecodingTest)
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]() {
+  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]()
+  {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {

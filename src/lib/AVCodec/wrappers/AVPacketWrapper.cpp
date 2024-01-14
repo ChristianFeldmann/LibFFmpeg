@@ -32,6 +32,13 @@ constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and sh
 
 } // namespace
 
+AVPacketWrapper::AVPacketWrapper(AVPacketWrapper &&other)
+{
+  this->packet          = other.packet;
+  other.packet          = nullptr;
+  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
+}
+
 AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {

@@ -31,7 +31,8 @@ AVFormatContextWrapper::AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries>
 
 AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContextWrapper &&wrapper)
 {
-  this->formatContext   = std::move(wrapper.formatContext);
+  this->formatContext   = wrapper.formatContext;
+  wrapper.formatContext = nullptr;
   this->ffmpegLibraries = std::move(wrapper.ffmpegLibraries);
 }
 
