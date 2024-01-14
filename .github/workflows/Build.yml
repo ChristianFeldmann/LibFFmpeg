@@ -63,13 +63,6 @@ jobs:
       with:
         name: ffmpegTest
 
-    - name: Unzip ffmpegTest
-      run: |
-        ls -l
-        mv ffmpegTest ffmpegTest.zip
-        md5sum ffmpegTest.zip
-        unzip ffmpegTest.zip
-
     - name: Download FFmpeg
       run: |
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/ffmpeg6.0-ubuntu20.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg6.0-ubuntu20.zip
@@ -80,4 +73,5 @@ jobs:
     - name: runffmpegTest
       run: |
         ls -l
+        md5 ffmpegTest
         ./ffmpegTest
