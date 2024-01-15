@@ -32,7 +32,8 @@ std::size_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame)
 
   for (int component = 0; component < pixelFormatDescriptor.numberOfComponents; ++component)
   {
-    const auto data = frame.getData(component);
+    const auto data     = frame.getData(component);
+    const auto dataSize = data.size();
     for (const auto value : data)
       hash ^= hasher(value) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
   }

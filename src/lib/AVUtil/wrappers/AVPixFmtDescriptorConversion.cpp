@@ -144,4 +144,17 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
   return format;
 }
 
+Size getSizeOfFrameComponent(const int                    component,
+                             const Size                   frameSize,
+                             const PixelFormatDescriptor &pixelFormatDescriptor)
+{
+  if (component == 0)
+    return frameSize;
+
+  const auto height = (frameSize.height >> pixelFormatDescriptor.shiftLumaToChroma.heightShift);
+  const auto width  = (frameSize.width >> pixelFormatDescriptor.shiftLumaToChroma.widthShift);
+
+  return {width, height};
+}
+
 } // namespace ffmpeg::avutil

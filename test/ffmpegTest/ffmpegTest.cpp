@@ -229,9 +229,9 @@ TEST(FFmpegTest, DecodingTest)
       EXPECT_EQ(frame->getPixelFormatDescriptor().name, "yuv420p");
 
       EXPECT_EQ(frame->getSize(), Size({320, 240}));
-      EXPECT_EQ(frame->getLineSize(0), 320);
-      EXPECT_EQ(frame->getLineSize(1), 160);
-      EXPECT_EQ(frame->getLineSize(2), 160);
+      EXPECT_EQ(frame->getLineSize(0), 384);
+      EXPECT_EQ(frame->getLineSize(1), 192);
+      EXPECT_EQ(frame->getLineSize(2), 192);
       EXPECT_EQ(frame->getSampleAspectRatio(), Rational({1, 1}));
 
       const auto absoluteFrameIndex = totalFrameCounter + framesDecodedInLoop;

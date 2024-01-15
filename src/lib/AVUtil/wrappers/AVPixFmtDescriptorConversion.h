@@ -76,4 +76,8 @@ PixelFormatDescriptor
 convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat,
                           const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries);
 
+Size getSizeOfFrameComponent(const int                    component,
+                             const Size                   frameSize,
+                             const PixelFormatDescriptor &pixelFormatDescriptor);
+
 } // namespace ffmpeg::avutil

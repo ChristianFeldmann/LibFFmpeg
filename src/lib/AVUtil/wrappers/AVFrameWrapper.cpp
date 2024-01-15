@@ -9,7 +9,6 @@
 #include "AVFrameWrapperInternal.h"
 #include "CastUtilClasses.h"
 
-#include <common/Functions.h>
 #include <common/InternalTypes.h>
 
 #include <stdexcept>
@@ -23,6 +22,24 @@ namespace
 using ffmpeg::internal::AVDictionary;
 using ffmpeg::internal::AVPictureType;
 using ffmpeg::internal::AVRational;
+
+ByteVector copyFrameDataFromRawArray(const uint8_t *inputData, Size size, const int linesize)
+{
+  ByteVector data;
+  data.resize(size.height * size.width);
+
+  auto inputDataPtrAsBytes = reinterpret_cast<const std::byte *>(inputData);
+  auto outputIterator      = data.begin();
+
+  for (int y = 0; y < size.height; ++y)
+  {
+    std::copy(inputDataPtrAsBytes, inputDataPtrAsBytes + size.width, outputIterator);
+    inputDataPtrAsBytes += linesize;
+    outputIterator += size.width;
+  }
+
+  return data;
+}
 
 } // namespace
 
@@ -58,17 +75,11 @@ ByteVector AVFrameWrapper::getData(int component) const
   int linesize;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, linesize, linesize[component]);
 
-  int height;
-  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, height, height);
+  const auto componentSize =
+      getSizeOfFrameComponent(component, this->getSize(), this->getPixelFormatDescriptor());
+  const auto dataSize = componentSize.width * componentSize.height;
 
-  const auto pixelFormatDescriptor = this->getPixelFormatDescriptor();
-
-  bool isLuma = (component == 0);
-  if (!isLuma)
-    height = (height >> pixelFormatDescriptor.shiftLumaToChroma.heightShift);
-  const auto dataSize = linesize * height;
-
-  return copyDataFromRawArray(dataPointer, dataSize);
+  return copyFrameDataFromRawArray(dataPointer, componentSize, linesize);
 }
 
 int AVFrameWrapper::getLineSize(int component) const
