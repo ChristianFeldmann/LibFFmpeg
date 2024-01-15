@@ -11,18 +11,27 @@
 namespace ffmpeg::internal::avcodec
 {
 
-struct AVProfile_56
+struct AVProfile_57
 {
   int         profile;
   const char *name;
 };
 
-typedef AVProfile_56 AVProfile_57;
-typedef AVProfile_56 AVProfile_58;
-typedef AVProfile_56 AVProfile_59;
-typedef AVProfile_56 AVProfile_60;
+typedef AVProfile_57 AVProfile_58;
+typedef AVProfile_57 AVProfile_59;
+typedef AVProfile_57 AVProfile_60;
 
 struct AVCodecDescriptor_56
+{
+  AVCodecID          id;
+  AVMediaType        type;
+  const char        *name;
+  const char        *long_name;
+  int                props;
+  const char *const *mime_types;
+};
+
+struct AVCodecDescriptor_57
 {
   AVCodecID                  id;
   AVMediaType                type;
@@ -30,12 +39,11 @@ struct AVCodecDescriptor_56
   const char                *long_name;
   int                        props;
   const char *const         *mime_types;
-  const struct AVProfile_56 *profiles;
+  const struct AVProfile_57 *profiles;
 };
 
-typedef AVCodecDescriptor_56 AVCodecDescriptor_57;
-typedef AVCodecDescriptor_56 AVCodecDescriptor_58;
-typedef AVCodecDescriptor_56 AVCodecDescriptor_59;
-typedef AVCodecDescriptor_56 AVCodecDescriptor_60;
+typedef AVCodecDescriptor_57 AVCodecDescriptor_58;
+typedef AVCodecDescriptor_57 AVCodecDescriptor_59;
+typedef AVCodecDescriptor_57 AVCodecDescriptor_60;
 
 } // namespace ffmpeg::internal::avcodec

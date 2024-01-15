@@ -79,8 +79,13 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   auto       ffmpegLibraries = openLibraries();
   auto       demuxer         = openTestFileInDemuxer(ffmpegLibraries);
   const auto formatContext   = demuxer.getFormatContext();
+  const auto majorVersion    = ffmpegLibraries->getLibrariesVersion().avformat.major;
 
-  EXPECT_EQ(formatContext->getStartTime(), 0);
+  if (majorVersion <= 56)
+    EXPECT_EQ(formatContext->getStartTime(), -23220);
+  else
+    EXPECT_EQ(formatContext->getStartTime(), 0);
+
   EXPECT_EQ(formatContext->getDuration(), 1000000);
   EXPECT_EQ(formatContext->getNumberStreams(), 2);
 
@@ -98,16 +103,19 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   const auto inputFormat = formatContext->getInputFormat();
   EXPECT_EQ(inputFormat.getName(), "mov,mp4,m4a,3gp,3g2,mj2");
   EXPECT_EQ(inputFormat.getLongName(), "QuickTime / MOV");
-  EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
+  EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2",
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif"}),
               testing::Contains(inputFormat.getExtensions()));
 
   avformat::AVInputFormatFlags expectedFlags{};
-  if (ffmpegLibraries->getLibrariesVersion().avformat.major > 58)
+  if (majorVersion > 58)
     // Older (<= ffmpeg 4) versions will report this flag as false
     expectedFlags.showIDs = true;
   expectedFlags.noByteSeek = true;
-  expectedFlags.seekToPTS  = true;
+  if (majorVersion > 56)
+    // Older (<= ffmpeg 2) versions will report this flag as false
+    expectedFlags.seekToPTS = true;
 
   EXPECT_EQ(inputFormat.getMimeType(), "");
   EXPECT_EQ(inputFormat.getFlags(), expectedFlags);
@@ -116,16 +124,16 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioStream.getCodecType(), MediaType::Audio);
 
   const auto audioCodecDescriptor = audioStream.getCodecDescriptor();
-  EXPECT_EQ(audioCodecDescriptor->getMediaType(), MediaType::Audio);
-  EXPECT_EQ(audioCodecDescriptor->getCodecName(), "aac");
-  EXPECT_EQ(audioCodecDescriptor->getLongName(), "AAC (Advanced Audio Coding)");
-  avcodec::AVCodecDescriptorProperties expectedAudioProperties{};
+  EXPECT_EQ(audioCodecDescriptor->mediaType, MediaType::Audio);
+  EXPECT_EQ(audioCodecDescriptor->codecName, "aac");
+  EXPECT_EQ(audioCodecDescriptor->longName, "AAC (Advanced Audio Coding)");
+  avcodec::CodecDescriptorProperties expectedAudioProperties{};
   expectedAudioProperties.intraOnly = true;
   expectedAudioProperties.lossy     = true;
-  EXPECT_EQ(audioCodecDescriptor->getProperties(), expectedAudioProperties);
-  EXPECT_EQ(audioCodecDescriptor->getMimeTypes().size(), 0);
-  EXPECT_EQ(audioCodecDescriptor->getProfiles().size(), 8);
-  EXPECT_TRUE(areEqual(audioCodecDescriptor->getProfiles(),
+  EXPECT_EQ(audioCodecDescriptor->properties, expectedAudioProperties);
+  EXPECT_EQ(audioCodecDescriptor->mimeTypes.size(), 0);
+  EXPECT_EQ(audioCodecDescriptor->profiles.size(), 8);
+  EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
                        {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
   EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
   EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
@@ -138,17 +146,17 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(videoStream.getCodecType(), MediaType::Video);
 
   const auto videoCodecDescriptor = videoStream.getCodecDescriptor();
-  EXPECT_EQ(videoCodecDescriptor->getMediaType(), MediaType::Video);
-  EXPECT_EQ(videoCodecDescriptor->getCodecName(), "h264");
-  EXPECT_EQ(videoCodecDescriptor->getLongName(), "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
-  avcodec::AVCodecDescriptorProperties expectedVideoProperties{};
+  EXPECT_EQ(videoCodecDescriptor->mediaType, MediaType::Video);
+  EXPECT_EQ(videoCodecDescriptor->codecName, "h264");
+  EXPECT_EQ(videoCodecDescriptor->longName, "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
+  avcodec::CodecDescriptorProperties expectedVideoProperties{};
   expectedVideoProperties.lossy    = true;
   expectedVideoProperties.lossless = true;
   expectedVideoProperties.reorder  = true;
-  EXPECT_EQ(videoCodecDescriptor->getProperties(), expectedVideoProperties);
-  EXPECT_EQ(videoCodecDescriptor->getMimeTypes().size(), 0);
-  EXPECT_EQ(videoCodecDescriptor->getProfiles().size(), 15);
-  EXPECT_TRUE(areEqual(videoCodecDescriptor->getProfiles(),
+  EXPECT_EQ(videoCodecDescriptor->properties, expectedVideoProperties);
+  EXPECT_EQ(videoCodecDescriptor->mimeTypes.size(), 0);
+  EXPECT_EQ(videoCodecDescriptor->profiles.size(), 15);
+  EXPECT_TRUE(areEqual(videoCodecDescriptor->profiles,
                        {"Baseline",
                         "Constrained Baseline",
                         "Main",
