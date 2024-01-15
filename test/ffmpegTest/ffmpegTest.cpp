@@ -128,13 +128,20 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioCodecDescriptor->codecName, "aac");
   EXPECT_EQ(audioCodecDescriptor->longName, "AAC (Advanced Audio Coding)");
   avcodec::CodecDescriptorProperties expectedAudioProperties{};
-  expectedAudioProperties.intraOnly = true;
-  expectedAudioProperties.lossy     = true;
+  if (majorVersion > 58)
+    // Older (<= ffmpeg 4) versions will report this flag as false
+    expectedAudioProperties.intraOnly = true;
+  expectedAudioProperties.lossy = true;
   EXPECT_EQ(audioCodecDescriptor->properties, expectedAudioProperties);
   EXPECT_EQ(audioCodecDescriptor->mimeTypes.size(), 0);
-  EXPECT_EQ(audioCodecDescriptor->profiles.size(), 8);
-  EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
-                       {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
+
+  if (majorVersion > 56)
+    EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
+                         {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
+  else
+    // Old ffmpeg versions do not parse profiles in the descriptor
+    EXPECT_EQ(audioCodecDescriptor->profiles.size(), 0);
+
   EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
   EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
   EXPECT_EQ(audioStream.getFrameSize(), Size({0, 0}));
@@ -155,23 +162,28 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   expectedVideoProperties.reorder  = true;
   EXPECT_EQ(videoCodecDescriptor->properties, expectedVideoProperties);
   EXPECT_EQ(videoCodecDescriptor->mimeTypes.size(), 0);
-  EXPECT_EQ(videoCodecDescriptor->profiles.size(), 15);
-  EXPECT_TRUE(areEqual(videoCodecDescriptor->profiles,
-                       {"Baseline",
-                        "Constrained Baseline",
-                        "Main",
-                        "Extended",
-                        "High",
-                        "High 10",
-                        "High 10 Intra",
-                        "High 4:2:2",
-                        "High 4:2:2 Intra",
-                        "High 4:4:4",
-                        "High 4:4:4 Predictive",
-                        "High 4:4:4 Intra",
-                        "CAVLC 4:4:4",
-                        "Multiview High",
-                        "Stereo High"}));
+
+  if (majorVersion > 56)
+    EXPECT_TRUE(areEqual(videoCodecDescriptor->profiles,
+                         {"Baseline",
+                          "Constrained Baseline",
+                          "Main",
+                          "Extended",
+                          "High",
+                          "High 10",
+                          "High 10 Intra",
+                          "High 4:2:2",
+                          "High 4:2:2 Intra",
+                          "High 4:4:4",
+                          "High 4:4:4 Predictive",
+                          "High 4:4:4 Intra",
+                          "CAVLC 4:4:4",
+                          "Multiview High",
+                          "Stereo High"}));
+  else
+    // Old ffmpeg versions do not parse profiles in the descriptor
+    EXPECT_EQ(videoCodecDescriptor->profiles.size(), 0);
+
   EXPECT_EQ(videoStream.getAverageFrameRate(), Rational({25, 1}));
   EXPECT_EQ(videoStream.getTimeBase(), Rational({1, 12800}));
   EXPECT_EQ(videoStream.getFrameSize(), Size({320, 240}));
