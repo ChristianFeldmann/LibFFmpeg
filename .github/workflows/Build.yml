@@ -65,14 +65,14 @@ jobs:
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/ffmpeg6.0-ubuntu20.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg6.0-ubuntu20.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/ubuntu-22.04/ffmpeg-6.0.1.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ls -l
-        unzip ffmpeg6.0-ubuntu20.zip
+        unzip ffmpeg.zip
+        rm ffmpeg.zip
 
     - name: runffmpegTest
       run: |
         chmod a+x ffmpegTest
         ls -l
-      
         ./ffmpegTest
