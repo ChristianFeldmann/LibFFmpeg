@@ -76,8 +76,9 @@ TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 
 TEST(FFmpegTest, CheckFormatAndStreamParameters)
 {
-  auto       demuxer       = openTestFileInDemuxer(openLibraries());
-  const auto formatContext = demuxer.getFormatContext();
+  auto       ffmpegLibraries = openLibraries();
+  auto       demuxer         = openTestFileInDemuxer(ffmpegLibraries);
+  const auto formatContext   = demuxer.getFormatContext();
 
   EXPECT_EQ(formatContext->getStartTime(), 0);
   EXPECT_EQ(formatContext->getDuration(), 1000000);
@@ -101,13 +102,15 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif"}),
               testing::Contains(inputFormat.getExtensions()));
 
-  EXPECT_EQ(inputFormat.getMimeType(), "");
-  const auto                   flags = inputFormat.getFlags();
   avformat::AVInputFormatFlags expectedFlags{};
-  expectedFlags.showIDs    = true;
+  if (ffmpegLibraries->getLibrariesVersion().avformat.major > 58)
+    // Older (<= ffmpeg 4) versions will report this flag as false
+    expectedFlags.showIDs = true;
   expectedFlags.noByteSeek = true;
   expectedFlags.seekToPTS  = true;
-  EXPECT_EQ(flags, expectedFlags);
+
+  EXPECT_EQ(inputFormat.getMimeType(), "");
+  EXPECT_EQ(inputFormat.getFlags(), expectedFlags);
 
   const auto &audioStream = formatContext->getStream(0);
   EXPECT_EQ(audioStream.getCodecType(), MediaType::Audio);
