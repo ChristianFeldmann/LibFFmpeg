@@ -91,11 +91,14 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
 
     lib.tryResolveFunction(functions.av_free_packet, "av_free_packet");
     lib.tryResolveFunction(functions.avcodec_decode_video2, "avcodec_decode_video2");
+    lib.tryResolveFunction(functions.av_init_packet, "av_init_packet");
 
     checkForMissingFunctionAndLog(
         functions.av_free_packet, "av_free_packet", missingFunctions, log);
     checkForMissingFunctionAndLog(
         functions.avcodec_decode_video2, "avcodec_decode_video2", missingFunctions, log);
+    checkForMissingFunctionAndLog(
+        functions.av_init_packet, "av_init_packet", missingFunctions, log);
   }
 
   if (!missingFunctions.empty())

@@ -30,6 +30,7 @@ struct AvCodecFunctions
   // FFmpeg Version 2.x (avcodec 56)
   std::function<void(AVPacket *pkt)>                                        av_free_packet;
   std::function<void(AVCodecContext *, AVFrame *, int *, const AVPacket *)> avcodec_decode_video2;
+  std::function<void(AVPacket *pkt)>                                        av_init_packet;
 
   // FFmpeg >= Version 3.x (>= avcodec 57)
   std::function<AVCodecParameters *()>                            avcodec_parameters_alloc;

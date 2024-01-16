@@ -33,6 +33,8 @@ FFmpegLibrariesMock::FFmpegLibrariesMock()
 
   this->avcodec.av_packet_alloc = [this]() { return this->av_packet_alloc_mock(); };
   this->avcodec.av_packet_free  = [this](AVPacket **packet) { this->av_packet_free_mock(packet); };
+  this->avcodec.av_free_packet  = [this](AVPacket *packet) { this->av_free_packet_mock(packet); };
+  this->avcodec.av_init_packet  = [this](AVPacket *packet) { this->av_init_packet_mock(packet); };
   this->avcodec.avcodec_receive_frame = [this](AVCodecContext *context, AVFrame *frame)
   { return this->avcodec_receive_frame_mock(context, frame); };
   this->avcodec.avcodec_send_packet = [this](AVCodecContext *context, const AVPacket *packet)
@@ -133,6 +135,22 @@ void FFmpegLibrariesMock::av_packet_free_mock(AVPacket **packet)
     delete (castPacket);
     *packet = nullptr;
     ++this->functionCounters.avPacketFree;
+  }
+}
+
+void FFmpegLibrariesMock::av_free_packet_mock(internal::AVPacket *packet)
+{
+  if (packet != nullptr)
+  {
+    ++this->functionCounters.avFreePacket;
+  }
+}
+
+void FFmpegLibrariesMock::av_init_packet_mock(internal::AVPacket *packet)
+{
+  if (packet != nullptr)
+  {
+    ++this->functionCounters.avInitPacket;
   }
 }
 

@@ -38,6 +38,8 @@ public:
     int avDictGet{};
     int avPacketAlloc{};
     int avPacketFree{};
+    int avFreePacket{};
+    int avInitPacket{};
     int avcodecReceiveFrame{};
     int avcodecSendPacketNonNull{};
     int avcodecSendPacketNull{};
@@ -79,6 +81,8 @@ private:
   // AVCodec
   internal::AVPacket *av_packet_alloc_mock();
   void                av_packet_free_mock(internal::AVPacket **packet);
+  void                av_free_packet_mock(internal::AVPacket *packet);
+  void                av_init_packet_mock(internal::AVPacket *packet);
   int avcodec_receive_frame_mock(internal::AVCodecContext *context, internal::AVFrame *frame);
   int avcodec_send_packet_mock(internal::AVCodecContext *context, const internal::AVPacket *packet);
   const internal::AVCodecDescriptor *avcodec_descriptor_get_mock(internal::AVCodecID codecID);

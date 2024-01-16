@@ -37,8 +37,9 @@ class AVCodecDescriptorConversionTest : public testing::TestWithParam<LibraryVer
 TEST_F(AVCodecDescriptorConversionTest, ConstructorWithNullptrShoudlTrhwo)
 {
   const AVCodecDescriptor *nullDescriptor = nullptr;
-  EXPECT_THROW(convertAVCodecDescriptor(reinterpret_cast<AVCodecDescriptor *>(&nullDescriptor), 56),
-               std::runtime_error);
+  EXPECT_THROW(
+      convertAVCodecDescriptor(reinterpret_cast<const AVCodecDescriptor *>(nullDescriptor), 56),
+      std::runtime_error);
 }
 
 template <typename AVCodecDescriptorType> void runParsingTest()

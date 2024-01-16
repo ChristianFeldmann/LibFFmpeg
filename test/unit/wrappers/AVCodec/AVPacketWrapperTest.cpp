@@ -34,6 +34,8 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
+  const auto majorVersion = version.avcodec.major;
+
   constexpr auto         TEST_STREAM_INDEX = 7;
   constexpr auto         TEST_PTS          = 7338;
   constexpr auto         TEST_DTS          = 378;
@@ -83,18 +85,47 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
     packetFreeCounter++;
   };
 
+  int packetInitCounter = 0;
+  if (majorVersion == 56)
+  {
+    ffmpegLibraries->avcodec.av_init_packet = [&packetInitCounter](AVPacket *packet)
+    {
+      auto castPacket          = reinterpret_cast<AVPacket_56 *>(packet);
+      castPacket->stream_index = TEST_STREAM_INDEX;
+      castPacket->pts          = TEST_PTS;
+      castPacket->dts          = TEST_DTS;
+      castPacket->duration     = TEST_DURATION;
+      castPacket->flags        = TEST_FLAGS;
+      castPacket->size         = 0;
+      castPacket->data         = nullptr;
+      ++packetInitCounter;
+    };
+  }
+
   {
     AVPacketWrapper packet(ffmpegLibraries);
 
     checkForExpectedPacketDefaultValues(packet);
     EXPECT_EQ(packet.getDataSize(), 0);
 
-    EXPECT_EQ(packetAllocationCounter, 1);
+    if (majorVersion > 56)
+      EXPECT_EQ(packetAllocationCounter, 1);
+    else
+      EXPECT_EQ(packetInitCounter, 1);
     EXPECT_EQ(packetFreeCounter, 0);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 0);
   }
 
-  EXPECT_EQ(packetAllocationCounter, 1);
-  EXPECT_EQ(packetFreeCounter, 1);
+  if (majorVersion > 56)
+  {
+    EXPECT_EQ(packetAllocationCounter, 1);
+    EXPECT_EQ(packetFreeCounter, 1);
+  }
+  else
+  {
+    EXPECT_EQ(packetInitCounter, 1);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 1);
+  }
   EXPECT_EQ(dataDeletionCounter, 0);
 
   int packetNewCounter                   = 0;
@@ -106,6 +137,7 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
     return 0;
   };
 
+  // Test the constructor from a byte array
   {
     const auto      data = dataArrayToByteVector(TEST_DATA);
     AVPacketWrapper packet(data, ffmpegLibraries);
@@ -114,13 +146,35 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
     EXPECT_EQ(packet.getDataSize(), data.size());
     EXPECT_EQ(packet.getData(), data);
 
-    EXPECT_EQ(packetAllocationCounter, 2);
-    EXPECT_EQ(packetFreeCounter, 1);
+    if (majorVersion > 56)
+    {
+      EXPECT_EQ(packetAllocationCounter, 2);
+      EXPECT_EQ(packetFreeCounter, 1);
+    }
+    else
+    {
+      EXPECT_EQ(packetInitCounter, 2);
+      EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 1);
+    }
   }
 
-  EXPECT_EQ(packetAllocationCounter, 2);
-  EXPECT_EQ(packetFreeCounter, 2);
-  EXPECT_EQ(dataDeletionCounter, 1);
+  if (majorVersion > 56)
+  {
+    EXPECT_EQ(packetAllocationCounter, 2);
+    EXPECT_EQ(packetFreeCounter, 2);
+    EXPECT_EQ(packetInitCounter, 0);
+    EXPECT_EQ(dataDeletionCounter, 1);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 0);
+  }
+  else
+  {
+    EXPECT_EQ(packetAllocationCounter, 0);
+    EXPECT_EQ(packetFreeCounter, 0);
+    EXPECT_EQ(packetInitCounter, 2);
+    EXPECT_EQ(dataDeletionCounter, 0);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 2);
+    EXPECT_EQ(ffmpegLibraries->functionCounters.avInitPacket, 0);
+  }
 }
 
 } // namespace
