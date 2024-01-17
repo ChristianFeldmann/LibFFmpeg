@@ -235,14 +235,20 @@ TEST(FFmpegTest, DecodingTest)
   auto demuxer         = openTestFileInDemuxer(ffmpegLibraries);
   auto decoder         = Decoder(ffmpegLibraries);
 
-  const auto streamToDecode = 1;
-  const auto stream         = demuxer.getFormatContext()->getStream(streamToDecode);
+  const auto streamToDecode      = 1;
+  const auto stream              = demuxer.getFormatContext()->getStream(streamToDecode);
+  const auto avcodecVersionMajor = ffmpegLibraries->getLibrariesVersion().avcodec.major;
 
-  decoder.openForDecoding(stream);
+  std::array<int, 3> expectedLinesize = {384, 192, 192};
+  if (avcodecVersionMajor == 56)
+    expectedLinesize = {320, 160, 160};
+
+  ASSERT_TRUE(decoder.openForDecoding(stream));
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]()
+  auto pullFramesFromDecoder =
+      [&decoder, &totalFrameCounter, &expectedLinesize, &avcodecVersionMajor]()
   {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
@@ -252,9 +258,9 @@ TEST(FFmpegTest, DecodingTest)
       EXPECT_EQ(frame->getPixelFormatDescriptor().name, "yuv420p");
 
       EXPECT_EQ(frame->getSize(), Size({320, 240}));
-      EXPECT_EQ(frame->getLineSize(0), 384);
-      EXPECT_EQ(frame->getLineSize(1), 192);
-      EXPECT_EQ(frame->getLineSize(2), 192);
+      EXPECT_EQ(frame->getLineSize(0), expectedLinesize.at(0));
+      EXPECT_EQ(frame->getLineSize(1), expectedLinesize.at(1));
+      EXPECT_EQ(frame->getLineSize(2), expectedLinesize.at(2));
       EXPECT_EQ(frame->getSampleAspectRatio(), Rational({1, 1}));
 
       const auto absoluteFrameIndex = totalFrameCounter + framesDecodedInLoop;
@@ -270,7 +276,10 @@ TEST(FFmpegTest, DecodingTest)
       constexpr std::array<int64_t, 25> expectedPTSValues = {
           0,    512,  1024, 1536, 2048, 2560, 3072, 3584,  4096,  4608,  5120,  5632, 6144,
           6656, 7168, 7680, 8192, 8704, 9216, 9728, 10240, 10752, 11264, 11776, 12288};
-      EXPECT_EQ(frame->getPTS(), expectedPTSValues.at(absoluteFrameIndex));
+      if (avcodecVersionMajor == 56)
+        EXPECT_FALSE(frame->getPTS());
+      else
+        EXPECT_EQ(frame->getPTS(), expectedPTSValues.at(absoluteFrameIndex));
 
       constexpr std::array<std::size_t, 25> expectedFrameHashes = {
           10335300354773531646_sz, 9598839882643808065_sz,  6359550546723864943_sz,

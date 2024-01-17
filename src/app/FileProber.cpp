@@ -212,8 +212,9 @@ int main(int argc, char const *argv[])
 
     if (settings.showPackets)
     {
+      auto ptsString = packet->getPTS() ? std::to_string(packet->getPTS().value()) : "No-PTS";
       std::cout << "  Packet " << packetIndex << ": StreamIndex " << packet->getStreamIndex()
-                << " DTS " << packet->getDTS() << " PTS " << packet->getPTS() << " duration "
+                << " DTS " << packet->getDTS() << " PTS " << ptsString << " duration "
                 << packet->getDuration() << " dataSize " << packet->getDataSize();
       const auto flags = to_string(packet->getFlags());
       if (!flags.empty())

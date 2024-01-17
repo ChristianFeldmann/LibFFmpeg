@@ -104,8 +104,8 @@ TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
     avformat::AVCodecParametersWrapper codecParameters(
         reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
 
-    auto context = AVCodecContextWrapper::openContextForDecoding(codecParameters, ffmpegLibraries);
-    EXPECT_TRUE(context);
+    auto context = AVCodecContextWrapper(ffmpegLibraries);
+    EXPECT_TRUE(context.openContextForDecoding(codecParameters));
   }
 
   EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecAllocContext3, 1);

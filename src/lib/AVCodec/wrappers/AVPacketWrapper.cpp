@@ -39,6 +39,14 @@ AVPacketWrapper::AVPacketWrapper(AVPacketWrapper &&other)
   this->ffmpegLibraries = std::move(other.ffmpegLibraries);
 }
 
+AVPacketWrapper &AVPacketWrapper::operator=(AVPacketWrapper &&other)
+{
+  this->packet          = other.packet;
+  other.packet          = nullptr;
+  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
+  return *this;
+}
+
 AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
@@ -95,6 +103,22 @@ AVPacketWrapper::~AVPacketWrapper()
     this->ffmpegLibraries->avcodec.av_packet_free(&this->packet);
 }
 
+std::optional<AVPacketWrapper> AVPacketWrapper::clone() const
+{
+  if (this->packet == nullptr)
+    return {};
+
+  AVPacketWrapper clonedWrapper(this->ffmpegLibraries);
+  clonedWrapper.ffmpegLibraries = this->ffmpegLibraries;
+
+  const auto ret =
+      this->ffmpegLibraries->avcodec.av_copy_packet(clonedWrapper.getPacket(), this->packet);
+  if (ret < 0)
+    return {};
+
+  return clonedWrapper;
+}
+
 void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)
 {
   CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet, dts, dts);
@@ -108,10 +132,14 @@ int AVPacketWrapper::getStreamIndex() const
   return index;
 }
 
-int64_t AVPacketWrapper::getPTS() const
+std::optional<int64_t> AVPacketWrapper::getPTS() const
 {
   int64_t pts;
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, pts, pts);
+
+  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
+  if (pts == AV_NOPTS_VALUE)
+    return {};
   return pts;
 }
 

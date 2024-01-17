@@ -30,7 +30,6 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   lib.tryResolveFunction(functions.avcodec_open2, "avcodec_open2");
   lib.tryResolveFunction(functions.avcodec_free_context, "avcodec_free_context");
   lib.tryResolveFunction(functions.av_new_packet, "av_new_packet");
-  lib.tryResolveFunction(functions.av_packet_unref, "av_packet_unref");
   lib.tryResolveFunction(functions.avcodec_flush_buffers, "avcodec_flush_buffers");
   lib.tryResolveFunction(functions.avcodec_version, "avcodec_version");
   lib.tryResolveFunction(functions.avcodec_get_name, "avcodec_get_name");
@@ -44,8 +43,6 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   checkForMissingFunctionAndLog(
       functions.avcodec_free_context, "avcodec_free_context", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_new_packet, "av_new_packet", missingFunctions, log);
-  checkForMissingFunctionAndLog(
-      functions.av_packet_unref, "av_packet_unref", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.avcodec_flush_buffers, "avcodec_flush_buffers", missingFunctions, log);
   checkForMissingFunctionAndLog(
@@ -92,6 +89,7 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
     lib.tryResolveFunction(functions.av_free_packet, "av_free_packet");
     lib.tryResolveFunction(functions.avcodec_decode_video2, "avcodec_decode_video2");
     lib.tryResolveFunction(functions.av_init_packet, "av_init_packet");
+    lib.tryResolveFunction(functions.av_copy_packet, "av_copy_packet");
 
     checkForMissingFunctionAndLog(
         functions.av_free_packet, "av_free_packet", missingFunctions, log);
@@ -99,6 +97,8 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
         functions.avcodec_decode_video2, "avcodec_decode_video2", missingFunctions, log);
     checkForMissingFunctionAndLog(
         functions.av_init_packet, "av_init_packet", missingFunctions, log);
+    checkForMissingFunctionAndLog(
+        functions.av_copy_packet, "av_copy_packet", missingFunctions, log);
   }
 
   if (!missingFunctions.empty())

@@ -21,16 +21,16 @@ struct AvCodecFunctions
   std::function<int(AVCodecContext *, const AVCodec *, AVDictionary **)> avcodec_open2;
   std::function<void(AVCodecContext **)>                                 avcodec_free_context;
   std::function<int(AVPacket *, int)>                                    av_new_packet;
-  std::function<void(AVPacket *)>                                        av_packet_unref;
+  std::function<int(AVPacket *, const AVPacket *)>                       av_copy_packet;
   std::function<void(AVCodecContext *)>                                  avcodec_flush_buffers;
   std::function<unsigned()>                                              avcodec_version;
   std::function<const char *(AVCodecID)>                                 avcodec_get_name;
   std::function<const AVCodecDescriptor *(AVCodecID)>                    avcodec_descriptor_get;
 
   // FFmpeg Version 2.x (avcodec 56)
-  std::function<void(AVPacket *pkt)>                                        av_free_packet;
-  std::function<void(AVCodecContext *, AVFrame *, int *, const AVPacket *)> avcodec_decode_video2;
-  std::function<void(AVPacket *pkt)>                                        av_init_packet;
+  std::function<void(AVPacket *pkt)>                                       av_free_packet;
+  std::function<int(AVCodecContext *, AVFrame *, int *, const AVPacket *)> avcodec_decode_video2;
+  std::function<void(AVPacket *pkt)>                                       av_init_packet;
 
   // FFmpeg >= Version 3.x (>= avcodec 57)
   std::function<AVCodecParameters *()>                            avcodec_parameters_alloc;

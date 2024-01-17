@@ -49,6 +49,10 @@ private:
   std::shared_ptr<IFFmpegLibraries>             libraries;
   std::optional<avcodec::AVCodecContextWrapper> decoderContext{};
 
+  // For the old (FFmpeg 2) interface, we store the frame that is returned
+  // in sendPacket from avcodec_decode_video2.
+  std::optional<avutil::AVFrameWrapper> pendingDecodedFrame;
+
   State decoderState{State::NotOpened};
   bool  flushing{};
 };

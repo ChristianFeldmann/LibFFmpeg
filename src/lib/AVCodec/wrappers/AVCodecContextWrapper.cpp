@@ -42,7 +42,13 @@ AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext                   *c
     throw std::runtime_error("Provided codecContext pointer must not be null");
   if (!ffmpegLibraries)
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
-  this->codecContextOwnership = false;
+}
+
+AVCodecContextWrapper::AVCodecContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : ffmpegLibraries(ffmpegLibraries)
+{
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
 AVCodecContextWrapper &AVCodecContextWrapper::operator=(AVCodecContextWrapper &&codecContextWrapper)
@@ -68,34 +74,49 @@ AVCodecContextWrapper::~AVCodecContextWrapper()
     this->ffmpegLibraries->avcodec.avcodec_free_context(&this->codecContext);
 }
 
-std::optional<AVCodecContextWrapper> AVCodecContextWrapper::openContextForDecoding(
-    const avformat::AVCodecParametersWrapper &codecParameters,
-    std::shared_ptr<IFFmpegLibraries>         ffmpegLibraries)
+bool AVCodecContextWrapper::openContextForDecoding(
+    const avformat::AVCodecParametersWrapper &codecParameters)
 {
   const auto decoderCodec =
       ffmpegLibraries->avcodec.avcodec_find_decoder(codecParameters.getCodecID());
   if (decoderCodec == nullptr)
-    return {};
+    return false;
 
-  auto codecContextPointer = ffmpegLibraries->avcodec.avcodec_alloc_context3(decoderCodec);
-  if (codecContextPointer == nullptr)
-    return {};
+  this->codecContext = ffmpegLibraries->avcodec.avcodec_alloc_context3(decoderCodec);
+  if (this->codecContext == nullptr)
+    return false;
 
-  auto codecContext = AVCodecContextWrapper(codecContextPointer, ffmpegLibraries);
+  this->codecContextOwnership = true;
 
   auto ret = ffmpegLibraries->avcodec.avcodec_parameters_to_context(
-      codecContext.codecContext, codecParameters.getCodecParameters());
+      this->codecContext, codecParameters.getCodecParameters());
   if (ret < 0)
-    return {};
+    return false;
 
   AVDictionary *dictionary = nullptr;
-  ret =
-      ffmpegLibraries->avcodec.avcodec_open2(codecContext.codecContext, decoderCodec, &dictionary);
+  ret = ffmpegLibraries->avcodec.avcodec_open2(this->codecContext, decoderCodec, &dictionary);
   if (ret < 0)
-    return {};
+    return false;
 
-  codecContext.codecContextOwnership = true;
-  return std::move(codecContext);
+  return true;
+}
+
+bool AVCodecContextWrapper::openContextForDecoding()
+{
+  if (this->codecContext == nullptr)
+    return false;
+
+  const auto decoderCodec = ffmpegLibraries->avcodec.avcodec_find_decoder(this->getCodecID());
+  if (decoderCodec == nullptr)
+    return false;
+
+  AVDictionary *dictionary = nullptr;
+  const auto    ret =
+      ffmpegLibraries->avcodec.avcodec_open2(this->codecContext, decoderCodec, &dictionary);
+  if (ret < 0)
+    return false;
+
+  return true;
 }
 
 ReturnCode AVCodecContextWrapper::sendPacket(const avcodec::AVPacketWrapper &packet)
@@ -112,15 +133,62 @@ ReturnCode AVCodecContextWrapper::sendFlushPacket()
   return toReturnCode(avReturnCode);
 }
 
-AVCodecContextWrapper::RevieveFrameResult AVCodecContextWrapper::revieveFrame()
+AVCodecContextWrapper::DecodeResult AVCodecContextWrapper::revieveFrame()
 {
-  RevieveFrameResult result;
-  result.frame.emplace(this->ffmpegLibraries);
+  DecodeResult result;
 
+  result.frame.emplace(this->ffmpegLibraries);
   const auto avReturnCode = this->ffmpegLibraries->avcodec.avcodec_receive_frame(
       this->codecContext, result.frame->getFrame());
   result.returnCode = toReturnCode(avReturnCode);
 
+  return result;
+}
+
+AVCodecContextWrapper::DecodeResult
+AVCodecContextWrapper::decodeVideo2(const avcodec::AVPacketWrapper &packet)
+{
+  DecodeResult result;
+
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major != 56)
+  {
+    result.returnCode = ReturnCode::Unknown;
+    return result;
+  }
+
+  result.frame.emplace(this->ffmpegLibraries);
+
+  int        frameRecieved = 0;
+  const auto avReturnCode  = this->ffmpegLibraries->avcodec.avcodec_decode_video2(
+      this->codecContext, result.frame->getFrame(), &frameRecieved, packet.getPacket());
+
+  if (frameRecieved == 0)
+    result.frame.reset();
+
+  result.returnCode = toReturnCode(avReturnCode);
+  return result;
+}
+
+AVCodecContextWrapper::DecodeResult AVCodecContextWrapper::decodeVideo2Flush()
+{
+  DecodeResult result;
+
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major != 56)
+  {
+    result.returnCode = ReturnCode::Unknown;
+    return result;
+  }
+
+  result.frame.emplace(this->ffmpegLibraries);
+
+  int        frameRecieved = 0;
+  const auto avReturnCode  = this->ffmpegLibraries->avcodec.avcodec_decode_video2(
+      this->codecContext, result.frame->getFrame(), &frameRecieved, nullptr);
+
+  if (frameRecieved == 0)
+    result.frame.reset();
+
+  result.returnCode = toReturnCode(avReturnCode);
   return result;
 }
 

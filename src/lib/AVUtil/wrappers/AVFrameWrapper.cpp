@@ -51,17 +51,25 @@ AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries
     throw std::runtime_error("Error allocating AVFrame");
 }
 
-AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&frame)
+AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&other)
 {
-  this->frame           = frame.frame;
-  frame.frame           = nullptr;
-  this->ffmpegLibraries = std::move(frame.ffmpegLibraries);
+  this->frame           = other.frame;
+  other.frame           = nullptr;
+  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
 }
 
 AVFrameWrapper::~AVFrameWrapper()
 {
   if (this->frame != nullptr)
     this->ffmpegLibraries->avutil.av_frame_free(&this->frame);
+}
+
+AVFrameWrapper &AVFrameWrapper::operator=(AVFrameWrapper &&other)
+{
+  this->frame           = other.frame;
+  other.frame           = nullptr;
+  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
+  return *this;
 }
 
 ByteVector AVFrameWrapper::getData(int component) const
@@ -103,10 +111,14 @@ Size AVFrameWrapper::getSize() const
   return {width, height};
 }
 
-int64_t AVFrameWrapper::getPTS() const
+std::optional<int64_t> AVFrameWrapper::getPTS() const
 {
   int64_t pts;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, pts, pts);
+
+  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
+  if (pts == AV_NOPTS_VALUE)
+    return {};
   return pts;
 }
 

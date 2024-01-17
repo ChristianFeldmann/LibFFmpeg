@@ -22,6 +22,7 @@ class AVCodecContextWrapper
 {
 public:
   AVCodecContextWrapper() = delete;
+  AVCodecContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVCodecContextWrapper(ffmpeg::internal::AVCodecContext *codecContext,
                         std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVCodecContextWrapper(const AVCodecContextWrapper &) = delete;
@@ -30,19 +31,22 @@ public:
   AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
   ~AVCodecContextWrapper();
 
-  static std::optional<AVCodecContextWrapper>
-  openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters,
-                         std::shared_ptr<IFFmpegLibraries>         ffmpegLibraries);
+  bool openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters);
+  bool openContextForDecoding();
 
   ReturnCode sendPacket(const avcodec::AVPacketWrapper &packet);
   ReturnCode sendFlushPacket();
 
-  struct RevieveFrameResult
+  struct DecodeResult
   {
     std::optional<avutil::AVFrameWrapper> frame{};
     ReturnCode                            returnCode{};
   };
-  RevieveFrameResult revieveFrame();
+  DecodeResult revieveFrame();
+
+  // This is the old FFMpeg 2 interface before pushPacket/pullFrame.
+  DecodeResult decodeVideo2(const avcodec::AVPacketWrapper &packet);
+  DecodeResult decodeVideo2Flush();
 
   avutil::MediaType             getCodecType() const;
   ffmpeg::internal::AVCodecID   getCodecID() const;
