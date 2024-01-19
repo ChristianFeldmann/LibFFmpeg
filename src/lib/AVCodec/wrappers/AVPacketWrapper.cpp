@@ -54,7 +54,10 @@ AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibrari
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
   if (ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
   {
-    this->packet = reinterpret_cast<AVPacket *>(new AVPacket_56);
+    auto newPacket  = new AVPacket_56;
+    newPacket->data = nullptr;
+    newPacket->size = 0;
+    this->packet    = reinterpret_cast<AVPacket *>(newPacket);
     this->ffmpegLibraries->avcodec.av_init_packet(this->packet);
   }
   else
