@@ -27,6 +27,7 @@ using ffmpeg::internal::avcodec::AVPacket_57;
 using ffmpeg::internal::avcodec::AVPacket_58;
 using ffmpeg::internal::avcodec::AVPacket_59;
 using ffmpeg::internal::avcodec::AVPacket_60;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersions &version)
@@ -86,6 +87,7 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
   };
 
   int packetInitCounter = 0;
+  int freePacketCounter = 0;
   if (majorVersion == 56)
   {
     ffmpegLibraries->avcodec.av_init_packet = [&packetInitCounter](AVPacket *packet)
@@ -100,7 +102,28 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
       castPacket->data         = nullptr;
       ++packetInitCounter;
     };
+
+    ffmpegLibraries->avcodec.av_free_packet =
+        [&freePacketCounter, &dataDeletionCounter](AVPacket *packet)
+    {
+      auto actualPacket = reinterpret_cast<AVPacketType *>(packet);
+      if (actualPacket->data != nullptr && actualPacket->size > 0)
+      {
+        delete[] actualPacket->data;
+        ++dataDeletionCounter;
+      }
+      freePacketCounter++;
+    };
   }
+
+  int packetNewCounter                   = 0;
+  ffmpegLibraries->avcodec.av_new_packet = [](AVPacket *packet, int dataSize)
+  {
+    auto actualPacket  = reinterpret_cast<AVPacketType *>(packet);
+    actualPacket->data = new uint8_t[dataSize];
+    actualPacket->size = dataSize;
+    return 0;
+  };
 
   {
     AVPacketWrapper packet(ffmpegLibraries);
@@ -124,18 +147,9 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
   else
   {
     EXPECT_EQ(packetInitCounter, 1);
-    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 1);
+    EXPECT_EQ(freePacketCounter, 1);
   }
   EXPECT_EQ(dataDeletionCounter, 0);
-
-  int packetNewCounter                   = 0;
-  ffmpegLibraries->avcodec.av_new_packet = [](AVPacket *packet, int dataSize)
-  {
-    auto actualPacket  = reinterpret_cast<AVPacketType *>(packet);
-    actualPacket->data = new uint8_t[dataSize];
-    actualPacket->size = dataSize;
-    return 0;
-  };
 
   // Test the constructor from a byte array
   {
@@ -154,7 +168,7 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
     else
     {
       EXPECT_EQ(packetInitCounter, 2);
-      EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 1);
+      EXPECT_EQ(freePacketCounter, 1);
     }
   }
 
@@ -163,18 +177,15 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
     EXPECT_EQ(packetAllocationCounter, 2);
     EXPECT_EQ(packetFreeCounter, 2);
     EXPECT_EQ(packetInitCounter, 0);
-    EXPECT_EQ(dataDeletionCounter, 1);
-    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 0);
   }
   else
   {
     EXPECT_EQ(packetAllocationCounter, 0);
     EXPECT_EQ(packetFreeCounter, 0);
     EXPECT_EQ(packetInitCounter, 2);
-    EXPECT_EQ(dataDeletionCounter, 0);
-    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 2);
-    EXPECT_EQ(ffmpegLibraries->functionCounters.avInitPacket, 0);
+    EXPECT_EQ(freePacketCounter, 2);
   }
+  EXPECT_EQ(dataDeletionCounter, 1);
 }
 
 } // namespace
@@ -191,7 +202,7 @@ TEST_F(AVPacketWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShouldThrow)
 
 TEST_F(AVPacketWrapperTest, IfPacketAllocationFailsShouldThrow)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  auto ffmpegLibraries = std::make_shared<NiceMock<FFmpegLibrariesMock>>();
 
   ffmpegLibraries->avcodec.av_packet_alloc = []() { return nullptr; };
 

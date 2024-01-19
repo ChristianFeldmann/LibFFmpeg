@@ -46,7 +46,6 @@ public:
 
   // This is the old FFMpeg 2 interface before pushPacket/pullFrame.
   DecodeResult decodeVideo2(const avcodec::AVPacketWrapper &packet);
-  DecodeResult decodeVideo2Flush();
 
   avutil::MediaType             getCodecType() const;
   ffmpeg::internal::AVCodecID   getCodecID() const;

@@ -111,7 +111,12 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
   {
     if (this->flushing)
     {
-      auto decodeResult = this->decoderContext->decodeVideo2Flush();
+      avcodec::AVPacketWrapper emptyFlushPacket(this->libraries);
+
+      const auto dataPtr  = emptyFlushPacket.getData();
+      const auto dataSize = emptyFlushPacket.getDataSize();
+
+      auto decodeResult = this->decoderContext->decodeVideo2(emptyFlushPacket);
       if (decodeResult.frame)
         return std::move(decodeResult.frame);
       this->decoderState = State::EndOfBitstream;

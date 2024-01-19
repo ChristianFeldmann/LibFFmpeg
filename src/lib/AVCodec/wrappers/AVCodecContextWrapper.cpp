@@ -169,29 +169,6 @@ AVCodecContextWrapper::decodeVideo2(const avcodec::AVPacketWrapper &packet)
   return result;
 }
 
-AVCodecContextWrapper::DecodeResult AVCodecContextWrapper::decodeVideo2Flush()
-{
-  DecodeResult result;
-
-  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major != 56)
-  {
-    result.returnCode = ReturnCode::Unknown;
-    return result;
-  }
-
-  result.frame.emplace(this->ffmpegLibraries);
-
-  int        frameRecieved = 0;
-  const auto avReturnCode  = this->ffmpegLibraries->avcodec.avcodec_decode_video2(
-      this->codecContext, result.frame->getFrame(), &frameRecieved, nullptr);
-
-  if (frameRecieved == 0)
-    result.frame.reset();
-
-  result.returnCode = toReturnCode(avReturnCode);
-  return result;
-}
-
 avutil::MediaType AVCodecContextWrapper::getCodecType() const
 {
   AVMediaType type;

@@ -183,10 +183,10 @@ int AVPacketWrapper::getDataSize() const
 
 ByteVector AVPacketWrapper::getData() const
 {
-  uint8_t *data;
+  uint8_t *data{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, data, data);
 
-  int dataSize;
+  int dataSize{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataSize, size);
 
   return copyDataFromRawArray(data, dataSize);

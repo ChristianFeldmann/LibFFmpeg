@@ -35,6 +35,7 @@ using ffmpeg::internal::avcodec::AVCodecContext_58;
 using ffmpeg::internal::avcodec::AVCodecContext_59;
 using ffmpeg::internal::avcodec::AVCodecContext_60;
 using ffmpeg::internal::avcodec::AVPacket_56;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryVersions &version)
@@ -97,7 +98,7 @@ TEST_F(AVCodecContextWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShould
 
 TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  auto ffmpegLibraries = std::make_shared<NiceMock<FFmpegLibrariesMock>>();
 
   {
     AVDummy                            codecParametersDummy;
@@ -115,7 +116,7 @@ TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
 
 TEST_F(AVCodecContextWrapperTest, TestSendingPackets)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  auto ffmpegLibraries = std::make_shared<NiceMock<FFmpegLibrariesMock>>();
 
   AVDummy               codecContext;
   AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContext), ffmpegLibraries);
