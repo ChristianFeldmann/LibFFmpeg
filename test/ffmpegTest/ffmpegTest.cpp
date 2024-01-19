@@ -128,8 +128,8 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioCodecDescriptor->codecName, "aac");
   EXPECT_EQ(audioCodecDescriptor->longName, "AAC (Advanced Audio Coding)");
   avcodec::CodecDescriptorProperties expectedAudioProperties{};
-  if (majorVersion > 58)
-    // Older (<= ffmpeg 4) versions will report this flag as false
+  if (majorVersion >= 58)
+    // Older (< ffmpeg 4) versions will report this flag as false
     expectedAudioProperties.intraOnly = true;
   expectedAudioProperties.lossy = true;
   EXPECT_EQ(audioCodecDescriptor->properties, expectedAudioProperties);
