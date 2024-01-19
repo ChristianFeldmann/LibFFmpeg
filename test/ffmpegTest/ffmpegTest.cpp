@@ -113,7 +113,7 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
     // Older (<= ffmpeg 4) versions will report this flag as false
     expectedFlags.showIDs = true;
   expectedFlags.noByteSeek = true;
-  if (majorVersion > 56)
+  if (majorVersion > 57)
     // Older (<= ffmpeg 2) versions will report this flag as false
     expectedFlags.seekToPTS = true;
 
@@ -135,12 +135,16 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(audioCodecDescriptor->properties, expectedAudioProperties);
   EXPECT_EQ(audioCodecDescriptor->mimeTypes.size(), 0);
 
-  if (majorVersion > 56)
+  if (majorVersion == 56)
+    // FFmpeg versions 2 does not parse profiles in the descriptor
+    EXPECT_EQ(audioCodecDescriptor->profiles.size(), 0);
+  else if (majorVersion == 57)
+    // For some reason, the "LC" profile is reported twice for FFmpeg 3
+    EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
+                         {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "LC", "SSR", "LTP"}));
+  else
     EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
                          {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
-  else
-    // Old ffmpeg versions do not parse profiles in the descriptor
-    EXPECT_EQ(audioCodecDescriptor->profiles.size(), 0);
 
   EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
   EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
@@ -195,7 +199,8 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
 
 TEST(FFmpegTest, DemuxPackets)
 {
-  auto       demuxer       = openTestFileInDemuxer(openLibraries());
+  auto       libraries     = openLibraries();
+  auto       demuxer       = openTestFileInDemuxer(libraries);
   const auto formatContext = demuxer.getFormatContext();
 
   constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
@@ -213,12 +218,18 @@ TEST(FFmpegTest, DemuxPackets)
     EXPECT_TRUE(packet->getStreamIndex() == 0 || packet->getStreamIndex() == 1);
     if (packet->getStreamIndex() == 0)
     {
-      EXPECT_EQ(packet->getDataSize(), expectedDataSizesAudio.at(packetCountAudio));
+      if (packetCountAudio == 0 && libraries->getLibrariesVersion().avcodec.major == 57)
+        // For some reason, the first packet is 23 bytes larger for this version of FFmpeg.
+        EXPECT_EQ(packet->getDataSize(), 366) << "Audio packet number " << packetCountAudio;
+      else
+        EXPECT_EQ(packet->getDataSize(), expectedDataSizesAudio.at(packetCountAudio))
+            << "Audio packet number " << packetCountAudio;
       ++packetCountAudio;
     }
     else if (packet->getStreamIndex() == 1)
     {
-      EXPECT_EQ(packet->getDataSize(), expectedDataSizesVideo.at(packetCountVideo));
+      EXPECT_EQ(packet->getDataSize(), expectedDataSizesVideo.at(packetCountVideo))
+          << "Video packet number " << packetCountVideo;
       ++packetCountVideo;
     }
   }
@@ -239,8 +250,10 @@ TEST(FFmpegTest, DecodingTest)
   const auto stream              = demuxer.getFormatContext()->getStream(streamToDecode);
   const auto avcodecVersionMajor = ffmpegLibraries->getLibrariesVersion().avcodec.major;
 
+  // The amount of padding that FFmpeg uses depends on how it was compiled.
+  // Here, we use our own compiled versions. But in general this can not be predicted.
   std::array<int, 3> expectedLinesize = {384, 192, 192};
-  if (avcodecVersionMajor == 56)
+  if (avcodecVersionMajor <= 57)
     expectedLinesize = {320, 160, 160};
 
   ASSERT_TRUE(decoder.openForDecoding(stream));
