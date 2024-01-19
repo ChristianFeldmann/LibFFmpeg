@@ -18,10 +18,17 @@ namespace ffmpeg::avcodec
 class AVPacketWrapper
 {
 public:
-  AVPacketWrapper() = delete;
+  AVPacketWrapper()                                   = delete;
+  AVPacketWrapper(const AVPacketWrapper &packet)      = delete;
+  AVPacketWrapper &operator=(const AVPacketWrapper &) = delete;
+  AVPacketWrapper(AVPacketWrapper &&packet);
+  AVPacketWrapper &operator=(AVPacketWrapper &&);
   AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVPacketWrapper(const ByteVector &data, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   ~AVPacketWrapper();
+
+  // Todo: Needs to be tested
+  std::optional<AVPacketWrapper> clone() const;
 
   void setTimestamps(const int64_t dts, const int64_t pts);
 
@@ -34,13 +41,13 @@ public:
     bool discard{};
   };
 
-  int        getStreamIndex() const;
-  int64_t    getPTS() const;
-  int64_t    getDTS() const;
-  int64_t    getDuration() const;
-  Flags      getFlags() const;
-  int        getDataSize() const;
-  ByteVector getData() const;
+  int                    getStreamIndex() const;
+  std::optional<int64_t> getPTS() const;
+  int64_t                getDTS() const;
+  int64_t                getDuration() const;
+  Flags                  getFlags() const;
+  int                    getDataSize() const;
+  ByteVector             getData() const;
 
   explicit operator bool() const { return this->packet != nullptr; };
 

@@ -178,8 +178,8 @@ bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
           this->libAvcodec, absoluteDirectoryPath, "avcodec", libraryVersions.avcodec, log))
     return false;
 
-  if (const auto functions =
-          internal::functions::tryBindAVCodecFunctionsFromLibrary(this->libAvcodec, log))
+  if (const auto functions = internal::functions::tryBindAVCodecFunctionsFromLibrary(
+          this->libAvcodec, libraryVersions.avcodec, log))
     this->avcodec = functions.value();
   else
     return false;

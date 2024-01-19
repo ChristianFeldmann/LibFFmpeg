@@ -9,7 +9,6 @@
 #include "AVFrameWrapperInternal.h"
 #include "CastUtilClasses.h"
 
-#include <common/Functions.h>
 #include <common/InternalTypes.h>
 
 #include <stdexcept>
@@ -24,6 +23,24 @@ using ffmpeg::internal::AVDictionary;
 using ffmpeg::internal::AVPictureType;
 using ffmpeg::internal::AVRational;
 
+ByteVector copyFrameDataFromRawArray(const uint8_t *inputData, Size size, const int linesize)
+{
+  ByteVector data;
+  data.resize(size.height * size.width);
+
+  auto inputDataPtrAsBytes = reinterpret_cast<const std::byte *>(inputData);
+  auto outputIterator      = data.begin();
+
+  for (int y = 0; y < size.height; ++y)
+  {
+    std::copy(inputDataPtrAsBytes, inputDataPtrAsBytes + size.width, outputIterator);
+    inputDataPtrAsBytes += linesize;
+    outputIterator += size.width;
+  }
+
+  return data;
+}
+
 } // namespace
 
 AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
@@ -34,17 +51,25 @@ AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries
     throw std::runtime_error("Error allocating AVFrame");
 }
 
-AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&frame)
+AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&other)
 {
-  this->frame           = frame.frame;
-  frame.frame           = nullptr;
-  this->ffmpegLibraries = std::move(frame.ffmpegLibraries);
+  this->frame           = other.frame;
+  other.frame           = nullptr;
+  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
 }
 
 AVFrameWrapper::~AVFrameWrapper()
 {
   if (this->frame != nullptr)
     this->ffmpegLibraries->avutil.av_frame_free(&this->frame);
+}
+
+AVFrameWrapper &AVFrameWrapper::operator=(AVFrameWrapper &&other)
+{
+  this->frame           = other.frame;
+  other.frame           = nullptr;
+  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
+  return *this;
 }
 
 ByteVector AVFrameWrapper::getData(int component) const
@@ -58,17 +83,11 @@ ByteVector AVFrameWrapper::getData(int component) const
   int linesize;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, linesize, linesize[component]);
 
-  int height;
-  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, height, height);
+  const auto componentSize =
+      getSizeOfFrameComponent(component, this->getSize(), this->getPixelFormatDescriptor());
+  const auto dataSize = componentSize.width * componentSize.height;
 
-  const auto pixelFormatDescriptor = this->getPixelFormatDescriptor();
-
-  bool isLuma = (component == 0);
-  if (!isLuma)
-    height = (height >> pixelFormatDescriptor.shiftLumaToChroma.heightShift);
-  const auto dataSize = linesize * height;
-
-  return copyDataFromRawArray(dataPointer, dataSize);
+  return copyFrameDataFromRawArray(dataPointer, componentSize, linesize);
 }
 
 int AVFrameWrapper::getLineSize(int component) const
@@ -92,10 +111,14 @@ Size AVFrameWrapper::getSize() const
   return {width, height};
 }
 
-int64_t AVFrameWrapper::getPTS() const
+std::optional<int64_t> AVFrameWrapper::getPTS() const
 {
   int64_t pts;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame, pts, pts);
+
+  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
+  if (pts == AV_NOPTS_VALUE)
+    return {};
   return pts;
 }
 
