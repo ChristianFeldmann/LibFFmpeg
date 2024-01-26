@@ -32,78 +32,30 @@ constexpr auto AV_PKT_FLAG_DISCARD = 0x0004; ///< Not required for output and sh
 
 } // namespace
 
-AVPacketWrapper::AVPacketWrapper(AVPacketWrapper &&other)
-{
-  this->packet          = other.packet;
-  other.packet          = nullptr;
-  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
-}
-
-AVPacketWrapper &AVPacketWrapper::operator=(AVPacketWrapper &&other)
-{
-  this->packet          = other.packet;
-  other.packet          = nullptr;
-  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
-  return *this;
-}
-
 AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
   if (!ffmpegLibraries)
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
-  if (ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
-  {
-    auto newPacket  = new AVPacket_56;
-    newPacket->data = nullptr;
-    newPacket->size = 0;
-    this->packet    = reinterpret_cast<AVPacket *>(newPacket);
-    this->ffmpegLibraries->avcodec.av_init_packet(this->packet);
-  }
-  else
-    this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
-  if (this->packet == nullptr)
-    throw std::runtime_error("Unable to allocate new AVPacket");
+  this->allocateNewPacket();
 }
 
 AVPacketWrapper::AVPacketWrapper(const ByteVector                 &data,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
-  if (ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
-  {
-    this->packet = reinterpret_cast<AVPacket *>(new AVPacket_56);
-    this->ffmpegLibraries->avcodec.av_init_packet(this->packet);
-  }
-  else
-    this->packet = this->ffmpegLibraries->avcodec.av_packet_alloc();
-  if (this->packet == nullptr)
-    throw std::runtime_error("Unable to allocate new AVPacket");
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
+  this->allocateNewPacket();
 
-  const auto ret =
-      this->ffmpegLibraries->avcodec.av_new_packet(this->packet, static_cast<int>(data.size()));
+  const auto ret = this->ffmpegLibraries->avcodec.av_new_packet(this->packet.get(),
+                                                                static_cast<int>(data.size()));
   if (ret > 0)
     throw std::runtime_error("Error calling av_new_packet");
 
   uint8_t *dataPointer;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataPointer, data);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dataPointer, data);
   std::memcpy(dataPointer, data.data(), data.size());
-}
-
-AVPacketWrapper::~AVPacketWrapper()
-{
-  if (!this->packet)
-    return;
-
-  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
-  {
-    this->ffmpegLibraries->avcodec.av_free_packet(this->packet);
-    auto castPointer = reinterpret_cast<AVPacket_56 *>(this->packet);
-    delete castPointer;
-    this->packet = nullptr;
-  }
-  else
-    this->ffmpegLibraries->avcodec.av_packet_free(&this->packet);
 }
 
 std::optional<AVPacketWrapper> AVPacketWrapper::clone() const
@@ -115,7 +67,7 @@ std::optional<AVPacketWrapper> AVPacketWrapper::clone() const
   clonedWrapper.ffmpegLibraries = this->ffmpegLibraries;
 
   const auto ret =
-      this->ffmpegLibraries->avcodec.av_copy_packet(clonedWrapper.getPacket(), this->packet);
+      this->ffmpegLibraries->avcodec.av_copy_packet(clonedWrapper.getPacket(), this->packet.get());
   if (ret < 0)
     return {};
 
@@ -124,21 +76,21 @@ std::optional<AVPacketWrapper> AVPacketWrapper::clone() const
 
 void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)
 {
-  CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet, dts, dts);
-  CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet, pts, pts);
+  CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet.get(), dts, dts);
+  CAST_AVCODEC_SET_MEMBER(AVPacket, this->packet.get(), pts, pts);
 }
 
 int AVPacketWrapper::getStreamIndex() const
 {
   int index;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, index, stream_index);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), index, stream_index);
   return index;
 }
 
 std::optional<int64_t> AVPacketWrapper::getPTS() const
 {
   int64_t pts;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, pts, pts);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), pts, pts);
 
   constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
   if (pts == AV_NOPTS_VALUE)
@@ -149,21 +101,21 @@ std::optional<int64_t> AVPacketWrapper::getPTS() const
 int64_t AVPacketWrapper::getDTS() const
 {
   int64_t dts;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dts, dts);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dts, dts);
   return dts;
 }
 
 int64_t AVPacketWrapper::getDuration() const
 {
   int64_t duration;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, duration, duration);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), duration, duration);
   return duration;
 }
 
 AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 {
   int flagsAsInt;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, flagsAsInt, flags);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), flagsAsInt, flags);
 
   Flags flags;
 
@@ -180,19 +132,52 @@ AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 int AVPacketWrapper::getDataSize() const
 {
   int dataSize;
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataSize, size);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dataSize, size);
   return dataSize;
 }
 
 ByteVector AVPacketWrapper::getData() const
 {
   uint8_t *data{};
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, data, data);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), data, data);
 
   int dataSize{};
-  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet, dataSize, size);
+  CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dataSize, size);
 
   return copyDataFromRawArray(data, dataSize);
+}
+
+void AVPacketWrapper::allocateNewPacket()
+{
+  if (ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
+  {
+    auto newPacket  = new AVPacket_56;
+    newPacket->data = nullptr;
+    newPacket->size = 0;
+    this->packet    = std::unique_ptr<AVPacket, AVPacketDeleter>(
+        reinterpret_cast<AVPacket *>(newPacket), AVPacketDeleter(this->ffmpegLibraries));
+    this->ffmpegLibraries->avcodec.av_init_packet(this->packet.get());
+  }
+  else
+    this->packet = std::unique_ptr<AVPacket, AVPacketDeleter>(
+        this->ffmpegLibraries->avcodec.av_packet_alloc(), AVPacketDeleter(this->ffmpegLibraries));
+  if (this->packet == nullptr)
+    throw std::runtime_error("Unable to allocate new AVPacket");
+}
+
+void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket *packet) const noexcept
+{
+  if (packet == nullptr)
+    return;
+
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
+  {
+    this->ffmpegLibraries->avcodec.av_free_packet(packet);
+    auto castPointer = reinterpret_cast<AVPacket_56 *>(packet);
+    delete castPointer;
+  }
+  else
+    this->ffmpegLibraries->avcodec.av_packet_free(&packet);
 }
 
 } // namespace ffmpeg::avcodec

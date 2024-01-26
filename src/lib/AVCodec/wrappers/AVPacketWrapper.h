@@ -18,21 +18,17 @@ namespace ffmpeg::avcodec
 class AVPacketWrapper
 {
 public:
-  AVPacketWrapper()                                   = delete;
-  AVPacketWrapper(const AVPacketWrapper &packet)      = delete;
-  AVPacketWrapper &operator=(const AVPacketWrapper &) = delete;
-  AVPacketWrapper(AVPacketWrapper &&packet);
-  AVPacketWrapper &operator=(AVPacketWrapper &&);
+  AVPacketWrapper()                         = delete;
+  AVPacketWrapper(AVPacketWrapper &&packet) = default;
   AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVPacketWrapper(const ByteVector &data, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
-  ~AVPacketWrapper();
 
   // Todo: Needs to be tested
   std::optional<AVPacketWrapper> clone() const;
 
   void setTimestamps(const int64_t dts, const int64_t pts);
 
-  ffmpeg::internal::AVPacket *getPacket() const { return this->packet; }
+  ffmpeg::internal::AVPacket *getPacket() const { return this->packet.get(); }
 
   struct Flags
   {
@@ -52,8 +48,22 @@ public:
   explicit operator bool() const { return this->packet != nullptr; };
 
 private:
-  ffmpeg::internal::AVPacket       *packet{};
-  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
+  void allocateNewPacket();
+
+  class AVPacketDeleter
+  {
+  public:
+    AVPacketDeleter() = default;
+    AVPacketDeleter(const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)
+        : ffmpegLibraries(ffmpegLibraries){};
+    void operator()(ffmpeg::internal::AVPacket *packet) const noexcept;
+
+  private:
+    std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
+  };
+
+  std::unique_ptr<ffmpeg::internal::AVPacket, AVPacketDeleter> packet{nullptr, AVPacketDeleter()};
+  std::shared_ptr<IFFmpegLibraries>                            ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avcodec
