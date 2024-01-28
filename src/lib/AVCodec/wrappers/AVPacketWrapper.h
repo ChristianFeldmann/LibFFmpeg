@@ -13,8 +13,6 @@
 namespace ffmpeg::avcodec
 {
 
-// A wrapper around the different versions of the AVPacket versions.
-// It also adds some functions like automatic deletion when it goes out of scope.
 class AVPacketWrapper
 {
 public:
