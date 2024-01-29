@@ -42,7 +42,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
+        ffmpegVersions: [6.1.1]
     runs-on: windows-2022
     steps:
     - uses: actions/download-artifact@master
@@ -53,12 +53,9 @@ jobs:
       run: |
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/windows-2022/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
-        ls -l
-        unzip ffmpeg.zip
+        dir
+        7z x ffmpeg.zip
         rm ffmpeg.zip
 
     - name: runffmpegTest
-      run: |
-        chmod a+x ffmpegTest
-        ls -l
-        ./ffmpegTest
+      run: ffmpegTest
