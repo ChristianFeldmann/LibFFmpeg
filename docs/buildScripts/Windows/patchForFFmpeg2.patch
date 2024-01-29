@@ -1,0 +1,13 @@
+diff --git a/common.mak b/common.mak
+index 7569d35bb1..d42b899d41 100644
+--- a/common.mak
++++ b/common.mak
+@@ -72,7 +72,7 @@ COMPILE_HOSTC = $(call COMPILE,HOSTCC)
+ 	$(COMPILE_HOSTC)
+ 
+ %.o: %.rc
+-	$(WINDRES) $(IFLAGS) --preprocessor "$(DEPWINDRES) -E -xc-header -DRC_INVOKED $(CC_DEPFLAGS)" -o $@ $<
++	$(WINDRES) $(IFLAGS) $(foreach ARG,$(CC_DEPFLAGS),--preprocessor-arg "$(ARG)") -o $@ $<
+ 
+ %.i: %.c
+ 	$(CC) $(CCFLAGS) $(CC_E) $<
