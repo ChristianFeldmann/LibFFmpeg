@@ -30,19 +30,19 @@ using ffmpeg::internal::avcodec::AVPacket_60;
 using ::testing::NiceMock;
 using ::testing::Return;
 
+constexpr auto         TEST_STREAM_INDEX = 7;
+constexpr auto         TEST_PTS          = 7338;
+constexpr auto         TEST_DTS          = 378;
+constexpr auto         TEST_DURATION     = 6789;
+constexpr auto         TEST_FLAGS        = 0b101;
+std::array<uint8_t, 3> TEST_DATA         = {88, 99, 120};
+
 template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersions &version)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   const auto majorVersion = version.avcodec.major;
-
-  constexpr auto         TEST_STREAM_INDEX = 7;
-  constexpr auto         TEST_PTS          = 7338;
-  constexpr auto         TEST_DTS          = 378;
-  constexpr auto         TEST_DURATION     = 6789;
-  constexpr auto         TEST_FLAGS        = 0b101;
-  std::array<uint8_t, 3> TEST_DATA         = {88, 99, 120};
 
   auto checkForExpectedPacketDefaultValues = [&](const AVPacketWrapper &packet)
   {
