@@ -58,4 +58,4 @@ jobs:
         rm ffmpeg.zip
 
     - name: runffmpegTest
-      run: ffmpegTest
+      run: ffmpegTest.exe
