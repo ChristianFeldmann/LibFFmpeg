@@ -65,8 +65,8 @@ struct AVFormatContext_57
   unsigned int    packet_size;
   int             max_delay;
   int             flags;
-  unsigned int    probesize;
-  int             max_analyze_duration;
+  int64_t         probesize;
+  int64_t         max_analyze_duration;
   const uint8_t  *key;
   int             keylen;
   unsigned int    nb_programs;

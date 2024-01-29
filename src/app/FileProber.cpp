@@ -17,7 +17,7 @@ using namespace ffmpeg;
 
 const auto FILE_NAME = std::string("testFile.webm");
 
-std::string to_string(const avcodec::AVCodecDescriptorProperties &properties)
+std::string to_string(const avcodec::CodecDescriptorProperties &properties)
 {
   std::string str;
   if (properties.intraOnly)
@@ -185,13 +185,12 @@ int main(int argc, char const *argv[])
     if (const auto codecDescriptor = stream.getCodecDescriptor())
     {
       std::cout << "      Media Type      : "
-                << avutil::mediaTypeMapper.getName(codecDescriptor->getMediaType()) << "\n";
-      std::cout << "      Name            : " << codecDescriptor->getCodecName() << "\n";
-      std::cout << "      Long Name       : " << codecDescriptor->getLongName() << "\n";
-      std::cout << "      Properties      : " << to_string(codecDescriptor->getProperties())
-                << "\n";
-      std::cout << "      Mime Types      : " << to_string(codecDescriptor->getMimeTypes()) << "\n";
-      std::cout << "      Profiles        : " << to_string(codecDescriptor->getProfiles()) << "\n";
+                << avutil::mediaTypeMapper.getName(codecDescriptor->mediaType) << "\n";
+      std::cout << "      Name            : " << codecDescriptor->codecName << "\n";
+      std::cout << "      Long Name       : " << codecDescriptor->longName << "\n";
+      std::cout << "      Properties      : " << to_string(codecDescriptor->properties) << "\n";
+      std::cout << "      Mime Types      : " << to_string(codecDescriptor->mimeTypes) << "\n";
+      std::cout << "      Profiles        : " << to_string(codecDescriptor->profiles) << "\n";
 
       std::cout << "    Average Framerate : " << to_string(stream.getAverageFrameRate()) << "\n";
       std::cout << "    Time Base         : " << to_string(stream.getTimeBase()) << "\n";
@@ -213,8 +212,9 @@ int main(int argc, char const *argv[])
 
     if (settings.showPackets)
     {
+      auto ptsString = packet->getPTS() ? std::to_string(packet->getPTS().value()) : "No-PTS";
       std::cout << "  Packet " << packetIndex << ": StreamIndex " << packet->getStreamIndex()
-                << " DTS " << packet->getDTS() << " PTS " << packet->getPTS() << " duration "
+                << " DTS " << packet->getDTS() << " PTS " << ptsString << " duration "
                 << packet->getDuration() << " dataSize " << packet->getDataSize();
       const auto flags = to_string(packet->getFlags());
       if (!flags.empty())

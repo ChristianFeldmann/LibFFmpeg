@@ -26,12 +26,15 @@ public:
   AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   ~AVFrameWrapper();
 
+  AVFrameWrapper &operator=(AVFrameWrapper &&);
+  AVFrameWrapper &operator=(const AVFrameWrapper &) = delete;
+
   ffmpeg::internal::AVFrame *getFrame() const { return this->frame; }
 
   ByteVector                         getData(int component) const;
   int                                getLineSize(int component) const;
   Size                               getSize() const;
-  int64_t                            getPTS() const;
+  std::optional<int64_t>             getPTS() const;
   avutil::PictureType                getPictType() const;
   bool                               isKeyFrame() const;
   std::optional<AVDictionaryWrapper> getMetadata() const;

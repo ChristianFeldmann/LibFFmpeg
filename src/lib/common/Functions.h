@@ -26,7 +26,7 @@ std::string to_string(const std::vector<std::string> &strings,
 
 inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int inputDataSize)
 {
-  if (inputDataSize <= 0)
+  if (inputDataSize <= 0 || inputData == nullptr)
     return {};
 
   ByteVector data;

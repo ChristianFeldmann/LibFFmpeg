@@ -22,22 +22,30 @@ class AVCodecContextWrapper
 {
 public:
   AVCodecContextWrapper() = delete;
+  AVCodecContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVCodecContextWrapper(ffmpeg::internal::AVCodecContext *codecContext,
                         std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  AVCodecContextWrapper(const AVCodecContextWrapper &) = delete;
+  AVCodecContextWrapper &operator=(AVCodecContextWrapper &&);
+  AVCodecContextWrapper &operator=(const AVCodecContextWrapper &) = delete;
+  AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
+  ~AVCodecContextWrapper();
 
-  static std::optional<AVCodecContextWrapper>
-  openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters,
-                         std::shared_ptr<IFFmpegLibraries>         ffmpegLibraries);
+  bool openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters);
+  bool openContextForDecoding();
 
   ReturnCode sendPacket(const avcodec::AVPacketWrapper &packet);
   ReturnCode sendFlushPacket();
 
-  struct RevieveFrameResult
+  struct DecodeResult
   {
     std::optional<avutil::AVFrameWrapper> frame{};
     ReturnCode                            returnCode{};
   };
-  RevieveFrameResult revieveFrame();
+  DecodeResult revieveFrame();
+
+  // This is the old FFMpeg 2 interface before pushPacket/pullFrame.
+  DecodeResult decodeVideo2(const avcodec::AVPacketWrapper &packet);
 
   avutil::MediaType             getCodecType() const;
   ffmpeg::internal::AVCodecID   getCodecID() const;
@@ -48,7 +56,15 @@ public:
   ByteVector                    getExtradata() const;
 
 private:
+  /* It depends on how the wrapper is created who has ownership of this.
+   * If the function openContextForDecoding is used, then this class has ownership. If the
+   * constructor with a raw pointer is called, then the ownership is not in this class. That is used
+   * for older FFmpeg versions where the AVStream has ownership of the codec. In newer versions,
+   * this is not the case anymore.
+   */
   ffmpeg::internal::AVCodecContext *codecContext{};
+  bool                              codecContextOwnership{};
+
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 

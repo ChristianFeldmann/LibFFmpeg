@@ -20,6 +20,7 @@
 namespace ffmpeg::avcodec
 {
 
+using ffmpeg::internal::AVCodec;
 using ffmpeg::internal::AVCodecContext;
 using ffmpeg::internal::AVCodecID;
 using ffmpeg::internal::AVCodecParameters;
@@ -34,6 +35,7 @@ using ffmpeg::internal::avcodec::AVCodecContext_58;
 using ffmpeg::internal::avcodec::AVCodecContext_59;
 using ffmpeg::internal::avcodec::AVCodecContext_60;
 using ffmpeg::internal::avcodec::AVPacket_56;
+using ::testing::NiceMock;
 using ::testing::Return;
 
 template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryVersions &version)
@@ -96,22 +98,25 @@ TEST_F(AVCodecContextWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShould
 
 TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  auto ffmpegLibraries = std::make_shared<NiceMock<FFmpegLibrariesMock>>();
 
-  AVDummy               codecContextDummy;
-  AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContextDummy),
-                                ffmpegLibraries);
+  {
+    AVDummy                            codecParametersDummy;
+    avformat::AVCodecParametersWrapper codecParameters(
+        reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
 
-  AVDummy                            codecParametersDummy;
-  avformat::AVCodecParametersWrapper codecParameters(
-      reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
+    auto context = AVCodecContextWrapper(ffmpegLibraries);
+    EXPECT_TRUE(context.openContextForDecoding(codecParameters));
+  }
 
-  wrapper.openContextForDecoding(codecParameters, ffmpegLibraries);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecAllocContext3, 1);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecParametersToContext, 1);
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecOpen2, 1);
 }
 
 TEST_F(AVCodecContextWrapperTest, TestSendingPackets)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  auto ffmpegLibraries = std::make_shared<NiceMock<FFmpegLibrariesMock>>();
 
   AVDummy               codecContext;
   AVCodecContextWrapper wrapper(reinterpret_cast<AVCodecContext *>(&codecContext), ffmpegLibraries);

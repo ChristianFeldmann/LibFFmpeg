@@ -136,14 +136,15 @@ ByteVector AVStreamWrapper::getExtradata() const
   return {};
 }
 
-std::optional<avcodec::AVCodecDescriptorWrapper> AVStreamWrapper::getCodecDescriptor() const
+std::optional<avcodec::CodecDescriptor> AVStreamWrapper::getCodecDescriptor() const
 {
   const auto codecID = this->getCodecID();
 
   const auto descriptor = this->ffmpegLibraries->avcodec.avcodec_descriptor_get(codecID);
 
   if (descriptor)
-    return avcodec::AVCodecDescriptorWrapper(descriptor);
+    return avcodec::convertAVCodecDescriptor(descriptor,
+                                             this->ffmpegLibraries->getLibrariesVersion().avcodec);
   return {};
 }
 

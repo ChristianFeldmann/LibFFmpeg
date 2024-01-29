@@ -76,10 +76,16 @@ TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 
 TEST(FFmpegTest, CheckFormatAndStreamParameters)
 {
-  auto       demuxer       = openTestFileInDemuxer(openLibraries());
-  const auto formatContext = demuxer.getFormatContext();
+  auto       ffmpegLibraries = openLibraries();
+  auto       demuxer         = openTestFileInDemuxer(ffmpegLibraries);
+  const auto formatContext   = demuxer.getFormatContext();
+  const auto majorVersion    = ffmpegLibraries->getLibrariesVersion().avformat.major;
 
-  EXPECT_EQ(formatContext->getStartTime(), 0);
+  if (majorVersion <= 56)
+    EXPECT_EQ(formatContext->getStartTime(), -23220);
+  else
+    EXPECT_EQ(formatContext->getStartTime(), 0);
+
   EXPECT_EQ(formatContext->getDuration(), 1000000);
   EXPECT_EQ(formatContext->getNumberStreams(), 2);
 
@@ -97,33 +103,49 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   const auto inputFormat = formatContext->getInputFormat();
   EXPECT_EQ(inputFormat.getName(), "mov,mp4,m4a,3gp,3g2,mj2");
   EXPECT_EQ(inputFormat.getLongName(), "QuickTime / MOV");
-  EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
+  EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2",
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif"}),
               testing::Contains(inputFormat.getExtensions()));
 
-  EXPECT_EQ(inputFormat.getMimeType(), "");
-  const auto                   flags = inputFormat.getFlags();
   avformat::AVInputFormatFlags expectedFlags{};
-  expectedFlags.showIDs    = true;
+  if (majorVersion > 58)
+    // Older (<= ffmpeg 4) versions will report this flag as false
+    expectedFlags.showIDs = true;
   expectedFlags.noByteSeek = true;
-  expectedFlags.seekToPTS  = true;
-  EXPECT_EQ(flags, expectedFlags);
+  if (majorVersion > 57)
+    // Older (<= ffmpeg 2) versions will report this flag as false
+    expectedFlags.seekToPTS = true;
+
+  EXPECT_EQ(inputFormat.getMimeType(), "");
+  EXPECT_EQ(inputFormat.getFlags(), expectedFlags);
 
   const auto &audioStream = formatContext->getStream(0);
   EXPECT_EQ(audioStream.getCodecType(), MediaType::Audio);
 
   const auto audioCodecDescriptor = audioStream.getCodecDescriptor();
-  EXPECT_EQ(audioCodecDescriptor->getMediaType(), MediaType::Audio);
-  EXPECT_EQ(audioCodecDescriptor->getCodecName(), "aac");
-  EXPECT_EQ(audioCodecDescriptor->getLongName(), "AAC (Advanced Audio Coding)");
-  avcodec::AVCodecDescriptorProperties expectedAudioProperties{};
-  expectedAudioProperties.intraOnly = true;
-  expectedAudioProperties.lossy     = true;
-  EXPECT_EQ(audioCodecDescriptor->getProperties(), expectedAudioProperties);
-  EXPECT_EQ(audioCodecDescriptor->getMimeTypes().size(), 0);
-  EXPECT_EQ(audioCodecDescriptor->getProfiles().size(), 8);
-  EXPECT_TRUE(areEqual(audioCodecDescriptor->getProfiles(),
-                       {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
+  EXPECT_EQ(audioCodecDescriptor->mediaType, MediaType::Audio);
+  EXPECT_EQ(audioCodecDescriptor->codecName, "aac");
+  EXPECT_EQ(audioCodecDescriptor->longName, "AAC (Advanced Audio Coding)");
+  avcodec::CodecDescriptorProperties expectedAudioProperties{};
+  if (majorVersion >= 58)
+    // Older (< ffmpeg 4) versions will report this flag as false
+    expectedAudioProperties.intraOnly = true;
+  expectedAudioProperties.lossy = true;
+  EXPECT_EQ(audioCodecDescriptor->properties, expectedAudioProperties);
+  EXPECT_EQ(audioCodecDescriptor->mimeTypes.size(), 0);
+
+  if (majorVersion == 56)
+    // FFmpeg versions 2 does not parse profiles in the descriptor
+    EXPECT_EQ(audioCodecDescriptor->profiles.size(), 0);
+  else if (majorVersion == 57)
+    // For some reason, the "LC" profile is reported twice for FFmpeg 3
+    EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
+                         {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "LC", "SSR", "LTP"}));
+  else
+    EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
+                         {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
+
   EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
   EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
   EXPECT_EQ(audioStream.getFrameSize(), Size({0, 0}));
@@ -135,32 +157,37 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(videoStream.getCodecType(), MediaType::Video);
 
   const auto videoCodecDescriptor = videoStream.getCodecDescriptor();
-  EXPECT_EQ(videoCodecDescriptor->getMediaType(), MediaType::Video);
-  EXPECT_EQ(videoCodecDescriptor->getCodecName(), "h264");
-  EXPECT_EQ(videoCodecDescriptor->getLongName(), "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
-  avcodec::AVCodecDescriptorProperties expectedVideoProperties{};
+  EXPECT_EQ(videoCodecDescriptor->mediaType, MediaType::Video);
+  EXPECT_EQ(videoCodecDescriptor->codecName, "h264");
+  EXPECT_EQ(videoCodecDescriptor->longName, "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10");
+  avcodec::CodecDescriptorProperties expectedVideoProperties{};
   expectedVideoProperties.lossy    = true;
   expectedVideoProperties.lossless = true;
   expectedVideoProperties.reorder  = true;
-  EXPECT_EQ(videoCodecDescriptor->getProperties(), expectedVideoProperties);
-  EXPECT_EQ(videoCodecDescriptor->getMimeTypes().size(), 0);
-  EXPECT_EQ(videoCodecDescriptor->getProfiles().size(), 15);
-  EXPECT_TRUE(areEqual(videoCodecDescriptor->getProfiles(),
-                       {"Baseline",
-                        "Constrained Baseline",
-                        "Main",
-                        "Extended",
-                        "High",
-                        "High 10",
-                        "High 10 Intra",
-                        "High 4:2:2",
-                        "High 4:2:2 Intra",
-                        "High 4:4:4",
-                        "High 4:4:4 Predictive",
-                        "High 4:4:4 Intra",
-                        "CAVLC 4:4:4",
-                        "Multiview High",
-                        "Stereo High"}));
+  EXPECT_EQ(videoCodecDescriptor->properties, expectedVideoProperties);
+  EXPECT_EQ(videoCodecDescriptor->mimeTypes.size(), 0);
+
+  if (majorVersion > 56)
+    EXPECT_TRUE(areEqual(videoCodecDescriptor->profiles,
+                         {"Baseline",
+                          "Constrained Baseline",
+                          "Main",
+                          "Extended",
+                          "High",
+                          "High 10",
+                          "High 10 Intra",
+                          "High 4:2:2",
+                          "High 4:2:2 Intra",
+                          "High 4:4:4",
+                          "High 4:4:4 Predictive",
+                          "High 4:4:4 Intra",
+                          "CAVLC 4:4:4",
+                          "Multiview High",
+                          "Stereo High"}));
+  else
+    // Old ffmpeg versions do not parse profiles in the descriptor
+    EXPECT_EQ(videoCodecDescriptor->profiles.size(), 0);
+
   EXPECT_EQ(videoStream.getAverageFrameRate(), Rational({25, 1}));
   EXPECT_EQ(videoStream.getTimeBase(), Rational({1, 12800}));
   EXPECT_EQ(videoStream.getFrameSize(), Size({320, 240}));
@@ -172,7 +199,8 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
 
 TEST(FFmpegTest, DemuxPackets)
 {
-  auto       demuxer       = openTestFileInDemuxer(openLibraries());
+  auto       libraries     = openLibraries();
+  auto       demuxer       = openTestFileInDemuxer(libraries);
   const auto formatContext = demuxer.getFormatContext();
 
   constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
@@ -190,12 +218,18 @@ TEST(FFmpegTest, DemuxPackets)
     EXPECT_TRUE(packet->getStreamIndex() == 0 || packet->getStreamIndex() == 1);
     if (packet->getStreamIndex() == 0)
     {
-      EXPECT_EQ(packet->getDataSize(), expectedDataSizesAudio.at(packetCountAudio));
+      if (packetCountAudio == 0 && libraries->getLibrariesVersion().avcodec.major == 57)
+        // For some reason, the first packet is 23 bytes larger for this version of FFmpeg.
+        EXPECT_EQ(packet->getDataSize(), 366) << "Audio packet number " << packetCountAudio;
+      else
+        EXPECT_EQ(packet->getDataSize(), expectedDataSizesAudio.at(packetCountAudio))
+            << "Audio packet number " << packetCountAudio;
       ++packetCountAudio;
     }
     else if (packet->getStreamIndex() == 1)
     {
-      EXPECT_EQ(packet->getDataSize(), expectedDataSizesVideo.at(packetCountVideo));
+      EXPECT_EQ(packet->getDataSize(), expectedDataSizesVideo.at(packetCountVideo))
+          << "Video packet number " << packetCountVideo;
       ++packetCountVideo;
     }
   }
@@ -212,14 +246,23 @@ TEST(FFmpegTest, DecodingTest)
   auto demuxer         = openTestFileInDemuxer(ffmpegLibraries);
   auto decoder         = Decoder(ffmpegLibraries);
 
-  const auto streamToDecode = 1;
-  const auto stream         = demuxer.getFormatContext()->getStream(streamToDecode);
+  const auto streamToDecode      = 1;
+  const auto stream              = demuxer.getFormatContext()->getStream(streamToDecode);
+  const auto avcodecVersionMajor = ffmpegLibraries->getLibrariesVersion().avcodec.major;
 
-  decoder.openForDecoding(stream);
+  // The amount of padding that FFmpeg uses depends on how it was compiled.
+  // Here, we use our own compiled versions. But in general this can not be predicted.
+  std::array<int, 3> expectedLinesize = {384, 192, 192};
+  if (avcodecVersionMajor <= 57)
+    expectedLinesize = {320, 160, 160};
+
+  ASSERT_TRUE(decoder.openForDecoding(stream));
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder = [&decoder, &totalFrameCounter]() {
+  auto pullFramesFromDecoder =
+      [&decoder, &totalFrameCounter, &expectedLinesize, &avcodecVersionMajor]()
+  {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {
@@ -228,9 +271,9 @@ TEST(FFmpegTest, DecodingTest)
       EXPECT_EQ(frame->getPixelFormatDescriptor().name, "yuv420p");
 
       EXPECT_EQ(frame->getSize(), Size({320, 240}));
-      EXPECT_EQ(frame->getLineSize(0), 320);
-      EXPECT_EQ(frame->getLineSize(1), 160);
-      EXPECT_EQ(frame->getLineSize(2), 160);
+      EXPECT_EQ(frame->getLineSize(0), expectedLinesize.at(0));
+      EXPECT_EQ(frame->getLineSize(1), expectedLinesize.at(1));
+      EXPECT_EQ(frame->getLineSize(2), expectedLinesize.at(2));
       EXPECT_EQ(frame->getSampleAspectRatio(), Rational({1, 1}));
 
       const auto absoluteFrameIndex = totalFrameCounter + framesDecodedInLoop;
@@ -246,7 +289,10 @@ TEST(FFmpegTest, DecodingTest)
       constexpr std::array<int64_t, 25> expectedPTSValues = {
           0,    512,  1024, 1536, 2048, 2560, 3072, 3584,  4096,  4608,  5120,  5632, 6144,
           6656, 7168, 7680, 8192, 8704, 9216, 9728, 10240, 10752, 11264, 11776, 12288};
-      EXPECT_EQ(frame->getPTS(), expectedPTSValues.at(absoluteFrameIndex));
+      if (avcodecVersionMajor == 56)
+        EXPECT_FALSE(frame->getPTS());
+      else
+        EXPECT_EQ(frame->getPTS(), expectedPTSValues.at(absoluteFrameIndex));
 
       constexpr std::array<std::size_t, 25> expectedFrameHashes = {
           10335300354773531646_sz, 9598839882643808065_sz,  6359550546723864943_sz,

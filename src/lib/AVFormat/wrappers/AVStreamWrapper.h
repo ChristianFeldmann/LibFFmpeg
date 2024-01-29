@@ -7,7 +7,7 @@
 #pragma once
 
 #include <AVCodec/wrappers/AVCodecContextWrapper.h>
-#include <AVCodec/wrappers/AVCodecDescriptorWrapper.h>
+#include <AVCodec/wrappers/AVCodecDescriptorConversion.h>
 #include <AVFormat/wrappers/AVCodecParametersWrapper.h>
 #include <AVUtil/ColorSpace.h>
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
@@ -37,14 +37,13 @@ public:
   avutil::PixelFormatDescriptor getPixelFormat() const;
   ByteVector                    getExtradata() const;
 
-  std::optional<avcodec::AVCodecDescriptorWrapper> getCodecDescriptor() const;
-  std::optional<AVCodecParametersWrapper>          getCodecParameters() const;
+  std::optional<avcodec::CodecDescriptor>       getCodecDescriptor() const;
+  std::optional<AVCodecParametersWrapper>       getCodecParameters() const;
+  std::optional<avcodec::AVCodecContextWrapper> getCodecContext() const;
 
 private:
   ffmpeg::internal::AVStream       *stream{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
-
-  std::optional<avcodec::AVCodecContextWrapper> getCodecContext() const;
 };
 
 } // namespace ffmpeg::avformat
