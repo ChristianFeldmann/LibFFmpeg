@@ -17,12 +17,14 @@ jobs:
             COPY_COMMAND: copy
             DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
             UNIT_TEST_PATH: test/unit/Release/
-            FFMPEG_TEST_NAME: Release/ffmpegTest.exe
+            FFMPEG_TEST_NAME: ffmpegTest.exe
+            FFMPEG_TEST_PATH: test/ffmpegTest/Release
           # - os: ubuntu-22.04
           #   COPY_COMMAND: cp
           #   DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
           #   UNIT_TEST_PATH: test/unit/
           #   FFMPEG_TEST_NAME: ffmpegTest
+          #   FFMPEG_TEST_PATH: test/ffmpegTest
           #- os: macos-12
           #  COPY_COMMAND: cp
           #  DUMMY_LIB_PATH: test/dummyLib/libdummyLib.dylib
@@ -57,7 +59,7 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: ${{matrix.FFMPEG_TEST_NAME}}
-        path: ${{steps.strings.outputs.build-output-dir}}/test/ffmpegTest/${{matrix.FFMPEG_TEST_NAME}}
+        path: ${{steps.strings.outputs.build-output-dir}}/${{matrix.FFMPEG_TEST_PATH}}/${{matrix.FFMPEG_TEST_NAME}}
 
   testffmpeg:
     needs: build
