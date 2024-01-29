@@ -6,6 +6,7 @@
 
 #include <AVUtil/wrappers/AVFrameWrapper.h>
 #include <AVUtil/wrappers/AVFrameWrapperInternal.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 #include <common/InternalTypes.h>
 #include <wrappers/TestHelper.h>
 
@@ -20,31 +21,26 @@ namespace
 {
 
 using ffmpeg::internal::AVFrame;
+using ffmpeg::internal::AVPixelFormat;
 using internal::avutil::AVFrame_54;
 using internal::avutil::AVFrame_55;
 using internal::avutil::AVFrame_56;
 using internal::avutil::AVFrame_57;
 using internal::avutil::AVFrame_58;
+using internal::avutil::AVPixFmtDescriptor_54;
+using internal::avutil::AVPixFmtDescriptor_55;
+using internal::avutil::AVPixFmtDescriptor_56;
+using internal::avutil::AVPixFmtDescriptor_57;
+using internal::avutil::AVPixFmtDescriptor_58;
 using ::testing::Return;
-
-template <typename T> void setTestValuesInFrame(AVFrame *frame)
-{
-  auto castFrame                 = reinterpret_cast<T *>(frame);
-  castFrame->width               = 320;
-  castFrame->height              = 160;
-  castFrame->linesize[0]         = 123;
-  castFrame->linesize[1]         = 223;
-  castFrame->linesize[2]         = 323;
-  castFrame->pts                 = 1000;
-  castFrame->pict_type           = internal::AV_PICTURE_TYPE_P;
-  castFrame->key_frame           = 1;
-  castFrame->sample_aspect_ratio = {16, 9};
-}
 
 template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions &version)
 {
+  constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   int frameAllocCounter                  = 0;
   ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]() {
@@ -69,7 +65,19 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
     EXPECT_EQ(frameAllocCounter, 1);
     EXPECT_EQ(frameFreeCounter, 0);
 
-    setTestValuesInFrame<AVFrameType>(frame.getFrame());
+    {
+      auto castFrame                 = reinterpret_cast<AVFrameType *>(frame.getFrame());
+      castFrame->width               = 320;
+      castFrame->height              = 160;
+      castFrame->linesize[0]         = 123;
+      castFrame->linesize[1]         = 223;
+      castFrame->linesize[2]         = 323;
+      castFrame->pts                 = 1000;
+      castFrame->pict_type           = internal::AV_PICTURE_TYPE_P;
+      castFrame->key_frame           = 1;
+      castFrame->sample_aspect_ratio = {16, 9};
+      castFrame->format              = TEST_PIXEL_FORMAT;
+    }
 
     EXPECT_TRUE(frame);
     EXPECT_EQ(frame.getSize(), Size({320, 160}));
@@ -80,13 +88,24 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
     EXPECT_EQ(frame.getPictType(), PictureType::P);
     EXPECT_TRUE(frame.isKeyFrame());
     EXPECT_EQ(frame.getSampleAspectRatio(), Rational({16, 9}));
+    EXPECT_EQ(frame.getPixelFormatDescriptor().name, "None");
 
     // Todo: Getting data untested so far.
-    // Todo: PixelFormatDescriptor not tested
   }
 
+  EXPECT_EQ(ffmpegLibraries->functionCounters.avPixFmtDescGet, 1);
   EXPECT_EQ(frameAllocCounter, 1);
   EXPECT_EQ(frameFreeCounter, 1);
+}
+
+template <typename AVFrameType, typename AVPixFmtDescriptorType>
+void runAVFrameWrapperTestDataAccess(const LibraryVersions &version)
+{
+  constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
+
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 }
 
 } // namespace
@@ -108,6 +127,21 @@ TEST_P(AVFrameWrapperTest, TestAVFrameWrapper)
     runAVFrameWrapperTest<AVFrame_57>(version);
   else if (version.avutil.major == 58)
     runAVFrameWrapperTest<AVFrame_58>(version);
+}
+
+TEST_P(AVFrameWrapperTest, TestAVFrameWrapperDataAccess)
+{
+  const auto version = GetParam();
+  if (version.avutil.major == 54)
+    runAVFrameWrapperTestDataAccess<AVFrame_54, AVPixFmtDescriptor_54>(version);
+  else if (version.avutil.major == 55)
+    runAVFrameWrapperTestDataAccess<AVFrame_55, AVPixFmtDescriptor_55>(version);
+  else if (version.avutil.major == 56)
+    runAVFrameWrapperTestDataAccess<AVFrame_56, AVPixFmtDescriptor_56>(version);
+  else if (version.avutil.major == 57)
+    runAVFrameWrapperTestDataAccess<AVFrame_57, AVPixFmtDescriptor_57>(version);
+  else if (version.avutil.major == 58)
+    runAVFrameWrapperTestDataAccess<AVFrame_58, AVPixFmtDescriptor_58>(version);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,

@@ -11,6 +11,8 @@
 
 #include <libHandling/FFmpegLibrariesMoc.h>
 
+#include <wrappers/AVUtil/AVPixFmtDescriptorCreation.h>
+
 #include <gtest/gtest.h>
 
 namespace ffmpeg::avutil
@@ -31,88 +33,35 @@ using internal::avutil::AVPixFmtDescriptor_57;
 using internal::avutil::AVPixFmtDescriptor_58;
 using ::testing::Return;
 
-template <typename AVComponentDescriptorType>
-AVComponentDescriptorType getComponentDescriptor(int index)
-{
-  AVComponentDescriptorType componentDescriptor;
-  componentDescriptor.plane = index;
-  componentDescriptor.shift = 4;
-
-  if constexpr (std::is_same_v<AVComponentDescriptorType, AVComponentDescriptor_54> ||
-                std::is_same_v<AVComponentDescriptorType, AVComponentDescriptor_55>)
-  {
-    componentDescriptor.step_minus1  = 3;
-    componentDescriptor.offset_plus1 = 4;
-    componentDescriptor.depth_minus1 = 5;
-  }
-  if constexpr (std::is_same_v<AVComponentDescriptorType, AVComponentDescriptor_55> ||
-                std::is_same_v<AVComponentDescriptorType, AVComponentDescriptor_57>)
-  {
-    componentDescriptor.step   = 4;
-    componentDescriptor.offset = 3;
-    componentDescriptor.depth  = 6;
-  }
-
-  return componentDescriptor;
-}
-
-template <typename T> AVPixFmtDescriptor *getDescriptor(AVPixelFormat pix_fmt)
-{
-  if constexpr (std::is_same_v<T, AVPixFmtDescriptor_54>)
-  {
-    static AVPixFmtDescriptor_54 descriptor;
-    descriptor.name          = "Test";
-    descriptor.nb_components = 3;
-    descriptor.log2_chroma_w = 4;
-    descriptor.log2_chroma_h = 5;
-    descriptor.flags         = 0b10001; // Planar and bigEndia flag
-    descriptor.comp[0]       = getComponentDescriptor<AVComponentDescriptor_54>(0);
-    descriptor.comp[1]       = getComponentDescriptor<AVComponentDescriptor_54>(1);
-    descriptor.comp[2]       = getComponentDescriptor<AVComponentDescriptor_54>(2);
-    return reinterpret_cast<AVPixFmtDescriptor *>(&descriptor);
-  }
-  if constexpr (std::is_same_v<T, AVPixFmtDescriptor_55> ||
-                std::is_same_v<T, AVPixFmtDescriptor_56>)
-  {
-    static AVPixFmtDescriptor_55 descriptor;
-    descriptor.name          = "Test";
-    descriptor.nb_components = 3;
-    descriptor.log2_chroma_w = 4;
-    descriptor.log2_chroma_h = 5;
-    descriptor.flags         = 0b10001; // Planar and bigEndia flag
-    descriptor.comp[0]       = getComponentDescriptor<AVComponentDescriptor_55>(0);
-    descriptor.comp[1]       = getComponentDescriptor<AVComponentDescriptor_55>(1);
-    descriptor.comp[2]       = getComponentDescriptor<AVComponentDescriptor_55>(2);
-    return reinterpret_cast<AVPixFmtDescriptor *>(&descriptor);
-  }
-  if constexpr (std::is_same_v<T, AVPixFmtDescriptor_57> ||
-                std::is_same_v<T, AVPixFmtDescriptor_58>)
-  {
-    static AVPixFmtDescriptor_57 descriptor;
-    descriptor.name          = "Test";
-    descriptor.nb_components = 3;
-    descriptor.log2_chroma_w = 4;
-    descriptor.log2_chroma_h = 5;
-    descriptor.flags         = 0b10001; // Planar and bigEndia flag
-    descriptor.comp[0]       = getComponentDescriptor<AVComponentDescriptor_57>(0);
-    descriptor.comp[1]       = getComponentDescriptor<AVComponentDescriptor_57>(1);
-    descriptor.comp[2]       = getComponentDescriptor<AVComponentDescriptor_57>(2);
-    return reinterpret_cast<AVPixFmtDescriptor *>(&descriptor);
-  }
-
-  return nullptr;
-}
-
 template <typename AVPixFmtDescriptorType>
 void runAVPixFmtDescriptorConversionTest(const LibraryVersions &version)
 {
+  const auto TEST_PIXEL_FORMAT = static_cast<AVPixelFormat>(123);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpegLibraries->avutil.av_pix_fmt_desc_get = getDescriptor<AVPixFmtDescriptorType>;
+  PixelFormatDescriptor TEST_DESCRIPTOR;
+  TEST_DESCRIPTOR.name                          = "Test";
+  TEST_DESCRIPTOR.numberOfComponents            = 3;
+  TEST_DESCRIPTOR.shiftLumaToChroma.widthShift  = 4;
+  TEST_DESCRIPTOR.shiftLumaToChroma.heightShift = 5;
+  TEST_DESCRIPTOR.flags.planar                  = true;
+  TEST_DESCRIPTOR.flags.bigEndian               = true;
+  TEST_DESCRIPTOR.componentDescriptors.push_back({0, 4, 3, 4, 6});
+  TEST_DESCRIPTOR.componentDescriptors.push_back({1, 4, 3, 4, 6});
+  TEST_DESCRIPTOR.componentDescriptors.push_back({2, 4, 3, 4, 6});
 
-  const auto pixelFormat = static_cast<AVPixelFormat>(123);
-  const auto format      = convertAVPixFmtDescriptor(pixelFormat, ffmpegLibraries);
+  auto rawPixelFormatDescriptor =
+      createRawFormatDescriptor<AVPixFmtDescriptorType>(TEST_DESCRIPTOR);
+
+  ffmpegLibraries->avutil.av_pix_fmt_desc_get = [&](AVPixelFormat pix_fmt) {
+    EXPECT_EQ(pix_fmt, TEST_PIXEL_FORMAT);
+    ++ffmpegLibraries->functionCounters.avPixFmtDescGet;
+    return reinterpret_cast<const AVPixFmtDescriptor *>(&rawPixelFormatDescriptor);
+  };
+
+  const auto format = convertAVPixFmtDescriptor(TEST_PIXEL_FORMAT, ffmpegLibraries);
 
   EXPECT_EQ(format.name, "Test");
   EXPECT_EQ(format.numberOfComponents, 3);
@@ -139,6 +88,8 @@ void runAVPixFmtDescriptorConversionTest(const LibraryVersions &version)
     EXPECT_EQ(format.componentDescriptors[i].shift, 4);
     EXPECT_EQ(format.componentDescriptors[i].depth, 6);
   }
+
+  EXPECT_EQ(format, TEST_DESCRIPTOR);
 }
 
 } // namespace
