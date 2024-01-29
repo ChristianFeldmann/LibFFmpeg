@@ -17,7 +17,7 @@ jobs:
             COPY_COMMAND: copy
             DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
             UNIT_TEST_PATH: test/unit/Release/
-            FFMPEG_TEST_NAME: ffmpegTest.exe
+            FFMPEG_TEST_NAME: Release/ffmpegTest.exe
           # - os: ubuntu-22.04
           #   COPY_COMMAND: cp
           #   DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
@@ -50,6 +50,9 @@ jobs:
         ${{matrix.COPY_COMMAND}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.DUMMY_LIB_PATH}} ${{steps.strings.outputs.build-output-dir}}/${{matrix.UNIT_TEST_PATH}}
         cd ${{steps.strings.outputs.build-output-dir}}/${{matrix.UNIT_TEST_PATH}}
         ./unitTest
+
+    - name: List all files
+      run: ls -R
 
     - uses: actions/upload-artifact@master
       with:
