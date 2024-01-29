@@ -17,6 +17,7 @@ jobs:
             COPY_COMMAND: copy
             DUMMY_LIB_PATH: test/dummyLib/Release/dummyLib.dll
             UNIT_TEST_PATH: test/unit/Release/
+            FFMPEG_TEST_NAME: ffmpegTest.exe
           # - os: ubuntu-22.04
           #   COPY_COMMAND: cp
           #   DUMMY_LIB_PATH: test/dummyLib/libdummyLib.so
