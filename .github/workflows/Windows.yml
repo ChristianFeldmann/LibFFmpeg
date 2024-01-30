@@ -42,7 +42,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        ffmpegVersions: [6.1.1]
+        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
     runs-on: windows-2022
     steps:
     - uses: actions/download-artifact@master
