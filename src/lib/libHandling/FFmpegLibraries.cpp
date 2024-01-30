@@ -23,7 +23,7 @@ std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int ve
   // libavutil.54.dylib.
 
 #if defined(_WIN32)
-  return {{libraryName + "-" + std::to_string(version)}};
+  return {{libraryName + "-" + std::to_string(version) + ".dll"}};
 #elif defined(__APPLE__)
   return {{"lib" + libraryName + "." + std::to_string(version) + ".dylib"}};
 #else

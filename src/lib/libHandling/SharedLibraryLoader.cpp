@@ -6,6 +6,8 @@
 
 #include "SharedLibraryLoader.h"
 
+#include <optional>
+
 #if (!defined(_WIN32) && !defined(_WIN64))
 #include <limits.h>
 #endif
@@ -27,6 +29,15 @@ std::string addLibraryExtensionIfNeeded(const std::string &libraryName)
     return libraryName + ".dylib";
 #endif
   return libraryName;
+}
+
+std::optional<std::string>
+getLibraryPathWithoutDLLExtension(const std::filesystem::path &libraryPath)
+{
+  const auto fullPath = libraryPath.string();
+  if (fullPath.size() < 5 || fullPath.substr(fullPath.size() - 4) != ".dll")
+    return {};
+  return fullPath.substr(0, fullPath.size() - 4);
 }
 
 } // namespace
@@ -73,7 +84,9 @@ bool SharedLibraryLoader::load(const std::filesystem::path &absolutePathToLibrar
     return false;
 
 #if (defined(_WIN32) || defined(_WIN64))
-  this->libHandle = LoadLibraryA(absolutePathToLibraryFile.string().c_str());
+  if (const auto pathWithoutExtension =
+          getLibraryPathWithoutDLLExtension(absolutePathToLibraryFile))
+    this->libHandle = LoadLibraryA(pathWithoutExtension->c_str());
 #else
   this->libHandle = dlopen(absolutePathToLibraryFile.c_str(), RTLD_NOW | RTLD_LOCAL);
 #endif
