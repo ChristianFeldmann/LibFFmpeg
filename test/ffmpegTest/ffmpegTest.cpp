@@ -260,9 +260,10 @@ TEST(FFmpegTest, DecodingTest)
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder =
-      [&decoder, &totalFrameCounter, &expectedLinesize, &avcodecVersionMajor]()
-  {
+  auto pullFramesFromDecoder = [&decoder,
+                                &totalFrameCounter,
+                                &expectedLinesize,
+                                &avcodecVersionMajor]() {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {
@@ -294,16 +295,14 @@ TEST(FFmpegTest, DecodingTest)
       else
         EXPECT_EQ(frame->getPTS(), expectedPTSValues.at(absoluteFrameIndex));
 
-      constexpr std::array<std::size_t, 25> expectedFrameHashes = {
-          10335300354773531646_sz, 9598839882643808065_sz,  6359550546723864943_sz,
-          12130793413653774513_sz, 4628923352507498026_sz,  2858635716901433640_sz,
-          14970121357180727058_sz, 253752768086499004_sz,   5299985766580468689_sz,
-          3099208567159189892_sz,  2133379519116086084_sz,  2180065343928270602_sz,
-          2489343340331754166_sz,  5632195775965507548_sz,  3303234774067442630_sz,
-          12498746788431539799_sz, 14512385209203951550_sz, 18204733184941058056_sz,
-          10739588934149693643_sz, 14470189926003804569_sz, 9627428302243774942_sz,
-          11993285150246447462_sz, 15648684513962840504_sz, 15210735267164473200_sz,
-          1388011374301074777_sz};
+      constexpr std::array<std::int64_t, 25> expectedFrameHashes = {
+          -3007600926112186533, -3391200051889142087, -1160633604618185881, 4273627566792723166,
+          -4154039706688151037, -1301428058581480615, 7452780297656341798,  7600256964838247071,
+          -8499296325100989937, -8234365708930177171, -6091801175307918277, -6243952166556384038,
+          -1538307937175716804, -1214069488220656158, 221111691894747256,   -6002299333845183392,
+          2227144204187938134,  6419852838956731569,  -2032560420377261054, 84234931995669811,
+          -6767048039990945080, -8993409000448418032, -7272467650392102601, 3844105725739243304,
+          -2350406183677959349};
       EXPECT_EQ(calculateFrameDataHash(*frame), expectedFrameHashes.at(absoluteFrameIndex));
 
       ++framesDecodedInLoop;

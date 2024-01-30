@@ -14,7 +14,7 @@
 namespace ffmpeg
 {
 
-bool        areEqual(const std::vector<std::string> &lhs, const std::vector<std::string> &rhs);
-std::size_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame);
+bool         areEqual(const std::vector<std::string> &lhs, const std::vector<std::string> &rhs);
+std::int64_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame);
 
 } // namespace ffmpeg

@@ -22,20 +22,19 @@ bool areEqual(const std::vector<std::string> &lhs, const std::vector<std::string
   return true;
 }
 
-std::size_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame)
+std::int64_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame)
 {
   const auto pixelFormatDescriptor = frame.getPixelFormatDescriptor();
   const auto frameSize             = frame.getSize();
 
-  std::size_t          hash = 0;
-  std::hash<std::byte> hasher;
+  std::int64_t hash = 0;
 
   for (int component = 0; component < pixelFormatDescriptor.numberOfComponents; ++component)
   {
     const auto data     = frame.getData(component);
     const auto dataSize = data.size();
     for (const auto value : data)
-      hash ^= hasher(value) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+      hash ^= std::to_integer<std::int64_t>(value) + 0x9e3779b9 + (hash << 6) + (hash >> 2);
   }
 
   return hash;
