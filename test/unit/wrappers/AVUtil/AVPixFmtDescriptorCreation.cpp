@@ -71,11 +71,7 @@ template AVPixFmtDescriptor_54
 createRawFormatDescriptor<AVPixFmtDescriptor_54>(const PixelFormatDescriptor &pixelFormat);
 template AVPixFmtDescriptor_55
 createRawFormatDescriptor<AVPixFmtDescriptor_55>(const PixelFormatDescriptor &pixelFormat);
-template AVPixFmtDescriptor_56
-createRawFormatDescriptor<AVPixFmtDescriptor_56>(const PixelFormatDescriptor &pixelFormat);
 template AVPixFmtDescriptor_57
 createRawFormatDescriptor<AVPixFmtDescriptor_57>(const PixelFormatDescriptor &pixelFormat);
-template AVPixFmtDescriptor_58
-createRawFormatDescriptor<AVPixFmtDescriptor_58>(const PixelFormatDescriptor &pixelFormat);
 
 } // namespace ffmpeg::avutil
