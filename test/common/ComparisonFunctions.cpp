@@ -6,6 +6,8 @@
 
 #include "ComparisonFunctions.h"
 
+#include <cstddef>
+
 namespace ffmpeg
 {
 
