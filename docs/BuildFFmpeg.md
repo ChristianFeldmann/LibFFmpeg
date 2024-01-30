@@ -30,7 +30,7 @@ zip ffmpeg6.0.zip *
 
 For windows I used cross compilation from linux (on an Ubuntu 22.04). For this, I installed gcc-mingw-w64-i686 and mingw-w64-i686-dev.
 
-> sudo apt install gcc-mingw-w64-i686 mingw-w64-i686-dev
+> sudo apt install gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev
 
 Then ffmpeg can be configured and built using configure with the correct mongw prefix:
 

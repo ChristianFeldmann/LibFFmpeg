@@ -30,7 +30,7 @@ if [[ $2 = 56 ]]; then
 fi
 
 echo "Configuring FFmpeg..."
-./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --arch=x86_64 --target-os=mingw32 --cross-prefix=i686-w64-mingw32-
+./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++ -static-libgcc" --arch=x86_64 --target-os=mingw32 --cross-prefix=x86_64-w64-mingw32-
 make clean
 make -j 8
 git reset --hard
