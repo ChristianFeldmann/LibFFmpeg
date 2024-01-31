@@ -240,8 +240,6 @@ TEST(FFmpegTest, DemuxPackets)
 
 TEST(FFmpegTest, DecodingTest)
 {
-  const auto errorCode = toReturnCode(526789);
-
   auto ffmpegLibraries = openLibraries();
   auto demuxer         = openTestFileInDemuxer(ffmpegLibraries);
   auto decoder         = Decoder(ffmpegLibraries);
