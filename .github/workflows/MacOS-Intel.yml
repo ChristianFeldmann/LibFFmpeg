@@ -26,8 +26,7 @@ jobs:
 
     - name: Unit tests
       run: |
-        ls -R
-        cp ${{steps.strings.outputs.build-output-dir}}/test/dummyLib/dummyLib.dylib ${{steps.strings.outputs.build-output-dir}}/test/unit/
+        cp ${{steps.strings.outputs.build-output-dir}}/test/dummyLib/libdummyLib.dylib ${{steps.strings.outputs.build-output-dir}}/test/unit/
         cd ${{steps.strings.outputs.build-output-dir}}/test/unit/
         ./unitTest
 
