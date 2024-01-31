@@ -30,9 +30,6 @@ jobs:
         cd ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
         ./unitTest
 
-    - name: List all files
-      run: ls -R
-
     - uses: actions/upload-artifact@master
       with:
         name: ffmpegTest.exe
