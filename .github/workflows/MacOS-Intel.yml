@@ -1,4 +1,4 @@
-name: Windows
+name: MacOS Intel
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: macos-latest
     
     steps:
     - uses: actions/checkout@v4
@@ -26,7 +26,7 @@ jobs:
 
     - name: Unit tests
       run: |
-        copy ${{steps.strings.outputs.build-output-dir}}/test/dummyLib/Release/dummyLib.dll ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
+        copy ${{steps.strings.outputs.build-output-dir}}/test/dummyLib/Release/dummyLib.dylib ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
         cd ${{steps.strings.outputs.build-output-dir}}/test/unit/Release/
         ./unitTest
 
@@ -35,26 +35,29 @@ jobs:
 
     - uses: actions/upload-artifact@master
       with:
-        name: ffmpegTest.exe
-        path: ${{steps.strings.outputs.build-output-dir}}/test/ffmpegTest/Release/ffmpegTest.exe
+        name: ffmpegTest
+        path: ${{steps.strings.outputs.build-output-dir}}/test/ffmpegTest/ffmpegTest
 
   testffmpeg:
     needs: build
     strategy:
       matrix:
-        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
-    runs-on: windows-2022
+        ffmpegVersions: [6.1.1]
+    runs-on: macos-latest
     steps:
     - uses: actions/download-artifact@master
       with:
-        name: ffmpegTest.exe
+        name: ffmpegTest
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/windows/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/macos-intel/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
-        7z x ffmpeg.zip
+        ls
+        unzip ffmpeg.zip
         rm ffmpeg.zip
 
     - name: runffmpegTest
-      run: ./ffmpegTest
+      run: |
+        ls
+        ./ffmpegTest
