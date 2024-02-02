@@ -24,12 +24,11 @@ public:
   AVFrameWrapper(const AVFrameWrapper &) = delete;
   AVFrameWrapper(AVFrameWrapper &&frame);
   AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
-  ~AVFrameWrapper();
 
   AVFrameWrapper &operator=(AVFrameWrapper &&);
   AVFrameWrapper &operator=(const AVFrameWrapper &) = delete;
 
-  ffmpeg::internal::AVFrame *getFrame() const { return this->frame; }
+  ffmpeg::internal::AVFrame *getFrame() const { return this->frame.get(); }
 
   ByteVector                         getData(int component) const;
   int                                getLineSize(int component) const;
@@ -44,8 +43,20 @@ public:
   explicit operator bool() const { return this->frame != nullptr; }
 
 private:
-  ffmpeg::internal::AVFrame        *frame{};
-  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
+  class AVFrameDeleter
+  {
+  public:
+    AVFrameDeleter() = default;
+    AVFrameDeleter(const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)
+        : ffmpegLibraries(ffmpegLibraries){};
+    void operator()(ffmpeg::internal::AVFrame *frame) const noexcept;
+
+  private:
+    std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
+  };
+
+  std::unique_ptr<ffmpeg::internal::AVFrame, AVFrameDeleter> frame{nullptr, AVFrameDeleter()};
+  std::shared_ptr<IFFmpegLibraries>                          ffmpegLibraries{};
 };
 
 } // namespace ffmpeg::avutil
