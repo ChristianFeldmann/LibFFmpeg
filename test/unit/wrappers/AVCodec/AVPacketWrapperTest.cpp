@@ -37,26 +37,48 @@ constexpr auto         TEST_DURATION     = 6789;
 constexpr auto         TEST_FLAGS        = 0b101;
 std::array<uint8_t, 3> TEST_DATA         = {88, 99, 120};
 
-template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersions &version)
+void checkPacketForExpectedDefaultValues(const AVPacketWrapper &packet)
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_EQ(packet.getStreamIndex(), TEST_STREAM_INDEX);
+  EXPECT_EQ(packet.getPTS(), TEST_PTS);
+  EXPECT_EQ(packet.getDTS(), TEST_DTS);
+  EXPECT_EQ(packet.getDuration(), TEST_DURATION);
+  EXPECT_TRUE(packet.getFlags().keyframe);
+  EXPECT_FALSE(packet.getFlags().corrupt);
+  EXPECT_TRUE(packet.getFlags().discard);
+};
 
-  const auto majorVersion = version.avcodec.major;
-
-  auto checkForExpectedPacketDefaultValues = [&](const AVPacketWrapper &packet)
+template <typename AVPacketType>
+class FFmpegLibrariesMockWithPacketAllocation : public FFmpegLibrariesMock
+{
+public:
+  FFmpegLibrariesMockWithPacketAllocation() : FFmpegLibrariesMock()
   {
-    EXPECT_EQ(packet.getStreamIndex(), TEST_STREAM_INDEX);
-    EXPECT_EQ(packet.getPTS(), TEST_PTS);
-    EXPECT_EQ(packet.getDTS(), TEST_DTS);
-    EXPECT_EQ(packet.getDuration(), TEST_DURATION);
-    EXPECT_TRUE(packet.getFlags().keyframe);
-    EXPECT_FALSE(packet.getFlags().corrupt);
-    EXPECT_TRUE(packet.getFlags().discard);
+    this->avcodec.av_packet_alloc = [this]() { return this->allocatePacket(); };
+    this->avcodec.av_packet_free  = [this](AVPacket **packet) { this->freePacket(packet); };
+    this->avcodec.av_new_packet   = [this](AVPacket *packet, int dataSize) {
+      return this->newPacket(packet, dataSize);
+    };
+    if constexpr (std::is_same_v<AVPacketType, AVPacket_56>)
+    {
+      this->avcodec.av_init_packet = [this](AVPacket *packet) { this->initPacket(packet); };
+      this->avcodec.av_free_packet = [this](AVPacket *packet) { this->freePacket(packet); };
+    }
   };
 
-  int packetAllocationCounter              = 0;
-  ffmpegLibraries->avcodec.av_packet_alloc = [&]()
+  ~FFmpegLibrariesMockWithPacketAllocation()
+  {
+    EXPECT_EQ(this->packetCounters.packetAllocationCounter, this->packetCounters.packetFreeCounter)
+        << "Not all allocated packets were freed again";
+    // While it is not technically required for "init" to be called if a packet is allocated in
+    // AVCodec major version 56, the AVPacketWrapper will always do so.
+    EXPECT_EQ(this->packetCounters.packetInitCounter, this->packetCounters.freePacketCounter)
+        << "Not all allocated packets were freed again";
+    EXPECT_EQ(this->packetCounters.packetNewCounter, this->packetCounters.dataDeletionCounter)
+        << "Not all allocated packet data was freed again";
+  }
+
+  AVPacket *allocatePacket()
   {
     auto packet          = new AVPacketType;
     packet->stream_index = TEST_STREAM_INDEX;
@@ -66,126 +88,116 @@ template <typename AVPacketType> void runAVPacketWrapperTest(const LibraryVersio
     packet->flags        = TEST_FLAGS;
     packet->size         = 0;
     packet->data         = nullptr;
-    packetAllocationCounter++;
+    ++this->packetCounters.packetAllocationCounter;
     return reinterpret_cast<AVPacket *>(packet);
-  };
+  }
 
-  int packetFreeCounter   = 0;
-  int dataDeletionCounter = 0;
-  ffmpegLibraries->avcodec.av_packet_free =
-      [&packetFreeCounter, &dataDeletionCounter](AVPacket **packet)
+  void freePacket(AVPacket **packet)
   {
     auto actualPacket = reinterpret_cast<AVPacketType *>(*packet);
     if (actualPacket->data != nullptr && actualPacket->size > 0)
     {
       delete[] actualPacket->data;
-      dataDeletionCounter++;
+      ++this->packetCounters.dataDeletionCounter;
     }
     delete actualPacket;
     packet = nullptr;
-    packetFreeCounter++;
-  };
-
-  int packetInitCounter = 0;
-  int freePacketCounter = 0;
-  if (majorVersion == 56)
-  {
-    ffmpegLibraries->avcodec.av_init_packet = [&packetInitCounter](AVPacket *packet)
-    {
-      auto castPacket          = reinterpret_cast<AVPacket_56 *>(packet);
-      castPacket->stream_index = TEST_STREAM_INDEX;
-      castPacket->pts          = TEST_PTS;
-      castPacket->dts          = TEST_DTS;
-      castPacket->duration     = TEST_DURATION;
-      castPacket->flags        = TEST_FLAGS;
-      castPacket->size         = 0;
-      castPacket->data         = nullptr;
-      ++packetInitCounter;
-    };
-
-    ffmpegLibraries->avcodec.av_free_packet =
-        [&freePacketCounter, &dataDeletionCounter](AVPacket *packet)
-    {
-      auto actualPacket = reinterpret_cast<AVPacketType *>(packet);
-      if (actualPacket->data != nullptr && actualPacket->size > 0)
-      {
-        delete[] actualPacket->data;
-        ++dataDeletionCounter;
-      }
-      freePacketCounter++;
-    };
+    ++this->packetCounters.packetFreeCounter;
   }
 
-  int packetNewCounter                   = 0;
-  ffmpegLibraries->avcodec.av_new_packet = [](AVPacket *packet, int dataSize)
+  int newPacket(AVPacket *packet, int dataSize)
   {
     auto actualPacket  = reinterpret_cast<AVPacketType *>(packet);
     actualPacket->data = new uint8_t[dataSize];
     actualPacket->size = dataSize;
+    ++this->packetCounters.packetNewCounter;
     return 0;
   };
+
+  // AVCodec major version 56 only
+  void initPacket(AVPacket *packet)
+  {
+    auto castPacket          = reinterpret_cast<AVPacket_56 *>(packet);
+    castPacket->stream_index = TEST_STREAM_INDEX;
+    castPacket->pts          = TEST_PTS;
+    castPacket->dts          = TEST_DTS;
+    castPacket->duration     = TEST_DURATION;
+    castPacket->flags        = TEST_FLAGS;
+    castPacket->size         = 0;
+    castPacket->data         = nullptr;
+    ++this->packetCounters.packetInitCounter;
+  }
+
+  // AVCodec major version 56 only
+  void freePacket(AVPacket *packet)
+  {
+    auto actualPacket = reinterpret_cast<AVPacketType *>(packet);
+    if (actualPacket->data != nullptr && actualPacket->size > 0)
+    {
+      delete[] actualPacket->data;
+      ++this->packetCounters.dataDeletionCounter;
+    }
+    ++this->packetCounters.freePacketCounter;
+  }
+
+  struct PacketCounters
+  {
+    int packetAllocationCounter{0};
+    int dataDeletionCounter{0};
+    int packetFreeCounter{0};
+    int packetNewCounter{0};
+    // These are AVCodec major version 56 only
+    int packetInitCounter{0};
+    int freePacketCounter{0};
+  };
+  PacketCounters packetCounters{};
+};
+
+template <typename AVPacketType> void runEmptyConstructionTest(const LibraryVersions &version)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType>>();
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   {
     AVPacketWrapper packet(ffmpegLibraries);
 
-    checkForExpectedPacketDefaultValues(packet);
+    checkPacketForExpectedDefaultValues(packet);
     EXPECT_EQ(packet.getDataSize(), 0);
 
-    if (majorVersion > 56)
-      EXPECT_EQ(packetAllocationCounter, 1);
+    if (version.avcodec.major > 56)
+      EXPECT_EQ(ffmpegLibraries->packetCounters.packetAllocationCounter, 1);
     else
-      EXPECT_EQ(packetInitCounter, 1);
-    EXPECT_EQ(packetFreeCounter, 0);
-    EXPECT_EQ(ffmpegLibraries->functionCounters.avFreePacket, 0);
+      EXPECT_EQ(ffmpegLibraries->packetCounters.packetInitCounter, 1);
+    EXPECT_EQ(ffmpegLibraries->packetCounters.packetFreeCounter, 0);
+    EXPECT_EQ(ffmpegLibraries->packetCounters.freePacketCounter, 0);
   }
 
-  if (majorVersion > 56)
-  {
-    EXPECT_EQ(packetAllocationCounter, 1);
-    EXPECT_EQ(packetFreeCounter, 1);
-  }
-  else
-  {
-    EXPECT_EQ(packetInitCounter, 1);
-    EXPECT_EQ(freePacketCounter, 1);
-  }
-  EXPECT_EQ(dataDeletionCounter, 0);
+  // No data should have been allocated with this constructor
+  EXPECT_EQ(ffmpegLibraries->packetCounters.dataDeletionCounter, 0);
+}
 
-  // Test the constructor from a byte array
+template <typename AVPacketType> void runConstructorFromDataTest(const LibraryVersions &version)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType>>();
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+
   {
     const auto      data = dataArrayToByteVector(TEST_DATA);
     AVPacketWrapper packet(data, ffmpegLibraries);
 
-    checkForExpectedPacketDefaultValues(packet);
+    checkPacketForExpectedDefaultValues(packet);
     EXPECT_EQ(packet.getDataSize(), data.size());
     EXPECT_EQ(packet.getData(), data);
 
-    if (majorVersion > 56)
-    {
-      EXPECT_EQ(packetAllocationCounter, 2);
-      EXPECT_EQ(packetFreeCounter, 1);
-    }
+    if (version.avcodec.major > 56)
+      EXPECT_EQ(ffmpegLibraries->packetCounters.packetAllocationCounter, 1);
     else
-    {
-      EXPECT_EQ(packetInitCounter, 2);
-      EXPECT_EQ(freePacketCounter, 1);
-    }
+      EXPECT_EQ(ffmpegLibraries->packetCounters.packetInitCounter, 1);
+    EXPECT_EQ(ffmpegLibraries->packetCounters.packetFreeCounter, 0);
+    EXPECT_EQ(ffmpegLibraries->packetCounters.freePacketCounter, 0);
   }
 
-  if (majorVersion > 56)
-  {
-    EXPECT_EQ(packetAllocationCounter, 2);
-    EXPECT_EQ(packetFreeCounter, 2);
-    EXPECT_EQ(packetInitCounter, 0);
-  }
-  else
-  {
-    EXPECT_EQ(packetAllocationCounter, 0);
-    EXPECT_EQ(packetFreeCounter, 0);
-    EXPECT_EQ(packetInitCounter, 2);
-    EXPECT_EQ(freePacketCounter, 2);
-  }
-  EXPECT_EQ(dataDeletionCounter, 1);
+  EXPECT_EQ(ffmpegLibraries->packetCounters.dataDeletionCounter, 1);
 }
 
 } // namespace
@@ -212,19 +224,34 @@ TEST_F(AVPacketWrapperTest, IfPacketAllocationFailsShouldThrow)
   EXPECT_THROW(AVPacketWrapper packet(data, ffmpegLibraries), std::runtime_error);
 }
 
-TEST_P(AVPacketWrapperTest, TestAVInputFormatWrapperWithCodecParametersSet)
+TEST_P(AVPacketWrapperTest, TestDefaultConstructor)
 {
   const auto version = GetParam();
   if (version.avformat.major == 56)
-    runAVPacketWrapperTest<AVPacket_56>(version);
+    runEmptyConstructionTest<AVPacket_56>(version);
   else if (version.avformat.major == 57)
-    runAVPacketWrapperTest<AVPacket_57>(version);
+    runEmptyConstructionTest<AVPacket_57>(version);
   else if (version.avformat.major == 58)
-    runAVPacketWrapperTest<AVPacket_58>(version);
+    runEmptyConstructionTest<AVPacket_58>(version);
   else if (version.avformat.major == 59)
-    runAVPacketWrapperTest<AVPacket_59>(version);
+    runEmptyConstructionTest<AVPacket_59>(version);
   else if (version.avformat.major == 60)
-    runAVPacketWrapperTest<AVPacket_60>(version);
+    runEmptyConstructionTest<AVPacket_60>(version);
+}
+
+TEST_P(AVPacketWrapperTest, TestConstructorFromData)
+{
+  const auto version = GetParam();
+  if (version.avformat.major == 56)
+    runConstructorFromDataTest<AVPacket_56>(version);
+  else if (version.avformat.major == 57)
+    runConstructorFromDataTest<AVPacket_57>(version);
+  else if (version.avformat.major == 58)
+    runConstructorFromDataTest<AVPacket_58>(version);
+  else if (version.avformat.major == 59)
+    runConstructorFromDataTest<AVPacket_59>(version);
+  else if (version.avformat.major == 60)
+    runConstructorFromDataTest<AVPacket_60>(version);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
