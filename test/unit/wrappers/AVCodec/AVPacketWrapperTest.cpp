@@ -200,6 +200,26 @@ template <typename AVPacketType> void runConstructorFromDataTest(const LibraryVe
   EXPECT_EQ(ffmpegLibraries->packetCounters.dataDeletionCounter, 1);
 }
 
+template <typename AVPacketType> void runTimestampTest(const LibraryVersions &version)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType>>();
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+
+  AVPacketWrapper packet(ffmpegLibraries);
+  checkPacketForExpectedDefaultValues(packet);
+
+  constexpr int64_t PTS_TEST       = 890;
+  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
+  constexpr int64_t DTS_TEST       = 8200;
+
+  packet.setTimestamps(DTS_TEST, PTS_TEST);
+  EXPECT_EQ(packet.getPTS(), PTS_TEST);
+  EXPECT_EQ(packet.getDTS(), DTS_TEST);
+
+  packet.setTimestamps(DTS_TEST, AV_NOPTS_VALUE);
+  EXPECT_FALSE(packet.getPTS());
+}
+
 } // namespace
 
 class AVPacketWrapperTest : public testing::TestWithParam<LibraryVersions>
@@ -252,6 +272,21 @@ TEST_P(AVPacketWrapperTest, TestConstructorFromData)
     runConstructorFromDataTest<AVPacket_59>(version);
   else if (version.avformat.major == 60)
     runConstructorFromDataTest<AVPacket_60>(version);
+}
+
+TEST_P(AVPacketWrapperTest, TestSettingOfTimestamp)
+{
+  const auto version = GetParam();
+  if (version.avformat.major == 56)
+    runTimestampTest<AVPacket_56>(version);
+  else if (version.avformat.major == 57)
+    runTimestampTest<AVPacket_57>(version);
+  else if (version.avformat.major == 58)
+    runTimestampTest<AVPacket_58>(version);
+  else if (version.avformat.major == 59)
+    runTimestampTest<AVPacket_59>(version);
+  else if (version.avformat.major == 60)
+    runTimestampTest<AVPacket_60>(version);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
