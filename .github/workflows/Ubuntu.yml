@@ -1,4 +1,4 @@
-name: Build and test
+name: Ubuntu
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
@@ -40,8 +40,7 @@ jobs:
     strategy:
       matrix:
         ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
-        os: [ubuntu-22.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@master
       with:
@@ -49,9 +48,9 @@ jobs:
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.os }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/ubuntu-22.04/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
-        ls -l
+        ls
         unzip ffmpeg.zip
         rm ffmpeg.zip
 
