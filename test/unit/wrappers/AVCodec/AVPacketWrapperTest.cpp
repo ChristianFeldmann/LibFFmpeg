@@ -11,6 +11,8 @@
 
 #include <libHandling/FFmpegLibrariesMoc.h>
 
+#include "RunTestForAllAVCodecVersions.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -246,47 +248,17 @@ TEST_F(AVPacketWrapperTest, IfPacketAllocationFailsShouldThrow)
 
 TEST_P(AVPacketWrapperTest, TestDefaultConstructor)
 {
-  const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runEmptyConstructionTest<AVPacket_56>(version);
-  else if (version.avformat.major == 57)
-    runEmptyConstructionTest<AVPacket_57>(version);
-  else if (version.avformat.major == 58)
-    runEmptyConstructionTest<AVPacket_58>(version);
-  else if (version.avformat.major == 59)
-    runEmptyConstructionTest<AVPacket_59>(version);
-  else if (version.avformat.major == 60)
-    runEmptyConstructionTest<AVPacket_60>(version);
+  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runEmptyConstructionTest, AVPacket);
 }
 
 TEST_P(AVPacketWrapperTest, TestConstructorFromData)
 {
-  const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runConstructorFromDataTest<AVPacket_56>(version);
-  else if (version.avformat.major == 57)
-    runConstructorFromDataTest<AVPacket_57>(version);
-  else if (version.avformat.major == 58)
-    runConstructorFromDataTest<AVPacket_58>(version);
-  else if (version.avformat.major == 59)
-    runConstructorFromDataTest<AVPacket_59>(version);
-  else if (version.avformat.major == 60)
-    runConstructorFromDataTest<AVPacket_60>(version);
+  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runConstructorFromDataTest, AVPacket);
 }
 
 TEST_P(AVPacketWrapperTest, TestSettingOfTimestamp)
 {
-  const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runTimestampTest<AVPacket_56>(version);
-  else if (version.avformat.major == 57)
-    runTimestampTest<AVPacket_57>(version);
-  else if (version.avformat.major == 58)
-    runTimestampTest<AVPacket_58>(version);
-  else if (version.avformat.major == 59)
-    runTimestampTest<AVPacket_59>(version);
-  else if (version.avformat.major == 60)
-    runTimestampTest<AVPacket_60>(version);
+  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runTimestampTest, AVPacket);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,

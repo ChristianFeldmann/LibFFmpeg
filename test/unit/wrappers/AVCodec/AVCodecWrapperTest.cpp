@@ -11,6 +11,8 @@
 
 #include <libHandling/FFmpegLibrariesMoc.h>
 
+#include "RunTestForAllAVCodecVersions.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -100,17 +102,7 @@ TEST_F(AVCodecWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShouldThrow)
 
 TEST_P(AVCodecWrapperTest, TestAVCodecWrapper)
 {
-  const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runAVCodecWrapperTest<AVCodec_56>(version);
-  else if (version.avformat.major == 57)
-    runAVCodecWrapperTest<AVCodec_57>(version);
-  else if (version.avformat.major == 58)
-    runAVCodecWrapperTest<AVCodec_58>(version);
-  else if (version.avformat.major == 59)
-    runAVCodecWrapperTest<AVCodec_59>(version);
-  else if (version.avformat.major == 60)
-    runAVCodecWrapperTest<AVCodec_60>(version);
+  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runAVCodecWrapperTest, AVCodec);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
