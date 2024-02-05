@@ -8,6 +8,7 @@
 #include <AVUtil/wrappers/AVFrameSideDataWrapperInternal.h>
 #include <AVUtil/wrappers/AVMotionVectorConversionInternal.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
+#include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
@@ -58,21 +59,56 @@ template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummy
   return array;
 }
 
-template <typename AVFrameSideDataType, typename MotionVectorType>
-void runAVFrameSideDataWrapperTest(const LibraryVersions &version)
+template <typename T> struct TypeWrapper
 {
+  using type = T;
+};
+
+template <FFmpegVersion V> constexpr auto avFrameSideDataTypeFromVersionFunc()
+{
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return TypeWrapper<AVFrameSideData_54>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_3x)
+    return TypeWrapper<AVFrameSideData_55>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_4x)
+    return TypeWrapper<AVFrameSideData_56>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_5x)
+    return TypeWrapper<AVFrameSideData_57>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_6x)
+    return TypeWrapper<AVFrameSideData_58>{};
+}
+
+template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
+{
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return TypeWrapper<AVMotionVector_54>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_3x || V == FFmpegVersion::FFmpeg_4x ||
+                V == FFmpegVersion::FFmpeg_5x || V == FFmpegVersion::FFmpeg_6x)
+    return TypeWrapper<AVMotionVector_55_56_57_58>{};
+}
+
+template <FFmpegVersion V>
+using FrameSideDataType = typename decltype(avFrameSideDataTypeFromVersionFunc<V>())::type;
+
+template <FFmpegVersion V>
+using MotionVectorType = typename decltype(avMotionVectorTypeFromVersionFunc<V>())::type;
+
+template <FFmpegVersion V> void runAVFrameSideDataWrapperTest()
+{
+  const auto version = getLibraryVerions(V);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  auto dummyRawMotionData = createDummyMotionData<MotionVectorType>();
+  auto dummyRawMotionData = createDummyMotionData<MotionVectorType<V>>();
 
   const auto &info     = typeid(dummyRawMotionData);
-  const auto  typeSize = sizeof(MotionVectorType);
+  const auto  typeSize = sizeof(MotionVectorType<V>);
 
-  AVFrameSideDataType rawSideData{};
+  FrameSideDataType<V> rawSideData{};
   rawSideData.type = AV_FRAME_DATA_DOWNMIX_INFO;
   rawSideData.data = reinterpret_cast<uint8_t *>(dummyRawMotionData.data());
-  rawSideData.size = 5 * sizeof(MotionVectorType);
+  rawSideData.size = 5 * typeSize;
 
   AVFrameSideDataWrapper sideData(reinterpret_cast<AVFrameSideData *>(&rawSideData),
                                   ffmpegLibraries);
@@ -120,16 +156,7 @@ class AVFrameSideDataWrapperTest : public testing::TestWithParam<LibraryVersions
 TEST_P(AVFrameSideDataWrapperTest, TestGettingOfMotionVectors)
 {
   const auto version = GetParam();
-  if (version.avutil.major == 54)
-    runAVFrameSideDataWrapperTest<AVFrameSideData_54, AVMotionVector_54>(version);
-  else if (version.avutil.major == 55)
-    runAVFrameSideDataWrapperTest<AVFrameSideData_55, AVMotionVector_55_56_57_58>(version);
-  else if (version.avutil.major == 56)
-    runAVFrameSideDataWrapperTest<AVFrameSideData_56, AVMotionVector_55_56_57_58>(version);
-  else if (version.avutil.major == 57)
-    runAVFrameSideDataWrapperTest<AVFrameSideData_57, AVMotionVector_55_56_57_58>(version);
-  else if (version.avutil.major == 58)
-    runAVFrameSideDataWrapperTest<AVFrameSideData_58, AVMotionVector_55_56_57_58>(version);
+  RUN_TEST_FOR_VERSION(version, runAVFrameSideDataWrapperTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
