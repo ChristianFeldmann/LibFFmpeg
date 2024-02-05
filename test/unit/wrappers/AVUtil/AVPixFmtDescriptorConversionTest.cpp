@@ -5,13 +5,13 @@
  */
 
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
-#include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 #include <common/InternalTypes.h>
+#include <libHandling/FFmpegLibrariesMoc.h>
+#include <wrappers/AVUtil/AVPixFmtDescriptorCreation.h>
+#include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
-#include <libHandling/FFmpegLibrariesMoc.h>
-
-#include <wrappers/AVUtil/AVPixFmtDescriptorCreation.h>
+#include "VersionToAVUtilTypes.h"
 
 #include <gtest/gtest.h>
 
@@ -23,19 +23,13 @@ namespace
 
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVPixFmtDescriptor;
-using internal::avutil::AVComponentDescriptor_54;
-using internal::avutil::AVComponentDescriptor_55;
-using internal::avutil::AVComponentDescriptor_57;
-using internal::avutil::AVPixFmtDescriptor_54;
-using internal::avutil::AVPixFmtDescriptor_55;
-using internal::avutil::AVPixFmtDescriptor_56;
-using internal::avutil::AVPixFmtDescriptor_57;
-using internal::avutil::AVPixFmtDescriptor_58;
+
 using ::testing::Return;
 
-template <typename AVPixFmtDescriptorType>
-void runAVPixFmtDescriptorConversionTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVPixFmtDescriptorConversionTest()
 {
+  const auto version = getLibraryVerions(V);
+
   const auto TEST_PIXEL_FORMAT = static_cast<AVPixelFormat>(123);
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
@@ -53,7 +47,7 @@ void runAVPixFmtDescriptorConversionTest(const LibraryVersions &version)
   TEST_DESCRIPTOR.componentDescriptors.push_back({2, 4, 3, 4, 6});
 
   auto rawPixelFormatDescriptor =
-      createRawFormatDescriptor<AVPixFmtDescriptorType>(TEST_DESCRIPTOR);
+      createRawFormatDescriptor<AVPixFmtDescriptorType<V>>(TEST_DESCRIPTOR);
 
   ffmpegLibraries->avutil.av_pix_fmt_desc_get = [&](AVPixelFormat pix_fmt) {
     EXPECT_EQ(pix_fmt, TEST_PIXEL_FORMAT);
@@ -124,16 +118,7 @@ TEST(AVPixFmtDescriptorConversionTest, TestDefaultConstructor)
 TEST_P(AVPixFmtDescriptorConversionTest, TestAVPixFmtDescriptorConversion)
 {
   const auto version = GetParam();
-  if (version.avutil.major == 54)
-    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_54>(version);
-  else if (version.avutil.major == 55)
-    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_55>(version);
-  else if (version.avutil.major == 56)
-    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_56>(version);
-  else if (version.avutil.major == 57)
-    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_57>(version);
-  else if (version.avutil.major == 58)
-    runAVPixFmtDescriptorConversionTest<AVPixFmtDescriptor_58>(version);
+  RUN_TEST_FOR_VERSION(version, runAVPixFmtDescriptorConversionTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,

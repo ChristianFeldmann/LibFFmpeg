@@ -10,6 +10,7 @@
 
 #include <AVUtil/wrappers/AVFrameSideDataWrapperInternal.h>
 #include <AVUtil/wrappers/AVMotionVectorConversionInternal.h>
+#include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 
 namespace ffmpeg::avutil
 {
@@ -21,6 +22,11 @@ using internal::avutil::AVFrameSideData_57;
 using internal::avutil::AVFrameSideData_58;
 using internal::avutil::AVMotionVector_54;
 using internal::avutil::AVMotionVector_55_56_57_58;
+using internal::avutil::AVPixFmtDescriptor_54;
+using internal::avutil::AVPixFmtDescriptor_55;
+using internal::avutil::AVPixFmtDescriptor_56;
+using internal::avutil::AVPixFmtDescriptor_57;
+using internal::avutil::AVPixFmtDescriptor_58;
 
 template <FFmpegVersion V> constexpr auto avFrameSideDataTypeFromVersionFunc()
 {
@@ -36,6 +42,9 @@ template <FFmpegVersion V> constexpr auto avFrameSideDataTypeFromVersionFunc()
     return TypeWrapper<AVFrameSideData_58>{};
 }
 
+template <FFmpegVersion V>
+using FrameSideDataType = typename decltype(avFrameSideDataTypeFromVersionFunc<V>())::type;
+
 template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
 {
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
@@ -46,9 +55,23 @@ template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
 }
 
 template <FFmpegVersion V>
-using FrameSideDataType = typename decltype(avFrameSideDataTypeFromVersionFunc<V>())::type;
+using MotionVectorType = typename decltype(avMotionVectorTypeFromVersionFunc<V>())::type;
+
+template <FFmpegVersion V> constexpr auto avPixFmtDescriptorFromVersionFunc()
+{
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return TypeWrapper<AVPixFmtDescriptor_54>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_3x)
+    return TypeWrapper<AVPixFmtDescriptor_55>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_4x)
+    return TypeWrapper<AVPixFmtDescriptor_56>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_5x)
+    return TypeWrapper<AVPixFmtDescriptor_57>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_6x)
+    return TypeWrapper<AVPixFmtDescriptor_58>{};
+}
 
 template <FFmpegVersion V>
-using MotionVectorType = typename decltype(avMotionVectorTypeFromVersionFunc<V>())::type;
+using AVPixFmtDescriptorType = typename decltype(avPixFmtDescriptorFromVersionFunc<V>())::type;
 
 } // namespace ffmpeg::avutil
