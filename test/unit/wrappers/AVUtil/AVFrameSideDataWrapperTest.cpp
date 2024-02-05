@@ -5,11 +5,11 @@
  */
 
 #include <AVUtil/wrappers/AVFrameSideDataWrapper.h>
-#include <AVUtil/wrappers/AVFrameSideDataWrapperInternal.h>
-#include <AVUtil/wrappers/AVMotionVectorConversionInternal.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
+
+#include "VersionToAVUtilTypes.h"
 
 #include <gtest/gtest.h>
 
@@ -24,13 +24,7 @@ namespace
 using ffmpeg::internal::AV_FRAME_DATA_DOWNMIX_INFO;
 using ffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS;
 using ffmpeg::internal::AVFrameSideData;
-using ffmpeg::internal::avutil::AVMotionVector_54;
-using ffmpeg::internal::avutil::AVMotionVector_55_56_57_58;
-using internal::avutil::AVFrameSideData_54;
-using internal::avutil::AVFrameSideData_55;
-using internal::avutil::AVFrameSideData_56;
-using internal::avutil::AVFrameSideData_57;
-using internal::avutil::AVFrameSideData_58;
+
 using ::testing::Return;
 
 template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummyMotionData()
@@ -58,40 +52,6 @@ template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummy
   }
   return array;
 }
-
-template <typename T> struct TypeWrapper
-{
-  using type = T;
-};
-
-template <FFmpegVersion V> constexpr auto avFrameSideDataTypeFromVersionFunc()
-{
-  if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVFrameSideData_54>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<AVFrameSideData_55>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<AVFrameSideData_56>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<AVFrameSideData_57>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVFrameSideData_58>{};
-}
-
-template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
-{
-  if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVMotionVector_54>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_3x || V == FFmpegVersion::FFmpeg_4x ||
-                V == FFmpegVersion::FFmpeg_5x || V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVMotionVector_55_56_57_58>{};
-}
-
-template <FFmpegVersion V>
-using FrameSideDataType = typename decltype(avFrameSideDataTypeFromVersionFunc<V>())::type;
-
-template <FFmpegVersion V>
-using MotionVectorType = typename decltype(avMotionVectorTypeFromVersionFunc<V>())::type;
 
 template <FFmpegVersion V> void runAVFrameSideDataWrapperTest()
 {

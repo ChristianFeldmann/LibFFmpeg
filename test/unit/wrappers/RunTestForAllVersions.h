@@ -25,6 +25,11 @@ namespace ffmpeg
       testFunctionName<ffmpeg::FFmpegVersion::FFmpeg_6x>();                                        \
   }
 
+template <typename T> struct TypeWrapper
+{
+  using type = T;
+};
+
 constexpr LibraryVersions getLibraryVerions(const FFmpegVersion ffmpegVersion)
 {
   // Starting with C++ 20 we could also use std::find_if in the SupportedFFmpegVersions list
