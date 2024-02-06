@@ -5,12 +5,13 @@
  */
 
 #include <AVUtil/wrappers/AVFrameWrapper.h>
-#include <AVUtil/wrappers/AVFrameWrapperInternal.h>
-#include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 #include <common/InternalTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
+
+#include "VersionToAVUtilTypes.h"
 
 #include <gtest/gtest.h>
 
@@ -22,11 +23,7 @@ namespace
 
 using ffmpeg::internal::AVFrame;
 using ffmpeg::internal::AVPixelFormat;
-using internal::avutil::AVFrame_54;
-using internal::avutil::AVFrame_55;
-using internal::avutil::AVFrame_56;
-using internal::avutil::AVFrame_57;
-using internal::avutil::AVFrame_58;
+
 using internal::avutil::AVPixFmtDescriptor_54;
 using internal::avutil::AVPixFmtDescriptor_55;
 using internal::avutil::AVPixFmtDescriptor_56;
@@ -34,8 +31,10 @@ using internal::avutil::AVPixFmtDescriptor_57;
 using internal::avutil::AVPixFmtDescriptor_58;
 using ::testing::Return;
 
-template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVFrameWrapperTest()
 {
+  const auto version = getLibraryVerions(V);
+
   constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
@@ -44,7 +43,7 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
 
   int frameAllocCounter                  = 0;
   ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]() {
-    auto frame = new AVFrameType;
+    auto frame = new AVFrameType<V>;
     frameAllocCounter++;
     return reinterpret_cast<AVFrame *>(frame);
   };
@@ -53,7 +52,7 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
   ffmpegLibraries->avutil.av_frame_free = [&frameFreeCounter](AVFrame **frame) {
     if (frame != nullptr && *frame != nullptr)
     {
-      auto castFrame = reinterpret_cast<AVFrameType *>(*frame);
+      auto castFrame = reinterpret_cast<AVFrameType<V> *>(*frame);
       delete (castFrame);
       *frame = nullptr;
       frameFreeCounter++;
@@ -66,7 +65,7 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
     EXPECT_EQ(frameFreeCounter, 0);
 
     {
-      auto castFrame                 = reinterpret_cast<AVFrameType *>(frame.getFrame());
+      auto castFrame                 = reinterpret_cast<AVFrameType<V> *>(frame.getFrame());
       castFrame->width               = 320;
       castFrame->height              = 160;
       castFrame->linesize[0]         = 123;
@@ -98,10 +97,11 @@ template <typename AVFrameType> void runAVFrameWrapperTest(const LibraryVersions
   EXPECT_EQ(frameFreeCounter, 1);
 }
 
-template <typename AVFrameType, typename AVPixFmtDescriptorType>
-void runAVFrameWrapperTestDataAccess(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVFrameWrapperTestDataAccess()
 {
   constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
+
+  const auto version = getLibraryVerions(V);
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
@@ -119,31 +119,13 @@ class AVFrameWrapperTest : public testing::TestWithParam<LibraryVersions>
 TEST_P(AVFrameWrapperTest, TestAVFrameWrapper)
 {
   const auto version = GetParam();
-  if (version.avutil.major == 54)
-    runAVFrameWrapperTest<AVFrame_54>(version);
-  else if (version.avutil.major == 55)
-    runAVFrameWrapperTest<AVFrame_55>(version);
-  else if (version.avutil.major == 56)
-    runAVFrameWrapperTest<AVFrame_56>(version);
-  else if (version.avutil.major == 57)
-    runAVFrameWrapperTest<AVFrame_57>(version);
-  else if (version.avutil.major == 58)
-    runAVFrameWrapperTest<AVFrame_58>(version);
+  RUN_TEST_FOR_VERSION(version, runAVFrameWrapperTest);
 }
 
 TEST_P(AVFrameWrapperTest, TestAVFrameWrapperDataAccess)
 {
   const auto version = GetParam();
-  if (version.avutil.major == 54)
-    runAVFrameWrapperTestDataAccess<AVFrame_54, AVPixFmtDescriptor_54>(version);
-  else if (version.avutil.major == 55)
-    runAVFrameWrapperTestDataAccess<AVFrame_55, AVPixFmtDescriptor_55>(version);
-  else if (version.avutil.major == 56)
-    runAVFrameWrapperTestDataAccess<AVFrame_56, AVPixFmtDescriptor_56>(version);
-  else if (version.avutil.major == 57)
-    runAVFrameWrapperTestDataAccess<AVFrame_57, AVPixFmtDescriptor_57>(version);
-  else if (version.avutil.major == 58)
-    runAVFrameWrapperTestDataAccess<AVFrame_58, AVPixFmtDescriptor_58>(version);
+  RUN_TEST_FOR_VERSION(version, runAVFrameWrapperTestDataAccess);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
