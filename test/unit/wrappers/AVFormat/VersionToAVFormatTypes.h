@@ -7,32 +7,43 @@
 #pragma once
 
 #include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
+#include <AVFormat/wrappers/AVStreamWrapperInternal.h>
 #include <wrappers/RunTestForAllVersions.h>
 
 namespace ffmpeg::avformat
 {
 
-using internal::avformat::AVCodecParameters_56;
-using internal::avformat::AVCodecParameters_57;
-using internal::avformat::AVCodecParameters_58;
-using internal::avformat::AVCodecParameters_59;
-using internal::avformat::AVCodecParameters_60;
-
 template <FFmpegVersion V> constexpr auto avCodecParametersTypeFunction()
 {
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVCodecParameters_56>{};
+    return TypeWrapper<internal::avformat::AVCodecParameters_56>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<AVCodecParameters_57>{};
+    return TypeWrapper<internal::avformat::AVCodecParameters_57>{};
   if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<AVCodecParameters_58>{};
+    return TypeWrapper<internal::avformat::AVCodecParameters_58>{};
   if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<AVCodecParameters_59>{};
+    return TypeWrapper<internal::avformat::AVCodecParameters_59>{};
   if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVCodecParameters_60>{};
+    return TypeWrapper<internal::avformat::AVCodecParameters_60>{};
 }
 
 template <FFmpegVersion V>
 using AVCodecParametersType = typename decltype(avCodecParametersTypeFunction<V>())::type;
+
+template <FFmpegVersion V> constexpr auto avStreamTypeFunction()
+{
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return TypeWrapper<internal::avformat::AVStream_56>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_3x)
+    return TypeWrapper<internal::avformat::AVStream_57>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_4x)
+    return TypeWrapper<internal::avformat::AVStream_58>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_5x)
+    return TypeWrapper<internal::avformat::AVStream_59>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_6x)
+    return TypeWrapper<internal::avformat::AVStream_60>{};
+}
+
+template <FFmpegVersion V> using AVStreamType = typename decltype(avStreamTypeFunction<V>())::type;
 
 } // namespace ffmpeg::avformat

@@ -4,11 +4,11 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
-#include <AVCodec/wrappers/AVCodecContextWrapperInternal.h>
-#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
 #include <AVFormat/wrappers/AVStreamWrapper.h>
-#include <AVFormat/wrappers/AVStreamWrapperInternal.h>
 #include <common/InternalTypes.h>
+#include <wrappers/AVCodec/VersionToAVCodecTypes.h>
+#include <wrappers/AVFormat/VersionToAVFormatTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
@@ -32,34 +32,21 @@ using ffmpeg::internal::AVMEDIA_TYPE_AUDIO;
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVRational;
 using ffmpeg::internal::AVStream;
-using internal::avcodec::AVCodecContext_56;
-using internal::avcodec::AVCodecContext_57;
-using internal::avcodec::AVCodecContext_58;
-using internal::avcodec::AVCodecContext_59;
-using internal::avcodec::AVCodecContext_60;
-using internal::avformat::AVCodecParameters_57;
-using internal::avformat::AVCodecParameters_58;
-using internal::avformat::AVCodecParameters_59;
-using internal::avformat::AVCodecParameters_60;
-using internal::avformat::AVStream_56;
-using internal::avformat::AVStream_57;
-using internal::avformat::AVStream_58;
-using internal::avformat::AVStream_59;
-using internal::avformat::AVStream_60;
 using ::testing::Return;
 
 constexpr auto TEST_CODEC_ID = static_cast<AVCodecID>(234);
 
-template <typename AVStreamType>
-void runAVStreamWrapperTestDefaultValues(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVStreamWrapperTestDefaultValues()
 {
+  const auto version = getLibraryVerions(V);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID =
       ffmpeg::internal::AV_CODEC_ID_NONE;
 
-  AVStreamType    stream;
+  AVStreamType<V> stream;
   AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
 
   EXPECT_EQ(streamWrapper.getIndex(), 0);
@@ -77,24 +64,24 @@ void runAVStreamWrapperTestDefaultValues(const LibraryVersions &version)
   EXPECT_EQ(ffmpegLibraries->functionCounters.avcodecDescriptorGet, 1);
 }
 
-template <typename AVStreamType, typename AVCodecContextType>
-void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVStreamWrapperTestCodecContextSet()
 {
+  const auto version = getLibraryVerions(V);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID = TEST_CODEC_ID;
 
-  AVStreamType stream;
+  AVStreamType<V> stream;
   stream.index          = 22;
   stream.time_base      = AVRational({12, 44});
   stream.avg_frame_rate = AVRational({13, 4});
 
-  if constexpr (std::is_same_v<AVStreamType, AVStream_56> ||
-                std::is_same_v<AVStreamType, AVStream_57> ||
-                std::is_same_v<AVStreamType, AVStream_58>)
+  if constexpr (V == FFmpegVersion::FFmpeg_2x || V == FFmpegVersion::FFmpeg_3x ||
+                V == FFmpegVersion::FFmpeg_4x)
   {
-    AVCodecContextType codecContext;
+    avcodec::AVCodecContextType<V> codecContext;
 
     codecContext.codec_type = AVMEDIA_TYPE_AUDIO;
     codecContext.codec_id   = TEST_CODEC_ID;
@@ -138,20 +125,23 @@ void runAVStreamWrapperTestCodecContextSet(const LibraryVersions &version)
   }
 }
 
-template <typename AVStreamType, typename AVCodecParametersType>
-void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVStreamWrapperTestCodecParametersSet()
 {
+  const auto version = getLibraryVerions(V);
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return;
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID = TEST_CODEC_ID;
 
-  AVStreamType stream;
+  AVStreamType<V> stream;
   stream.index          = 22;
   stream.time_base      = AVRational({12, 44});
   stream.avg_frame_rate = AVRational({13, 4});
 
-  AVCodecParametersType codecParameter;
+  AVCodecParametersType<V> codecParameter;
 
   codecParameter.codec_type  = AVMEDIA_TYPE_AUDIO;
   codecParameter.codec_id    = TEST_CODEC_ID;
@@ -165,7 +155,10 @@ void runAVStreamWrapperTestCodecParametersSet(const LibraryVersions &version)
   codecParameter.extradata      = TEST_EXTRADATA.data();
   codecParameter.extradata_size = static_cast<int>(TEST_EXTRADATA.size());
 
-  stream.codecpar = reinterpret_cast<AVCodecParameters *>(&codecParameter);
+  if constexpr (V != FFmpegVersion::FFmpeg_2x)
+    // Without this constexpr check, some compilers do not see that this code is never used and
+    // AVStream_56 does not have codecpar.
+    stream.codecpar = reinterpret_cast<AVCodecParameters *>(&codecParameter);
 
   AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
 
@@ -192,7 +185,7 @@ class AVStreamWrapperTest : public testing::TestWithParam<LibraryVersions>
 
 TEST(AVStreamWrapperTest, shouldThrowIfLibraryNotSet)
 {
-  AVStream_56                       stream;
+  internal::avformat::AVStream_56   stream;
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
 
   EXPECT_THROW(AVStreamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries),
@@ -201,41 +194,22 @@ TEST(AVStreamWrapperTest, shouldThrowIfLibraryNotSet)
 
 TEST(AVStreamWrapperTest, shouldThrowIfAVStreamPointerIsNull)
 {
-  AVStream_56 *stream{};
-  auto         ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  AVStream *stream{};
+  auto      ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 
-  EXPECT_THROW(AVStreamWrapper(reinterpret_cast<AVStream *>(stream), ffmpegLibraries),
-               std::runtime_error);
+  EXPECT_THROW(AVStreamWrapper(stream, ffmpegLibraries), std::runtime_error);
 }
 
 TEST_P(AVStreamWrapperTest, TestAVInputFormatWrapperDefaultValues)
 {
   const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runAVStreamWrapperTestDefaultValues<AVStream_56>(version);
-  else if (version.avformat.major == 57)
-    runAVStreamWrapperTestDefaultValues<AVStream_57>(version);
-  else if (version.avformat.major == 58)
-    runAVStreamWrapperTestDefaultValues<AVStream_58>(version);
-  else if (version.avformat.major == 59)
-    runAVStreamWrapperTestDefaultValues<AVStream_59>(version);
-  else if (version.avformat.major == 60)
-    runAVStreamWrapperTestDefaultValues<AVStream_60>(version);
+  RUN_TEST_FOR_VERSION(version, runAVStreamWrapperTestDefaultValues);
 }
 
 TEST_P(AVStreamWrapperTest, TestAVInputFormatWrapperWithCodecContextSet)
 {
   const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runAVStreamWrapperTestCodecContextSet<AVStream_56, AVCodecContext_56>(version);
-  else if (version.avformat.major == 57)
-    runAVStreamWrapperTestCodecContextSet<AVStream_57, AVCodecContext_57>(version);
-  else if (version.avformat.major == 58)
-    runAVStreamWrapperTestCodecContextSet<AVStream_58, AVCodecContext_58>(version);
-  else if (version.avformat.major == 59)
-    runAVStreamWrapperTestCodecContextSet<AVStream_59, AVCodecContext_59>(version);
-  else if (version.avformat.major == 60)
-    runAVStreamWrapperTestCodecContextSet<AVStream_60, AVCodecContext_60>(version);
+  RUN_TEST_FOR_VERSION(version, runAVStreamWrapperTestCodecContextSet);
 }
 
 TEST_P(AVStreamWrapperTest, TestAVInputFormatWrapperWithCodecParametersSet)
@@ -244,14 +218,8 @@ TEST_P(AVStreamWrapperTest, TestAVInputFormatWrapperWithCodecParametersSet)
   if (version.avformat.major == 56)
     // Version 56 does not have codec parameters yet
     return;
-  else if (version.avformat.major == 57)
-    runAVStreamWrapperTestCodecParametersSet<AVStream_57, AVCodecParameters_57>(version);
-  else if (version.avformat.major == 58)
-    runAVStreamWrapperTestCodecParametersSet<AVStream_58, AVCodecParameters_58>(version);
-  else if (version.avformat.major == 59)
-    runAVStreamWrapperTestCodecParametersSet<AVStream_59, AVCodecParameters_59>(version);
-  else if (version.avformat.major == 60)
-    runAVStreamWrapperTestCodecParametersSet<AVStream_60, AVCodecParameters_60>(version);
+
+  RUN_TEST_FOR_VERSION(version, runAVStreamWrapperTestCodecParametersSet);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
