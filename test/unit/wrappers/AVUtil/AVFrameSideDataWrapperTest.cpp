@@ -6,10 +6,9 @@
 
 #include <AVUtil/wrappers/AVFrameSideDataWrapper.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
+#include <wrappers/AVUtil/VersionToAVUtilTypes.h>
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
-
-#include "VersionToAVUtilTypes.h"
 
 #include <gtest/gtest.h>
 
@@ -24,6 +23,8 @@ namespace
 using ffmpeg::internal::AV_FRAME_DATA_DOWNMIX_INFO;
 using ffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS;
 using ffmpeg::internal::AVFrameSideData;
+using internal::avutil::AVMotionVector_54;
+using internal::avutil::AVMotionVector_55_56_57_58;
 
 using ::testing::Return;
 

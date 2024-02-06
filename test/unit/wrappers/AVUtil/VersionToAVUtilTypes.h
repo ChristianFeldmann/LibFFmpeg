@@ -16,36 +16,18 @@
 namespace ffmpeg::avutil
 {
 
-using internal::avutil::AVFrame_54;
-using internal::avutil::AVFrame_55;
-using internal::avutil::AVFrame_56;
-using internal::avutil::AVFrame_57;
-using internal::avutil::AVFrame_58;
-using internal::avutil::AVFrameSideData_54;
-using internal::avutil::AVFrameSideData_55;
-using internal::avutil::AVFrameSideData_56;
-using internal::avutil::AVFrameSideData_57;
-using internal::avutil::AVFrameSideData_58;
-using internal::avutil::AVMotionVector_54;
-using internal::avutil::AVMotionVector_55_56_57_58;
-using internal::avutil::AVPixFmtDescriptor_54;
-using internal::avutil::AVPixFmtDescriptor_55;
-using internal::avutil::AVPixFmtDescriptor_56;
-using internal::avutil::AVPixFmtDescriptor_57;
-using internal::avutil::AVPixFmtDescriptor_58;
-
 template <FFmpegVersion V> constexpr auto avFrameSideDataTypeFromVersionFunc()
 {
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVFrameSideData_54>{};
+    return TypeWrapper<internal::avutil::AVFrameSideData_54>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<AVFrameSideData_55>{};
+    return TypeWrapper<internal::avutil::AVFrameSideData_55>{};
   if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<AVFrameSideData_56>{};
+    return TypeWrapper<internal::avutil::AVFrameSideData_56>{};
   if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<AVFrameSideData_57>{};
+    return TypeWrapper<internal::avutil::AVFrameSideData_57>{};
   if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVFrameSideData_58>{};
+    return TypeWrapper<internal::avutil::AVFrameSideData_58>{};
 }
 
 template <FFmpegVersion V>
@@ -54,10 +36,10 @@ using FrameSideDataType = typename decltype(avFrameSideDataTypeFromVersionFunc<V
 template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
 {
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVMotionVector_54>{};
+    return TypeWrapper<internal::avutil::AVMotionVector_54>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x || V == FFmpegVersion::FFmpeg_4x ||
                 V == FFmpegVersion::FFmpeg_5x || V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVMotionVector_55_56_57_58>{};
+    return TypeWrapper<internal::avutil::AVMotionVector_55_56_57_58>{};
 }
 
 template <FFmpegVersion V>
@@ -66,15 +48,15 @@ using MotionVectorType = typename decltype(avMotionVectorTypeFromVersionFunc<V>(
 template <FFmpegVersion V> constexpr auto avPixFmtDescriptorFromVersionFunc()
 {
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVPixFmtDescriptor_54>{};
+    return TypeWrapper<internal::avutil::AVPixFmtDescriptor_54>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<AVPixFmtDescriptor_55>{};
+    return TypeWrapper<internal::avutil::AVPixFmtDescriptor_55>{};
   if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<AVPixFmtDescriptor_56>{};
+    return TypeWrapper<internal::avutil::AVPixFmtDescriptor_56>{};
   if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<AVPixFmtDescriptor_57>{};
+    return TypeWrapper<internal::avutil::AVPixFmtDescriptor_57>{};
   if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVPixFmtDescriptor_58>{};
+    return TypeWrapper<internal::avutil::AVPixFmtDescriptor_58>{};
 }
 
 template <FFmpegVersion V>
@@ -83,15 +65,15 @@ using AVPixFmtDescriptorType = typename decltype(avPixFmtDescriptorFromVersionFu
 template <FFmpegVersion V> constexpr auto avFrameFromVersionFunc()
 {
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<AVFrame_54>{};
+    return TypeWrapper<internal::avutil::AVFrame_54>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<AVFrame_55>{};
+    return TypeWrapper<internal::avutil::AVFrame_55>{};
   if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<AVFrame_56>{};
+    return TypeWrapper<internal::avutil::AVFrame_56>{};
   if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<AVFrame_57>{};
+    return TypeWrapper<internal::avutil::AVFrame_57>{};
   if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<AVFrame_58>{};
+    return TypeWrapper<internal::avutil::AVFrame_58>{};
 }
 
 template <FFmpegVersion V> using AVFrameType = typename decltype(avFrameFromVersionFunc<V>())::type;

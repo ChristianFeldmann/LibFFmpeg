@@ -8,10 +8,9 @@
 #include <common/InternalTypes.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
 #include <wrappers/AVUtil/AVPixFmtDescriptorCreation.h>
+#include <wrappers/AVUtil/VersionToAVUtilTypes.h>
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
-
-#include "VersionToAVUtilTypes.h"
 
 #include <gtest/gtest.h>
 
