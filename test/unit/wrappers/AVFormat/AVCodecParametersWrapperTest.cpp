@@ -5,11 +5,12 @@
  */
 
 #include <AVFormat/wrappers/AVCodecParametersWrapper.h>
-#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
 #include <common/InternalTypes.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
+
+#include "VersionToAVFormatTypes.h"
 
 #include <gtest/gtest.h>
 
@@ -29,15 +30,11 @@ using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVPixFmtDescriptor;
 using ffmpeg::internal::AVRational;
 using internal::avformat::AVCodecParameters_56;
-using internal::avformat::AVCodecParameters_57;
-using internal::avformat::AVCodecParameters_58;
-using internal::avformat::AVCodecParameters_59;
-using internal::avformat::AVCodecParameters_60;
 using ::testing::Return;
 
 void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
 {
-  // Version 65 does not have a codecParameters struct yet.
+  // Version 56 does not have a codecParameters struct yet.
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
@@ -54,9 +51,13 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
   EXPECT_EQ(parameters.getSampleAspectRatio(), Rational());
 }
 
-template <typename AVCodecParametersType>
-void runAVCodecParametersWrapperTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVCodecParametersWrapperTest()
 {
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    // No codec parameters in V2 (AVFormat 56)
+    return;
+
+  const auto version           = getLibraryVerions(V);
   const auto TEST_PIXEL_FORMAT = static_cast<AVPixelFormat>(637);
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
@@ -66,11 +67,11 @@ void runAVCodecParametersWrapperTest(const LibraryVersions &version)
 
   std::array<uint8_t, 4> TEST_EXTRADATA = {22, 56, 19, 22};
 
-  AVCodecParametersType codecParameters;
+  AVCodecParametersType<V> codecParameters;
   codecParameters.codec_type          = AVMEDIA_TYPE_AUDIO;
   codecParameters.codec_id            = static_cast<AVCodecID>(123);
   codecParameters.extradata           = TEST_EXTRADATA.data();
-  codecParameters.extradata_size      = TEST_EXTRADATA.size();
+  codecParameters.extradata_size      = static_cast<int>(TEST_EXTRADATA.size());
   codecParameters.width               = 64;
   codecParameters.height              = 198;
   codecParameters.color_space         = AVCOL_SPC_SMPTE240M;
@@ -122,14 +123,8 @@ TEST_P(AVCodecParametersWrapperTest, TestAVInputFormatWrapper)
   const auto version = GetParam();
   if (version.avformat.major == 56)
     runAVCodecParametersWrapperTestAVFormat56(version);
-  else if (version.avformat.major == 57)
-    runAVCodecParametersWrapperTest<AVCodecParameters_57>(version);
-  else if (version.avformat.major == 58)
-    runAVCodecParametersWrapperTest<AVCodecParameters_58>(version);
-  else if (version.avformat.major == 59)
-    runAVCodecParametersWrapperTest<AVCodecParameters_59>(version);
-  else if (version.avformat.major == 60)
-    runAVCodecParametersWrapperTest<AVCodecParameters_60>(version);
+  else
+    RUN_TEST_FOR_VERSION(version, runAVCodecParametersWrapperTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
