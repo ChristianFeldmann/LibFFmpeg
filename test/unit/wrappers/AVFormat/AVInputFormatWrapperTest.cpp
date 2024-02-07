@@ -5,8 +5,9 @@
  */
 
 #include <AVFormat/wrappers/AVInputFormatWrapper.h>
-#include <AVFormat/wrappers/AVInputFormatWrapperInternal.h>
 #include <common/InternalTypes.h>
+#include <wrappers/AVFormat/VersionToAVFormatTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
@@ -20,20 +21,16 @@ namespace
 {
 
 using ffmpeg::internal::AVInputFormat;
-using internal::avformat::AVInputFormat_56;
-using internal::avformat::AVInputFormat_57;
-using internal::avformat::AVInputFormat_58;
-using internal::avformat::AVInputFormat_59;
-using internal::avformat::AVInputFormat_60;
 using ::testing::Return;
 
-template <typename AVInputFormatType>
-void runAVInputFormatWrapperTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVInputFormatWrapperTest()
 {
+  const auto version = getLibraryVerions(V);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  AVInputFormatType inputFormat;
+  AVInputFormatType<V> inputFormat;
   inputFormat.name      = "TestName";
   inputFormat.long_name = "TestNameLong";
   inputFormat.flags =
@@ -79,8 +76,8 @@ class AVInputFormatWrapperTest : public testing::TestWithParam<LibraryVersions>
 
 TEST(AVInputFormatWrapperTest, shouldThrowIfLibraryNotSet)
 {
-  AVInputFormat_56                  inputFormat;
-  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
+  internal::avformat::AVInputFormat_56 inputFormat;
+  std::shared_ptr<IFFmpegLibraries>    ffmpegLibraries;
 
   EXPECT_THROW(
       AVInputFormatWrapper(reinterpret_cast<AVInputFormat *>(&inputFormat), ffmpegLibraries),
@@ -89,27 +86,16 @@ TEST(AVInputFormatWrapperTest, shouldThrowIfLibraryNotSet)
 
 TEST(AVInputFormatWrapperTest, shouldThrowIfAVInputFormatPointerIsNull)
 {
-  AVInputFormat_56 *inputFormat{};
-  auto              ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  AVInputFormat *inputFormat{};
+  auto           ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 
-  EXPECT_THROW(
-      AVInputFormatWrapper(reinterpret_cast<AVInputFormat *>(inputFormat), ffmpegLibraries),
-      std::runtime_error);
+  EXPECT_THROW(AVInputFormatWrapper(inputFormat, ffmpegLibraries), std::runtime_error);
 }
 
 TEST_P(AVInputFormatWrapperTest, TestAVInputFormatWrapper)
 {
   const auto version = GetParam();
-  if (version.avformat.major == 56)
-    runAVInputFormatWrapperTest<AVInputFormat_56>(version);
-  else if (version.avformat.major == 57)
-    runAVInputFormatWrapperTest<AVInputFormat_57>(version);
-  else if (version.avformat.major == 58)
-    runAVInputFormatWrapperTest<AVInputFormat_58>(version);
-  else if (version.avformat.major == 59)
-    runAVInputFormatWrapperTest<AVInputFormat_59>(version);
-  else if (version.avformat.major == 60)
-    runAVInputFormatWrapperTest<AVInputFormat_60>(version);
+  RUN_TEST_FOR_VERSION(version, runAVInputFormatWrapperTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,

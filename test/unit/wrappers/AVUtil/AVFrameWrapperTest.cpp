@@ -23,11 +23,6 @@ namespace
 using ffmpeg::internal::AVFrame;
 using ffmpeg::internal::AVPixelFormat;
 
-using internal::avutil::AVPixFmtDescriptor_54;
-using internal::avutil::AVPixFmtDescriptor_55;
-using internal::avutil::AVPixFmtDescriptor_56;
-using internal::avutil::AVPixFmtDescriptor_57;
-using internal::avutil::AVPixFmtDescriptor_58;
 using ::testing::Return;
 
 template <FFmpegVersion V> void runAVFrameWrapperTest()
