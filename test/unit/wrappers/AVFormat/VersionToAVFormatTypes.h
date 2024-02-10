@@ -15,18 +15,28 @@
 namespace ffmpeg::avformat
 {
 
+namespace
+{
+
+#define RETURN_AVFORMAT_TYPE_WRAPPER_FOR_VERSION_V(wrapperNamePrefix)                              \
+  {                                                                                                \
+    if constexpr (V == FFmpegVersion::FFmpeg_2x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_56>{};                            \
+    if constexpr (V == FFmpegVersion::FFmpeg_3x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_57>{};                            \
+    if constexpr (V == FFmpegVersion::FFmpeg_4x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_58>{};                            \
+    if constexpr (V == FFmpegVersion::FFmpeg_5x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_59>{};                            \
+    if constexpr (V == FFmpegVersion::FFmpeg_6x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_60>{};                            \
+  }
+
+} // namespace
+
 template <FFmpegVersion V> constexpr auto avCodecParametersTypeFunction()
 {
-  if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<internal::avformat::AVCodecParameters_56>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<internal::avformat::AVCodecParameters_57>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<internal::avformat::AVCodecParameters_58>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<internal::avformat::AVCodecParameters_59>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<internal::avformat::AVCodecParameters_60>{};
+  RETURN_AVFORMAT_TYPE_WRAPPER_FOR_VERSION_V(AVCodecParameters);
 }
 
 template <FFmpegVersion V>
@@ -34,32 +44,14 @@ using AVCodecParametersType = typename decltype(avCodecParametersTypeFunction<V>
 
 template <FFmpegVersion V> constexpr auto avStreamTypeFunction()
 {
-  if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<internal::avformat::AVStream_56>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<internal::avformat::AVStream_57>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<internal::avformat::AVStream_58>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<internal::avformat::AVStream_59>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<internal::avformat::AVStream_60>{};
+  RETURN_AVFORMAT_TYPE_WRAPPER_FOR_VERSION_V(AVStream);
 }
 
 template <FFmpegVersion V> using AVStreamType = typename decltype(avStreamTypeFunction<V>())::type;
 
 template <FFmpegVersion V> constexpr auto avInputFormatTypeFunction()
 {
-  if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<internal::avformat::AVInputFormat_56>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<internal::avformat::AVInputFormat_57>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<internal::avformat::AVInputFormat_58>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<internal::avformat::AVInputFormat_59>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<internal::avformat::AVInputFormat_60>{};
+  RETURN_AVFORMAT_TYPE_WRAPPER_FOR_VERSION_V(AVInputFormat);
 }
 
 template <FFmpegVersion V>
@@ -67,16 +59,7 @@ using AVInputFormatType = typename decltype(avInputFormatTypeFunction<V>())::typ
 
 template <FFmpegVersion V> constexpr auto avFormatContextTypeFunction()
 {
-  if constexpr (V == FFmpegVersion::FFmpeg_2x)
-    return TypeWrapper<internal::avformat::AVFormatContext_56>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_3x)
-    return TypeWrapper<internal::avformat::AVFormatContext_57>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_4x)
-    return TypeWrapper<internal::avformat::AVFormatContext_58>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_5x)
-    return TypeWrapper<internal::avformat::AVFormatContext_59>{};
-  if constexpr (V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<internal::avformat::AVFormatContext_60>{};
+  RETURN_AVFORMAT_TYPE_WRAPPER_FOR_VERSION_V(AVFormatContext);
 }
 
 template <FFmpegVersion V>
