@@ -112,6 +112,24 @@ class AVFrameSideDataWrapperTest : public testing::TestWithParam<LibraryVersions
 {
 };
 
+TEST(AVFrameSideDataWrapperTest, NullptrShouldReturnEmptyMap)
+{
+  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+
+  AVFrameSideDataWrapper wrapper(nullptr, ffmpegLibraries);
+  EXPECT_TRUE(wrapper.getMotionVectors().empty());
+}
+
+TEST(AVFrameSideDataWrapperTest, shouldThrowIfLibraryNotSet)
+{
+  AVDummy                           dummyFrameSideData;
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
+
+  EXPECT_THROW(AVFrameSideDataWrapper(reinterpret_cast<AVFrameSideData *>(&dummyFrameSideData),
+                                      ffmpegLibraries),
+               std::runtime_error);
+}
+
 TEST_P(AVFrameSideDataWrapperTest, TestGettingOfMotionVectors)
 {
   const auto version = GetParam();

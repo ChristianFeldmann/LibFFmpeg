@@ -14,21 +14,21 @@ namespace ffmpeg::avutil
 {
 
 using DictionaryMap = std::map<std::string, std::string>;
+using ffmpeg::internal::AVDictionary;
 
 class AVDictionaryWrapper
 {
 public:
   AVDictionaryWrapper() = delete;
-  AVDictionaryWrapper(ffmpeg::internal::AVDictionary   *dict,
-                      std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  AVDictionaryWrapper(AVDictionary *dictionary, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
-  explicit                        operator bool() const { return this->dict != nullptr; }
-  ffmpeg::internal::AVDictionary *getDictionary() const { return this->dict; }
+  explicit      operator bool() const { return this->dictionary != nullptr; }
+  AVDictionary *getDictionary() const { return this->dictionary; }
 
   DictionaryMap toMap() const;
 
 private:
-  ffmpeg::internal::AVDictionary   *dict{};
+  AVDictionary *                    dictionary{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 

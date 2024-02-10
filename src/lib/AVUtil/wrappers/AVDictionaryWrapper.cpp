@@ -14,9 +14,9 @@ using ffmpeg::internal::AVDictionaryEntry;
 
 constexpr auto AV_DICT_IGNORE_SUFFIX = 2;
 
-AVDictionaryWrapper::AVDictionaryWrapper(AVDictionary *                    dict,
+AVDictionaryWrapper::AVDictionaryWrapper(AVDictionary *                    dictionary,
                                          std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
-    : dict(dict), ffmpegLibraries(ffmpegLibraries)
+    : dictionary(dictionary), ffmpegLibraries(ffmpegLibraries)
 {
   if (!ffmpegLibraries)
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
@@ -24,7 +24,7 @@ AVDictionaryWrapper::AVDictionaryWrapper(AVDictionary *                    dict,
 
 DictionaryMap AVDictionaryWrapper::toMap() const
 {
-  if (this->dict == nullptr)
+  if (this->dictionary == nullptr)
     return {};
 
   DictionaryMap map;
@@ -32,7 +32,8 @@ DictionaryMap AVDictionaryWrapper::toMap() const
   AVDictionaryEntry *entry{};
   while (true)
   {
-    entry = this->ffmpegLibraries->avutil.av_dict_get(this->dict, "", entry, AV_DICT_IGNORE_SUFFIX);
+    entry = this->ffmpegLibraries->avutil.av_dict_get(
+        this->dictionary, "", entry, AV_DICT_IGNORE_SUFFIX);
     if (entry == nullptr)
       break;
 

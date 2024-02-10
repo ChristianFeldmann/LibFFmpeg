@@ -19,7 +19,7 @@ using ffmpeg::internal::AVDictionary;
 using ffmpeg::internal::AVDictionaryEntry;
 using StringPair = std::pair<std::string, std::string>;
 
-TEST(AVFrameSideDataWrapperTest, NullptrShouldReturnEmptyMap)
+TEST(AVDictionaryWrapperTest, NullptrShouldReturnEmptyMap)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 
@@ -27,7 +27,17 @@ TEST(AVFrameSideDataWrapperTest, NullptrShouldReturnEmptyMap)
   EXPECT_TRUE(wrapper.toMap().empty());
 }
 
-TEST(AVFrameSideDataWrapperTest, GetDictEntriesTest)
+TEST(AVDictionaryWrapperTest, shouldThrowIfLibraryNotSet)
+{
+  AVDummy                           dummyDictionary;
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
+
+  EXPECT_THROW(
+      AVDictionaryWrapper(reinterpret_cast<AVDictionary *>(&dummyDictionary), ffmpegLibraries),
+      std::runtime_error);
+}
+
+TEST(AVDictionaryWrapperTest, GetDictEntriesTest)
 {
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 

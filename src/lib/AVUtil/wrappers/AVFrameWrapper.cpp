@@ -142,7 +142,8 @@ std::optional<AVDictionaryWrapper> AVFrameWrapper::getMetadata() const
   if (version == 57 || version == 58)
   {
     const auto p = reinterpret_cast<internal::avutil::AVFrame_57 *>(this->frame.get());
-    return AVDictionaryWrapper(p->metadata, this->ffmpegLibraries);
+    if (p->metadata)
+      return AVDictionaryWrapper(p->metadata, this->ffmpegLibraries);
   }
 
   return {};
