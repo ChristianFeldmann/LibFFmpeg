@@ -5,8 +5,9 @@
  */
 
 #include <AVCodec/wrappers/AVCodecDescriptorConversion.h>
-#include <AVCodec/wrappers/AVCodecDescriptorConversionInternal.h>
 #include <common/InternalTypes.h>
+#include <wrappers/AVCodec/VersionToAVCodecTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
@@ -18,9 +19,6 @@ namespace ffmpeg::avcodec
 
 using ffmpeg::internal::AVCodecDescriptor;
 using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::avcodec::AVCodecDescriptor_56;
-using ffmpeg::internal::avcodec::AVCodecDescriptor_57;
-using ffmpeg::internal::avcodec::AVProfile_57;
 
 namespace
 {
@@ -42,9 +40,9 @@ TEST_F(AVCodecDescriptorConversionTest, ConstructorWithNullptrShoudlTrhwo)
       std::runtime_error);
 }
 
-template <typename AVCodecDescriptorType> void runParsingTest()
+template <FFmpegVersion V> void runParsingTest()
 {
-  AVCodecDescriptorType rawDescriptor;
+  AVCodecDescriptorType<V> rawDescriptor;
   rawDescriptor.id        = static_cast<AVCodecID>(37);
   rawDescriptor.type      = ffmpeg::internal::AVMEDIA_TYPE_VIDEO;
   rawDescriptor.name      = TEST_NAME;
@@ -57,8 +55,8 @@ template <typename AVCodecDescriptorType> void runParsingTest()
   const std::array<const char *, 4> MIME_TYPES = {"MimeType0", "MimeType1", "MimeType2", nullptr};
   rawDescriptor.mime_types                     = MIME_TYPES.data();
 
-  std::array<AVProfile_57, 4>       profiles;
-  const std::array<const char *, 4> PROFILE_NAMES = {
+  std::array<ffmpeg::internal::avcodec::AVProfile_57, 4> profiles;
+  const std::array<const char *, 4>                      PROFILE_NAMES = {
       "ProfileName0", "ProfileName1", "ProfileName2", "TerminatingProfile"};
   constexpr auto FF_PROFILE_UNKNOWN = -99;
   for (int i = 0; i < 4; ++i)
@@ -68,7 +66,7 @@ template <typename AVCodecDescriptorType> void runParsingTest()
   }
 
   Version version(56);
-  if constexpr (std::is_same_v<AVCodecDescriptorType, AVCodecDescriptor_57>)
+  if constexpr (V > FFmpegVersion::FFmpeg_2x)
   {
     rawDescriptor.profiles = profiles.data();
     version                = Version(57);
@@ -90,7 +88,7 @@ template <typename AVCodecDescriptorType> void runParsingTest()
   const auto expectedMimeTypes = std::vector<std::string>({"MimeType0", "MimeType1", "MimeType2"});
   EXPECT_EQ(descriptor.mimeTypes, expectedMimeTypes);
 
-  if constexpr (std::is_same_v<AVCodecDescriptorType, AVCodecDescriptor_57>)
+  if constexpr (V > FFmpegVersion::FFmpeg_2x)
   {
     const auto expectedProfiles =
         std::vector<std::string>({"ProfileName0", "ProfileName1", "ProfileName2"});
@@ -98,14 +96,15 @@ template <typename AVCodecDescriptorType> void runParsingTest()
   }
 }
 
-TEST_F(AVCodecDescriptorConversionTest, TestParsing_AVCodecVersion_56)
+TEST_P(AVCodecDescriptorConversionTest, TestParsing)
 {
-  runParsingTest<AVCodecDescriptor_56>();
+  const auto version = GetParam();
+  RUN_TEST_FOR_VERSION(version, runParsingTest);
 }
 
-TEST_F(AVCodecDescriptorConversionTest, TestParsing_AVCodecVersion_greater_56)
-{
-  runParsingTest<AVCodecDescriptor_57>();
-}
+INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
+                         AVCodecDescriptorConversionTest,
+                         testing::ValuesIn(SupportedFFmpegVersions),
+                         getNameWithFFmpegVersion);
 
 } // namespace ffmpeg::avcodec
