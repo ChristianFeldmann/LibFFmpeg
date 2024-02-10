@@ -6,11 +6,10 @@
 
 #include <AVUtil/wrappers/AVFrameWrapper.h>
 #include <common/InternalTypes.h>
+#include <libHandling/FFmpegLibrariesMoc.h>
 #include <wrappers/AVUtil/VersionToAVUtilTypes.h>
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
-
-#include <libHandling/FFmpegLibrariesMoc.h>
 
 #include <gtest/gtest.h>
 

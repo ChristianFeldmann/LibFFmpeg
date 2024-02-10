@@ -6,12 +6,11 @@
 
 #include <AVFormat/wrappers/AVStreamWrapper.h>
 #include <common/InternalTypes.h>
+#include <libHandling/FFmpegLibrariesMoc.h>
 #include <wrappers/AVCodec/VersionToAVCodecTypes.h>
 #include <wrappers/AVFormat/VersionToAVFormatTypes.h>
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
-
-#include <libHandling/FFmpegLibrariesMoc.h>
 
 #include <gtest/gtest.h>
 

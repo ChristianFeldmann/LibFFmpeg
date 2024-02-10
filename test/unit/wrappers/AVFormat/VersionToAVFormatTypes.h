@@ -7,6 +7,7 @@
 #pragma once
 
 #include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
+#include <AVFormat/wrappers/AVFormatContextWrapperInternal.h>
 #include <AVFormat/wrappers/AVInputFormatWrapperInternal.h>
 #include <AVFormat/wrappers/AVStreamWrapperInternal.h>
 #include <wrappers/RunTestForAllVersions.h>
@@ -63,5 +64,22 @@ template <FFmpegVersion V> constexpr auto avInputFormatTypeFunction()
 
 template <FFmpegVersion V>
 using AVInputFormatType = typename decltype(avInputFormatTypeFunction<V>())::type;
+
+template <FFmpegVersion V> constexpr auto avFormatContextTypeFunction()
+{
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return TypeWrapper<internal::avformat::AVFormatContext_56>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_3x)
+    return TypeWrapper<internal::avformat::AVFormatContext_57>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_4x)
+    return TypeWrapper<internal::avformat::AVFormatContext_58>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_5x)
+    return TypeWrapper<internal::avformat::AVFormatContext_59>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_6x)
+    return TypeWrapper<internal::avformat::AVFormatContext_60>{};
+}
+
+template <FFmpegVersion V>
+using AVFormatContextType = typename decltype(avFormatContextTypeFunction<V>())::type;
 
 } // namespace ffmpeg::avformat
