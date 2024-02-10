@@ -5,13 +5,11 @@
  */
 
 #include <AVCodec/wrappers/AVPacketWrapper.h>
-#include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/TestHelper.h>
-
 #include <libHandling/FFmpegLibrariesMoc.h>
-
-#include "RunTestForAllAVCodecVersions.h"
+#include <wrappers/AVCodec/VersionToAVCodecTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
+#include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
 
@@ -24,11 +22,6 @@ namespace
 {
 
 using ffmpeg::internal::AVPacket;
-using ffmpeg::internal::avcodec::AVPacket_56;
-using ffmpeg::internal::avcodec::AVPacket_57;
-using ffmpeg::internal::avcodec::AVPacket_58;
-using ffmpeg::internal::avcodec::AVPacket_59;
-using ffmpeg::internal::avcodec::AVPacket_60;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -61,7 +54,7 @@ public:
     this->avcodec.av_new_packet   = [this](AVPacket *packet, int dataSize) {
       return this->newPacket(packet, dataSize);
     };
-    if constexpr (std::is_same_v<AVPacketType, AVPacket_56>)
+    if constexpr (std::is_same_v<AVPacketType, ffmpeg::internal::avcodec::AVPacket_56>)
     {
       this->avcodec.av_init_packet = [this](AVPacket *packet) { this->initPacket(packet); };
       this->avcodec.av_free_packet = [this](AVPacket *packet) { this->freePacket(packet); };
@@ -119,7 +112,7 @@ public:
   // AVCodec major version 56 only
   void initPacket(AVPacket *packet)
   {
-    auto castPacket          = reinterpret_cast<AVPacket_56 *>(packet);
+    auto castPacket          = reinterpret_cast<ffmpeg::internal::avcodec::AVPacket_56 *>(packet);
     castPacket->stream_index = TEST_STREAM_INDEX;
     castPacket->pts          = TEST_PTS;
     castPacket->dts          = TEST_DTS;
@@ -155,9 +148,12 @@ public:
   PacketCounters packetCounters{};
 };
 
-template <typename AVPacketType> void runEmptyConstructionTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runEmptyConstructionTest()
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType>>();
+  const auto version = getLibraryVerions(V);
+
+  auto ffmpegLibraries =
+      std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType<V>>>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   {
@@ -178,9 +174,12 @@ template <typename AVPacketType> void runEmptyConstructionTest(const LibraryVers
   EXPECT_EQ(ffmpegLibraries->packetCounters.dataDeletionCounter, 0);
 }
 
-template <typename AVPacketType> void runConstructorFromDataTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runConstructorFromDataTest()
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType>>();
+  const auto version = getLibraryVerions(V);
+
+  auto ffmpegLibraries =
+      std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType<V>>>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   {
@@ -202,9 +201,12 @@ template <typename AVPacketType> void runConstructorFromDataTest(const LibraryVe
   EXPECT_EQ(ffmpegLibraries->packetCounters.dataDeletionCounter, 1);
 }
 
-template <typename AVPacketType> void runTimestampTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runTimestampTest()
 {
-  auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType>>();
+  const auto version = getLibraryVerions(V);
+
+  auto ffmpegLibraries =
+      std::make_shared<FFmpegLibrariesMockWithPacketAllocation<AVPacketType<V>>>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
   AVPacketWrapper packet(ffmpegLibraries);
@@ -248,17 +250,20 @@ TEST_F(AVPacketWrapperTest, IfPacketAllocationFailsShouldThrow)
 
 TEST_P(AVPacketWrapperTest, TestDefaultConstructor)
 {
-  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runEmptyConstructionTest, AVPacket);
+  const auto version = GetParam();
+  RUN_TEST_FOR_VERSION(version, runEmptyConstructionTest);
 }
 
 TEST_P(AVPacketWrapperTest, TestConstructorFromData)
 {
-  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runConstructorFromDataTest, AVPacket);
+  const auto version = GetParam();
+  RUN_TEST_FOR_VERSION(version, runConstructorFromDataTest);
 }
 
 TEST_P(AVPacketWrapperTest, TestSettingOfTimestamp)
 {
-  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runTimestampTest, AVPacket);
+  const auto version = GetParam();
+  RUN_TEST_FOR_VERSION(version, runTimestampTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
