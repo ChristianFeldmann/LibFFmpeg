@@ -37,10 +37,8 @@ constexpr auto TEST_CODEC_ID = static_cast<AVCodecID>(234);
 
 template <FFmpegVersion V> void runAVStreamWrapperTestDefaultValues()
 {
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID =
       ffmpeg::internal::AV_CODEC_ID_NONE;
@@ -65,10 +63,8 @@ template <FFmpegVersion V> void runAVStreamWrapperTestDefaultValues()
 
 template <FFmpegVersion V> void runAVStreamWrapperTestCodecContextSet()
 {
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID = TEST_CODEC_ID;
 
@@ -126,12 +122,11 @@ template <FFmpegVersion V> void runAVStreamWrapperTestCodecContextSet()
 
 template <FFmpegVersion V> void runAVStreamWrapperTestCodecParametersSet()
 {
-  const auto version = getLibraryVerions(V);
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
     return;
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID = TEST_CODEC_ID;
 
@@ -184,10 +179,10 @@ class AVStreamWrapperTest : public testing::TestWithParam<LibraryVersions>
 
 TEST(AVStreamWrapperTest, shouldThrowIfLibraryNotSet)
 {
-  internal::avformat::AVStream_56   stream;
+  AVDummy                           dummyStream;
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
 
-  EXPECT_THROW(AVStreamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries),
+  EXPECT_THROW(AVStreamWrapper(reinterpret_cast<AVStream *>(&dummyStream), ffmpegLibraries),
                std::runtime_error);
 }
 

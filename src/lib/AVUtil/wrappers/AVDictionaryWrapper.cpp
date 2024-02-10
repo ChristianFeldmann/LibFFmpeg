@@ -14,10 +14,12 @@ using ffmpeg::internal::AVDictionaryEntry;
 
 constexpr auto AV_DICT_IGNORE_SUFFIX = 2;
 
-AVDictionaryWrapper::AVDictionaryWrapper(AVDictionary                     *dict,
+AVDictionaryWrapper::AVDictionaryWrapper(AVDictionary *                    dict,
                                          std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : dict(dict), ffmpegLibraries(ffmpegLibraries)
 {
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
 DictionaryMap AVDictionaryWrapper::toMap() const

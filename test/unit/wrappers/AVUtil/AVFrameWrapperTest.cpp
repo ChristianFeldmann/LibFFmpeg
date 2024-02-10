@@ -26,12 +26,10 @@ using ::testing::Return;
 
 template <FFmpegVersion V> void runAVFrameWrapperTest()
 {
-  const auto version = getLibraryVerions(V);
-
   constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
   ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   int frameAllocCounter                  = 0;
@@ -94,10 +92,8 @@ template <FFmpegVersion V> void runAVFrameWrapperTestDataAccess()
 {
   constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
 
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
   ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   // Todo ... there must be more here
@@ -108,6 +104,12 @@ template <FFmpegVersion V> void runAVFrameWrapperTestDataAccess()
 class AVFrameWrapperTest : public testing::TestWithParam<LibraryVersions>
 {
 };
+
+TEST(AVFrameWrapperTest, shouldThrowIfLibraryNotSet)
+{
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
+  EXPECT_THROW(AVFrameWrapper frame(ffmpegLibraries), std::runtime_error);
+}
 
 TEST_P(AVFrameWrapperTest, TestAVFrameWrapper)
 {

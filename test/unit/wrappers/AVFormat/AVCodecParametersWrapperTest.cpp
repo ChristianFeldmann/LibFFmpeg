@@ -5,6 +5,7 @@
  */
 
 #include <AVFormat/wrappers/AVCodecParametersWrapper.h>
+#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
 #include <common/InternalTypes.h>
 #include <wrappers/TestHelper.h>
 
@@ -29,7 +30,6 @@ using ffmpeg::internal::AVMEDIA_TYPE_AUDIO;
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVPixFmtDescriptor;
 using ffmpeg::internal::AVRational;
-using internal::avformat::AVCodecParameters_56;
 using ::testing::Return;
 
 void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
@@ -38,7 +38,7 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  AVCodecParameters_56     codecParameters;
+  ffmpeg::internal::avformat::AVCodecParameters_56 codecParameters;
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
                                       ffmpegLibraries);
 
@@ -100,22 +100,20 @@ class AVCodecParametersWrapperTest : public testing::TestWithParam<LibraryVersio
 
 TEST(AVCodecParametersWrapperTest, shouldThrowIfLibraryNotSet)
 {
-  AVCodecParameters_56              codecParameters;
+  AVDummy                           dummyCodecParameters;
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
 
-  EXPECT_THROW(AVCodecParametersWrapper(reinterpret_cast<AVCodecParameters *>(&codecParameters),
-                                        ffmpegLibraries),
+  EXPECT_THROW(AVCodecParametersWrapper(
+                   reinterpret_cast<AVCodecParameters *>(&dummyCodecParameters), ffmpegLibraries),
                std::runtime_error);
 }
 
 TEST(AVCodecParametersWrapperTest, shouldThrowIfAVInputFormatPointerIsNull)
 {
-  AVCodecParameters_56 *codecParameters{};
-  auto                  ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
+  AVCodecParameters *codecParameters{};
+  auto               ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
 
-  EXPECT_THROW(AVCodecParametersWrapper(reinterpret_cast<AVCodecParameters *>(codecParameters),
-                                        ffmpegLibraries),
-               std::runtime_error);
+  EXPECT_THROW(AVCodecParametersWrapper(codecParameters, ffmpegLibraries), std::runtime_error);
 }
 
 TEST_P(AVCodecParametersWrapperTest, TestAVInputFormatWrapper)

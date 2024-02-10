@@ -24,10 +24,8 @@ using ::testing::Return;
 
 template <FFmpegVersion V> void runAVInputFormatWrapperTest()
 {
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   AVInputFormatType<V> inputFormat;
   inputFormat.name      = "TestName";
@@ -75,11 +73,11 @@ class AVInputFormatWrapperTest : public testing::TestWithParam<LibraryVersions>
 
 TEST(AVInputFormatWrapperTest, shouldThrowIfLibraryNotSet)
 {
-  internal::avformat::AVInputFormat_56 inputFormat;
-  std::shared_ptr<IFFmpegLibraries>    ffmpegLibraries;
+  AVDummy                           dummyInputFormat;
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
 
   EXPECT_THROW(
-      AVInputFormatWrapper(reinterpret_cast<AVInputFormat *>(&inputFormat), ffmpegLibraries),
+      AVInputFormatWrapper(reinterpret_cast<AVInputFormat *>(&dummyInputFormat), ffmpegLibraries),
       std::runtime_error);
 }
 

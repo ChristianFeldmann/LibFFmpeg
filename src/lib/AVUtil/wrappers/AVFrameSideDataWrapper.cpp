@@ -26,6 +26,8 @@ AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData                  
                                                std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : sideData(sideData), ffmpegLibraries(ffmpegLibraries)
 {
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
 std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const

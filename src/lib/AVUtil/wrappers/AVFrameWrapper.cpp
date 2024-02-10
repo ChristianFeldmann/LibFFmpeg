@@ -47,6 +47,9 @@ ByteVector copyFrameDataFromRawArray(const uint8_t *inputData, Size size, const 
 AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
+
   this->frame = std::unique_ptr<AVFrame, AVFrameDeleter>(
       reinterpret_cast<AVFrame *>(this->ffmpegLibraries->avutil.av_frame_alloc()),
       AVFrameDeleter(this->ffmpegLibraries));

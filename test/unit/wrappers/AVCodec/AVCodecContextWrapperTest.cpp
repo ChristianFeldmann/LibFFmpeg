@@ -5,15 +5,13 @@
  */
 
 #include <AVCodec/wrappers/AVCodecContextWrapper.h>
-#include <AVCodec/wrappers/AVCodecContextWrapperInternal.h>
 #include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <AVFormat/wrappers/AVCodecParametersWrapper.h>
 #include <common/InternalTypes.h>
-#include <wrappers/TestHelper.h>
-
 #include <libHandling/FFmpegLibrariesMoc.h>
-
-#include "RunTestForAllAVCodecVersions.h"
+#include <wrappers/AVCodec/VersionToAVCodecTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
+#include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
 
@@ -31,16 +29,10 @@ using ffmpeg::internal::AVFrame;
 using ffmpeg::internal::AVPacket;
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVRational;
-using ffmpeg::internal::avcodec::AVCodecContext_56;
-using ffmpeg::internal::avcodec::AVCodecContext_57;
-using ffmpeg::internal::avcodec::AVCodecContext_58;
-using ffmpeg::internal::avcodec::AVCodecContext_59;
-using ffmpeg::internal::avcodec::AVCodecContext_60;
-using ffmpeg::internal::avcodec::AVPacket_56;
 using ::testing::NiceMock;
 using ::testing::Return;
 
-template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVCodecContextTest()
 {
   constexpr auto TEST_CODEC_ID     = AVCodecID(849);
   constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
@@ -49,11 +41,11 @@ template <typename AVCodecContextType> void runAVCodecContextTest(const LibraryV
   constexpr auto TEST_TIMEBASE     = AVRational({12, 44});
 
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
-  AVCodecContextType codecContext;
+  AVCodecContextType<V> codecContext;
   codecContext.codec_type = ffmpeg::internal::AVMEDIA_TYPE_ATTACHMENT;
   codecContext.codec_id   = TEST_CODEC_ID;
   codecContext.pix_fmt    = TEST_PIXEL_FORMAT;
@@ -85,7 +77,7 @@ class AVCodecContextWrapperTest : public testing::TestWithParam<LibraryVersions>
 TEST_F(AVCodecContextWrapperTest, ConstructorWithNullptrForCodecContextShouldThrow)
 {
   auto            ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  AVCodecContext *codecContext    = nullptr;
+  AVCodecContext *codecContext{};
   EXPECT_THROW(AVCodecContextWrapper wrapper(codecContext, ffmpegLibraries), std::runtime_error);
 }
 
@@ -155,7 +147,8 @@ TEST_F(AVCodecContextWrapperTest, TestRecievingFrames)
 
 TEST_P(AVCodecContextWrapperTest, TestAVCodecContextWrapper)
 {
-  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runAVCodecContextTest, AVCodecContext);
+  const auto version = GetParam();
+  RUN_TEST_FOR_VERSION(version, runAVCodecContextTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecContextWrapper,

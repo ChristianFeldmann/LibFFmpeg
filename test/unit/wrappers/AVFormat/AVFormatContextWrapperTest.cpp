@@ -44,10 +44,8 @@ template <FFmpegVersion V> void runAVFormatContextWrapperTest()
       AVDictionaryEntry({nullptr, nullptr})};
   avutil::DictionaryMap TEST_METADATA_REFERENCE_ENTRIES = {{"key1", "value1"}, {"key2", "value2"}};
 
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   int formatOpenInputCount = 0;
   ffmpegLibraries->avformat.avformat_open_input =

@@ -56,10 +56,8 @@ template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummy
 
 template <FFmpegVersion V> void runAVFrameSideDataWrapperTest()
 {
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   auto dummyRawMotionData = createDummyMotionData<MotionVectorType<V>>();
 
@@ -93,7 +91,7 @@ template <FFmpegVersion V> void runAVFrameSideDataWrapperTest()
     EXPECT_EQ(vector.dst_y, i * 7);
     EXPECT_EQ(vector.flags, i * 8);
 
-    if (version.avutil.major == 54)
+    if constexpr (V == FFmpegVersion::FFmpeg_2x)
     {
       EXPECT_EQ(vector.motion_x, 0);
       EXPECT_EQ(vector.motion_y, 0);

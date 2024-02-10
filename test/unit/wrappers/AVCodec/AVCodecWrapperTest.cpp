@@ -29,10 +29,8 @@ using ::testing::Return;
 
 template <FFmpegVersion V> void runAVCodecWrapperTest()
 {
-  const auto version = getLibraryVerions(V);
-
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
-  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
+  EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   constexpr auto TEST_NAME         = "CodecNameTest";
   constexpr auto TEST_LONG_NAME    = "CodecLongNameTest";
@@ -90,9 +88,9 @@ TEST_F(AVCodecWrapperTest, ConstructorWithNullptrForCodecShouldThrow)
 
 TEST_F(AVCodecWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShouldThrow)
 {
-  std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries;
-  ffmpeg::internal::avcodec::AVCodec_56 codec;
-  EXPECT_THROW(AVCodecWrapper wrapper(reinterpret_cast<AVCodec *>(&codec), ffmpegLibraries),
+  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
+  AVDummy                           dummyCodec;
+  EXPECT_THROW(AVCodecWrapper wrapper(reinterpret_cast<AVCodec *>(&dummyCodec), ffmpegLibraries),
                std::runtime_error);
 }
 
