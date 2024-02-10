@@ -7,8 +7,10 @@
 #pragma once
 
 #include <AVCodec/wrappers/AVCodecContextWrapperInternal.h>
+#include <AVCodec/wrappers/AVCodecWrapperInternal.h>
 #include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <wrappers/RunTestForAllVersions.h>
+
 
 namespace ffmpeg::avcodec
 {
@@ -45,5 +47,21 @@ template <FFmpegVersion V> constexpr auto avPacketTypeFunction()
 }
 
 template <FFmpegVersion V> using AVPacketType = typename decltype(avPacketTypeFunction<V>())::type;
+
+template <FFmpegVersion V> constexpr auto avCodecTypeFunction()
+{
+  if constexpr (V == FFmpegVersion::FFmpeg_2x)
+    return TypeWrapper<internal::avcodec::AVCodec_56>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_3x)
+    return TypeWrapper<internal::avcodec::AVCodec_57>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_4x)
+    return TypeWrapper<internal::avcodec::AVCodec_58>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_5x)
+    return TypeWrapper<internal::avcodec::AVCodec_59>{};
+  if constexpr (V == FFmpegVersion::FFmpeg_6x)
+    return TypeWrapper<internal::avcodec::AVCodec_60>{};
+}
+
+template <FFmpegVersion V> using AVCodecType = typename decltype(avCodecTypeFunction<V>())::type;
 
 } // namespace ffmpeg::avcodec

@@ -7,11 +7,10 @@
 #include <AVCodec/wrappers/AVCodecWrapper.h>
 #include <AVCodec/wrappers/AVCodecWrapperInternal.h>
 #include <common/InternalTypes.h>
-#include <wrappers/TestHelper.h>
-
 #include <libHandling/FFmpegLibrariesMoc.h>
-
-#include "RunTestForAllAVCodecVersions.h"
+#include <wrappers/AVCodec/VersionToAVCodecTypes.h>
+#include <wrappers/RunTestForAllVersions.h>
+#include <wrappers/TestHelper.h>
 
 #include <gtest/gtest.h>
 
@@ -26,15 +25,12 @@ namespace
 using ffmpeg::internal::AVCodec;
 using ffmpeg::internal::AVPixelFormat;
 using ffmpeg::internal::AVRational;
-using ffmpeg::internal::avcodec::AVCodec_56;
-using ffmpeg::internal::avcodec::AVCodec_57;
-using ffmpeg::internal::avcodec::AVCodec_58;
-using ffmpeg::internal::avcodec::AVCodec_59;
-using ffmpeg::internal::avcodec::AVCodec_60;
 using ::testing::Return;
 
-template <typename AVCodecType> void runAVCodecWrapperTest(const LibraryVersions &version)
+template <FFmpegVersion V> void runAVCodecWrapperTest()
 {
+  const auto version = getLibraryVerions(V);
+
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
@@ -43,7 +39,7 @@ template <typename AVCodecType> void runAVCodecWrapperTest(const LibraryVersions
   constexpr auto TEST_CODEC_ID     = static_cast<ffmpeg::internal::AVCodecID>(98);
   constexpr auto TEST_CAPABILITIES = 849;
 
-  AVCodecType rawCodec;
+  AVCodecType<V> rawCodec;
   rawCodec.name         = TEST_NAME;
   rawCodec.long_name    = TEST_LONG_NAME;
   rawCodec.type         = ffmpeg::internal::AVMEDIA_TYPE_SUBTITLE;
@@ -94,15 +90,16 @@ TEST_F(AVCodecWrapperTest, ConstructorWithNullptrForCodecShouldThrow)
 
 TEST_F(AVCodecWrapperTest, ConstructorWithNullptrForFFmpegLibrariesShouldThrow)
 {
-  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries;
-  AVCodec_56                        codec;
+  std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries;
+  ffmpeg::internal::avcodec::AVCodec_56 codec;
   EXPECT_THROW(AVCodecWrapper wrapper(reinterpret_cast<AVCodec *>(&codec), ffmpegLibraries),
                std::runtime_error);
 }
 
 TEST_P(AVCodecWrapperTest, TestAVCodecWrapper)
 {
-  RUN_TEST_FOR_ALL_AVCODEC_VERSIONS(runAVCodecWrapperTest, AVCodec);
+  const auto version = GetParam();
+  RUN_TEST_FOR_VERSION(version, runAVCodecWrapperTest);
 }
 
 INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
