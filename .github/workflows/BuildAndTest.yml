@@ -8,8 +8,8 @@ on:
 jobs:
   build:
     strategy:
-    matrix:
-      config: [ {os: windows-2022, copyCommand: copy, artifactName: ffmpegTestWindows} ]
+      matrix:
+        config: [ {os: windows-2022, copyCommand: copy, artifactName: ffmpegTestWindows} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
