@@ -1,0 +1,61 @@
+name: Windows
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+    matrix:
+      config: [ {os: windows-2022, copyCommand: copy, artifactName: ffmpegTestWindows} ]
+    runs-on: ${{ matrix.config.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Configure CMake
+      run: cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DENABLE_TEST=ON
+
+    - name: Build
+      run: cmake --build ${{ github.workspace }}/build -j 4 --config Release
+
+    - name: Unit tests
+      run: |
+        ${{ matrix.config.os }} ${{ github.workspace }}/build/test/dummyLib/Release/dummyLib.dll ${{ github.workspace }}/build/test/unit/Release/
+        cd ${{ github.workspace }}/build/test/unit/Release/
+        ./unitTest
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.config.artifactName }}
+        path: ${{ github.workspace }}/build/test/ffmpegTest/Release/ffmpegTest.exe
+
+  testffmpeg:
+    needs: build
+    strategy:
+      matrix:
+        config: [ {os: windows-2022, artifactName: ffmpegTestWindows, ffmpegPath: windows, unzipCommand: 7z x } ]
+        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
+    runs-on: ${{ matrix.config.os }}
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: ${{ matrix.config.artifactName }}
+
+    - name: Download FFmpeg
+      run: |
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.ffmpegPath }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
+        ${{ matrix.config.unzipCommand }} ffmpeg.zip
+        rm ffmpeg.zip
+
+    - name: runffmpegTest
+      run: ./ffmpegTest
