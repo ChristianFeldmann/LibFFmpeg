@@ -23,6 +23,7 @@ using namespace ffmpeg;
 using ffmpeg::avutil::ColorSpace;
 using ffmpeg::avutil::MediaType;
 using ffmpeg::avutil::PictureType;
+using ::testing::Contains;
 
 namespace
 {
@@ -106,7 +107,7 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif"}),
-              testing::Contains(inputFormat.getExtensions()));
+              Contains(inputFormat.getExtensions()));
 
   avformat::AVInputFormatFlags expectedFlags{};
   if (majorVersion > 58)
@@ -250,18 +251,16 @@ TEST(FFmpegTest, DecodingTest)
 
   // The amount of padding that FFmpeg uses depends on how it was compiled.
   // Here, we use our own compiled versions. But in general this can not be predicted.
-  std::array<int, 3> expectedLinesize = {384, 192, 192};
-  if (avcodecVersionMajor <= 57)
-    expectedLinesize = {320, 160, 160};
+  constexpr std::array<int, 2> EXPECTED_LINESIZE_LUMA   = {320, 384};
+  constexpr std::array<int, 2> EXPECTED_LINESIZE_CHROMA = {160, 192};
 
   ASSERT_TRUE(decoder.openForDecoding(stream));
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder = [&decoder,
-                                &totalFrameCounter,
-                                &expectedLinesize,
-                                &avcodecVersionMajor]() {
+  auto pullFramesFromDecoder =
+      [&decoder, &totalFrameCounter, &EXPECTED_LINESIZE_LUMA, &EXPECTED_LINESIZE_CHROMA, &avcodecVersionMajor]()
+  {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {
@@ -270,9 +269,9 @@ TEST(FFmpegTest, DecodingTest)
       EXPECT_EQ(frame->getPixelFormatDescriptor().name, "yuv420p");
 
       EXPECT_EQ(frame->getSize(), Size({320, 240}));
-      EXPECT_EQ(frame->getLineSize(0), expectedLinesize.at(0));
-      EXPECT_EQ(frame->getLineSize(1), expectedLinesize.at(1));
-      EXPECT_EQ(frame->getLineSize(2), expectedLinesize.at(2));
+      EXPECT_THAT(EXPECTED_LINESIZE_LUMA, Contains(frame->getLineSize(0)));
+      EXPECT_THAT(EXPECTED_LINESIZE_CHROMA, Contains(frame->getLineSize(1)));
+      EXPECT_THAT(EXPECTED_LINESIZE_CHROMA, Contains(frame->getLineSize(2)));
       EXPECT_EQ(frame->getSampleAspectRatio(), Rational({1, 1}));
 
       const auto absoluteFrameIndex = totalFrameCounter + framesDecodedInLoop;

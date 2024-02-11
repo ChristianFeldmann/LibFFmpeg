@@ -17,8 +17,14 @@ namespace
 
 using AVErrorToReturnCode = std::pair<int, ReturnCode>;
 
+#if (defined(__APPLE__))
+constexpr int EAGAIN_VALUE = 35;
+#else
+constexpr int EAGAIN_VALUE = 11;
+#endif
+
 constexpr std::array<AVErrorToReturnCode, 28> AVERRORToReturnCodeMap{
-    {{-11, ReturnCode::TryAgain},
+    {{-EAGAIN_VALUE, ReturnCode::TryAgain},
      {-1179861752, ReturnCode::BSFNotFound},
      {-558323010, ReturnCode::Bug},
      {-1397118274, ReturnCode::BufferTooSmall},
