@@ -46,6 +46,10 @@ jobs:
       with:
         name: ${{ matrix.config.artifactName }}
 
+    - name: Make ffmoegTest executable
+      run: chmod a+x ffmpegTest
+      if: ${{ matrix.config.os }} != windows-latest
+
     - name: Download FFmpeg
       run: |
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.ffmpegPath }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
