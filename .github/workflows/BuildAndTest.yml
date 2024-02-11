@@ -1,4 +1,4 @@
-name: Windows
+name: Build and test
 
 on:
   push:
@@ -9,7 +9,8 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: windows-2022, copyCommand: copy, artifactName: ffmpegTestWindows} ]
+        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe},
+                  {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -23,20 +24,21 @@ jobs:
 
     - name: Unit tests
       run: |
-        ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/Release/dummyLib.dll ${{ github.workspace }}/build/test/unit/Release/
-        cd ${{ github.workspace }}/build/test/unit/Release/
+        ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/${{ matrix.config.buildPath }}/${{ matrix.config.dummyLib }} ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
+        cd ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
         ./unitTest
 
     - uses: actions/upload-artifact@master
       with:
         name: ${{ matrix.config.artifactName }}
-        path: ${{ github.workspace }}/build/test/ffmpegTest/Release/ffmpegTest.exe
+        path: ${{ github.workspace }}/build/test/ffmpegTest/${{ matrix.config.buildPath }}${{ matrix.config.ffmpegTest }}
 
   testffmpeg:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-2022, artifactName: ffmpegTestWindows, ffmpegPath: windows, unzipCommand: 7z x } ]
+        config: [ {os: windows-latest, artifactName: ffmpegTestWindows, ffmpegPath: windows, unzipCommand: 7z x },
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, ffmpegPath: ubuntu-22.04, unzipCommand: unzip } ]
         ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
     runs-on: ${{ matrix.config.os }}
     steps:
