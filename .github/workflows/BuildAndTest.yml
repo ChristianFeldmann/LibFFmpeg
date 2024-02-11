@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe},
-                  {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest} ]
+                  {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest},
+                  {os: macos-latest, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -38,7 +39,8 @@ jobs:
     strategy:
       matrix:
         config: [ {os: windows-latest, artifactName: ffmpegTestWindows, ffmpegPath: windows, unzipCommand: 7z x },
-                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, ffmpegPath: ubuntu-22.04, unzipCommand: unzip } ]
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, ffmpegPath: ubuntu-22.04, unzipCommand: unzip },
+                  {os: macos-latest, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-intel, unzipCommand: unzip } ]
         ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
     runs-on: ${{ matrix.config.os }}
     steps:
