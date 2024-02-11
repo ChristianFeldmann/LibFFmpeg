@@ -15,12 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set reusable strings
-      id: strings
-      shell: bash
-      run: |
-        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
-
     - name: Configure CMake
       run: cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DENABLE_TEST=ON
 
@@ -29,7 +23,7 @@ jobs:
 
     - name: Unit tests
       run: |
-        ${{ matrix.config.os }} ${{ github.workspace }}/build/test/dummyLib/Release/dummyLib.dll ${{ github.workspace }}/build/test/unit/Release/
+        ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/Release/dummyLib.dll ${{ github.workspace }}/build/test/unit/Release/
         cd ${{ github.workspace }}/build/test/unit/Release/
         ./unitTest
 
