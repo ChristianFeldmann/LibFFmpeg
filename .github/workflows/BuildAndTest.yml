@@ -55,6 +55,7 @@ jobs:
 
     - name: Install ffmpeg apt
       run: apt-get update & apt-get install ffmpeg
+      if: ${{ matrix.config.os }} == ubuntu-latest
 
     - name: Download Test files
       run: curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
