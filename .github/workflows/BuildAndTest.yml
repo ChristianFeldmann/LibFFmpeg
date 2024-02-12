@@ -50,7 +50,10 @@ jobs:
     - name: Install ffmpeg
       run: |
         choco install ffmpeg-shared
+        $env:path
         echo "C:\Program Files\FFmpeg\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        $env:path
+        "C:\Program Files\FFmpeg\bin\ffmpeg.exe" --version
         ffmpeg --version
 
     - name: runffmpegTest
