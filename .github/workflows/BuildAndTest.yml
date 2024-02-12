@@ -50,7 +50,7 @@ jobs:
     - name: Install ffmpeg
       run: |
         choco install ffmpeg-shared
-        Install-ChocolateyPath -PathToInstall "C:\Program Files\FFmpeg\bin" -PathType User
+        $env:path
         ffmpeg --version
 
     - name: runffmpegTest
