@@ -65,7 +65,7 @@ bool tryLoadLibraryInPath(SharedLibraryLoader &        lib,
     else
     {
       const auto success = lib.load(possibleLibName);
-      log.push_back("Loading library " + libName + (success ? " succeded" : " failed"));
+      log.push_back("Loading library " + possibleLibName + (success ? " succeded" : " failed"));
       if (success)
         return true;
     }
