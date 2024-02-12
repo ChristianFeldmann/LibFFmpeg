@@ -9,10 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe},
-                  {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest},
-                  {os: macos-latest, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest},
-                  {os: macos-14, copyCommand: cp, artifactName: ffmpegTestMacM1, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
+        config: [ {os: macos-14, copyCommand: cp, artifactName: ffmpegTestMacM1, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -39,11 +36,8 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-latest, artifactName: ffmpegTestWindows, ffmpegPath: windows, unzipCommand: 7z x },
-                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, ffmpegPath: ubuntu-22.04, unzipCommand: unzip },
-                  {os: macos-latest, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-intel, unzipCommand: unzip },
-                  {os: macos-14, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-m1, unzipCommand: unzip } ]
-        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
+        config: [ {os: macos-14, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-m1, unzipCommand: unzip } ]
+        ffmpegVersions: [ 6.1.1]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
@@ -59,6 +53,9 @@ jobs:
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.ffmpegPath }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ${{ matrix.config.unzipCommand }} ffmpeg.zip
+        otool -hv libavutil.58.dylib
+        otool -l libavutil.58.dylib
+        file libavutil.58.dylib
         rm ffmpeg.zip
 
     - name: runffmpegTest
