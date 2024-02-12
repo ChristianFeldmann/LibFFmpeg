@@ -50,7 +50,7 @@ jobs:
     - name: Install ffmpeg
       run: |
         choco install ffmpeg-shared
-        dir "C:\Program Files" /S
+        ls 'C:\Program Files\' -R
         ffmpeg --version
 
     - name: runffmpegTest
