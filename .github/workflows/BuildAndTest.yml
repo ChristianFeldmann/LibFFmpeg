@@ -26,7 +26,7 @@ jobs:
 
     - name: Unit tests
       run: |
-        ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/${{ matrix.config.buildPath }}/${{ matrix.config.dummyLib }} ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
+        ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/${{ matrix.config.buildPath }}${{ matrix.config.dummyLib }} ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
         cd ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
         ./unitTest
 
@@ -39,10 +39,10 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-latest, artifactName: ffmpegTestWindows, ffmpegPath: windows, unzipCommand: 7z x },
-                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, ffmpegPath: ubuntu-22.04, unzipCommand: unzip },
-                  {os: macos-latest, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-intel, unzipCommand: unzip },
-                  {os: macos-14, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-m1, unzipCommand: unzip } ]
+        config: [ {os: windows-latest, artifactName: ffmpegTestWindows, azureFolder: windows, unzipCommand: 7z x },
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, azureFolder: ubuntu-22.04, unzipCommand: unzip },
+                  {os: macos-latest, artifactName: ffmpegTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
+                  {os: macos-14, artifactName: ffmpegTestMacM1, azureFolder: macos-m1, unzipCommand: unzip } ]
         ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
     runs-on: ${{ matrix.config.os }}
     steps:
@@ -50,13 +50,13 @@ jobs:
       with:
         name: ${{ matrix.config.artifactName }}
 
-    - name: Make ffmoegTest executable
+    - name: Make ffmpegTest executable
       run: chmod a+x ffmpegTest
       if: ${{ matrix.config.os }} != windows-latest
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.ffmpegPath }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.azureFolder }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ${{ matrix.config.unzipCommand }} ffmpeg.zip
         rm ffmpeg.zip
