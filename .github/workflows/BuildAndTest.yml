@@ -36,7 +36,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: macos-14, artifactName: ffmpegTestMacIntel, ffmpegPath: macos-m1, unzipCommand: unzip } ]
+        config: [ {os: macos-14, artifactName: ffmpegTestMacM1, ffmpegPath: macos-m1, unzipCommand: unzip } ]
         ffmpegVersions: [ 6.1.1]
     runs-on: ${{ matrix.config.os }}
     steps:
