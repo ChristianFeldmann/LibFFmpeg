@@ -33,6 +33,7 @@ jobs:
         path: ${{ github.workspace }}/build/test/ffmpegTest/${{ matrix.config.buildPath }}${{ matrix.config.ffmpegTest }}
 
   testffmpegNative:
+    needs: build
     strategy:
       matrix:
         config: [ {os: windows-latest, artifactName: ffmpegTestWindows } ]
