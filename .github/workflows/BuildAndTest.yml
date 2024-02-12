@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest} ]
+        config: [ {os: macos-latest, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -36,7 +36,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: ubuntu-latest, artifactName: ffmpegTestUbuntu } ]
+        config: [ {os: macos-latest, artifactName: ffmpegTestMacIntel } ]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
