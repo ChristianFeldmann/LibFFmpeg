@@ -34,20 +34,20 @@ std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int ve
   return {};
 }
 
-bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
+bool tryLoadLibraryInPath(SharedLibraryLoader &        lib,
                           const std::filesystem::path &absoluteDirectoryPath,
-                          const std::string           &libName,
-                          const Version               &version,
-                          Log                         &log)
+                          const std::string &          libName,
+                          const Version &              version,
+                          Log &                        log)
 {
   log.push_back("Trying to load library " + libName + " in path " + absoluteDirectoryPath.string());
 
   for (const auto &possibleLibName : getPossibleLibraryNames(libName, version.major))
   {
-    const auto absolutePathOrLibName = absoluteDirectoryPath / possibleLibName;
     if (!absoluteDirectoryPath.empty())
     {
-      const auto fileStatus = std::filesystem::status(absolutePathOrLibName);
+      const auto absolutePathOrLibName = absoluteDirectoryPath / possibleLibName;
+      const auto fileStatus            = std::filesystem::status(absolutePathOrLibName);
 
       if (fileStatus.type() == std::filesystem::file_type::not_found)
       {
@@ -55,21 +55,28 @@ bool tryLoadLibraryInPath(SharedLibraryLoader         &lib,
                       absolutePathOrLibName.string());
         continue;
       }
-    }
 
-    const auto success = lib.load(absolutePathOrLibName);
-    log.push_back("Loading library " + absolutePathOrLibName.string() +
-                  (success ? " succeded" : " failed"));
-    if (success)
-      return true;
+      const auto success = lib.load(absolutePathOrLibName);
+      log.push_back("Loading library " + absolutePathOrLibName.string() +
+                    (success ? " succeded" : " failed"));
+      if (success)
+        return true;
+    }
+    else
+    {
+      const auto success = lib.load(possibleLibName);
+      log.push_back("Loading library " + libName + (success ? " succeded" : " failed"));
+      if (success)
+        return true;
+    }
   }
   return false;
 };
 
 bool checkLibraryVersion(const std::string &libName,
                          unsigned           ffmpegVersionOfLoadedLibrary,
-                         const Version     &expectedVersion,
-                         Log               &log)
+                         const Version &    expectedVersion,
+                         Log &              log)
 {
   const auto loadedVersion = Version::fromFFmpegVersion(ffmpegVersionOfLoadedLibrary);
   if (loadedVersion != expectedVersion)
@@ -135,8 +142,8 @@ ResultAndLog FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const std::filesystem
 
 bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
     const std::filesystem::path &absoluteDirectoryPath,
-    const LibraryVersions       &libraryVersions,
-    Log                         &log)
+    const LibraryVersions &      libraryVersions,
+    Log &                        log)
 {
   // AVUtil
 
@@ -235,10 +242,9 @@ std::vector<LibraryInfo> FFmpegLibraries::getLibrariesInfo() const
 
   std::vector<LibraryInfo> infoPerLIbrary;
 
-  auto addLibraryInfo = [&infoPerLIbrary](const char                  *name,
+  auto addLibraryInfo = [&infoPerLIbrary](const char *                 name,
                                           const std::filesystem::path &path,
-                                          const unsigned               ffmpegVersion)
-  {
+                                          const unsigned               ffmpegVersion) {
     const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
     const auto version        = libraryVersion.toString();
 
