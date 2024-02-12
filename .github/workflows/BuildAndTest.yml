@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe} ]
+        config: [ {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -36,7 +36,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-latest, artifactName: ffmpegTestWindows } ]
+        config: [ {os: ubuntu-latest, artifactName: ffmpegTestUbuntu } ]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
@@ -52,6 +52,9 @@ jobs:
         choco install ffmpeg-shared
         echo "C:\Program Files\FFmpeg\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       if: ${{ matrix.config.os }} == windows-latest
+
+    - name: Install ffmpeg apt
+      run: apt-get update & apt-get install ffmpeg
 
     - name: Download Test files
       run: curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
