@@ -43,7 +43,7 @@ jobs:
       with:
         name: ${{ matrix.config.artifactName }}
 
-    - uses: ConorMacBride/install-package@master
+    - uses: ConorMacBride/install-package@main
       with:
         brew: ffmpeg
         apt: ffmpeg
