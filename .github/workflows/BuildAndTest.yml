@@ -51,11 +51,11 @@ jobs:
       run: |
         choco install ffmpeg-shared
         echo "C:\Program Files\FFmpeg\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      if: ${{ matrix.config.os }} == windows-latest
+      if: matrix.config.os == 'windows-latest'
 
     - name: Install ffmpeg apt
       run: apt-get update & apt-get install ffmpeg
-      if: ${{ matrix.config.os }} == ubuntu-latest
+      if: matrix.config.os == 'ubuntu-latest'
 
     - name: Download Test files
       run: curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
