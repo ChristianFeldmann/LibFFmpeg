@@ -6,31 +6,31 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # build:
-  #   strategy:
-  #     matrix:
-  #       config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe} ]
-  #   runs-on: ${{ matrix.config.os }}
+  build:
+    strategy:
+      matrix:
+        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe} ]
+    runs-on: ${{ matrix.config.os }}
     
-  #   steps:
-  #   - uses: actions/checkout@v4
+    steps:
+    - uses: actions/checkout@v4
 
-  #   - name: Configure CMake
-  #     run: cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DENABLE_TEST=ON
+    - name: Configure CMake
+      run: cmake -B ${{ github.workspace }}/build -S ${{ github.workspace }} -DENABLE_TEST=ON
 
-  #   - name: Build
-  #     run: cmake --build ${{ github.workspace }}/build -j 4 --config Release
+    - name: Build
+      run: cmake --build ${{ github.workspace }}/build -j 4 --config Release
 
-  #   - name: Unit tests
-  #     run: |
-  #       ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/${{ matrix.config.buildPath }}${{ matrix.config.dummyLib }} ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
-  #       cd ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
-  #       ./unitTest
+    - name: Unit tests
+      run: |
+        ${{ matrix.config.copyCommand }} ${{ github.workspace }}/build/test/dummyLib/${{ matrix.config.buildPath }}${{ matrix.config.dummyLib }} ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
+        cd ${{ github.workspace }}/build/test/unit/${{ matrix.config.buildPath }}
+        ./unitTest
 
-  #   - uses: actions/upload-artifact@master
-  #     with:
-  #       name: ${{ matrix.config.artifactName }}
-  #       path: ${{ github.workspace }}/build/test/ffmpegTest/${{ matrix.config.buildPath }}${{ matrix.config.ffmpegTest }}
+    - uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.config.artifactName }}
+        path: ${{ github.workspace }}/build/test/ffmpegTest/${{ matrix.config.buildPath }}${{ matrix.config.ffmpegTest }}
 
   testffmpegNative:
     strategy:
@@ -42,9 +42,8 @@ jobs:
     - name: Install ffmpeg
       run: |
         choco install ffmpeg-shared
-        
-    - name: Test ffmpeg
-      run: |
-        & "C:\Program Files\FFmpeg\bin\ffmpeg.exe" -version
-        ffmpeg -version
+        echo "C:\Program Files\FFmpeg\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      if: ${{ matrix.config.os }} == windows-latest
 
+    - name: runffmpegTest
+      run: ./ffmpegTest
