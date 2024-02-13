@@ -35,7 +35,36 @@ jobs:
         name: ${{ matrix.config.artifactName }}
         path: ${{ github.workspace }}/build/test/ffmpegTest/${{ matrix.config.buildPath }}${{ matrix.config.ffmpegTest }}
 
-  testffmpegNative:
+  testFFmpegVersions:
+    needs: build
+    strategy:
+      matrix:
+        config: [ {os: windows-latest, artifactName: ffmpegTestWindows, azureFolder: windows, unzipCommand: 7z x },
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, azureFolder: ubuntu-22.04, unzipCommand: unzip },
+                  {os: macos-latest, artifactName: ffmpegTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
+                  {os: macos-14, artifactName: ffmpegTestMacM1, azureFolder: macos-m1, unzipCommand: unzip } ]
+        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
+    runs-on: ${{ matrix.config.os }}
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: ${{ matrix.config.artifactName }}
+
+    - name: Make ffmpegTest executable
+      run: chmod a+x ffmpegTest
+      if: ${{ matrix.config.os }} != windows-latest
+
+    - name: Download FFmpeg
+      run: |
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.azureFolder }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
+        ${{ matrix.config.unzipCommand }} ffmpeg.zip
+        rm ffmpeg.zip
+
+    - name: runffmpegTest
+      run: ./ffmpegTest
+
+  testFFmpegNativeInstall:
     needs: build
     strategy:
       matrix:
