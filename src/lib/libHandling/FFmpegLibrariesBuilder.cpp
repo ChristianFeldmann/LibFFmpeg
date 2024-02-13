@@ -32,7 +32,7 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
   {
     result.loadingLog.push_back(
         "No search paths specified. We will only try the default empty path.");
-    this->searchPaths.push_back("");
+    paths.push_back("");
   }
 
 #if (defined(__APPLE__) && defined(__arm64__))
