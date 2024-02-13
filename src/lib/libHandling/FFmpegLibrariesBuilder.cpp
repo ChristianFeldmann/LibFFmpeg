@@ -27,16 +27,24 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
     }
   }
 
-  if (this->searchPaths.empty())
+  auto paths = this->searchPaths;
+  if (paths.empty())
   {
     result.loadingLog.push_back(
         "No search paths specified. We will only try the default empty path.");
-    this->searchPaths.push_back("");
+    paths.push_back("");
   }
+
+#if (defined(__APPLE__) && defined(__arm64__))
+  // On apple silicone, the libraries that were installed through homebrew are not automatically
+  // in the library search path. On intel, this is the case. So we will search the homebrew library
+  // path manually. Issue: https://github.com/Homebrew/brew/issues/13481
+  paths.push_back("/opt/homebrew/lib");
+#endif
 
   auto libraryInterface = std::make_shared<FFmpegLibraries>();
 
-  for (const auto &path : this->searchPaths)
+  for (const auto &path : paths)
   {
     result.loadingLog.push_back("Trying to load the libraries in the path " + path.string());
 

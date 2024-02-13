@@ -42,7 +42,7 @@ constexpr auto TEST_FILE_NAME = "TestFile_h264_aac_1s_320x240.mp4";
 std::shared_ptr<IFFmpegLibraries> openLibraries()
 {
   const auto loadingResult =
-      FFmpegLibrariesBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
+      FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
   EXPECT_TRUE(loadingResult) << "Error loading libraries";
   return loadingResult.ffmpegLibraries;
 }
@@ -61,7 +61,7 @@ Demuxer openTestFileInDemuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 {
   const auto loadingResult =
-      FFmpegLibrariesBuilder().withAdditionalSearchPaths({"."}).tryLoadingOfLibraries();
+      FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
 
   ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
                              << "\nLog:\n"
@@ -258,9 +258,11 @@ TEST(FFmpegTest, DecodingTest)
 
   auto totalFrameCounter = 0;
 
-  auto pullFramesFromDecoder =
-      [&decoder, &totalFrameCounter, &EXPECTED_LINESIZE_LUMA, &EXPECTED_LINESIZE_CHROMA, &avcodecVersionMajor]()
-  {
+  auto pullFramesFromDecoder = [&decoder,
+                                &totalFrameCounter,
+                                &EXPECTED_LINESIZE_LUMA,
+                                &EXPECTED_LINESIZE_CHROMA,
+                                &avcodecVersionMajor]() {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {
