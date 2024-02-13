@@ -9,7 +9,10 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest} ]
+        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe},
+                  {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest},
+                  {os: macos-latest, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest},
+                  {os: macos-14, copyCommand: cp, artifactName: ffmpegTestMacM1, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -36,7 +39,10 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: ubuntu-latest, artifactName: ffmpegTestUbuntu }]
+        config: [ {os: windows-latest, artifactName: ffmpegTestWindows},
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu},
+                  {os: macos-latest, artifactName: ffmpegTestMacIntel},
+                  {os: macos-14, artifactName: ffmpegTestMacM1} ]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
