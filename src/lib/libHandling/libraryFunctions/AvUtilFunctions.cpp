@@ -15,11 +15,11 @@ namespace ffmpeg::internal::functions
 {
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 Log                       &log)
+                                                                 const LoggingFunction &    log)
 {
   if (!lib)
   {
-    log.push_back("Binding of avUtil functions failed. Library is not loaded.");
+    log(LogLevel::Error, "Binding of avUtil functions failed. Library is not loaded.");
     return {};
   }
 
@@ -45,7 +45,7 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLib
   checkForMissingFunctionAndLog(functions.avutil_version, "avutil_version", missingFunctions, log);
   if (!functions.avutil_version)
   {
-    log.push_back("Binding avutil functions failed.Missing function avutil_version");
+    log(LogLevel::Error, "Binding avutil functions failed.Missing function avutil_version");
     return {};
   }
 
@@ -78,12 +78,12 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLib
 
   if (!missingFunctions.empty())
   {
-    log.push_back("Binding avUtil functions failed. Missing functions: " +
-                  to_string(missingFunctions));
+    log(LogLevel::Debug,
+        "Binding avUtil functions failed. Missing functions: " + to_string(missingFunctions));
     return {};
   }
 
-  log.push_back("Binding of avUtil functions successful.");
+  log(LogLevel::Debug, "Binding of avUtil functions successful.");
   return functions;
 }
 

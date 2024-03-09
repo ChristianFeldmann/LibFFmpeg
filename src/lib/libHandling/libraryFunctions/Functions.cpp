@@ -13,14 +13,14 @@ namespace ffmpeg::internal::functions
 
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
                                                   const std::string               libraryName,
-                                                  Log                            &log)
+                                                  const LoggingFunction &         log)
 {
   if (missingFunctions.empty())
     return {};
 
   const auto errorMessage = "Binding " + libraryName +
                             " functions failed. Missing functions: " + to_string(missingFunctions);
-  log.push_back(errorMessage);
+  log(LogLevel::Debug, errorMessage);
   return errorMessage;
 }
 

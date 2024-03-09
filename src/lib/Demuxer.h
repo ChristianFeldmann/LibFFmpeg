@@ -21,7 +21,7 @@ public:
   Demuxer(Demuxer &&demuxer);
   Demuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
-  ResultAndLog openFile(const std::filesystem::path &path);
+  bool openFile(const std::filesystem::path &path);
 
   avformat::AVFormatContextWrapper *getFormatContext() { return &this->formatContext; }
 

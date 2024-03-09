@@ -16,22 +16,30 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
   LibrariesLoadingResult result;
 
   if (this->forceReload)
-    result.loadingLog.push_back("Library reload forced. Will skip cache check.");
+  {
+    if (this->loggingFunction)
+      this->loggingFunction(LogLevel::Info, "Library reload forced. Will skip cache check.");
+  }
   else
   {
     if (auto cachedFFmpegLibraries = this->lastLoadedLibraries.lock())
     {
-      result.loadingLog.push_back("Cached libraries still loaded. Returning cached libraries.");
+      if (this->loggingFunction)
+        this->loggingFunction(LogLevel::Info,
+                              "Cached libraries still loaded. Returning cached libraries.");
       result.ffmpegLibraries = cachedFFmpegLibraries;
       return result;
     }
   }
 
+  auto lib = std::make_shared<FFmpegLibraries>();
+  if (this->loggingFunction)
+    lib->setLoggingFunction(this->loggingFunction);
+
   auto paths = this->searchPaths;
   if (paths.empty())
   {
-    result.loadingLog.push_back(
-        "No search paths specified. We will only try the default empty path.");
+    lib->log(LogLevel::Info, "No search paths specified. We will only try the default empty path.");
     paths.push_back("");
   }
 
@@ -42,18 +50,13 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
   paths.push_back("/opt/homebrew/lib");
 #endif
 
-  auto libraryInterface = std::make_shared<FFmpegLibraries>();
-
   for (const auto &path : paths)
   {
-    result.loadingLog.push_back("Trying to load the libraries in the path " + path.string());
+    lib->log(LogLevel::Info, "Trying to load the libraries in the path " + path.string());
 
-    const auto [success, log] = libraryInterface->tryLoadFFmpegLibrariesInPath(path);
-    result.loadingLog.insert(result.loadingLog.end(), log.begin(), log.end());
-
-    if (success)
+    if (lib->tryLoadFFmpegLibrariesInPath(path))
     {
-      result.ffmpegLibraries = libraryInterface;
+      result.ffmpegLibraries = lib;
       return result;
     }
   }
@@ -71,6 +74,15 @@ FFmpegLibrariesBuilder &FFmpegLibrariesBuilder::withAdditionalSearchPaths(
 FFmpegLibrariesBuilder &FFmpegLibrariesBuilder::withForcedReload()
 {
   this->forceReload = true;
+  return *this;
+}
+
+FFmpegLibrariesBuilder &
+FFmpegLibrariesBuilder::withLoggingFunction(const LoggingFunction loggingCallback,
+                                            const LogLevel        minimumLogLevel)
+{
+  this->loggingFunction = loggingCallback;
+  this->minimumLogLevel = minimumLogLevel;
   return *this;
 }
 

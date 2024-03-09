@@ -6,8 +6,8 @@
 
 #include "AVFormatFunctions.h"
 
-#include <common/Version.h>
 #include <common/Functions.h>
+#include <common/Version.h>
 
 #include "Functions.h"
 
@@ -15,11 +15,11 @@ namespace ffmpeg::internal::functions
 {
 
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                     Log                       &log)
+                                                                     const LoggingFunction &    log)
 {
   if (!lib)
   {
-    log.push_back("Binding of avFormat functions failed. Library is not loaded.");
+    log(LogLevel::Error, "Binding of avFormat functions failed. Library is not loaded.");
     return {};
   }
 
@@ -40,7 +40,7 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
 
   if (!functions.avformat_version)
   {
-    log.push_back("Binding avFormat functions failed. Missing function avformat_version");
+    log(LogLevel::Debug, "Binding avFormat functions failed. Missing function avformat_version");
     return {};
   }
 
@@ -63,12 +63,12 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
 
   if (!missingFunctions.empty())
   {
-    log.push_back("Binding avFormat functions failed. Missing functions: " +
-                  to_string(missingFunctions));
+    log(LogLevel::Debug,
+        "Binding avFormat functions failed. Missing functions: " + to_string(missingFunctions));
     return {};
   }
 
-  log.push_back("Binding of avFormat functions successful.");
+  log(LogLevel::Debug, "Binding of avFormat functions successful.");
   return functions;
 }
 

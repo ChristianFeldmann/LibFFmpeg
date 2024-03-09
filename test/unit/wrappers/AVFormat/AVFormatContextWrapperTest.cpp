@@ -156,11 +156,8 @@ template <FFmpegVersion V> void runAVFormatContextWrapperTest()
 
   {
     AVFormatContextWrapper format(ffmpegLibraries);
-    auto                   result = format.openFile("dummyFilePath");
-    EXPECT_TRUE(result.first);
-
-    result = format.openFile("anotherDummyFile");
-    EXPECT_FALSE(result.first);
+    EXPECT_TRUE(format.openFile("dummyFilePath"));
+    EXPECT_FALSE(format.openFile("anotherDummyFile"));
 
     EXPECT_EQ(format.getStartTime(), TEST_START_TIME);
     EXPECT_EQ(format.getDuration(), TEST_DURATION);

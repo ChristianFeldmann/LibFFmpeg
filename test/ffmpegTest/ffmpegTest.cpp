@@ -50,8 +50,8 @@ std::shared_ptr<IFFmpegLibraries> openLibraries()
 Demuxer openTestFileInDemuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 {
   Demuxer demuxer(ffmpegLibraries);
-  const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
-  EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
+  EXPECT_TRUE(demuxer.openFile(TEST_FILE_NAME))
+      << "Opening test file " << TEST_FILE_NAME << " failed.";
 
   return demuxer;
 }

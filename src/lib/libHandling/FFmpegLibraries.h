@@ -8,6 +8,7 @@
 
 #include "IFFmpegLibraries.h"
 
+#include <common/Logging.h>
 #include <libHandling/SharedLibraryLoader.h>
 
 namespace ffmpeg
@@ -22,15 +23,21 @@ public:
   std::vector<LibraryInfo> getLibrariesInfo() const override;
   LibraryVersions          getLibrariesVersion() const override { return this->libraryVersions; }
 
-  std::string_view getLogList() const override { return this->logListFFmpeg; }
+  void setLoggingFunction(const LoggingFunction loggingFunction);
+
+  void log(const LogLevel logLevel, const std::string &message) const override;
 
 private:
-  ResultAndLog tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path);
+  bool tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path);
 
   bool
   tryLoadLibrariesBindFunctionsAndCheckVersions(const std::filesystem::path &absoluteDirectoryPath,
-                                                const LibraryVersions       &libraryVersions,
-                                                Log                         &log);
+                                                const LibraryVersions &      libraryVersions);
+
+  bool tryLoadLibraryInPath(SharedLibraryLoader &        lib,
+                            const std::filesystem::path &absoluteDirectoryPath,
+                            const std::string &          libName,
+                            const Version &              version);
 
   void unloadAllLibraries();
 
@@ -43,6 +50,8 @@ private:
 
   static std::string logListFFmpeg;
   static void        avLogCallback(void *ptr, int level, const char *fmt, va_list vargs);
+
+  LoggingFunction loggingFunction{};
 
   friend class FFmpegLibrariesBuilder;
 };

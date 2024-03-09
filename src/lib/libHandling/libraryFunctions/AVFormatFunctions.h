@@ -7,6 +7,7 @@
 #pragma once
 
 #include <common/InternalTypes.h>
+#include <common/Logging.h>
 #include <common/Types.h>
 #include <libHandling/SharedLibraryLoader.h>
 
@@ -28,6 +29,6 @@ struct AvFormatFunctions
 };
 
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                     Log &log);
+                                                                     const LoggingFunction &log);
 
 } // namespace ffmpeg::internal::functions

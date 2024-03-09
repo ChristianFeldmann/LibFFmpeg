@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <common/Logging.h>
 #include <libHandling/IFFmpegLibraries.h>
 
 #include <memory>
@@ -32,11 +33,15 @@ public:
   FFmpegLibrariesBuilder &
   withAdditionalSearchPaths(const std::vector<std::filesystem::path> &additionalPath);
   FFmpegLibrariesBuilder &withForcedReload();
+  FFmpegLibrariesBuilder &withLoggingFunction(const LoggingFunction loggingFunction,
+                                              const LogLevel        minimumLogLevel);
 
 private:
   std::vector<std::filesystem::path> searchPaths{};
   bool                               forceReload{false};
   std::weak_ptr<IFFmpegLibraries>    lastLoadedLibraries{};
+  LoggingFunction                    loggingFunction{};
+  LogLevel                           minimumLogLevel{LogLevel::Error};
 };
 
 } // namespace ffmpeg

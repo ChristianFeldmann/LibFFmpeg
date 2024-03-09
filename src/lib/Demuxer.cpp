@@ -21,18 +21,15 @@ Demuxer::Demuxer(Demuxer &&demuxer)
 {
 }
 
-ResultAndLog Demuxer::openFile(const std::filesystem::path &path)
+bool Demuxer::openFile(const std::filesystem::path &path)
 {
-  Log log;
-
   if (!this->ffmpegLibraries)
   {
-    log.push_back("Error. Libraries not loaded");
-    return {false, log};
+    this->ffmpegLibraries->log(LogLevel::Error, "Libraries not loaded.");
+    return false;
   }
 
   const auto result = this->formatContext.openFile(path);
-
   return result;
 }
 

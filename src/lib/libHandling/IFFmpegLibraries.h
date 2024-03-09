@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <common/Logging.h>
 #include <common/Types.h>
 #include <common/Version.h>
 #include <libHandling/libraryFunctions/AVFormatFunctions.h>
@@ -14,6 +15,7 @@
 #include <libHandling/libraryFunctions/SwResampleFunctions.h>
 
 #include <filesystem>
+#include <string>
 
 namespace ffmpeg
 {
@@ -33,7 +35,7 @@ public:
   virtual std::vector<LibraryInfo> getLibrariesInfo() const    = 0;
   virtual LibraryVersions          getLibrariesVersion() const = 0;
 
-  virtual std::string_view getLogList() const = 0;
+  virtual void log(const LogLevel logLevel, const std::string &message) const = 0;
 
   internal::functions::AvFormatFunctions   avformat{};
   internal::functions::AvCodecFunctions    avcodec{};

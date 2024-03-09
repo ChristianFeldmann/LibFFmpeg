@@ -26,7 +26,7 @@ public:
   AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   ~AVFormatContextWrapper();
 
-  ResultAndLog openFile(std::filesystem::path path);
+  bool openFile(const std::filesystem::path path);
 
   explicit operator bool() const;
 

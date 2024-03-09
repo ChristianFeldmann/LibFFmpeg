@@ -14,11 +14,11 @@ namespace ffmpeg::internal::functions
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedLibraryLoader &lib,
                                                                    const Version avCodecVersion,
-                                                                   Log          &log)
+                                                                   const LoggingFunction &log)
 {
   if (!lib)
   {
-    log.push_back("Binding of avCodec functions failed. Library is not loaded.");
+    log(LogLevel::Error, "Binding of avCodec functions failed. Library is not loaded.");
     return {};
   }
 
@@ -54,8 +54,9 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
 
   if (avCodecVersion.major >= 57)
   {
-    log.push_back("AVCodec version " + std::to_string(avCodecVersion.major) +
-                  " is >= 57. Looking for new decoding API.");
+    log(LogLevel::Debug,
+        "AVCodec version " + std::to_string(avCodecVersion.major) +
+            " is >= 57. Looking for new decoding API.");
 
     lib.tryResolveFunction(functions.avcodec_parameters_alloc, "avcodec_parameters_alloc");
     lib.tryResolveFunction(functions.av_packet_alloc, "av_packet_alloc");
@@ -83,8 +84,9 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   }
   else
   {
-    log.push_back("AVCodec version " + std::to_string(avCodecVersion.major) +
-                  " is < 57. Looking for the old decoding API.");
+    log(LogLevel::Debug,
+        "AVCodec version " + std::to_string(avCodecVersion.major) +
+            " is < 57. Looking for the old decoding API.");
 
     lib.tryResolveFunction(functions.av_free_packet, "av_free_packet");
     lib.tryResolveFunction(functions.avcodec_decode_video2, "avcodec_decode_video2");
@@ -103,12 +105,12 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
 
   if (!missingFunctions.empty())
   {
-    log.push_back("Binding avCodec functions failed. Missing functions: " +
-                  to_string(missingFunctions));
+    log(LogLevel::Debug,
+        "Binding avCodec functions failed. Missing functions: " + to_string(missingFunctions));
     return {};
   }
 
-  log.push_back("Binding of avCodec functions successful.");
+  log(LogLevel::Debug, "Binding of avCodec functions successful.");
   return functions;
 }
 

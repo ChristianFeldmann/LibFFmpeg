@@ -44,7 +44,5 @@ struct Rational
 };
 
 using ByteVector   = std::vector<std::byte>;
-using Log          = std::vector<std::string>;
-using ResultAndLog = std::pair<bool, Log>;
 
 } // namespace ffmpeg

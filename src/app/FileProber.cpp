@@ -83,17 +83,11 @@ std::string to_string(const avcodec::AVPacketWrapper::Flags &flags)
   return flagsString;
 }
 
-void printOutLog(const Log &log)
-{
-  std::cout << "\n ---- Log -----\n";
-  for (const auto &logLine : log)
-    std::cout << logLine << "\n";
-}
-
 struct Settings
 {
   bool                  showPackets{};
   std::filesystem::path libraryPath{};
+  ffmpeg::LogLevel      logLevel{ffmpeg::LogLevel::Error};
 };
 
 Settings parseCommandLineArguments(int argc, char const *argv[])
@@ -104,6 +98,12 @@ Settings parseCommandLineArguments(int argc, char const *argv[])
     const auto argument = std::string(argv[i]);
     if (argument == "-showAllPackets")
       settings.showPackets = true;
+    if (argument == "-loglevelDebug")
+      settings.logLevel = ffmpeg::LogLevel::Debug;
+    if (argument == "-loglevelInfo")
+      settings.logLevel = ffmpeg::LogLevel::Info;
+    if (argument == "-loglevelWarning")
+      settings.logLevel = ffmpeg::LogLevel::Warning;
     if (argument == "-libPath")
     {
       i++;
@@ -125,16 +125,27 @@ Settings parseCommandLineArguments(int argc, char const *argv[])
   return settings;
 }
 
+void loggingFunction(const LogLevel logLevel, const std::string &message)
+{
+  static std::map<LogLevel, std::string> LogLevelToName = {{LogLevel::Debug, "Debug"},
+                                                           {LogLevel::Info, "Info"},
+                                                           {LogLevel::Warning, "Warning"},
+                                                           {LogLevel::Error, "Error"}};
+
+  std::cout << "[" << LogLevelToName.at(logLevel) << "]" << message << "\n";
+}
+
 int main(int argc, char const *argv[])
 {
   const auto settings = parseCommandLineArguments(argc, argv);
 
-  const auto loadingResult = FFmpegLibrariesBuilder().tryLoadingOfLibraries();
+  const auto loadingResult = FFmpegLibrariesBuilder()
+                                 .withLoggingFunction(&loggingFunction, LogLevel::Debug)
+                                 .tryLoadingOfLibraries();
 
   if (!loadingResult.ffmpegLibraries)
   {
     std::cout << "Error when loading libraries: " << loadingResult.errorMessage << "\n";
-    printOutLog(loadingResult.loadingLog);
     return 1;
   }
   else
@@ -150,16 +161,12 @@ int main(int argc, char const *argv[])
   }
 
   Demuxer demuxer(loadingResult.ffmpegLibraries);
-  const auto [openSuccessfull, openingLog] = demuxer.openFile(FILE_NAME);
-
-  if (!openSuccessfull)
+  if (!demuxer.openFile(FILE_NAME))
   {
     std::cout << "Error when opening input file : " + FILE_NAME + "\n ";
-    printOutLog(openingLog);
     return 1;
   }
-  else
-    std::cout << "Successfully opened file " + FILE_NAME + ".\n";
+  std::cout << "Successfully opened file " + FILE_NAME + ".\n";
 
   const auto formatContext = demuxer.getFormatContext();
   const auto inputFormat   = formatContext->getInputFormat();
