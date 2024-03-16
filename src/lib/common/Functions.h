@@ -15,15 +15,6 @@
 namespace ffmpeg
 {
 
-enum class ConcatenationSymbol
-{
-  Comma,
-  Newline
-};
-
-std::string to_string(const std::vector<std::string> &strings,
-                      const ConcatenationSymbol concatenationSymbol = ConcatenationSymbol::Comma);
-
 inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int inputDataSize)
 {
   if (inputDataSize <= 0 || inputData == nullptr)

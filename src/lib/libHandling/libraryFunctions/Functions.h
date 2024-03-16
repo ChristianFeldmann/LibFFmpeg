@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <common/Logging.h>
 #include <common/Types.h>
 
 #include <functional>
@@ -17,22 +18,22 @@ namespace ffmpeg::internal::functions
 {
 
 template <typename T>
-void checkForMissingFunctionAndLog(const std::function<T>   &function,
-                                   const std::string        &name,
+void checkForMissingFunctionAndLog(const std::function<T> &  function,
+                                   const std::string &       name,
                                    std::vector<std::string> &missingFunctions,
-                                   Log                      &log)
+                                   const LoggingFunction &   log)
 {
   if (function)
-    log.push_back("Successfully resolved function " + name);
+    log(LogLevel::Debug, "Successfully resolved function " + name);
   else
   {
-    log.push_back("Failed to resolved function " + name);
+    log(LogLevel::Debug, "Failed to resolved function " + name);
     missingFunctions.push_back(name);
   }
 }
 
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
                                                   const std::string               libraryName,
-                                                  Log                            &log);
+                                                  const LoggingFunction &         log);
 
 } // namespace ffmpeg::internal::functions

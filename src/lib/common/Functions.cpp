@@ -11,22 +11,4 @@
 namespace ffmpeg
 {
 
-std::string to_string(const std::vector<std::string> &strings,
-                      const ConcatenationSymbol       concatenationSymbol)
-{
-  std::ostringstream stream;
-  for (auto it = strings.begin(); it != strings.end(); it++)
-  {
-    if (it != strings.begin())
-    {
-      if (concatenationSymbol == ConcatenationSymbol::Comma)
-        stream << ", ";
-      else if (concatenationSymbol == ConcatenationSymbol::Newline)
-        stream << "\n";
-    }
-    stream << (*it);
-  }
-  return stream.str();
-}
-
 } // namespace ffmpeg

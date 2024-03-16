@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <common/Logging.h>
 #include <common/Types.h>
 #include <libHandling/SharedLibraryLoader.h>
 
@@ -18,6 +19,6 @@ struct SwResampleFunctions
 };
 
 std::optional<SwResampleFunctions>
-tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log);
+tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, const LoggingFunction &log);
 
 } // namespace ffmpeg::internal::functions

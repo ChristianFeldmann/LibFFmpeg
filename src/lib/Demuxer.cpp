@@ -6,8 +6,29 @@
 
 #include "Demuxer.h"
 
+#include <common/Formatting.h>
+
 namespace ffmpeg
 {
+
+namespace
+{
+
+std::string logPacket(const avcodec::AVPacketWrapper &packet)
+{
+  std::stringstream stream;
+  stream << " DTS " << packet.getDTS();
+  stream << " PTS ";
+  const auto pts = packet.getPTS();
+  if (pts)
+    stream << *pts;
+  else
+    stream << "-";
+  stream << " Flags [" << to_string(packet.getFlags()) << "]";
+  return stream.str();
+}
+
+} // namespace
 
 Demuxer::Demuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : formatContext(avformat::AVFormatContextWrapper(ffmpegLibraries))
@@ -21,18 +42,15 @@ Demuxer::Demuxer(Demuxer &&demuxer)
 {
 }
 
-ResultAndLog Demuxer::openFile(const std::filesystem::path &path)
+bool Demuxer::openFile(const Path &path)
 {
-  Log log;
-
   if (!this->ffmpegLibraries)
   {
-    log.push_back("Error. Libraries not loaded");
-    return {false, log};
+    this->ffmpegLibraries->log(LogLevel::Error, "Libraries not loaded.");
+    return false;
   }
 
   const auto result = this->formatContext.openFile(path);
-
   return result;
 }
 
@@ -40,7 +58,11 @@ std::optional<avcodec::AVPacketWrapper> Demuxer::getNextPacket()
 {
   avcodec::AVPacketWrapper packet(this->ffmpegLibraries);
   if (!this->formatContext.getNextPacket(packet))
+  {
+    this->ffmpegLibraries->log(LogLevel::Debug, "Got empty packet");
     return {};
+  }
+  this->ffmpegLibraries->log(LogLevel::Debug, "Got Packet with " + logPacket(packet));
   return packet;
 }
 

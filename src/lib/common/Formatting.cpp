@@ -13,7 +13,7 @@
 namespace ffmpeg
 {
 
-std::string toString(int64_t timestamp, Rational timebase)
+std::string to_string(int64_t timestamp, Rational timebase)
 {
   auto absolutSeconds = static_cast<double>(timestamp) * static_cast<double>(timebase.numerator) /
                         static_cast<double>(timebase.denominator);
@@ -36,6 +36,75 @@ std::string toString(int64_t timestamp, Rational timebase)
   stream << std::setfill('0') << std::setw(3) << milliseconds << ":";
 
   return stream.str();
+}
+
+std::string to_string(const avcodec::AVPacketWrapper::Flags &flags)
+{
+  std::string flagsString;
+  if (flags.keyframe)
+    flagsString += "Keyframe,";
+  if (flags.corrupt)
+    flagsString += "Corrupt,";
+  if (flags.discard)
+    flagsString += "Discard";
+  if (!flagsString.empty())
+    flagsString.pop_back();
+  return flagsString;
+}
+
+std::string to_string(const std::vector<std::string> &strings,
+                      const ConcatenationSymbol       concatenationSymbol)
+{
+  std::ostringstream stream;
+  for (auto it = strings.begin(); it != strings.end(); it++)
+  {
+    if (it != strings.begin())
+    {
+      if (concatenationSymbol == ConcatenationSymbol::Comma)
+        stream << ", ";
+      else if (concatenationSymbol == ConcatenationSymbol::Newline)
+        stream << "\n";
+    }
+    stream << (*it);
+  }
+  return stream.str();
+}
+
+std::string to_string(const Decoder::State state)
+{
+  switch (state)
+  {
+  case Decoder::State::NotOpened:
+    return "NotOpened";
+  case Decoder::State::NeedsMoreData:
+    return "NeedsMoreData";
+  case Decoder::State::RetrieveFrames:
+    return "RetrieveFrames";
+  case Decoder::State::EndOfBitstream:
+    return "EndOfBitstream";
+  case Decoder::State::Error:
+    return "Error";
+  default:
+    return "";
+  }
+}
+
+std::string to_string(const LogLevel logLevel)
+{
+  switch (logLevel)
+  {
+  case LogLevel::Debug:
+    return "Debug";
+  case LogLevel::Info:
+    return "Info";
+  case LogLevel::Warning:
+    return "Warning";
+  case LogLevel::Error:
+    return "Error";
+
+  default:
+    return "";
+  }
 }
 
 } // namespace ffmpeg

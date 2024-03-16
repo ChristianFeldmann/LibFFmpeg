@@ -6,13 +6,20 @@
 
 #pragma once
 
+#include <functional>
+#include <string>
+
 namespace ffmpeg
 {
 
-// Demuxer openFileForParsing();
+enum class LogLevel
+{
+  Debug,
+  Info,
+  Warning,
+  Error
+};
 
-// Decoder createPacketDecoder();
-
-// Check if a path contains usable ffmpeg libraries
+using LoggingFunction = std::function<void(const LogLevel, const std::string &)>;
 
 } // namespace ffmpeg

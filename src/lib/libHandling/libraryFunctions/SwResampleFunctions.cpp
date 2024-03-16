@@ -6,7 +6,7 @@
 
 #include "SwResampleFunctions.h"
 
-#include <common/Functions.h>
+#include <common/Formatting.h>
 
 #include "Functions.h"
 
@@ -14,11 +14,11 @@ namespace ffmpeg::internal::functions
 {
 
 std::optional<SwResampleFunctions>
-tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log)
+tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, const LoggingFunction &log)
 {
   if (!lib)
   {
-    log.push_back("Binding of swResample functions failed. Library is not loaded.");
+    log(LogLevel::Error, "Binding of swResample functions failed. Library is not loaded.");
     return {};
   }
 
@@ -33,12 +33,12 @@ tryBindSwResampleFunctionsFromLibrary(const SharedLibraryLoader &lib, Log &log)
 
   if (!missingFunctions.empty())
   {
-    log.push_back("Binding swResample functions failed. Missing functions: " +
-                  to_string(missingFunctions));
+    log(LogLevel::Debug,
+        "Binding swResample functions failed. Missing functions: " + to_string(missingFunctions));
     return {};
   }
 
-  log.push_back("Binding of swPresample functions successful.");
+  log(LogLevel::Debug, "Binding of swPresample functions successful.");
   return functions;
 }
 
