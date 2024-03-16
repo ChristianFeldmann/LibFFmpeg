@@ -16,7 +16,7 @@ Decoder::Decoder(std::shared_ptr<IFFmpegLibraries> libraries)
 {
   if (!libraries)
     throw std::runtime_error("Given libraries pointer is null");
-  this->libraries = libraries;
+  this->ffmpegLibraries = libraries;
 }
 
 Decoder::operator bool() const
@@ -32,7 +32,7 @@ bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
   bool openContextSuccessfull = false;
   if (auto codecParameters = stream.getCodecParameters())
   {
-    this->decoderContext   = avcodec::AVCodecContextWrapper(this->libraries);
+    this->decoderContext   = avcodec::AVCodecContextWrapper(this->ffmpegLibraries);
     openContextSuccessfull = this->decoderContext->openContextForDecoding(*codecParameters);
   }
   else
@@ -45,9 +45,9 @@ bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
   }
 
   if (openContextSuccessfull)
-    this->libraries->log(LogLevel::Info, "Opening of decoder successfull");
+    this->ffmpegLibraries->log(LogLevel::Info, "Opening of decoder successfull");
   else
-    this->libraries->log(LogLevel::Error, "Opening of deoder failed.");
+    this->ffmpegLibraries->log(LogLevel::Error, "Opening of deoder failed.");
 
   this->decoderState = openContextSuccessfull ? State::NeedsMoreData : State::Error;
   return openContextSuccessfull;
@@ -58,27 +58,28 @@ Decoder::SendPacketResult Decoder::sendPacket(const avcodec::AVPacketWrapper &pa
   if (this->decoderState == State::NotOpened || this->decoderState == State::Error ||
       this->decoderState == State::EndOfBitstream || this->flushing)
   {
-    this->libraries->log(LogLevel::Error,
-                         "Can not send packet because decoder state is " +
-                             to_string(this->decoderState));
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Can not send packet because decoder state is " +
+                                   to_string(this->decoderState));
     return SendPacketResult::Error;
   }
 
   if (!packet)
   {
-    this->libraries->log(LogLevel::Error,
-                         "Can not send null packet. Use setFlushing to start flushing.");
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Can not send null packet. Use setFlushing to start flushing.");
     return SendPacketResult::Error;
   }
 
   if (this->decoderState == State::RetrieveFrames)
   {
-    this->libraries->log(LogLevel::Debug, "Sending packet failed. Frames must be pulled first.");
+    this->ffmpegLibraries->log(LogLevel::Debug,
+                               "Sending packet failed. Frames must be pulled first.");
     return SendPacketResult::NotSentPullFramesFirst;
   }
 
   ReturnCode returnCode;
-  if (this->libraries->getLibrariesVersion().avcodec.major == 56)
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
   {
     // In the old interface there is no pushPacket/pullFrame so we have
     // to adapt by decoding and storing the frames here.
@@ -96,14 +97,14 @@ Decoder::SendPacketResult Decoder::sendPacket(const avcodec::AVPacketWrapper &pa
 
   if (returnCode == ReturnCode::TryAgain)
   {
-    this->libraries->log(LogLevel::Debug,
-                         "Pushing packet failed (TryAgain). Swithing to state RetrieveFrames.");
+    this->ffmpegLibraries->log(
+        LogLevel::Debug, "Pushing packet failed (TryAgain). Swithing to state RetrieveFrames.");
     this->decoderState = State::RetrieveFrames;
     return SendPacketResult::NotSentPullFramesFirst;
   }
   if (returnCode != ReturnCode::Ok)
   {
-    this->libraries->log(LogLevel::Error, "Error sending packet.");
+    this->ffmpegLibraries->log(LogLevel::Error, "Error sending packet.");
     this->decoderState = State::Error;
     return SendPacketResult::Error;
   }
@@ -117,10 +118,10 @@ void Decoder::setFlushing()
     throw std::runtime_error("Flushing was already set. Can not be set multiple times.");
 
   auto returnCode = ReturnCode::Ok;
-  if (this->libraries->getLibrariesVersion().avcodec.major > 56)
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major > 56)
     returnCode = this->decoderContext->sendFlushPacket();
 
-  this->libraries->log(LogLevel::Debug, "Setting decoder to flushing.");
+  this->ffmpegLibraries->log(LogLevel::Debug, "Setting decoder to flushing.");
   this->flushing     = true;
   this->decoderState = (returnCode == ReturnCode::Ok) ? State::RetrieveFrames : State::Error;
 }
@@ -130,11 +131,11 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
   if (this->decoderState != State::RetrieveFrames)
     return {};
 
-  if (this->libraries->getLibrariesVersion().avcodec.major == 56)
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
   {
     if (this->flushing)
     {
-      avcodec::AVPacketWrapper emptyFlushPacket(this->libraries);
+      avcodec::AVPacketWrapper emptyFlushPacket(this->ffmpegLibraries);
 
       const auto dataPtr  = emptyFlushPacket.getData();
       const auto dataSize = emptyFlushPacket.getDataSize();

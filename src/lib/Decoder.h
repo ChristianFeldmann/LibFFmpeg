@@ -46,7 +46,7 @@ public:
   std::optional<avutil::AVFrameWrapper> decodeNextFrame();
 
 private:
-  std::shared_ptr<IFFmpegLibraries>             libraries;
+  std::shared_ptr<IFFmpegLibraries>             ffmpegLibraries;
   std::optional<avcodec::AVCodecContextWrapper> decoderContext{};
 
   // For the old (FFmpeg 2) interface, we store the frame that is returned
