@@ -63,9 +63,7 @@ TEST(FFmpegTest, LoadLibrariesAndLogVersion)
   const auto loadingResult =
       FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
 
-  ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
-                             << "\nLog:\n"
-                             << to_string(loadingResult.loadingLog, ConcatenationSymbol::Newline);
+  ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage;
 
   const auto librariesInfo = loadingResult.ffmpegLibraries->getLibrariesInfo();
   EXPECT_EQ(librariesInfo.size(), 4);

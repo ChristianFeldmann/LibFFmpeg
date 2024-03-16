@@ -33,6 +33,10 @@ private:
   bool
   tryLoadLibrariesBindFunctionsAndCheckVersions(const std::filesystem::path &absoluteDirectoryPath,
                                                 const LibraryVersions &      libraryVersions);
+  bool tryLoadBindAndCheckAVUtil(const std::filesystem::path &absoluteDirectoryPath);
+  bool tryLoadBindAndCheckSWResample(const std::filesystem::path &absoluteDirectoryPath);
+  bool tryLoadBindAndCheckAVCodec(const std::filesystem::path &absoluteDirectoryPath);
+  bool tryLoadBindAndCheckAVFormat(const std::filesystem::path &absoluteDirectoryPath);
 
   bool tryLoadLibraryInPath(SharedLibraryLoader &        lib,
                             const std::filesystem::path &absoluteDirectoryPath,
@@ -48,10 +52,8 @@ private:
 
   LibraryVersions libraryVersions{};
 
-  static std::string logListFFmpeg;
-  static void        avLogCallback(void *ptr, int level, const char *fmt, va_list vargs);
-
-  LoggingFunction loggingFunction{};
+  void            avLogCallback(void *ptr, int level, const char *fmt, va_list vargs);
+  LoggingFunction loggingFunction;
 
   friend class FFmpegLibrariesBuilder;
 };

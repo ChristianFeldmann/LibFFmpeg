@@ -18,7 +18,6 @@ struct LibrariesLoadingResult
 {
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
   std::string                       errorMessage{};
-  std::vector<std::string>          loadingLog{};
 
   explicit operator bool() const { return this->ffmpegLibraries.get() != nullptr; };
 };

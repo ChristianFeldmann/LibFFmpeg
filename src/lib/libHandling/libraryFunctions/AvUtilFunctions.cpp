@@ -6,7 +6,7 @@
 
 #include "AvUtilFunctions.h"
 
-#include <common/Functions.h>
+#include <common/Formatting.h>
 #include <common/Version.h>
 
 #include "Functions.h"

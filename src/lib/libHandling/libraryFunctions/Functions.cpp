@@ -6,7 +6,7 @@
 
 #include "Functions.h"
 
-#include <common/Functions.h>
+#include <common/Formatting.h>
 
 namespace ffmpeg::internal::functions
 {

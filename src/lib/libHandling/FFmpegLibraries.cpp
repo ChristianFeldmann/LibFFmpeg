@@ -104,8 +104,33 @@ bool FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const std::filesystem::path &
 bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
     const std::filesystem::path &absoluteDirectoryPath, const LibraryVersions &libraryVersions)
 {
-  // AVUtil
+  if (!this->tryLoadBindAndCheckAVUtil(absoluteDirectoryPath) ||
+      !this->tryLoadBindAndCheckSWResample(absoluteDirectoryPath) ||
+      !this->tryLoadBindAndCheckAVCodec(absoluteDirectoryPath) ||
+      !this->tryLoadBindAndCheckAVFormat(absoluteDirectoryPath))
+    return false;
 
+  this->libraryVersions.avutil   = Version::fromFFmpegVersion(this->avutil.avutil_version());
+  this->libraryVersions.avcodec  = Version::fromFFmpegVersion(this->avcodec.avcodec_version());
+  this->libraryVersions.avformat = Version::fromFFmpegVersion(this->avformat.avformat_version());
+  this->libraryVersions.swresample =
+      Version::fromFFmpegVersion(this->swresample.swresample_version());
+
+  static auto callbackStatic = [this](void *ptr, int level, const char *fmt, va_list vargs) {
+    this->avLogCallback(ptr, level, fmt, vargs);
+  };
+  this->avutil.av_log_set_callback([](void *ptr, int level, const char *fmt, va_list vargs) {
+    callbackStatic(ptr, level, fmt, vargs);
+  });
+
+  if (this->libraryVersions.avformat.major < 59)
+    this->avformat.av_register_all();
+
+  return true;
+}
+
+bool FFmpegLibraries::tryLoadBindAndCheckAVUtil(const std::filesystem::path &absoluteDirectoryPath)
+{
   if (!this->tryLoadLibraryInPath(
           this->libAvutil, absoluteDirectoryPath, "avutil", libraryVersions.avutil))
     return false;
@@ -116,12 +141,13 @@ bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
   else
     return false;
 
-  if (!checkLibraryVersion(
-          "avUtil", this->avutil.avutil_version(), libraryVersions.avutil, this->loggingFunction))
-    return false;
+  return checkLibraryVersion(
+      "avUtil", this->avutil.avutil_version(), libraryVersions.avutil, this->loggingFunction);
+}
 
-  // SWResample
-
+bool FFmpegLibraries::tryLoadBindAndCheckSWResample(
+    const std::filesystem::path &absoluteDirectoryPath)
+{
   if (!this->tryLoadLibraryInPath(
           this->libSwresample, absoluteDirectoryPath, "swresample", libraryVersions.swresample))
     return false;
@@ -132,14 +158,14 @@ bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
   else
     return false;
 
-  if (!checkLibraryVersion("swresample",
-                           this->swresample.swresample_version(),
-                           libraryVersions.swresample,
-                           this->loggingFunction))
-    return false;
+  return checkLibraryVersion("swresample",
+                             this->swresample.swresample_version(),
+                             libraryVersions.swresample,
+                             this->loggingFunction);
+}
 
-  // AVCodec
-
+bool FFmpegLibraries::tryLoadBindAndCheckAVCodec(const std::filesystem::path &absoluteDirectoryPath)
+{
   if (!this->tryLoadLibraryInPath(
           this->libAvcodec, absoluteDirectoryPath, "avcodec", libraryVersions.avcodec))
     return false;
@@ -150,14 +176,13 @@ bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
   else
     return false;
 
-  if (!checkLibraryVersion("avcodec",
-                           this->avcodec.avcodec_version(),
-                           libraryVersions.avcodec,
-                           this->loggingFunction))
-    return false;
+  return checkLibraryVersion(
+      "avcodec", this->avcodec.avcodec_version(), libraryVersions.avcodec, this->loggingFunction);
+}
 
-  // AVFormat
-
+bool FFmpegLibraries::tryLoadBindAndCheckAVFormat(
+    const std::filesystem::path &absoluteDirectoryPath)
+{
   if (!this->tryLoadLibraryInPath(
           this->libAvformat, absoluteDirectoryPath, "avformat", libraryVersions.avformat))
     return false;
@@ -168,26 +193,10 @@ bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
   else
     return false;
 
-  if (!checkLibraryVersion("avformat",
-                           this->avformat.avformat_version(),
-                           libraryVersions.avformat,
-                           this->loggingFunction))
-    return false;
-
-  // Success
-
-  this->libraryVersions.avutil   = Version::fromFFmpegVersion(this->avutil.avutil_version());
-  this->libraryVersions.avcodec  = Version::fromFFmpegVersion(this->avcodec.avcodec_version());
-  this->libraryVersions.avformat = Version::fromFFmpegVersion(this->avformat.avformat_version());
-  this->libraryVersions.swresample =
-      Version::fromFFmpegVersion(this->swresample.swresample_version());
-
-  this->avutil.av_log_set_callback(&FFmpegLibraries::avLogCallback);
-
-  if (this->libraryVersions.avformat.major < 59)
-    this->avformat.av_register_all();
-
-  return true;
+  return checkLibraryVersion("avformat",
+                             this->avformat.avformat_version(),
+                             libraryVersions.avformat,
+                             this->loggingFunction);
 }
 
 bool FFmpegLibraries::tryLoadLibraryInPath(SharedLibraryLoader &        lib,
@@ -276,8 +285,6 @@ void FFmpegLibraries::log(const LogLevel logLevel, const std::string &message) c
     this->loggingFunction(logLevel, message);
 }
 
-std::string FFmpegLibraries::logListFFmpeg;
-
 void FFmpegLibraries::avLogCallback(void *, int level, const char *fmt, va_list vargs)
 {
   std::string message;
@@ -287,7 +294,15 @@ void FFmpegLibraries::avLogCallback(void *, int level, const char *fmt, va_list 
   message.resize(len);
   vsnprintf(&message[0], len + 1, fmt, vargs);
 
-  FFmpegLibraries::logListFFmpeg.append("Level " + std::to_string(level) + message);
+  if (this->loggingFunction)
+  {
+    auto logLevel = LogLevel::Debug;
+    if (level <= 16)
+      logLevel = LogLevel::Error;
+    if (level <= 32)
+      logLevel = LogLevel::Info;
+    this->loggingFunction(logLevel, message);
+  }
 }
 
 } // namespace ffmpeg

@@ -5,6 +5,7 @@
  */
 
 #include <Demuxer.h>
+#include <common/Formatting.h>
 #include <libHandling/FFmpegLibrariesBuilder.h>
 
 #include <cstddef>
@@ -38,19 +39,6 @@ std::string to_string(const avcodec::CodecDescriptorProperties &properties)
   return str.substr(0, str.length() - 2);
 }
 
-std::string to_string(const std::vector<std::string> &stringVec)
-{
-  if (stringVec.empty())
-    return {};
-
-  std::ostringstream stream;
-  for (const auto &item : stringVec)
-    stream << item << ", ";
-
-  const auto outString = stream.str();
-  return outString.substr(0, outString.length() - 2);
-}
-
 std::string to_string(const Rational rational)
 {
   return std::to_string(rational.numerator) + "/" + std::to_string(rational.denominator);
@@ -67,20 +55,6 @@ std::string to_string(const ByteVector &bytes)
   for (const auto &byte : bytes)
     stream << "0x" << std::hex << std::to_integer<int>(byte) << " ";
   return stream.str();
-}
-
-std::string to_string(const avcodec::AVPacketWrapper::Flags &flags)
-{
-  std::string flagsString;
-  if (flags.keyframe)
-    flagsString += "Keyframe,";
-  if (flags.corrupt)
-    flagsString += "Corrupt,";
-  if (flags.discard)
-    flagsString += "Discard";
-  if (!flagsString.empty())
-    flagsString.pop_back();
-  return flagsString;
 }
 
 struct Settings

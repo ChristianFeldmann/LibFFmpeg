@@ -7,10 +7,25 @@
 #pragma once
 
 #include "Types.h"
+#include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <Decoder.h>
 
 namespace ffmpeg
 {
 
 std::string toString(int64_t timestamp, Rational timebase);
 
-}
+std::string to_string(const avcodec::AVPacketWrapper::Flags &flags);
+
+enum class ConcatenationSymbol
+{
+  Comma,
+  Newline
+};
+
+std::string to_string(const std::vector<std::string> &strings,
+                      const ConcatenationSymbol concatenationSymbol = ConcatenationSymbol::Comma);
+
+std::string to_string(const Decoder::State state);
+
+} // namespace ffmpeg

@@ -6,7 +6,7 @@
 
 #include "SwResampleFunctions.h"
 
-#include <common/Functions.h>
+#include <common/Formatting.h>
 
 #include "Functions.h"
 

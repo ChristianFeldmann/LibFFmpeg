@@ -7,6 +7,7 @@
 #include "Decoder.h"
 
 #include <common/Error.h>
+#include <common/Formatting.h>
 
 namespace ffmpeg
 {
@@ -37,10 +38,16 @@ bool Decoder::openForDecoding(const avformat::AVStreamWrapper &stream)
   else
   {
     this->decoderContext = stream.getCodecContext();
-    if (!this->decoderContext)
-      return false;
-    openContextSuccessfull = this->decoderContext->openContextForDecoding();
+    if (this->decoderContext)
+      openContextSuccessfull = this->decoderContext->openContextForDecoding();
+    else
+      openContextSuccessfull = false;
   }
+
+  if (openContextSuccessfull)
+    this->libraries->log(LogLevel::Info, "Opening of decoder successfull");
+  else
+    this->libraries->log(LogLevel::Error, "Opening of deoder failed.");
 
   this->decoderState = openContextSuccessfull ? State::NeedsMoreData : State::Error;
   return openContextSuccessfull;
@@ -50,13 +57,25 @@ Decoder::SendPacketResult Decoder::sendPacket(const avcodec::AVPacketWrapper &pa
 {
   if (this->decoderState == State::NotOpened || this->decoderState == State::Error ||
       this->decoderState == State::EndOfBitstream || this->flushing)
+  {
+    this->libraries->log(LogLevel::Error,
+                         "Can not send packet because decoder state is " +
+                             to_string(this->decoderState));
     return SendPacketResult::Error;
+  }
 
   if (!packet)
+  {
+    this->libraries->log(LogLevel::Error,
+                         "Can not send null packet. Use setFlushing to start flushing.");
     return SendPacketResult::Error;
+  }
 
   if (this->decoderState == State::RetrieveFrames)
+  {
+    this->libraries->log(LogLevel::Debug, "Sending packet failed. Frames must be pulled first.");
     return SendPacketResult::NotSentPullFramesFirst;
+  }
 
   ReturnCode returnCode;
   if (this->libraries->getLibrariesVersion().avcodec.major == 56)
@@ -77,11 +96,14 @@ Decoder::SendPacketResult Decoder::sendPacket(const avcodec::AVPacketWrapper &pa
 
   if (returnCode == ReturnCode::TryAgain)
   {
+    this->libraries->log(LogLevel::Debug,
+                         "Pushing packet failed (TryAgain). Swithing to state RetrieveFrames.");
     this->decoderState = State::RetrieveFrames;
     return SendPacketResult::NotSentPullFramesFirst;
   }
   if (returnCode != ReturnCode::Ok)
   {
+    this->libraries->log(LogLevel::Error, "Error sending packet.");
     this->decoderState = State::Error;
     return SendPacketResult::Error;
   }
@@ -98,6 +120,7 @@ void Decoder::setFlushing()
   if (this->libraries->getLibrariesVersion().avcodec.major > 56)
     returnCode = this->decoderContext->sendFlushPacket();
 
+  this->libraries->log(LogLevel::Debug, "Setting decoder to flushing.");
   this->flushing     = true;
   this->decoderState = (returnCode == ReturnCode::Ok) ? State::RetrieveFrames : State::Error;
 }
