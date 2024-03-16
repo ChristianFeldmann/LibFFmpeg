@@ -119,7 +119,7 @@ int main(int argc, char const *argv[])
 
   if (!loadingResult.ffmpegLibraries)
   {
-    std::cout << "Error when loading libraries: " << loadingResult.errorMessage << "\n";
+    std::cout << "Error when loading libraries\n";
     return 1;
   }
   else

@@ -42,7 +42,7 @@ Demuxer::Demuxer(Demuxer &&demuxer)
 {
 }
 
-bool Demuxer::openFile(const std::filesystem::path &path)
+bool Demuxer::openFile(const Path &path)
 {
   if (!this->ffmpegLibraries)
   {

@@ -22,9 +22,9 @@ namespace ffmpeg
 
 struct LibraryInfo
 {
-  std::string           name;
-  std::filesystem::path path;
-  std::string           version;
+  std::string name;
+  Path        path;
+  std::string version;
 };
 
 class IFFmpegLibraries

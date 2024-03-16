@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "Logging.h"
 #include "Types.h"
 #include <AVCodec/wrappers/AVPacketWrapper.h>
 #include <Decoder.h>
@@ -27,5 +28,7 @@ std::string to_string(const std::vector<std::string> &strings,
                       const ConcatenationSymbol concatenationSymbol = ConcatenationSymbol::Comma);
 
 std::string to_string(const Decoder::State state);
+
+std::string to_string(const LogLevel logLevel);
 
 } // namespace ffmpeg

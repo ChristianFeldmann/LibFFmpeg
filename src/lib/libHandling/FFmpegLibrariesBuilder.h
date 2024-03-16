@@ -17,7 +17,6 @@ namespace ffmpeg
 struct LibrariesLoadingResult
 {
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
-  std::string                       errorMessage{};
 
   explicit operator bool() const { return this->ffmpegLibraries.get() != nullptr; };
 };
@@ -29,18 +28,17 @@ public:
 
   LibrariesLoadingResult tryLoadingOfLibraries();
 
-  FFmpegLibrariesBuilder &
-  withAdditionalSearchPaths(const std::vector<std::filesystem::path> &additionalPath);
+  FFmpegLibrariesBuilder &withAdditionalSearchPaths(const std::vector<Path> &additionalPath);
   FFmpegLibrariesBuilder &withForcedReload();
   FFmpegLibrariesBuilder &withLoggingFunction(const LoggingFunction loggingFunction,
                                               const LogLevel        minimumLogLevel);
 
 private:
-  std::vector<std::filesystem::path> searchPaths{};
-  bool                               forceReload{false};
-  std::weak_ptr<IFFmpegLibraries>    lastLoadedLibraries{};
-  LoggingFunction                    loggingFunction{};
-  LogLevel                           minimumLogLevel{LogLevel::Error};
+  std::vector<Path>               searchPaths{};
+  bool                            forceReload{false};
+  std::weak_ptr<IFFmpegLibraries> lastLoadedLibraries{};
+  LoggingFunction                 loggingFunction{};
+  LogLevel                        minimumLogLevel{LogLevel::Error};
 };
 
 } // namespace ffmpeg

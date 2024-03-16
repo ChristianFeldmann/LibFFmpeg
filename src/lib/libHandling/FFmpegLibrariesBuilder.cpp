@@ -34,7 +34,7 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
 
   auto lib = std::make_shared<FFmpegLibraries>();
   if (this->loggingFunction)
-    lib->setLoggingFunction(this->loggingFunction);
+    lib->setLoggingFunction(this->loggingFunction, this->minimumLogLevel);
 
   auto paths = this->searchPaths;
   if (paths.empty())
@@ -64,8 +64,8 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
   return result;
 }
 
-FFmpegLibrariesBuilder &FFmpegLibrariesBuilder::withAdditionalSearchPaths(
-    const std::vector<std::filesystem::path> &additionalPath)
+FFmpegLibrariesBuilder &
+FFmpegLibrariesBuilder::withAdditionalSearchPaths(const std::vector<Path> &additionalPath)
 {
   this->searchPaths.insert(this->searchPaths.begin(), additionalPath.begin(), additionalPath.end());
   return *this;

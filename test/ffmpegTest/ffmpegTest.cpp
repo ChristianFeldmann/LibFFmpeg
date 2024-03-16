@@ -8,6 +8,7 @@
 #include <Demuxer.h>
 #include <common/ComparisonFunctions.h>
 #include <common/Error.h>
+#include <common/Formatting.h>
 #include <common/Functions.h>
 #include <libHandling/FFmpegLibrariesBuilder.h>
 #include <libHandling/libraryFunctions/Functions.h>
@@ -39,10 +40,17 @@ constexpr std::size_t operator"" _sz(unsigned long long n)
 // TestFile_h264_aac_1s_320x240.mp4
 constexpr auto TEST_FILE_NAME = "TestFile_h264_aac_1s_320x240.mp4";
 
+void loggingFunction(const LogLevel logLevel, const std::string &message)
+{
+  std::cerr << "[          ] [" << to_string(logLevel) << "] " << message << "\n";
+}
+
 std::shared_ptr<IFFmpegLibraries> openLibraries()
 {
-  const auto loadingResult =
-      FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
+  const auto loadingResult = FFmpegLibrariesBuilder()
+                                 .withAdditionalSearchPaths({".", ""})
+                                 .withLoggingFunction(&loggingFunction, LogLevel::Info)
+                                 .tryLoadingOfLibraries();
   EXPECT_TRUE(loadingResult) << "Error loading libraries";
   return loadingResult.ffmpegLibraries;
 }
@@ -60,12 +68,9 @@ Demuxer openTestFileInDemuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 
 TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 {
-  const auto loadingResult =
-      FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
+  auto ffmpegLibraries = openLibraries();
 
-  ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage;
-
-  const auto librariesInfo = loadingResult.ffmpegLibraries->getLibrariesInfo();
+  const auto librariesInfo = ffmpegLibraries->getLibrariesInfo();
   EXPECT_EQ(librariesInfo.size(), 4);
 
   for (const auto &libInfo : librariesInfo)
@@ -260,7 +265,8 @@ TEST(FFmpegTest, DecodingTest)
                                 &totalFrameCounter,
                                 &EXPECTED_LINESIZE_LUMA,
                                 &EXPECTED_LINESIZE_CHROMA,
-                                &avcodecVersionMajor]() {
+                                &avcodecVersionMajor]()
+  {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {

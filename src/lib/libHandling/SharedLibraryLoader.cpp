@@ -31,8 +31,7 @@ std::string addLibraryExtensionIfNeeded(const std::string &libraryName)
   return libraryName;
 }
 
-std::optional<std::string>
-getLibraryPathWithoutDLLExtension(const std::filesystem::path &libraryPath)
+std::optional<std::string> getLibraryPathWithoutDLLExtension(const Path &libraryPath)
 {
   const auto fullPath = libraryPath.string();
   if (fullPath.size() < 5 || fullPath.substr(fullPath.size() - 4) != ".dll")
@@ -75,7 +74,7 @@ bool SharedLibraryLoader::load(const std::string &libraryName)
   return true;
 };
 
-bool SharedLibraryLoader::load(const std::filesystem::path &absolutePathToLibraryFile)
+bool SharedLibraryLoader::load(const Path &absolutePathToLibraryFile)
 {
   this->unload();
 
@@ -104,7 +103,7 @@ void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::string &lib
   CHAR path[MAX_PATH] = {0};
   if (0 == GetModuleFileNameA(this->libHandle, path, MAX_PATH))
     return;
-  const auto realPath = std::filesystem::path(path);
+  const auto realPath = Path(path);
 #elif (defined(__APPLE__))
   // One of these may work. But I have to debug this on an actual mac.
   // for (auto i = 0; i < _dyld_image_count(); ++i)
@@ -138,11 +137,11 @@ void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::string &lib
   //   {
   //       throw std::runtime_error{ "Cannot load shared library " + std::string{ libraryPath } };
   //   }
-  std::filesystem::path realPath;
+  Path realPath;
 #else
   char       path[PATH_MAX] = {0};
   const auto ret            = dlinfo(this->libHandle, RTLD_DI_ORIGIN, &path);
-  const auto realPath       = std::filesystem::path(path) / libraryName;
+  const auto realPath       = Path(path) / libraryName;
 #endif
 
   if (this->libraryPath.empty() && !realPath.empty())

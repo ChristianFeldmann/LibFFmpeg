@@ -89,4 +89,22 @@ std::string to_string(const Decoder::State state)
   }
 }
 
+std::string to_string(const LogLevel logLevel)
+{
+  switch (logLevel)
+  {
+  case LogLevel::Debug:
+    return "Debug";
+  case LogLevel::Info:
+    return "Info";
+  case LogLevel::Warning:
+    return "Warning";
+  case LogLevel::Error:
+    return "Error";
+
+  default:
+    return "";
+  }
+}
+
 } // namespace ffmpeg
