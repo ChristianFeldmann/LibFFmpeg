@@ -20,6 +20,17 @@ enum class LogLevel
   Error
 };
 
+struct LogEntry
+{
+  LogLevel    logLevel{};
+  std::string message{};
+
+  bool operator==(const LogEntry &other) const
+  {
+    return this->logLevel == other.logLevel && this->message == other.message;
+  }
+};
+
 using LoggingFunction = std::function<void(const LogLevel, const std::string &)>;
 
 } // namespace ffmpeg

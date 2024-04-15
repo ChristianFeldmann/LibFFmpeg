@@ -11,6 +11,8 @@
 #include <common/Logging.h>
 #include <libHandling/SharedLibraryLoader.h>
 
+#include <mutex>
+
 namespace ffmpeg
 {
 
@@ -18,7 +20,7 @@ class FFmpegLibraries : public IFFmpegLibraries
 {
 public:
   FFmpegLibraries();
-  ~FFmpegLibraries() = default;
+  ~FFmpegLibraries();
 
   std::vector<LibraryInfo> getLibrariesInfo() const override;
   LibraryVersions          getLibrariesVersion() const override { return this->libraryVersions; }
@@ -52,10 +54,11 @@ private:
   LibraryVersions libraryVersions{};
   void            getLibraryVersionsFromLoadedLibraries();
 
-  void            connectAVLoggingCallback();
-  void            avLogCallback(void *ptr, int level, const char *fmt, va_list vargs);
+  void               connectAVLoggingCallback();
+  void               disconnectAVLoggingCallback();
+  mutable std::mutex loggingMutex;
+
   LoggingFunction loggingFunction;
-  LogLevel        minimumLogLevel{LogLevel::Info};
 
   friend class FFmpegLibrariesBuilder;
 };

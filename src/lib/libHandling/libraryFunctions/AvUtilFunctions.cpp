@@ -15,7 +15,7 @@ namespace ffmpeg::internal::functions
 {
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 const LoggingFunction &    log)
+                                                                 const LoggingFunction     &log)
 {
   if (!lib)
   {
@@ -35,6 +35,7 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLib
   lib.tryResolveFunction(functions.av_frame_get_side_data, "av_frame_get_side_data");
   lib.tryResolveFunction(functions.av_frame_get_metadata, "av_frame_get_metadata");
   lib.tryResolveFunction(functions.av_log_set_callback, "av_log_set_callback");
+  lib.tryResolveFunction(functions.av_log_default_callback, "av_log_default_callback");
   lib.tryResolveFunction(functions.av_log_set_level, "av_log_set_level");
   lib.tryResolveFunction(functions.av_pix_fmt_desc_get, "av_pix_fmt_desc_get");
   lib.tryResolveFunction(functions.av_pix_fmt_desc_next, "av_pix_fmt_desc_next");
@@ -67,6 +68,8 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLib
 
   checkForMissingFunctionAndLog(
       functions.av_log_set_callback, "av_log_set_callback", missingFunctions, log);
+  checkForMissingFunctionAndLog(
+      functions.av_log_default_callback, "av_log_default_callback", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.av_log_set_level, "av_log_set_level", missingFunctions, log);
   checkForMissingFunctionAndLog(
