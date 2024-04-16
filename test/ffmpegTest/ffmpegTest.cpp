@@ -104,10 +104,16 @@ TEST(FFmpegTest, LoadLibrariesAndCheckLoggingCallback)
   EXPECT_TRUE(libsAndLogs.containsLogEntry(
       {LogLevel::Debug, "Successfully resolved function avutil_version"}));
   EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Setting up av logging callback"}));
-  
-  // WHy? This makes no sense
+  EXPECT_TRUE(libsAndLogs.containsLogEntry(
+      {LogLevel::Info,
+       "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used."}));
+
   EXPECT_FALSE(
       libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnectiong av logging callback"}));
+
+  libsAndLogs.libraries.reset();
+
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnectiong av logging callback"}));
 }
 
 TEST(FFmpegTest, CheckFormatAndStreamParameters)

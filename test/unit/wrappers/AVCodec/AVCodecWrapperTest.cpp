@@ -34,7 +34,7 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
 
   constexpr auto TEST_NAME         = "CodecNameTest";
   constexpr auto TEST_LONG_NAME    = "CodecLongNameTest";
-  constexpr auto TEST_CODEC_ID     = static_cast<ffmpeg::internal::AVCodecID>(98);
+  constexpr auto TEST_CODEC_ID     = internal::AV_CODEC_ID_TESTING;
   constexpr auto TEST_CAPABILITIES = 849;
 
   AVCodecType<V> rawCodec;

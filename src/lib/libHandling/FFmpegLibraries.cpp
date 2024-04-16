@@ -117,6 +117,7 @@ auto setStaticLoggingCallback(ffmpeg::internal::functions::AvUtilFunctions &avut
         avutilFunctions.av_log_set_callback(staticLogFunction1);
       else if (callbackCounter == 2)
         avutilFunctions.av_log_set_callback(staticLogFunction2);
+      return;
     }
     ++callbackCounter;
   }

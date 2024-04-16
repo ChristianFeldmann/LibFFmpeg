@@ -33,7 +33,7 @@ using ffmpeg::internal::AVRational;
 using ffmpeg::internal::AVStream;
 using ::testing::Return;
 
-constexpr auto TEST_CODEC_ID = static_cast<AVCodecID>(234);
+constexpr auto TEST_CODEC_ID = internal::AV_CODEC_ID_TESTING;
 
 template <FFmpegVersion V> void runAVStreamWrapperTestDefaultValues()
 {
