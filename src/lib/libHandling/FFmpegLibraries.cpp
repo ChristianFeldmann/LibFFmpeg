@@ -7,6 +7,7 @@
 #include "FFmpegLibraries.h"
 
 #include <cstdarg>
+#include <array>
 
 namespace ffmpeg
 {
