@@ -67,7 +67,8 @@ public:
 
   void loggingFunction(const LogLevel logLevel, const std::string &message)
   {
-    std::cerr << "[          ] [" << to_string(logLevel) << "] " << message << "\n";
+    if (logLevel != LogLevel::Debug)
+      std::cerr << "[          ] [" << to_string(logLevel) << "] " << message << "\n";
     this->logEntries.push_back({logLevel, message});
   }
 
@@ -280,6 +281,24 @@ TEST(FFmpegTest, DemuxPackets)
 
   EXPECT_EQ(packetCountAudio, 45);
   EXPECT_EQ(packetCountVideo, 25);
+}
+
+TEST(FFmpegTest, DemuxPacketsAndCheckFFmpegCallbackLogs)
+{
+  auto libsAndLogs = LibrariesWithLogging();
+
+  auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
+  const auto formatContext = demuxer.getFormatContext();
+
+  while (auto packet = demuxer.getNextPacket())
+  {
+    EXPECT_TRUE(packet->getStreamIndex() == 0 || packet->getStreamIndex() == 1);
+  }
+
+  EXPECT_TRUE(libsAndLogs.containsLogEntry(
+      {LogLevel::Debug, "Got Packet with  DTS -1024 PTS 0 Flags [Keyframe]"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Debug, "Decoding VUI\n"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Debug, "stream 0, sample 0, dts -23220\n"}));
 }
 
 TEST(FFmpegTest, DecodingTest)
