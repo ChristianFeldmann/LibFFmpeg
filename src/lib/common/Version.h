@@ -38,7 +38,8 @@ enum class FFmpegVersion
   FFmpeg_3x,
   FFmpeg_4x,
   FFmpeg_5x,
-  FFmpeg_6x
+  FFmpeg_6x,
+  FFmpeg_7x
 };
 
 const EnumMapper<FFmpegVersion>
@@ -46,7 +47,8 @@ const EnumMapper<FFmpegVersion>
                          {FFmpegVersion::FFmpeg_3x, "3.x", "FFmpeg 3.x"},
                          {FFmpegVersion::FFmpeg_4x, "4.x", "FFmpeg 4.x"},
                          {FFmpegVersion::FFmpeg_5x, "5.x", "FFmpeg 5.x"},
-                         {FFmpegVersion::FFmpeg_6x, "6.x", "FFmpeg 6.x"}});
+                         {FFmpegVersion::FFmpeg_6x, "6.x", "FFmpeg 6.x"},
+                         {FFmpegVersion::FFmpeg_7x, "7.x", "FFmpeg 7.x"}});
 
 struct LibraryVersions
 {
@@ -64,32 +66,35 @@ using VersionSwresample = Version;
 
 // These FFmpeg versions are supported. The numbers indicate the major versions.
 // The versions are sorted from newest to oldest, so that we try to open the newest ones first.
-constexpr auto SupportedFFmpegVersions = {
-    LibraryVersions({FFmpegVersion::FFmpeg_6x,
-                     VersionAVFormat(60),
-                     VersionAVCodec(60),
-                     VersionAVUtil(58),
-                     VersionSwresample(4)}),
-    LibraryVersions({FFmpegVersion::FFmpeg_5x,
-                     VersionAVFormat(59),
-                     VersionAVCodec(59),
-                     VersionAVUtil(57),
-                     VersionSwresample(4)}),
-    LibraryVersions({FFmpegVersion::FFmpeg_4x,
-                     VersionAVFormat(58),
-                     VersionAVCodec(58),
-                     VersionAVUtil(56),
-                     VersionSwresample(3)}),
-    LibraryVersions({FFmpegVersion::FFmpeg_3x,
-                     VersionAVFormat(57),
-                     VersionAVCodec(57),
-                     VersionAVUtil(55),
-                     VersionSwresample(2)}),
-    LibraryVersions({FFmpegVersion::FFmpeg_2x,
-                     VersionAVFormat(56),
-                     VersionAVCodec(56),
-                     VersionAVUtil(54),
-                     VersionSwresample(1)}),
-};
+constexpr auto SupportedFFmpegVersions = {LibraryVersions({FFmpegVersion::FFmpeg_7x,
+                                                           VersionAVFormat(61),
+                                                           VersionAVCodec(61),
+                                                           VersionAVUtil(59),
+                                                           VersionSwresample(5)}),
+                                          LibraryVersions({FFmpegVersion::FFmpeg_6x,
+                                                           VersionAVFormat(60),
+                                                           VersionAVCodec(60),
+                                                           VersionAVUtil(58),
+                                                           VersionSwresample(4)}),
+                                          LibraryVersions({FFmpegVersion::FFmpeg_5x,
+                                                           VersionAVFormat(59),
+                                                           VersionAVCodec(59),
+                                                           VersionAVUtil(57),
+                                                           VersionSwresample(4)}),
+                                          LibraryVersions({FFmpegVersion::FFmpeg_4x,
+                                                           VersionAVFormat(58),
+                                                           VersionAVCodec(58),
+                                                           VersionAVUtil(56),
+                                                           VersionSwresample(3)}),
+                                          LibraryVersions({FFmpegVersion::FFmpeg_3x,
+                                                           VersionAVFormat(57),
+                                                           VersionAVCodec(57),
+                                                           VersionAVUtil(55),
+                                                           VersionSwresample(2)}),
+                                          LibraryVersions({FFmpegVersion::FFmpeg_2x,
+                                                           VersionAVFormat(56),
+                                                           VersionAVCodec(56),
+                                                           VersionAVUtil(54),
+                                                           VersionSwresample(1)})};
 
 } // namespace ffmpeg
