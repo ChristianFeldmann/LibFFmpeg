@@ -58,7 +58,8 @@ private:
   void               disconnectAVLoggingCallback();
   mutable std::mutex loggingMutex;
 
-  LoggingFunction loggingFunction;
+  LoggingFunction    loggingFunction;
+  std::optional<int> loggingFunctionIndex;
 
   friend class FFmpegLibrariesBuilder;
 };

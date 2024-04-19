@@ -6,14 +6,16 @@
 
 #include "FFmpegLibraries.h"
 
-#include <cstdarg>
 #include <array>
+#include <cstdarg>
 
 namespace ffmpeg
 {
 
 namespace
 {
+
+using AvUtilFunctions = ffmpeg::internal::functions::AvUtilFunctions;
 
 std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int version)
 {
@@ -103,8 +105,8 @@ void staticLogFunction2(void *ptr, int level, const char *fmt, va_list vargs)
   logToLoggingFunction(staticCallbackVector[2], ptr, level, fmt, vargs);
 }
 
-auto setStaticLoggingCallback(ffmpeg::internal::functions::AvUtilFunctions &avutilFunctions,
-                              LoggingFunction                               loggingFunction)
+[[nodiscard]] std::optional<int> setStaticLoggingCallback(AvUtilFunctions &avutilFunctions,
+                                                          LoggingFunction  loggingFunction)
 {
   int callbackCounter = 0;
   while (callbackCounter < MAX_NR_REGISTERED_CALLBACKS)
@@ -118,13 +120,23 @@ auto setStaticLoggingCallback(ffmpeg::internal::functions::AvUtilFunctions &avut
         avutilFunctions.av_log_set_callback(staticLogFunction1);
       else if (callbackCounter == 2)
         avutilFunctions.av_log_set_callback(staticLogFunction2);
-      return;
+      return callbackCounter;
     }
     ++callbackCounter;
   }
 
   loggingFunction(LogLevel::Error,
                   "Error setting av logging callback. The limit of static callbacks was reached.");
+  return {};
+}
+
+void unsetStaticLoggingCallback(AvUtilFunctions &avutilFunctions, int loggingFunctionIndex)
+{
+  if (staticCallbackVector.at(loggingFunctionIndex))
+    staticCallbackVector[loggingFunctionIndex] = {};
+
+  avutilFunctions.av_log_set_callback(
+      avutilFunctions.av_log_default_callback.target<void(void *, int, const char *, va_list)>());
 }
 
 } // namespace
@@ -365,7 +377,7 @@ void FFmpegLibraries::connectAVLoggingCallback()
   this->log(LogLevel::Info, "Setting up av logging callback");
   std::lock_guard<std::mutex> lock(this->loggingMutex);
 
-  setStaticLoggingCallback(this->avutil, this->loggingFunction);
+  this->loggingFunctionIndex = setStaticLoggingCallback(this->avutil, this->loggingFunction);
 }
 
 void FFmpegLibraries::disconnectAVLoggingCallback()
@@ -373,8 +385,8 @@ void FFmpegLibraries::disconnectAVLoggingCallback()
   this->log(LogLevel::Info, "Disconnectiong av logging callback");
   std::lock_guard<std::mutex> lock(this->loggingMutex);
 
-  this->avutil.av_log_set_callback(
-      this->avutil.av_log_default_callback.target<void(void *, int, const char *, va_list)>());
+  if (this->loggingFunctionIndex)
+    unsetStaticLoggingCallback(this->avutil, this->loggingFunctionIndex.value());
 }
 
 } // namespace ffmpeg
