@@ -299,10 +299,10 @@ TEST(FFmpegTest, DemuxPacketsAndCheckFFmpegCallbackLogs)
 
   EXPECT_TRUE(libsAndLogs.containsLogEntry(
       {LogLevel::Debug, "Got Packet with  DTS -1024 PTS 0 Flags [Keyframe]"}));
-  if (majorVersion <= 55)
+  if (majorVersion == 55)
     EXPECT_TRUE(
         libsAndLogs.containsLogEntry({LogLevel::Debug, "nal_unit_type: 8, nal_ref_idc: 3\n"}));
-  else
+  else if (majorVersion > 55)
     EXPECT_TRUE(
         libsAndLogs.containsLogEntry({LogLevel::Debug, "nal_unit_type: 8(PPS), nal_ref_idc: 3\n"}));
   EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Debug, "stream 0, sample 0, dts -23220\n"}));
