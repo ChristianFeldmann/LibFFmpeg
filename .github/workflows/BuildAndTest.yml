@@ -44,7 +44,7 @@ jobs:
                   {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, azureFolder: ubuntu-22.04, unzipCommand: unzip },
                   {os: macos-latest, artifactName: ffmpegTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
                   {os: macos-14, artifactName: ffmpegTestMacM1, azureFolder: macos-m1, unzipCommand: unzip } ]
-        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1]
+        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1, 7.0]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
