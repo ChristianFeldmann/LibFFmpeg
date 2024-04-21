@@ -14,7 +14,7 @@ namespace ffmpeg::avutil
 {
 
 using internal::avutil::AVMotionVector_54;
-using internal::avutil::AVMotionVector_55_56_57_58;
+using internal::avutil::AVMotionVector_55_56_57_58_59;
 
 std::vector<MotionVector>
 parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, const size_t dataSize)
@@ -46,11 +46,11 @@ parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, con
            libraryVersions.avutil.major == 57 || //
            libraryVersions.avutil.major == 58)
   {
-    const auto nrMotionVectors = dataSize / sizeof(AVMotionVector_55_56_57_58);
+    const auto nrMotionVectors = dataSize / sizeof(AVMotionVector_55_56_57_58_59);
     for (size_t index = 0; index < nrMotionVectors; ++index)
     {
-      const auto byteOffset = sizeof(AVMotionVector_55_56_57_58) * index;
-      const auto p = reinterpret_cast<const AVMotionVector_55_56_57_58 *>(data + byteOffset);
+      const auto byteOffset = sizeof(AVMotionVector_55_56_57_58_59) * index;
+      const auto p = reinterpret_cast<const AVMotionVector_55_56_57_58_59 *>(data + byteOffset);
 
       MotionVector motionVector;
       motionVector.source       = p->source;

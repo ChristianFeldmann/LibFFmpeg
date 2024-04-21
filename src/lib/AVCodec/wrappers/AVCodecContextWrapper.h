@@ -6,8 +6,8 @@
 
 #pragma once
 
+#include <AVCodec/wrappers/AVCodecParametersWrapper.h>
 #include <AVCodec/wrappers/AVPacketWrapper.h>
-#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
 #include <AVUtil/ColorSpace.h>
 #include <AVUtil/MediaType.h>
 #include <AVUtil/wrappers/AVFrameWrapper.h>
@@ -31,7 +31,7 @@ public:
   AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
   ~AVCodecContextWrapper();
 
-  bool openContextForDecoding(const avformat::AVCodecParametersWrapper &codecParameters);
+  bool openContextForDecoding(const avcodec::AVCodecParametersWrapper &codecParameters);
   bool openContextForDecoding();
 
   ReturnCode sendPacket(const avcodec::AVPacketWrapper &packet);

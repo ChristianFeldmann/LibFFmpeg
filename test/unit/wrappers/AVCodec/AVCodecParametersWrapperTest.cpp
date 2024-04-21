@@ -4,20 +4,20 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
-#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
-#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
+#include <AVCodec/wrappers/AVCodecParametersWrapper.h>
+#include <AVCodec/wrappers/AVCodecParametersWrapperInternal.h>
 #include <common/InternalTypes.h>
 #include <wrappers/TestHelper.h>
 
 #include <libHandling/FFmpegLibrariesMoc.h>
 
-#include "VersionToAVFormatTypes.h"
+#include "VersionToAVCodecTypes.h"
 
 #include <gtest/gtest.h>
 
 #include <array>
 
-namespace ffmpeg::avformat
+namespace ffmpeg::avcodec
 {
 
 namespace
@@ -38,7 +38,7 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpeg::internal::avformat::AVCodecParameters_56 codecParameters;
+  ffmpeg::internal::avcodec::AVCodecParameters_56 codecParameters;
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
                                       ffmpegLibraries);
 
@@ -130,4 +130,4 @@ INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avformat
+} // namespace ffmpeg::avcodec
