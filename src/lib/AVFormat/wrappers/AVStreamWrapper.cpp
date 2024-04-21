@@ -201,6 +201,12 @@ std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParame
     if (p->codecpar != nullptr)
       return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
+  if (version == 61)
+  {
+    const auto p = reinterpret_cast<AVStream_61 *>(this->stream);
+    if (p->codecpar != nullptr)
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+  }
 
   return {};
 }

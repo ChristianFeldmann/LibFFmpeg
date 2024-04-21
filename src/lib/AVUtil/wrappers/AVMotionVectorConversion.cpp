@@ -44,7 +44,8 @@ parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, con
   else if (libraryVersions.avutil.major == 55 || //
            libraryVersions.avutil.major == 56 || //
            libraryVersions.avutil.major == 57 || //
-           libraryVersions.avutil.major == 58)
+           libraryVersions.avutil.major == 58 || //
+           libraryVersions.avutil.major == 59)
   {
     const auto nrMotionVectors = dataSize / sizeof(AVMotionVector_55_56_57_58_59);
     for (size_t index = 0; index < nrMotionVectors; ++index)

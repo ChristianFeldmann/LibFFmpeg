@@ -129,7 +129,7 @@ void AVCodecParametersWrapper::setClearValues()
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
 
-  if (version == 57 || version == 58 || version == 59 || version == 60)
+  if (version == 57 || version == 58 || version == 59 || version == 60 || version == 61)
   {
     auto p                   = reinterpret_cast<AVCodecParameters_57 *>(this->codecParameters);
     p->codec_type            = ffmpeg::internal::AVMEDIA_TYPE_UNKNOWN;
