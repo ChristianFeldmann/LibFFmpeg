@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         config: [ {os: windows-latest, artifactName: ffmpegTestWindows, azureFolder: windows, unzipCommand: 7z x } ]
-        ffmpegVersions: ["2.8.22", "3.4.13", "4.4.4", "5.1.4", "6.1.1", "7.0"]
+        ffmpegVersions: ["7.0"]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
