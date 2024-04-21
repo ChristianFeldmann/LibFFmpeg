@@ -10,7 +10,10 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe} ]
+        config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe},
+                  {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest},
+                  {os: macos-latest, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest},
+                  {os: macos-14, copyCommand: cp, artifactName: ffmpegTestMacM1, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -33,11 +36,43 @@ jobs:
         name: ${{ matrix.config.artifactName }}
         path: ${{ github.workspace }}/build/test/ffmpegTest/${{ matrix.config.buildPath }}${{ matrix.config.ffmpegTest }}
 
+  testFFmpegVersions:
+    needs: build
+    strategy:
+      matrix:
+        config: [ {os: windows-latest, artifactName: ffmpegTestWindows, azureFolder: windows, unzipCommand: 7z x },
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, azureFolder: ubuntu-22.04, unzipCommand: unzip },
+                  {os: macos-latest, artifactName: ffmpegTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
+                  {os: macos-14, artifactName: ffmpegTestMacM1, azureFolder: macos-m1, unzipCommand: unzip } ]
+        ffmpegVersions: [2.8.22, 3.4.13, 4.4.4, 5.1.4, 6.1.1, 7.0]
+    runs-on: ${{ matrix.config.os }}
+    steps:
+    - uses: actions/download-artifact@master
+      with:
+        name: ${{ matrix.config.artifactName }}
+
+    - name: Make ffmpegTest executable
+      run: chmod a+x ffmpegTest
+      if: ${{ matrix.config.os }} != windows-latest
+
+    - name: Download FFmpeg
+      run: |
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.azureFolder }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
+        ${{ matrix.config.unzipCommand }} ffmpeg.zip
+        rm ffmpeg.zip
+
+    - name: runffmpegTest
+      run: ./ffmpegTest
+
   testFFmpegNativeInstall:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-latest, artifactName: ffmpegTestWindows} ]
+        config: [ {os: windows-latest, artifactName: ffmpegTestWindows},
+                  {os: ubuntu-latest, artifactName: ffmpegTestUbuntu},
+                  {os: macos-latest, artifactName: ffmpegTestMacIntel},
+                  {os: macos-14, artifactName: ffmpegTestMacM1} ]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
@@ -57,11 +92,6 @@ jobs:
     - name: Add ffmpeg to path
       run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-7.0-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       if: matrix.config.os == 'windows-latest'
-
-    - name: Debug ffmpegTest
-      run: |
-        dir C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-7.0-full_build-shared
-        dir C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-7.0-full_build-shared\bin
 
     - name: Download Test files
       run: curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
