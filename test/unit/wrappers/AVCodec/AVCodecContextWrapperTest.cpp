@@ -5,8 +5,8 @@
  */
 
 #include <AVCodec/wrappers/AVCodecContextWrapper.h>
+#include <AVCodec/wrappers/AVCodecParametersWrapper.h>
 #include <AVCodec/wrappers/AVPacketWrapperInternal.h>
-#include <AVFormat/wrappers/AVCodecParametersWrapper.h>
 #include <common/InternalTypes.h>
 #include <libHandling/FFmpegLibrariesMoc.h>
 #include <wrappers/AVCodec/VersionToAVCodecTypes.h>
@@ -95,8 +95,8 @@ TEST_F(AVCodecContextWrapperTest, TestOpeningOfFile)
   auto ffmpegLibraries = std::make_shared<NiceMock<FFmpegLibrariesMock>>();
 
   {
-    AVDummy                            codecParametersDummy;
-    avformat::AVCodecParametersWrapper codecParameters(
+    AVDummy                           codecParametersDummy;
+    avcodec::AVCodecParametersWrapper codecParameters(
         reinterpret_cast<AVCodecParameters *>(&codecParametersDummy), ffmpegLibraries);
 
     auto context = AVCodecContextWrapper(ffmpegLibraries);

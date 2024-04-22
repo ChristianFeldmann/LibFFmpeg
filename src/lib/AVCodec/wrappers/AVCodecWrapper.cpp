@@ -27,6 +27,7 @@ using ffmpeg::internal::avcodec::AVCodec_57;
 using ffmpeg::internal::avcodec::AVCodec_58;
 using ffmpeg::internal::avcodec::AVCodec_59;
 using ffmpeg::internal::avcodec::AVCodec_60;
+using ffmpeg::internal::avcodec::AVCodec_61;
 
 namespace
 {

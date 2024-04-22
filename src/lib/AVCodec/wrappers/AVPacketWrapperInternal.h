@@ -70,5 +70,6 @@ struct AVPacket_59
 };
 
 typedef AVPacket_59 AVPacket_60;
+typedef AVPacket_59 AVPacket_61;
 
 } // namespace ffmpeg::internal::avcodec

@@ -156,4 +156,40 @@ struct AVFormatContext_59
 
 typedef AVFormatContext_59 AVFormatContext_60;
 
+struct AVFormatContext_61
+{
+  const AVClass  *av_class;
+  AVInputFormat  *iformat;
+  AVOutputFormat *oformat;
+  void           *priv_data;
+  AVIOContext    *pb;
+  int             ctx_flags;
+  unsigned int    nb_streams;
+  AVStream      **streams;
+  unsigned int    nb_stream_groups; // Added in 61
+  AVStreamGroup **stream_groups;    // Added in 61
+  unsigned int    nb_chapters;      // Moved in 61
+  AVChapter     **chapters;         // Moved in 61
+  char           *url;
+  int64_t         start_time;
+  int64_t         duration;
+  int64_t         bit_rate;
+  unsigned int    packet_size;
+  int             max_delay;
+  int             flags;
+  int64_t         probesize;
+  int64_t         max_analyze_duration;
+  const uint8_t  *key;
+  int             keylen;
+  unsigned int    nb_programs;
+  AVProgram     **programs;
+  AVCodecID       video_codec_id;
+  AVCodecID       audio_codec_id;
+  AVCodecID       subtitle_codec_id;
+  AVCodecID       data_codec_id; // Added in 61
+  AVDictionary   *metadata;      // Moved in 61
+
+  // Actually, there is more here, but the variables above are the only we need.
+};
+
 } // namespace ffmpeg::internal::avformat

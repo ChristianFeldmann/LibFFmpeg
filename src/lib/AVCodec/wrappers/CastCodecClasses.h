@@ -33,6 +33,11 @@
       const auto p     = reinterpret_cast<classPrefix##_60 *>(castFrom);                           \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 61)                     \
+    {                                                                                              \
+      const auto p     = reinterpret_cast<classPrefix##_61 *>(castFrom);                           \
+      variableToAssign = p->member;                                                                \
+    }                                                                                              \
     else                                                                                           \
       throw std::runtime_error("Invalid library version");                                         \
   }
@@ -64,6 +69,11 @@
     else if (this->ffmpegLibraries->getLibrariesVersion().avformat.major == 60)                    \
     {                                                                                              \
       const auto p = reinterpret_cast<classPrefix##_60 *>(castFrom);                               \
+      p->member    = variableToSet;                                                                \
+    }                                                                                              \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avformat.major == 61)                    \
+    {                                                                                              \
+      const auto p = reinterpret_cast<classPrefix##_61 *>(castFrom);                               \
       p->member    = variableToSet;                                                                \
     }                                                                                              \
     else                                                                                           \

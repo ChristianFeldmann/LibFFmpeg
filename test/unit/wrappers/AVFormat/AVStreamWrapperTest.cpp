@@ -135,7 +135,7 @@ template <FFmpegVersion V> void runAVStreamWrapperTestCodecParametersSet()
   stream.time_base      = AVRational({12, 44});
   stream.avg_frame_rate = AVRational({13, 4});
 
-  AVCodecParametersType<V> codecParameter;
+  avcodec::AVCodecParametersType<V> codecParameter;
 
   codecParameter.codec_type  = AVMEDIA_TYPE_AUDIO;
   codecParameter.codec_id    = TEST_CODEC_ID;

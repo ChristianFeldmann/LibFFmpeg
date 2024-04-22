@@ -9,7 +9,8 @@ jobs:
   build:
     strategy:
       matrix:
-        ffmpeg: [{version: 6.1.1, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
+        ffmpeg: [{version: "7.0", avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
+                 {version: 6.1.1, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
                  {version: 5.1.4, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
                  {version: 4.4.4, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
                  {version: 3.4.13, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},

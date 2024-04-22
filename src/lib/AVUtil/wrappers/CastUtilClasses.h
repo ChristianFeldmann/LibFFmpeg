@@ -8,29 +8,34 @@
 
 #define CAST_AVUTIL_GET_MEMBER(classPrefix, castFrom, variableToAssign, member)                    \
   {                                                                                                \
-    if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 54)                        \
+    if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 54)                           \
     {                                                                                              \
       const auto p     = reinterpret_cast<internal::avutil::classPrefix##_54 *>(castFrom);         \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 55)                   \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 55)                      \
     {                                                                                              \
       const auto p     = reinterpret_cast<internal::avutil::classPrefix##_55 *>(castFrom);         \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 56)                   \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 56)                      \
     {                                                                                              \
       const auto p     = reinterpret_cast<internal::avutil::classPrefix##_56 *>(castFrom);         \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 57)                   \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 57)                      \
     {                                                                                              \
       const auto p     = reinterpret_cast<internal::avutil::classPrefix##_57 *>(castFrom);         \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
-    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 58)                   \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 58)                      \
     {                                                                                              \
       const auto p     = reinterpret_cast<internal::avutil::classPrefix##_58 *>(castFrom);         \
+      variableToAssign = p->member;                                                                \
+    }                                                                                              \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 59)                      \
+    {                                                                                              \
+      const auto p     = reinterpret_cast<internal::avutil::classPrefix##_59 *>(castFrom);         \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
     else                                                                                           \

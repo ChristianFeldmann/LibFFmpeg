@@ -13,26 +13,28 @@ namespace ffmpeg::internal
 
 // Some opaque types so that we can handle pointers to them.
 // The implementation depends on the libraries version.
-class AVFormatContext;
-class AVInputFormat;
-class AVPacket;
-class AVPacketSideData;
-class AVFrame;
-class AVFrameSideData;
-class AVDictionary;
-class AVPixFmtDescriptor;
+class AVBufferRef;
+class AVChapter;
+class AVClass;
 class AVCodec;
 class AVCodecContext;
-class AVCodecParameters;
 class AVCodecDescriptor;
-class AVBufferRef;
-class AVStream;
-class AVClass;
-class AVIOContext;
-class AVProgram;
-class AVChapter;
-class AVOutputFormat;
 class AVCodecInternal;
+class AVCodecParameters;
+class AVDictionary;
+class AVFormatContext;
+class AVFrame;
+class AVFrameSideData;
+class AVInputFormat;
+class AVIOContext;
+class AVOutputFormat;
+class AVPacket;
+class AVPacketSideData;
+class AVPixFmtDescriptor;
+class AVProfile;
+class AVProgram;
+class AVStream;
+class AVStreamGroup;
 
 #define AV_NUM_DATA_POINTERS 8
 

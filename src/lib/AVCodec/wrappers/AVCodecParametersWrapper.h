@@ -13,7 +13,7 @@
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
 
-namespace ffmpeg::avformat
+namespace ffmpeg::avcodec
 {
 class AVCodecParametersWrapper
 {

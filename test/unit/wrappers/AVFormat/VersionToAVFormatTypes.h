@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <AVFormat/wrappers/AVCodecParametersWrapperInternal.h>
 #include <AVFormat/wrappers/AVFormatContextWrapperInternal.h>
 #include <AVFormat/wrappers/AVInputFormatWrapperInternal.h>
 #include <AVFormat/wrappers/AVStreamWrapperInternal.h>
@@ -33,14 +32,6 @@ namespace
   }
 
 } // namespace
-
-template <FFmpegVersion V> constexpr auto avCodecParametersTypeFunction()
-{
-  RETURN_AVFORMAT_TYPE_WRAPPER_FOR_VERSION_V(AVCodecParameters);
-}
-
-template <FFmpegVersion V>
-using AVCodecParametersType = typename decltype(avCodecParametersTypeFunction<V>())::type;
 
 template <FFmpegVersion V> constexpr auto avStreamTypeFunction()
 {
