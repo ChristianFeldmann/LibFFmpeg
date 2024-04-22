@@ -8,8 +8,6 @@
 
 #include "StaticCallbacks.h"
 
-#include <cstdarg>
-
 namespace ffmpeg
 {
 

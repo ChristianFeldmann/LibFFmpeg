@@ -7,6 +7,7 @@
 #include "StaticCallbacks.h"
 
 #include <array>
+#include <cstdarg>
 
 namespace ffmpeg
 {
