@@ -30,19 +30,20 @@ public:
   void log(const LogLevel logLevel, const std::string &message) const override;
 
 private:
-  bool tryLoadFFmpegLibrariesInPath(const Path &path);
+  [[nodiscard]] bool tryLoadFFmpegLibrariesInPath(const Path &path);
 
-  bool tryLoadLibrariesBindFunctionsAndCheckVersions(const Path            &directory,
-                                                     const LibraryVersions &libraryVersions);
-  bool tryLoadBindAndCheckAVUtil(const Path &directory, const Version version);
-  bool tryLoadBindAndCheckSWResample(const Path &directory, const Version version);
-  bool tryLoadBindAndCheckAVCodec(const Path &directory, const Version version);
-  bool tryLoadBindAndCheckAVFormat(const Path &directory, const Version version);
+  [[nodiscard]] bool
+                     tryLoadLibrariesBindFunctionsAndCheckVersions(const Path &           directory,
+                                                                   const LibraryVersions &libraryVersions);
+  [[nodiscard]] bool tryLoadBindAndCheckAVUtil(const Path &directory, const Version version);
+  [[nodiscard]] bool tryLoadBindAndCheckSWResample(const Path &directory, const Version version);
+  [[nodiscard]] bool tryLoadBindAndCheckAVCodec(const Path &directory, const Version version);
+  [[nodiscard]] bool tryLoadBindAndCheckAVFormat(const Path &directory, const Version version);
 
-  bool tryLoadLibraryInPath(SharedLibraryLoader &lib,
-                            const Path          &directory,
-                            const std::string   &libName,
-                            const Version       &version);
+  [[nodiscard]] bool tryLoadLibraryInPath(SharedLibraryLoader &lib,
+                                          const Path &         directory,
+                                          const std::string &  libName,
+                                          const Version &      version);
 
   void unloadAllLibraries();
 

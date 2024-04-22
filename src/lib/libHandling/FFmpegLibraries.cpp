@@ -6,7 +6,8 @@
 
 #include "FFmpegLibraries.h"
 
-#include <array>
+#include "StaticCallbacks.h"
+
 #include <cstdarg>
 
 namespace ffmpeg
@@ -37,9 +38,9 @@ std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int ve
   return {};
 }
 
-bool checkLibraryVersion(const std::string     &libName,
+bool checkLibraryVersion(const std::string &    libName,
                          unsigned               ffmpegVersionOfLoadedLibrary,
-                         const Version         &expectedVersion,
+                         const Version &        expectedVersion,
                          const LoggingFunction &log)
 {
   const auto loadedVersion = Version::fromFFmpegVersion(ffmpegVersionOfLoadedLibrary);
@@ -63,80 +64,6 @@ Path getAbsolutePath(const Path &path)
     return std::filesystem::current_path();
 
   return std::filesystem::absolute(path);
-}
-
-constexpr auto                                           MAX_NR_REGISTERED_CALLBACKS = 3;
-std::array<LoggingFunction, MAX_NR_REGISTERED_CALLBACKS> staticCallbackVector;
-
-void logToLoggingFunction(
-    LoggingFunction &loggingFunction, void *ptr, int level, const char *fmt, va_list vargs)
-{
-  if (!loggingFunction)
-    return;
-
-  std::string message;
-  va_list     vargs_copy;
-  va_copy(vargs_copy, vargs);
-  size_t len = vsnprintf(0, 0, fmt, vargs_copy);
-  message.resize(len);
-  vsnprintf(&message[0], len + 1, fmt, vargs);
-
-  auto logLevel = LogLevel::Debug;
-  if (level <= 16)
-    logLevel = LogLevel::Error;
-  if (level <= 32)
-    logLevel = LogLevel::Info;
-
-  loggingFunction(logLevel, message);
-}
-
-void staticLogFunction0(void *ptr, int level, const char *fmt, va_list vargs)
-{
-  logToLoggingFunction(staticCallbackVector[0], ptr, level, fmt, vargs);
-}
-
-void staticLogFunction1(void *ptr, int level, const char *fmt, va_list vargs)
-{
-  logToLoggingFunction(staticCallbackVector[1], ptr, level, fmt, vargs);
-}
-
-void staticLogFunction2(void *ptr, int level, const char *fmt, va_list vargs)
-{
-  logToLoggingFunction(staticCallbackVector[2], ptr, level, fmt, vargs);
-}
-
-[[nodiscard]] std::optional<int> setStaticLoggingCallback(AvUtilFunctions &avutilFunctions,
-                                                          LoggingFunction  loggingFunction)
-{
-  int callbackCounter = 0;
-  while (callbackCounter < MAX_NR_REGISTERED_CALLBACKS)
-  {
-    if (!staticCallbackVector.at(callbackCounter))
-    {
-      staticCallbackVector[callbackCounter] = loggingFunction;
-      if (callbackCounter == 0)
-        avutilFunctions.av_log_set_callback(staticLogFunction0);
-      else if (callbackCounter == 1)
-        avutilFunctions.av_log_set_callback(staticLogFunction1);
-      else if (callbackCounter == 2)
-        avutilFunctions.av_log_set_callback(staticLogFunction2);
-      return callbackCounter;
-    }
-    ++callbackCounter;
-  }
-
-  loggingFunction(LogLevel::Error,
-                  "Error setting av logging callback. The limit of static callbacks was reached.");
-  return {};
-}
-
-void unsetStaticLoggingCallback(AvUtilFunctions &avutilFunctions, int loggingFunctionIndex)
-{
-  if (staticCallbackVector.at(loggingFunctionIndex))
-    staticCallbackVector[loggingFunctionIndex] = {};
-
-  avutilFunctions.av_log_set_callback(
-      avutilFunctions.av_log_default_callback.target<void(void *, int, const char *, va_list)>());
 }
 
 } // namespace
@@ -268,9 +195,9 @@ bool FFmpegLibraries::tryLoadBindAndCheckAVFormat(const Path &directory, const V
 }
 
 bool FFmpegLibraries::tryLoadLibraryInPath(SharedLibraryLoader &lib,
-                                           const Path          &directory,
-                                           const std::string   &libName,
-                                           const Version       &version)
+                                           const Path &         directory,
+                                           const std::string &  libName,
+                                           const Version &      version)
 {
   this->log(LogLevel::Info, "Trying to load library " + libName + " in path " + directory.string());
 
@@ -324,13 +251,12 @@ std::vector<LibraryInfo> FFmpegLibraries::getLibrariesInfo() const
   std::vector<LibraryInfo> infoPerLIbrary;
 
   auto addLibraryInfo =
-      [&infoPerLIbrary](const char *name, const Path &path, const unsigned ffmpegVersion)
-  {
-    const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
-    const auto version        = libraryVersion.toString();
+      [&infoPerLIbrary](const char *name, const Path &path, const unsigned ffmpegVersion) {
+        const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
+        const auto version        = libraryVersion.toString();
 
-    infoPerLIbrary.push_back(LibraryInfo({name, path, version}));
-  };
+        infoPerLIbrary.push_back(LibraryInfo({name, path, version}));
+      };
 
   addLibraryInfo("AVFormat", this->libAvformat.getLibraryPath(), this->avformat.avformat_version());
   addLibraryInfo("AVCodec", this->libAvcodec.getLibraryPath(), this->avcodec.avcodec_version());
@@ -346,9 +272,8 @@ void FFmpegLibraries::setLoggingFunction(const LoggingFunction function,
 {
   {
     std::lock_guard<std::mutex> lock(this->loggingMutex);
-    this->loggingFunction =
-        [this, function, minimumLogLevel](const LogLevel logLevel, const std::string &message)
-    {
+    this->loggingFunction = [this, function, minimumLogLevel](const LogLevel     logLevel,
+                                                              const std::string &message) {
       if (function && logLevel >= minimumLogLevel)
         function(logLevel, message);
     };
