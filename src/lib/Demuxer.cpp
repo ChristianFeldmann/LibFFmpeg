@@ -33,6 +33,9 @@ std::string logPacket(const avcodec::AVPacketWrapper &packet)
 Demuxer::Demuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : formatContext(avformat::AVFormatContextWrapper(ffmpegLibraries))
 {
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
+
   this->ffmpegLibraries = ffmpegLibraries;
 }
 
@@ -44,14 +47,7 @@ Demuxer::Demuxer(Demuxer &&demuxer)
 
 bool Demuxer::openFile(const Path &path)
 {
-  if (!this->ffmpegLibraries)
-  {
-    this->ffmpegLibraries->log(LogLevel::Error, "Libraries not loaded.");
-    return false;
-  }
-
-  const auto result = this->formatContext.openFile(path);
-  return result;
+  return this->formatContext.openFile(path);
 }
 
 std::optional<avcodec::AVPacketWrapper> Demuxer::getNextPacket()
