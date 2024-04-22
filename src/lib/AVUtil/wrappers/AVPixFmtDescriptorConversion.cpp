@@ -118,7 +118,7 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
       format.componentDescriptors.push_back(descriptor);
     }
   }
-  else if (version == 57 || version == 58)
+  else if (version == 57 || version == 58 || version == 59)
   {
     auto p      = reinterpret_cast<const internal::avutil::AVPixFmtDescriptor_57 *>(descriptor);
     format.name = std::string(p->name);

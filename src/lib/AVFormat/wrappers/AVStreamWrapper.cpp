@@ -28,6 +28,7 @@ using ffmpeg::internal::avformat::AVStream_57;
 using ffmpeg::internal::avformat::AVStream_58;
 using ffmpeg::internal::avformat::AVStream_59;
 using ffmpeg::internal::avformat::AVStream_60;
+using ffmpeg::internal::avformat::AVStream_61;
 
 } // namespace
 
@@ -173,32 +174,38 @@ std::optional<avcodec::AVCodecContextWrapper> AVStreamWrapper::getCodecContext()
   return {};
 };
 
-std::optional<AVCodecParametersWrapper> AVStreamWrapper::getCodecParameters() const
+std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParameters() const
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
   if (version == 57)
   {
     const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
     if (p->codecpar != nullptr)
-      return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
   if (version == 58)
   {
     const auto p = reinterpret_cast<AVStream_58 *>(this->stream);
     if (p->codecpar != nullptr)
-      return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
   if (version == 59)
   {
     const auto p = reinterpret_cast<AVStream_59 *>(this->stream);
     if (p->codecpar != nullptr)
-      return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
   if (version == 60)
   {
     const auto p = reinterpret_cast<AVStream_60 *>(this->stream);
     if (p->codecpar != nullptr)
-      return AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+  }
+  if (version == 61)
+  {
+    const auto p = reinterpret_cast<AVStream_61 *>(this->stream);
+    if (p->codecpar != nullptr)
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
 
   return {};

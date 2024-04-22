@@ -25,7 +25,7 @@ struct AVMotionVector_54
   uint64_t flags;
 };
 
-struct AVMotionVector_55_56_57_58
+struct AVMotionVector_55_56_57_58_59
 {
   int32_t  source;
   uint8_t  w, h;

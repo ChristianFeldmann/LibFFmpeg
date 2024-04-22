@@ -28,6 +28,7 @@ using ffmpeg::internal::avcodec::AVCodecContext_57;
 using ffmpeg::internal::avcodec::AVCodecContext_58;
 using ffmpeg::internal::avcodec::AVCodecContext_59;
 using ffmpeg::internal::avcodec::AVCodecContext_60;
+using ffmpeg::internal::avcodec::AVCodecContext_61;
 
 namespace internal
 {
@@ -75,7 +76,7 @@ AVCodecContextWrapper::~AVCodecContextWrapper()
 }
 
 bool AVCodecContextWrapper::openContextForDecoding(
-    const avformat::AVCodecParametersWrapper &codecParameters)
+    const avcodec::AVCodecParametersWrapper &codecParameters)
 {
   const auto decoderCodec =
       ffmpegLibraries->avcodec.avcodec_find_decoder(codecParameters.getCodecID());

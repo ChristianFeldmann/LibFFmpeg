@@ -8,6 +8,7 @@
 
 #include <AVCodec/wrappers/AVCodecContextWrapperInternal.h>
 #include <AVCodec/wrappers/AVCodecDescriptorConversionInternal.h>
+#include <AVCodec/wrappers/AVCodecParametersWrapperInternal.h>
 #include <AVCodec/wrappers/AVCodecWrapperInternal.h>
 #include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <wrappers/RunTestForAllVersions.h>
@@ -30,9 +31,19 @@ namespace
       return TypeWrapper<internal::avcodec::wrapperNamePrefix##_59>{};                             \
     if constexpr (V == FFmpegVersion::FFmpeg_6x)                                                   \
       return TypeWrapper<internal::avcodec::wrapperNamePrefix##_60>{};                             \
+    if constexpr (V == FFmpegVersion::FFmpeg_7x)                                                   \
+      return TypeWrapper<internal::avcodec::wrapperNamePrefix##_61>{};                             \
   }
 
 } // namespace
+
+template <FFmpegVersion V> constexpr auto avCodecParametersTypeFunction()
+{
+  RETURN_AVCODEC_TYPE_WRAPPER_FOR_VERSION_V(AVCodecParameters);
+}
+
+template <FFmpegVersion V>
+using AVCodecParametersType = typename decltype(avCodecParametersTypeFunction<V>())::type;
 
 template <FFmpegVersion V> constexpr auto avCodecContextFunction()
 {

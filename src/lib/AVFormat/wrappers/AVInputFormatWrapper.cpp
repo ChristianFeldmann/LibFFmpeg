@@ -25,6 +25,7 @@ using ffmpeg::internal::avformat::AVInputFormat_57;
 using ffmpeg::internal::avformat::AVInputFormat_58;
 using ffmpeg::internal::avformat::AVInputFormat_59;
 using ffmpeg::internal::avformat::AVInputFormat_60;
+using ffmpeg::internal::avformat::AVInputFormat_61;
 
 } // namespace
 

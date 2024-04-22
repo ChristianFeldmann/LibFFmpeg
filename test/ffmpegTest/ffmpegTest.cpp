@@ -106,7 +106,8 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(inputFormat.getLongName(), "QuickTime / MOV");
   EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
-                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif"}),
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif",
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif,heic,heif"}),
               Contains(inputFormat.getExtensions()));
 
   avformat::AVInputFormatFlags expectedFlags{};
@@ -262,7 +263,8 @@ TEST(FFmpegTest, DecodingTest)
                                 &totalFrameCounter,
                                 &EXPECTED_LINESIZE_LUMA,
                                 &EXPECTED_LINESIZE_CHROMA,
-                                &avcodecVersionMajor]() {
+                                &avcodecVersionMajor]()
+  {
     int framesDecodedInLoop = 0;
     while (const auto frame = decoder.decodeNextFrame())
     {

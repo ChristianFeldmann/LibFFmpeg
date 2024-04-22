@@ -45,5 +45,6 @@ typedef AVInputFormat_56 AVInputFormat_57;
 typedef AVInputFormat_56 AVInputFormat_58;
 typedef AVInputFormat_56 AVInputFormat_59;
 typedef AVInputFormat_56 AVInputFormat_60;
+typedef AVInputFormat_56 AVInputFormat_61;
 
 } // namespace ffmpeg::internal::avformat

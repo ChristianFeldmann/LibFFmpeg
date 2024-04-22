@@ -24,14 +24,14 @@ using ffmpeg::internal::AV_FRAME_DATA_DOWNMIX_INFO;
 using ffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS;
 using ffmpeg::internal::AVFrameSideData;
 using internal::avutil::AVMotionVector_54;
-using internal::avutil::AVMotionVector_55_56_57_58;
+using internal::avutil::AVMotionVector_55_56_57_58_59;
 
 using ::testing::Return;
 
 template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummyMotionData()
 {
   static_assert(std::is_same_v<MotionVectorType, AVMotionVector_54> ||
-                std::is_same_v<MotionVectorType, AVMotionVector_55_56_57_58>);
+                std::is_same_v<MotionVectorType, AVMotionVector_55_56_57_58_59>);
 
   std::array<MotionVectorType, 5> array;
   for (int i = 0; i < 5; ++i)
@@ -44,7 +44,7 @@ template <typename MotionVectorType> std::array<MotionVectorType, 5> createDummy
     array[i].dst_x  = i * 6;
     array[i].dst_y  = i * 7;
     array[i].flags  = i * 8;
-    if constexpr (std::is_same_v<MotionVectorType, AVMotionVector_55_56_57_58>)
+    if constexpr (std::is_same_v<MotionVectorType, AVMotionVector_55_56_57_58_59>)
     {
       array[i].motion_x     = i * 9;
       array[i].motion_y     = i * 10;

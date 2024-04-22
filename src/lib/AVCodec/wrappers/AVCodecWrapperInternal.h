@@ -52,4 +52,22 @@ struct AVCodec_59
 
 typedef AVCodec_59 AVCodec_60;
 
+struct AVCodec_61
+{
+  const char           *name;
+  const char           *long_name;
+  AVMediaType           type;
+  AVCodecID             id;
+  int                   capabilities;
+  uint8_t               max_lowres;
+  const AVRational     *supported_framerates;
+  const AVPixelFormat  *pix_fmts;
+  const int            *supported_samplerates;
+  const AVSampleFormat *sample_fmts;
+  const AVClass        *priv_class;
+  const AVProfile      *profiles;
+  const char           *wrapper_name;
+  const uint64_t       *channel_layouts;
+};
+
 } // namespace ffmpeg::internal::avcodec

@@ -205,4 +205,6 @@ struct AVStream_60
   int                  pts_wrap_bits{};
 };
 
+typedef AVStream_60 AVStream_61;
+
 } // namespace ffmpeg::internal::avformat
