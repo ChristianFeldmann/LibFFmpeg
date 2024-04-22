@@ -35,7 +35,7 @@ namespace internal
 
 } // namespace internal
 
-AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext                   *codecContext,
+AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext *                  codecContext,
                                              std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codecContext(codecContext), ffmpegLibraries(ffmpegLibraries)
 {

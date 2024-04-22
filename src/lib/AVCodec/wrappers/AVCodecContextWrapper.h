@@ -26,7 +26,7 @@ public:
   AVCodecContextWrapper(ffmpeg::internal::AVCodecContext *codecContext,
                         std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   AVCodecContextWrapper(const AVCodecContextWrapper &) = delete;
-  AVCodecContextWrapper &operator=(AVCodecContextWrapper &&);
+  AVCodecContextWrapper &operator                      =(AVCodecContextWrapper &&);
   AVCodecContextWrapper &operator=(const AVCodecContextWrapper &) = delete;
   AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
   ~AVCodecContextWrapper();

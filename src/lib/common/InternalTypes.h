@@ -17,7 +17,6 @@ class AVBufferRef;
 class AVChapter;
 class AVClass;
 class AVCodec;
-class AVCodecContext;
 class AVCodecDescriptor;
 class AVCodecInternal;
 class AVCodecParameters;
@@ -35,6 +34,8 @@ class AVProfile;
 class AVProgram;
 class AVStream;
 class AVStreamGroup;
+
+struct AVCodecContext;
 
 #define AV_NUM_DATA_POINTERS 8
 
@@ -257,7 +258,7 @@ enum AVSampleFormat
  * corresponding AVPixelFormatDescriptors which we can get from FFMpeg.
  * The defined value here is only used for testing. We can not just static cast to the underlying
  * type because Clang does handle that as a hard error.
-*/
+ */
 enum AVPixelFormat
 {
   AV_PIX_FMT_NONE    = -1,
