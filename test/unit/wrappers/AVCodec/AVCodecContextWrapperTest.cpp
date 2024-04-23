@@ -34,8 +34,8 @@ using ::testing::Return;
 
 template <FFmpegVersion V> void runAVCodecContextTest()
 {
-  constexpr auto TEST_CODEC_ID     = AVCodecID(849);
-  constexpr auto TEST_PIXEL_FORMAT = AVPixelFormat(289);
+  constexpr auto TEST_CODEC_ID     = internal::AV_CODEC_ID_TESTING;
+  constexpr auto TEST_PIXEL_FORMAT = internal::AV_PIX_FMT_TESTING;
   constexpr auto TEST_WIDTH        = 728;
   constexpr auto TEST_HEIGHT       = 20;
   constexpr auto TEST_TIMEBASE     = AVRational({12, 44});

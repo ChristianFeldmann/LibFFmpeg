@@ -7,6 +7,7 @@
 #pragma once
 
 #include <common/InternalTypes.h>
+#include <common/Logging.h>
 #include <common/Types.h>
 #include <libHandling/SharedLibraryLoader.h>
 
@@ -28,6 +29,7 @@ struct AvUtilFunctions
                                                                             av_frame_get_side_data;
   std::function<AVDictionary *(const AVFrame *frame)>                       av_frame_get_metadata;
   std::function<void(void (*callback)(void *, int, const char *, va_list))> av_log_set_callback;
+  std::function<void(void(void *, int, const char *, va_list))>             av_log_default_callback;
   std::function<void(int level)>                                            av_log_set_level;
   std::function<const AVPixFmtDescriptor *(AVPixelFormat pix_fmt)>          av_pix_fmt_desc_get;
   std::function<const AVPixFmtDescriptor *(const AVPixFmtDescriptor *prev)> av_pix_fmt_desc_next;
@@ -35,6 +37,6 @@ struct AvUtilFunctions
 };
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 Log &                      log);
+                                                                 const LoggingFunction     &log);
 
 } // namespace ffmpeg::internal::functions

@@ -6,7 +6,8 @@
 
 #pragma once
 
-#include <filesystem>
+#include <common/Types.h>
+
 #include <functional>
 
 #if (defined(_WIN32) || defined(_WIN64))
@@ -34,7 +35,7 @@ public:
    * where the library is searched for.
    */
   bool load(const std::string &libraryName);
-  bool load(const std::filesystem::path &absolutePathToLibraryFile);
+  bool load(const Path &absolutePathToLibraryFile);
 
   auto getLibraryPath() const { return this->libraryPath; }
 
@@ -64,7 +65,7 @@ private:
   void *libHandle{};
 #endif
 
-  std::filesystem::path libraryPath;
+  Path libraryPath;
 
   void updateActuallyLoadedLibraryPath(const std::string &libraryName);
 };

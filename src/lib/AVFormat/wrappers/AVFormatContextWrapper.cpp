@@ -43,32 +43,35 @@ AVFormatContextWrapper::~AVFormatContextWrapper()
     this->ffmpegLibraries->avformat.avformat_close_input(&this->formatContext);
 }
 
-ResultAndLog AVFormatContextWrapper::openFile(std::filesystem::path path)
+bool AVFormatContextWrapper::openFile(const std::filesystem::path path)
 {
-  Log log;
-
   if (this->formatContext)
   {
-    log.push_back("Error opening file. AVFormatContext is already initialized.");
-    return {false, log};
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Error opening file. AVFormatContext is already initialized.");
+    return false;
   }
 
   auto ret = this->ffmpegLibraries->avformat.avformat_open_input(
       &this->formatContext, path.string().c_str(), nullptr, nullptr);
   if (ret < 0)
   {
-    log.push_back("Error opening file (avformat_open_input). Return code " + std::to_string(ret));
-    return {false, log};
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Error opening file (avformat_open_input). Return code " +
+                                   std::to_string(ret));
+    return false;
   }
 
   ret = this->ffmpegLibraries->avformat.avformat_find_stream_info(this->formatContext, nullptr);
   if (ret < 0)
   {
-    log.push_back("Error opening file (avformat_open_input). Return code " + std::to_string(ret));
-    return {false, log};
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Error opening file (avformat_open_input). Return code " +
+                                   std::to_string(ret));
+    return false;
   }
 
-  return {true, log};
+  return true;
 }
 
 AVFormatContextWrapper::operator bool() const

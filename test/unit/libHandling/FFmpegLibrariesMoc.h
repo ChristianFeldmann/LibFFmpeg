@@ -27,8 +27,7 @@ public:
 
   MOCK_METHOD(std::vector<LibraryInfo>, getLibrariesInfo, (), (const, override));
   MOCK_METHOD(LibraryVersions, getLibrariesVersion, (), (const, override));
-
-  MOCK_METHOD(std::string_view, getLogList, (), (const, override));
+  MOCK_METHOD(void, log, (const LogLevel, const std::string &), (const, override));
 
   struct FunctionCounters
   {
@@ -70,11 +69,11 @@ private:
   AVDummy avDummy;
 
   // AVUtil
-  internal::AVFrame                  *av_frame_alloc_mock();
+  internal::AVFrame *                 av_frame_alloc_mock();
   void                                av_frame_free_mock(internal::AVFrame **frame);
   const internal::AVPixFmtDescriptor *av_pix_fmt_desc_get_mock(internal::AVPixelFormat pix_fmt);
-  internal::AVDictionaryEntry        *av_dict_get_moc(internal::AVDictionary            *dictionary,
-                                                      const char                        *key,
+  internal::AVDictionaryEntry *       av_dict_get_moc(internal::AVDictionary *           dictionary,
+                                                      const char *                       key,
                                                       const internal::AVDictionaryEntry *prev,
                                                       int                                flags);
 
@@ -86,8 +85,8 @@ private:
   int avcodec_receive_frame_mock(internal::AVCodecContext *context, internal::AVFrame *frame);
   int avcodec_send_packet_mock(internal::AVCodecContext *context, const internal::AVPacket *packet);
   const internal::AVCodecDescriptor *avcodec_descriptor_get_mock(internal::AVCodecID codecID);
-  internal::AVCodec                 *avcodec_find_decoder_mock(internal::AVCodecID codecID);
-  internal::AVCodecContext          *avcodec_alloc_context3_mock(const internal::AVCodec *codec);
+  internal::AVCodec *                avcodec_find_decoder_mock(internal::AVCodecID codecID);
+  internal::AVCodecContext *         avcodec_alloc_context3_mock(const internal::AVCodec *codec);
   void avcodec_free_context_mock(internal::AVCodecContext **codecContext);
   int  avcodec_parameters_to_context_mock(internal::AVCodecContext *,
                                           const internal::AVCodecParameters *);

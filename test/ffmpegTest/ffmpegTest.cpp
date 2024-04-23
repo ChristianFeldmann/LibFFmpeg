@@ -8,6 +8,7 @@
 #include <Demuxer.h>
 #include <common/ComparisonFunctions.h>
 #include <common/Error.h>
+#include <common/Formatting.h>
 #include <common/Functions.h>
 #include <libHandling/FFmpegLibrariesBuilder.h>
 #include <libHandling/libraryFunctions/Functions.h>
@@ -39,35 +40,55 @@ constexpr std::size_t operator"" _sz(unsigned long long n)
 // TestFile_h264_aac_1s_320x240.mp4
 constexpr auto TEST_FILE_NAME = "TestFile_h264_aac_1s_320x240.mp4";
 
-std::shared_ptr<IFFmpegLibraries> openLibraries()
+class LibrariesWithLogging
 {
-  const auto loadingResult =
-      FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
-  EXPECT_TRUE(loadingResult) << "Error loading libraries";
-  return loadingResult.ffmpegLibraries;
-}
+public:
+  LibrariesWithLogging()
+  {
+    const auto loadingResult =
+        FFmpegLibrariesBuilder()
+            .withAdditionalSearchPaths({".", ""})
+            .withLoggingFunction([this](const LogLevel logLevel, const std::string &message)
+                                 { this->loggingFunction(logLevel, message); },
+                                 LogLevel::Debug)
+            .tryLoadingOfLibraries();
+    EXPECT_TRUE(loadingResult) << "Error loading libraries";
+    this->libraries = loadingResult.ffmpegLibraries;
+  }
 
-Demuxer openTestFileInDemuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
-{
-  Demuxer demuxer(ffmpegLibraries);
-  const auto [openSuccessfull, openingLog] = demuxer.openFile(TEST_FILE_NAME);
-  EXPECT_TRUE(openSuccessfull) << "Opening test file " << TEST_FILE_NAME << " failed.";
+  Demuxer openTestFileInDemuxer()
+  {
+    Demuxer demuxer(this->libraries);
+    EXPECT_TRUE(demuxer.openFile(TEST_FILE_NAME))
+        << "Opening test file " << TEST_FILE_NAME << " failed.";
 
-  return demuxer;
-}
+    return demuxer;
+  }
+
+  void loggingFunction(const LogLevel logLevel, const std::string &message)
+  {
+    if (logLevel != LogLevel::Debug)
+      std::cerr << "[          ] [" << to_string(logLevel) << "] " << message << "\n";
+    this->logEntries.push_back({logLevel, message});
+  }
+
+  bool containsLogEntry(const LogEntry &logEntry)
+  {
+    return std::find(this->logEntries.begin(), this->logEntries.end(), logEntry) !=
+           this->logEntries.end();
+  }
+
+  std::vector<LogEntry>             logEntries{};
+  std::shared_ptr<IFFmpegLibraries> libraries;
+};
 
 } // namespace
 
 TEST(FFmpegTest, LoadLibrariesAndLogVersion)
 {
-  const auto loadingResult =
-      FFmpegLibrariesBuilder().withAdditionalSearchPaths({".", ""}).tryLoadingOfLibraries();
+  auto libsAndLogs = LibrariesWithLogging();
 
-  ASSERT_TRUE(loadingResult) << "Error loading ffmpeg library: " << loadingResult.errorMessage
-                             << "\nLog:\n"
-                             << to_string(loadingResult.loadingLog, ConcatenationSymbol::Newline);
-
-  const auto librariesInfo = loadingResult.ffmpegLibraries->getLibrariesInfo();
+  const auto librariesInfo = libsAndLogs.libraries->getLibrariesInfo();
   EXPECT_EQ(librariesInfo.size(), 4);
 
   for (const auto &libInfo : librariesInfo)
@@ -75,12 +96,34 @@ TEST(FFmpegTest, LoadLibrariesAndLogVersion)
               << " with version " << libInfo.version << "\n";
 }
 
+TEST(FFmpegTest, LoadLibrariesAndCheckLoggingCallback)
+{
+  auto libsAndLogs = LibrariesWithLogging();
+
+  EXPECT_FALSE(libsAndLogs.logEntries.empty());
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Logging function set successfully"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry(
+      {LogLevel::Debug, "Successfully resolved function avutil_version"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Setting up av logging callback"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry(
+      {LogLevel::Info,
+       "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used."}));
+
+  EXPECT_FALSE(
+      libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnectiong av logging callback"}));
+
+  libsAndLogs.libraries.reset();
+
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnectiong av logging callback"}));
+}
+
 TEST(FFmpegTest, CheckFormatAndStreamParameters)
 {
-  auto       ffmpegLibraries = openLibraries();
-  auto       demuxer         = openTestFileInDemuxer(ffmpegLibraries);
-  const auto formatContext   = demuxer.getFormatContext();
-  const auto majorVersion    = ffmpegLibraries->getLibrariesVersion().avformat.major;
+  auto libsAndLogs = LibrariesWithLogging();
+
+  auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
+  const auto formatContext = demuxer.getFormatContext();
+  const auto majorVersion  = libsAndLogs.libraries->getLibrariesVersion().avformat.major;
 
   if (majorVersion <= 56)
     EXPECT_EQ(formatContext->getStartTime(), -23220);
@@ -201,8 +244,9 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
 
 TEST(FFmpegTest, DemuxPackets)
 {
-  auto       libraries     = openLibraries();
-  auto       demuxer       = openTestFileInDemuxer(libraries);
+  auto libsAndLogs = LibrariesWithLogging();
+
+  auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
   const auto formatContext = demuxer.getFormatContext();
 
   constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
@@ -220,7 +264,7 @@ TEST(FFmpegTest, DemuxPackets)
     EXPECT_TRUE(packet->getStreamIndex() == 0 || packet->getStreamIndex() == 1);
     if (packet->getStreamIndex() == 0)
     {
-      if (packetCountAudio == 0 && libraries->getLibrariesVersion().avcodec.major == 57)
+      if (packetCountAudio == 0 && libsAndLogs.libraries->getLibrariesVersion().avcodec.major == 57)
         // For some reason, the first packet is 23 bytes larger for this version of FFmpeg.
         EXPECT_EQ(packet->getDataSize(), 366) << "Audio packet number " << packetCountAudio;
       else
@@ -240,15 +284,41 @@ TEST(FFmpegTest, DemuxPackets)
   EXPECT_EQ(packetCountVideo, 25);
 }
 
+TEST(FFmpegTest, DemuxPacketsAndCheckFFmpegCallbackLogs)
+{
+  auto libsAndLogs = LibrariesWithLogging();
+
+  auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
+  const auto formatContext = demuxer.getFormatContext();
+
+  while (auto packet = demuxer.getNextPacket())
+  {
+    EXPECT_TRUE(packet->getStreamIndex() == 0 || packet->getStreamIndex() == 1);
+  }
+
+  const auto majorVersion = libsAndLogs.libraries->getLibrariesVersion().avutil.major;
+
+  EXPECT_TRUE(libsAndLogs.containsLogEntry(
+      {LogLevel::Debug, "Got Packet with  DTS -1024 PTS 0 Flags [Keyframe]"}));
+  if (majorVersion == 55)
+    EXPECT_TRUE(
+        libsAndLogs.containsLogEntry({LogLevel::Debug, "nal_unit_type: 8, nal_ref_idc: 3\n"}));
+  else if (majorVersion > 55)
+    EXPECT_TRUE(
+        libsAndLogs.containsLogEntry({LogLevel::Debug, "nal_unit_type: 8(PPS), nal_ref_idc: 3\n"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Debug, "stream 0, sample 0, dts -23220\n"}));
+}
+
 TEST(FFmpegTest, DecodingTest)
 {
-  auto ffmpegLibraries = openLibraries();
-  auto demuxer         = openTestFileInDemuxer(ffmpegLibraries);
-  auto decoder         = Decoder(ffmpegLibraries);
+  auto libsAndLogs = LibrariesWithLogging();
+
+  auto demuxer = libsAndLogs.openTestFileInDemuxer();
+  auto decoder = Decoder(libsAndLogs.libraries);
 
   const auto streamToDecode      = 1;
   const auto stream              = demuxer.getFormatContext()->getStream(streamToDecode);
-  const auto avcodecVersionMajor = ffmpegLibraries->getLibrariesVersion().avcodec.major;
+  const auto avcodecVersionMajor = libsAndLogs.libraries->getLibrariesVersion().avcodec.major;
 
   // The amount of padding that FFmpeg uses depends on how it was compiled.
   // Here, we use our own compiled versions. But in general this can not be predicted.

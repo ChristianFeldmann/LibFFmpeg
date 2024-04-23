@@ -17,7 +17,6 @@ class AVBufferRef;
 class AVChapter;
 class AVClass;
 class AVCodec;
-class AVCodecContext;
 class AVCodecDescriptor;
 class AVCodecInternal;
 class AVCodecParameters;
@@ -35,6 +34,8 @@ class AVProfile;
 class AVProgram;
 class AVStream;
 class AVStreamGroup;
+
+struct AVCodecContext;
 
 #define AV_NUM_DATA_POINTERS 8
 
@@ -253,22 +254,28 @@ enum AVSampleFormat
 };
 
 /* The pixel format is very different per FFmpeg version. It actually depends on how FFMpeg
-   was compiled. So having a wrapper around this does not make sense. We will only handle
-   corresponding AVPixelFormatDescriptors which we can get from FFMpeg.
-*/
+ * was compiled. So having a wrapper around this does not make sense. We will only handle
+ * corresponding AVPixelFormatDescriptors which we can get from FFMpeg.
+ * The defined value here is only used for testing. We can not just static cast to the underlying
+ * type because Clang does handle that as a hard error.
+ */
 enum AVPixelFormat
 {
-  AV_PIX_FMT_NONE = -1
+  AV_PIX_FMT_NONE    = -1,
+  AV_PIX_FMT_TESTING = 289
 };
 
 /* The order / numbering of the values in this enum changes depending on the libavcodec version
  * number or even how the library was compiled. The id for AV_CODEC_ID_NONE is always 0. Update In
  * ffmpeg 5, this was changed so that the AVCodecID list is fixed per version and does not change
  * depending on compilation.
+ * The defined value here is only used for testing. We can not just static cast to the underlying
+ * type because Clang does handle that as a hard error.
  */
 enum AVCodecID
 {
-  AV_CODEC_ID_NONE = 0
+  AV_CODEC_ID_NONE    = 0,
+  AV_CODEC_ID_TESTING = 98
 };
 
 struct AVRational

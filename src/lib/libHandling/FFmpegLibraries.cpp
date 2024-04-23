@@ -6,13 +6,15 @@
 
 #include "FFmpegLibraries.h"
 
-#include <cstdarg>
+#include "StaticCallbacks.h"
 
 namespace ffmpeg
 {
 
 namespace
 {
+
+using AvUtilFunctions = ffmpeg::internal::functions::AvUtilFunctions;
 
 std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int version)
 {
@@ -34,64 +36,27 @@ std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int ve
   return {};
 }
 
-bool tryLoadLibraryInPath(SharedLibraryLoader &        lib,
-                          const std::filesystem::path &absoluteDirectoryPath,
-                          const std::string &          libName,
-                          const Version &              version,
-                          Log &                        log)
-{
-  log.push_back("Trying to load library " + libName + " in path " + absoluteDirectoryPath.string());
-
-  for (const auto &possibleLibName : getPossibleLibraryNames(libName, version.major))
-  {
-    if (!absoluteDirectoryPath.empty())
-    {
-      const auto absolutePathOrLibName = absoluteDirectoryPath / possibleLibName;
-      const auto fileStatus            = std::filesystem::status(absolutePathOrLibName);
-
-      if (fileStatus.type() == std::filesystem::file_type::not_found)
-      {
-        log.push_back("Loading using lib name " + possibleLibName + " failed. Can not find file " +
-                      absolutePathOrLibName.string());
-        continue;
-      }
-
-      const auto success = lib.load(absolutePathOrLibName);
-      log.push_back("Loading library " + absolutePathOrLibName.string() +
-                    (success ? " succeded" : " failed"));
-      if (success)
-        return true;
-    }
-    else
-    {
-      const auto success = lib.load(possibleLibName);
-      log.push_back("Loading library " + possibleLibName + (success ? " succeded" : " failed"));
-      if (success)
-        return true;
-    }
-  }
-  return false;
-};
-
-bool checkLibraryVersion(const std::string &libName,
-                         unsigned           ffmpegVersionOfLoadedLibrary,
-                         const Version &    expectedVersion,
-                         Log &              log)
+bool checkLibraryVersion(const std::string &    libName,
+                         unsigned               ffmpegVersionOfLoadedLibrary,
+                         const Version &        expectedVersion,
+                         const LoggingFunction &log)
 {
   const auto loadedVersion = Version::fromFFmpegVersion(ffmpegVersionOfLoadedLibrary);
   if (loadedVersion != expectedVersion)
   {
-    log.push_back("Version of loaded " + libName + " library (" + loadedVersion.toString() +
-                  ") is not the one we are trying to load (" + expectedVersion.toString() + ")");
+    log(LogLevel::Info,
+        "Version of loaded " + libName + " library (" + loadedVersion.toString() +
+            ") is not the one we are trying to load (" + expectedVersion.toString() + ")");
     return false;
   }
 
-  log.push_back("Version check for library " + libName + " successfull. Version " +
-                loadedVersion.toString() + ".");
+  log(LogLevel::Debug,
+      "Version check for library " + libName + " successfull. Version " + loadedVersion.toString() +
+          ".");
   return true;
 }
 
-std::filesystem::path getAbsolutePath(const std::filesystem::path &path)
+Path getAbsolutePath(const Path &path)
 {
   if (path == "." || path == "./")
     return std::filesystem::current_path();
@@ -101,131 +66,172 @@ std::filesystem::path getAbsolutePath(const std::filesystem::path &path)
 
 } // namespace
 
-ResultAndLog FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path)
+FFmpegLibraries::FFmpegLibraries()
 {
-  Log log;
+  std::lock_guard<std::mutex> lock(this->loggingMutex);
+  this->loggingFunction = [](const LogLevel, const std::string &) {};
+}
 
-  std::filesystem::path absoluteDirectoryPath;
+FFmpegLibraries::~FFmpegLibraries()
+{
+  this->disconnectAVLoggingCallback();
+}
+
+bool FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const Path &path)
+{
+  Path directory;
   if (!path.empty())
   {
     if (!std::filesystem::exists(path))
     {
-      log.push_back("The given path (" + path.string() + ") could not be found");
-      return {false, log};
+      this->log(LogLevel::Error, "The given path (" + path.string() + ") could not be found");
+      return false;
     }
 
-    absoluteDirectoryPath = getAbsolutePath(path);
-    log.push_back("Using absolute path " + absoluteDirectoryPath.string());
+    directory = getAbsolutePath(path);
+    this->log(LogLevel::Info, "Using absolute path " + directory.string());
   }
 
-  for (const auto &libraryVersions : SupportedFFmpegVersions)
+  for (const auto &version : SupportedFFmpegVersions)
   {
     this->unloadAllLibraries();
-    log.push_back("Unload libraries");
+    this->log(LogLevel::Debug, "Unload libraries");
 
-    if (this->tryLoadLibrariesBindFunctionsAndCheckVersions(
-            absoluteDirectoryPath, libraryVersions, log))
+    if (this->tryLoadLibrariesBindFunctionsAndCheckVersions(directory, version))
     {
-      log.push_back(
-          "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used.");
-      return {true, log};
+      this->log(LogLevel::Info,
+                "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used.");
+      return true;
     }
   }
 
   this->unloadAllLibraries();
-  log.push_back("Unload libraries");
-  log.push_back(
+  this->log(LogLevel::Debug, "Unload libraries");
+  this->log(
+      LogLevel::Error,
       "We tried all supported versions in given path. Loading of ffmpeg libraries in path failed.");
 
-  return {false, log};
+  return false;
 }
 
-bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(
-    const std::filesystem::path &absoluteDirectoryPath,
-    const LibraryVersions &      libraryVersions,
-    Log &                        log)
+bool FFmpegLibraries::tryLoadLibrariesBindFunctionsAndCheckVersions(const Path &directory,
+                                                                    const LibraryVersions &versions)
 {
-  // AVUtil
-
-  if (!tryLoadLibraryInPath(
-          this->libAvutil, absoluteDirectoryPath, "avutil", libraryVersions.avutil, log))
+  if (!this->tryLoadBindAndCheckAVUtil(directory, versions.avutil) ||
+      !this->tryLoadBindAndCheckSWResample(directory, versions.swresample) ||
+      !this->tryLoadBindAndCheckAVCodec(directory, versions.avcodec) ||
+      !this->tryLoadBindAndCheckAVFormat(directory, versions.avformat))
     return false;
 
-  if (const auto functions =
-          internal::functions::tryBindAVUtilFunctionsFromLibrary(this->libAvutil, log))
-    this->avutil = functions.value();
-  else
-    return false;
-
-  if (!checkLibraryVersion("avUtil", this->avutil.avutil_version(), libraryVersions.avutil, log))
-    return false;
-
-  // SWResample
-
-  if (!tryLoadLibraryInPath(this->libSwresample,
-                            absoluteDirectoryPath,
-                            "swresample",
-                            libraryVersions.swresample,
-                            log))
-    return false;
-
-  if (const auto functions =
-          internal::functions::tryBindSwResampleFunctionsFromLibrary(this->libSwresample, log))
-    this->swresample = functions.value();
-  else
-    return false;
-
-  if (!checkLibraryVersion(
-          "swresample", this->swresample.swresample_version(), libraryVersions.swresample, log))
-    return false;
-
-  // AVCodec
-
-  if (!tryLoadLibraryInPath(
-          this->libAvcodec, absoluteDirectoryPath, "avcodec", libraryVersions.avcodec, log))
-    return false;
-
-  if (const auto functions = internal::functions::tryBindAVCodecFunctionsFromLibrary(
-          this->libAvcodec, libraryVersions.avcodec, log))
-    this->avcodec = functions.value();
-  else
-    return false;
-
-  if (!checkLibraryVersion(
-          "avcodec", this->avcodec.avcodec_version(), libraryVersions.avcodec, log))
-    return false;
-
-  // AVFormat
-
-  if (!tryLoadLibraryInPath(
-          this->libAvformat, absoluteDirectoryPath, "avformat", libraryVersions.avformat, log))
-    return false;
-
-  if (const auto functions =
-          internal::functions::tryBindAVFormatFunctionsFromLibrary(this->libAvformat, log))
-    this->avformat = functions.value();
-  else
-    return false;
-
-  if (!checkLibraryVersion(
-          "avformat", this->avformat.avformat_version(), libraryVersions.avformat, log))
-    return false;
-
-  // Success
-
-  this->libraryVersions.avutil   = Version::fromFFmpegVersion(this->avutil.avutil_version());
-  this->libraryVersions.avcodec  = Version::fromFFmpegVersion(this->avcodec.avcodec_version());
-  this->libraryVersions.avformat = Version::fromFFmpegVersion(this->avformat.avformat_version());
-  this->libraryVersions.swresample =
-      Version::fromFFmpegVersion(this->swresample.swresample_version());
-
-  this->avutil.av_log_set_callback(&FFmpegLibraries::avLogCallback);
+  this->getLibraryVersionsFromLoadedLibraries();
+  this->connectAVLoggingCallback();
 
   if (this->libraryVersions.avformat.major < 59)
     this->avformat.av_register_all();
 
   return true;
 }
+
+bool FFmpegLibraries::tryLoadBindAndCheckAVUtil(const Path &directory, const Version version)
+{
+  if (!this->tryLoadLibraryInPath(this->libAvutil, directory, "avutil", version))
+    return false;
+
+  if (const auto functions = internal::functions::tryBindAVUtilFunctionsFromLibrary(
+          this->libAvutil, this->loggingFunction))
+    this->avutil = functions.value();
+  else
+    return false;
+
+  return checkLibraryVersion(
+      "avUtil", this->avutil.avutil_version(), version, this->loggingFunction);
+}
+
+bool FFmpegLibraries::tryLoadBindAndCheckSWResample(const Path &directory, const Version version)
+{
+  if (!this->tryLoadLibraryInPath(this->libSwresample, directory, "swresample", version))
+    return false;
+
+  if (const auto functions = internal::functions::tryBindSwResampleFunctionsFromLibrary(
+          this->libSwresample, this->loggingFunction))
+    this->swresample = functions.value();
+  else
+    return false;
+
+  return checkLibraryVersion(
+      "swresample", this->swresample.swresample_version(), version, this->loggingFunction);
+}
+
+bool FFmpegLibraries::tryLoadBindAndCheckAVCodec(const Path &directory, const Version version)
+{
+  if (!this->tryLoadLibraryInPath(this->libAvcodec, directory, "avcodec", version))
+    return false;
+
+  if (const auto functions = internal::functions::tryBindAVCodecFunctionsFromLibrary(
+          this->libAvcodec, version, this->loggingFunction))
+    this->avcodec = functions.value();
+  else
+    return false;
+
+  return checkLibraryVersion(
+      "avcodec", this->avcodec.avcodec_version(), version, this->loggingFunction);
+}
+
+bool FFmpegLibraries::tryLoadBindAndCheckAVFormat(const Path &directory, const Version version)
+{
+  if (!this->tryLoadLibraryInPath(this->libAvformat, directory, "avformat", version))
+    return false;
+
+  if (const auto functions = internal::functions::tryBindAVFormatFunctionsFromLibrary(
+          this->libAvformat, this->loggingFunction))
+    this->avformat = functions.value();
+  else
+    return false;
+
+  return checkLibraryVersion(
+      "avformat", this->avformat.avformat_version(), version, this->loggingFunction);
+}
+
+bool FFmpegLibraries::tryLoadLibraryInPath(SharedLibraryLoader &lib,
+                                           const Path &         directory,
+                                           const std::string &  libName,
+                                           const Version &      version)
+{
+  this->log(LogLevel::Info, "Trying to load library " + libName + " in path " + directory.string());
+
+  for (const auto &possibleLibName : getPossibleLibraryNames(libName, version.major))
+  {
+    if (!directory.empty())
+    {
+      const auto absolutePathOrLibName = directory / possibleLibName;
+      const auto fileStatus            = std::filesystem::status(absolutePathOrLibName);
+
+      if (fileStatus.type() == std::filesystem::file_type::not_found)
+      {
+        this->log(LogLevel::Info,
+                  "Loading using lib name " + possibleLibName + " failed. Can not find file " +
+                      absolutePathOrLibName.string());
+        continue;
+      }
+
+      const auto success = lib.load(absolutePathOrLibName);
+      this->log(LogLevel::Info,
+                "Loading library " + absolutePathOrLibName.string() +
+                    (success ? " succeded" : " failed"));
+      if (success)
+        return true;
+    }
+    else
+    {
+      const auto success = lib.load(possibleLibName);
+      this->log(LogLevel::Info,
+                "Loading library " + possibleLibName + (success ? " succeded" : " failed"));
+      if (success)
+        return true;
+    }
+  }
+  return false;
+};
 
 void FFmpegLibraries::unloadAllLibraries()
 {
@@ -242,14 +248,13 @@ std::vector<LibraryInfo> FFmpegLibraries::getLibrariesInfo() const
 
   std::vector<LibraryInfo> infoPerLIbrary;
 
-  auto addLibraryInfo = [&infoPerLIbrary](const char *                 name,
-                                          const std::filesystem::path &path,
-                                          const unsigned               ffmpegVersion) {
-    const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
-    const auto version        = libraryVersion.toString();
+  auto addLibraryInfo =
+      [&infoPerLIbrary](const char *name, const Path &path, const unsigned ffmpegVersion) {
+        const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
+        const auto version        = libraryVersion.toString();
 
-    infoPerLIbrary.push_back(LibraryInfo({name, path, version}));
-  };
+        infoPerLIbrary.push_back(LibraryInfo({name, path, version}));
+      };
 
   addLibraryInfo("AVFormat", this->libAvformat.getLibraryPath(), this->avformat.avformat_version());
   addLibraryInfo("AVCodec", this->libAvcodec.getLibraryPath(), this->avcodec.avcodec_version());
@@ -260,18 +265,51 @@ std::vector<LibraryInfo> FFmpegLibraries::getLibrariesInfo() const
   return infoPerLIbrary;
 }
 
-std::string FFmpegLibraries::logListFFmpeg;
-
-void FFmpegLibraries::avLogCallback(void *, int level, const char *fmt, va_list vargs)
+void FFmpegLibraries::setLoggingFunction(const LoggingFunction function,
+                                         const LogLevel        minimumLogLevel)
 {
-  std::string message;
-  va_list     vargs_copy;
-  va_copy(vargs_copy, vargs);
-  size_t len = vsnprintf(0, 0, fmt, vargs_copy);
-  message.resize(len);
-  vsnprintf(&message[0], len + 1, fmt, vargs);
+  {
+    std::lock_guard<std::mutex> lock(this->loggingMutex);
+    this->loggingFunction = [this, function, minimumLogLevel](const LogLevel     logLevel,
+                                                              const std::string &message) {
+      if (function && logLevel >= minimumLogLevel)
+        function(logLevel, message);
+    };
+  }
 
-  FFmpegLibraries::logListFFmpeg.append("Level " + std::to_string(level) + message);
+  this->log(LogLevel::Info, "Logging function set successfully");
+}
+
+void FFmpegLibraries::log(const LogLevel logLevel, const std::string &message) const
+{
+  std::lock_guard<std::mutex> lock(this->loggingMutex);
+  this->loggingFunction(logLevel, message);
+}
+
+void FFmpegLibraries::getLibraryVersionsFromLoadedLibraries()
+{
+  this->libraryVersions.avutil   = Version::fromFFmpegVersion(this->avutil.avutil_version());
+  this->libraryVersions.avcodec  = Version::fromFFmpegVersion(this->avcodec.avcodec_version());
+  this->libraryVersions.avformat = Version::fromFFmpegVersion(this->avformat.avformat_version());
+  this->libraryVersions.swresample =
+      Version::fromFFmpegVersion(this->swresample.swresample_version());
+}
+
+void FFmpegLibraries::connectAVLoggingCallback()
+{
+  this->log(LogLevel::Info, "Setting up av logging callback");
+  std::lock_guard<std::mutex> lock(this->loggingMutex);
+
+  this->loggingFunctionIndex = setStaticLoggingCallback(this->avutil, this->loggingFunction);
+}
+
+void FFmpegLibraries::disconnectAVLoggingCallback()
+{
+  this->log(LogLevel::Info, "Disconnectiong av logging callback");
+  std::lock_guard<std::mutex> lock(this->loggingMutex);
+
+  if (this->loggingFunctionIndex)
+    unsetStaticLoggingCallback(this->avutil, this->loggingFunctionIndex.value());
 }
 
 } // namespace ffmpeg

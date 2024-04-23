@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <optional>
 #include <string>
 #include <vector>
@@ -43,8 +44,7 @@ struct Rational
   int denominator;
 };
 
-using ByteVector   = std::vector<std::byte>;
-using Log          = std::vector<std::string>;
-using ResultAndLog = std::pair<bool, Log>;
+using ByteVector = std::vector<std::byte>;
+using Path       = std::filesystem::path;
 
 } // namespace ffmpeg

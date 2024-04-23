@@ -8,7 +8,10 @@
 
 #include "IFFmpegLibraries.h"
 
+#include <common/Logging.h>
 #include <libHandling/SharedLibraryLoader.h>
+
+#include <mutex>
 
 namespace ffmpeg
 {
@@ -16,21 +19,31 @@ namespace ffmpeg
 class FFmpegLibraries : public IFFmpegLibraries
 {
 public:
-  FFmpegLibraries()  = default;
-  ~FFmpegLibraries() = default;
+  FFmpegLibraries();
+  ~FFmpegLibraries();
 
   std::vector<LibraryInfo> getLibrariesInfo() const override;
   LibraryVersions          getLibrariesVersion() const override { return this->libraryVersions; }
 
-  std::string_view getLogList() const override { return this->logListFFmpeg; }
+  void setLoggingFunction(const LoggingFunction loggingFunction, const LogLevel minimumLogLevel);
+
+  void log(const LogLevel logLevel, const std::string &message) const override;
 
 private:
-  ResultAndLog tryLoadFFmpegLibrariesInPath(const std::filesystem::path &path);
+  [[nodiscard]] bool tryLoadFFmpegLibrariesInPath(const Path &path);
 
-  bool
-  tryLoadLibrariesBindFunctionsAndCheckVersions(const std::filesystem::path &absoluteDirectoryPath,
-                                                const LibraryVersions       &libraryVersions,
-                                                Log                         &log);
+  [[nodiscard]] bool
+                     tryLoadLibrariesBindFunctionsAndCheckVersions(const Path &           directory,
+                                                                   const LibraryVersions &libraryVersions);
+  [[nodiscard]] bool tryLoadBindAndCheckAVUtil(const Path &directory, const Version version);
+  [[nodiscard]] bool tryLoadBindAndCheckSWResample(const Path &directory, const Version version);
+  [[nodiscard]] bool tryLoadBindAndCheckAVCodec(const Path &directory, const Version version);
+  [[nodiscard]] bool tryLoadBindAndCheckAVFormat(const Path &directory, const Version version);
+
+  [[nodiscard]] bool tryLoadLibraryInPath(SharedLibraryLoader &lib,
+                                          const Path &         directory,
+                                          const std::string &  libName,
+                                          const Version &      version);
 
   void unloadAllLibraries();
 
@@ -40,9 +53,14 @@ private:
   SharedLibraryLoader libAvformat;
 
   LibraryVersions libraryVersions{};
+  void            getLibraryVersionsFromLoadedLibraries();
 
-  static std::string logListFFmpeg;
-  static void        avLogCallback(void *ptr, int level, const char *fmt, va_list vargs);
+  void               connectAVLoggingCallback();
+  void               disconnectAVLoggingCallback();
+  mutable std::mutex loggingMutex;
+
+  LoggingFunction    loggingFunction;
+  std::optional<int> loggingFunctionIndex;
 
   friend class FFmpegLibrariesBuilder;
 };
