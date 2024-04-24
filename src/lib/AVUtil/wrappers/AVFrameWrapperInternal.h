@@ -8,20 +8,20 @@
 
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::internal::avutil
+namespace libffmpeg::internal::avutil
 {
 
 struct AVFrame_54
 {
-  uint8_t      *data[AV_NUM_DATA_POINTERS];
+  uint8_t *     data[AV_NUM_DATA_POINTERS];
   int           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t     **extended_data;
+  uint8_t **    extended_data;
   int           width, height;
   int           nb_samples;
   int           format;
   int           key_frame;
   AVPictureType pict_type;
-  uint8_t      *base[AV_NUM_DATA_POINTERS];
+  uint8_t *     base[AV_NUM_DATA_POINTERS];
   AVRational    sample_aspect_ratio;
   int64_t       pts;
   int64_t       pkt_pts;
@@ -34,9 +34,9 @@ struct AVFrame_54
 
 struct AVFrame_55
 {
-  uint8_t      *data[AV_NUM_DATA_POINTERS];
+  uint8_t *     data[AV_NUM_DATA_POINTERS];
   int           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t     **extended_data;
+  uint8_t **    extended_data;
   int           width, height;
   int           nb_samples;
   int           format;
@@ -56,9 +56,9 @@ typedef AVFrame_55 AVFrame_56;
 
 struct AVFrame_57
 {
-  uint8_t                      *data[AV_NUM_DATA_POINTERS];
+  uint8_t *                     data[AV_NUM_DATA_POINTERS];
   int                           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t                     **extended_data;
+  uint8_t **                    extended_data;
   int                           width, height;
   int                           nb_samples;
   int                           format;
@@ -71,7 +71,7 @@ struct AVFrame_57
   int                           coded_picture_number;   // Deprecated
   int                           display_picture_number; // Deprecated
   int                           quality;
-  void                         *opaque;
+  void *                        opaque;
   int                           repeat_pict;
   int                           interlaced_frame;
   int                           top_field_first;
@@ -79,10 +79,10 @@ struct AVFrame_57
   int64_t                       reordered_opaque;
   int                           sample_rate;
   uint64_t                      channel_layout;
-  AVBufferRef                  *buf[AV_NUM_DATA_POINTERS];
-  AVBufferRef                 **extended_buf;
+  AVBufferRef *                 buf[AV_NUM_DATA_POINTERS];
+  AVBufferRef **                extended_buf;
   int                           nb_extended_buf;
-  AVFrameSideData             **side_data;
+  AVFrameSideData **            side_data;
   int                           nb_side_data;
   int                           flags;
   AVColorRange                  color_range;
@@ -93,7 +93,7 @@ struct AVFrame_57
   int64_t                       best_effort_timestamp;
   int64_t                       pkt_pos;
   int64_t                       pkt_duration;
-  AVDictionary                 *metadata;
+  AVDictionary *                metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
@@ -102,9 +102,9 @@ typedef AVFrame_57 AVFrame_58;
 
 struct AVFrame_59
 {
-  uint8_t                      *data[AV_NUM_DATA_POINTERS];
+  uint8_t *                     data[AV_NUM_DATA_POINTERS];
   int                           linesize[AV_NUM_DATA_POINTERS];
-  uint8_t                     **extended_data;
+  uint8_t **                    extended_data;
   int                           width, height;
   int                           nb_samples;
   int                           format;
@@ -115,17 +115,17 @@ struct AVFrame_59
   int64_t                       pkt_dts;
   AVRational                    time_base;
   int                           quality;
-  void                         *opaque;
+  void *                        opaque;
   int                           repeat_pict;
   int                           interlaced_frame;    // Deprecated
   int                           top_field_first;     // Deprecated
   int                           palette_has_changed; // Deprecated
   int64_t                       reordered_opaque;
   int                           sample_rate;
-  AVBufferRef                  *buf[AV_NUM_DATA_POINTERS];
-  AVBufferRef                 **extended_buf;
+  AVBufferRef *                 buf[AV_NUM_DATA_POINTERS];
+  AVBufferRef **                extended_buf;
   int                           nb_extended_buf;
-  AVFrameSideData             **side_data;
+  AVFrameSideData **            side_data;
   int                           nb_side_data;
   int                           flags;
   AVColorRange                  color_range;
@@ -135,9 +135,9 @@ struct AVFrame_59
   AVChromaLocation              chroma_location;
   int64_t                       best_effort_timestamp;
   int64_t                       pkt_pos; // Deprecated
-  AVDictionary                 *metadata;
+  AVDictionary *                metadata;
 
   // Actually, there is more here, but the variables above are the only we need.
 };
 
-} // namespace ffmpeg::internal::avutil
+} // namespace libffmpeg::internal::avutil

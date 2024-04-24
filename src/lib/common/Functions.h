@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int inputDataSize)
@@ -28,4 +28,4 @@ inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int input
   return data;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

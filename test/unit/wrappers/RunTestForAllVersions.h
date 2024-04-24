@@ -8,21 +8,21 @@
 
 #include <common/Version.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 #define RUN_TEST_FOR_VERSION(version, testFunctionName)                                            \
   {                                                                                                \
-    if (version.ffmpegVersion == ffmpeg::FFmpegVersion::FFmpeg_2x)                                 \
-      testFunctionName<ffmpeg::FFmpegVersion::FFmpeg_2x>();                                        \
-    else if (version.ffmpegVersion == ffmpeg::FFmpegVersion::FFmpeg_3x)                            \
-      testFunctionName<ffmpeg::FFmpegVersion::FFmpeg_3x>();                                        \
-    else if (version.ffmpegVersion == ffmpeg::FFmpegVersion::FFmpeg_4x)                            \
-      testFunctionName<ffmpeg::FFmpegVersion::FFmpeg_4x>();                                        \
-    else if (version.ffmpegVersion == ffmpeg::FFmpegVersion::FFmpeg_5x)                            \
-      testFunctionName<ffmpeg::FFmpegVersion::FFmpeg_5x>();                                        \
-    else if (version.ffmpegVersion == ffmpeg::FFmpegVersion::FFmpeg_6x)                            \
-      testFunctionName<ffmpeg::FFmpegVersion::FFmpeg_6x>();                                        \
+    if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_2x)                                 \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_2x>();                                        \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_3x)                            \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_3x>();                                        \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_4x)                            \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_4x>();                                        \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_5x)                            \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_5x>();                                        \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_6x)                            \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_6x>();                                        \
   }
 
 template <typename T> struct TypeWrapper
@@ -44,4 +44,4 @@ constexpr LibraryVersions getLibraryVerions(const FFmpegVersion ffmpegVersion)
   return {};
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

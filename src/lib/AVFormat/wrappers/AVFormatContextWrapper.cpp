@@ -10,18 +10,18 @@
 
 #include "CastFormatClasses.h"
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
-using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVInputFormat;
-using ffmpeg::internal::AVStream;
-using ffmpeg::internal::avformat::AVFormatContext_56;
-using ffmpeg::internal::avformat::AVFormatContext_57;
-using ffmpeg::internal::avformat::AVFormatContext_58;
-using ffmpeg::internal::avformat::AVFormatContext_59;
-using ffmpeg::internal::avformat::AVFormatContext_60;
-using ffmpeg::internal::avformat::AVFormatContext_61;
+using libffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVInputFormat;
+using libffmpeg::internal::AVStream;
+using libffmpeg::internal::avformat::AVFormatContext_56;
+using libffmpeg::internal::avformat::AVFormatContext_57;
+using libffmpeg::internal::avformat::AVFormatContext_58;
+using libffmpeg::internal::avformat::AVFormatContext_59;
+using libffmpeg::internal::avformat::AVFormatContext_60;
+using libffmpeg::internal::avformat::AVFormatContext_61;
 
 AVFormatContextWrapper::AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 {
@@ -139,4 +139,4 @@ bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)
   return ret == 0;
 }
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

@@ -17,19 +17,19 @@
 
 #include <array>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::AVCodecParameters;
-using ffmpeg::internal::AVCOL_SPC_SMPTE240M;
-using ffmpeg::internal::AVMEDIA_TYPE_AUDIO;
-using ffmpeg::internal::AVPixelFormat;
-using ffmpeg::internal::AVPixFmtDescriptor;
-using ffmpeg::internal::AVRational;
+using libffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVCodecParameters;
+using libffmpeg::internal::AVCOL_SPC_SMPTE240M;
+using libffmpeg::internal::AVMEDIA_TYPE_AUDIO;
+using libffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVPixFmtDescriptor;
+using libffmpeg::internal::AVRational;
 using ::testing::Return;
 
 void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
@@ -38,12 +38,12 @@ void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
   auto ffmpegLibraries = std::make_shared<FFmpegLibrariesMock>();
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(version));
 
-  ffmpeg::internal::avcodec::AVCodecParameters_56 codecParameters;
+  libffmpeg::internal::avcodec::AVCodecParameters_56 codecParameters;
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
                                       ffmpegLibraries);
 
   EXPECT_EQ(parameters.getCodecType(), avutil::MediaType::Unknown);
-  EXPECT_EQ(parameters.getCodecID(), ffmpeg::internal::AV_CODEC_ID_NONE);
+  EXPECT_EQ(parameters.getCodecID(), libffmpeg::internal::AV_CODEC_ID_NONE);
   EXPECT_TRUE(parameters.getExtradata().empty());
   EXPECT_EQ(parameters.getSize(), Size());
   EXPECT_EQ(parameters.getColorspace(), avutil::ColorSpace::UNSPECIFIED);
@@ -130,4 +130,4 @@ INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

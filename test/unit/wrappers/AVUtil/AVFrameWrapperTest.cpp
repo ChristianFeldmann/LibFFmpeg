@@ -13,14 +13,14 @@
 
 #include <gtest/gtest.h>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVFrame;
-using ffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVFrame;
+using libffmpeg::internal::AVPixelFormat;
 
 using ::testing::Return;
 
@@ -128,4 +128,4 @@ INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

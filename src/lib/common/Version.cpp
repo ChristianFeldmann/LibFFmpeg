@@ -8,7 +8,7 @@
 
 #include <sstream>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 Version Version::fromFFmpegVersion(const unsigned ffmpegVersion)
@@ -51,4 +51,4 @@ std::ostream &Version::operator<<(std::ostream &stream) const
   return stream;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

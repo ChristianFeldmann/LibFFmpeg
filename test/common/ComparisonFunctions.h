@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 bool         areEqual(const std::vector<std::string> &lhs, const std::vector<std::string> &rhs);
 std::int64_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame);
 
-} // namespace ffmpeg
+} // namespace libffmpeg

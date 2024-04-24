@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 enum class ReturnCode
@@ -50,4 +50,4 @@ enum class ReturnCode
 ReturnCode toReturnCode(const int returnValue);
 int        toAVError(const ReturnCode returnCode);
 
-} // namespace ffmpeg
+} // namespace libffmpeg

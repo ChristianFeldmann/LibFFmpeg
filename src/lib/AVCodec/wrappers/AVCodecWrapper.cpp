@@ -13,21 +13,21 @@
 #include "AVCodecWrapperInternal.h"
 #include "CastCodecClasses.h"
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
-using ffmpeg::internal::AVCodec;
-using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::AVMediaType;
-using ffmpeg::internal::AVPixelFormat;
-using ffmpeg::internal::AVRational;
-using ffmpeg::internal::AVSampleFormat;
-using ffmpeg::internal::avcodec::AVCodec_56;
-using ffmpeg::internal::avcodec::AVCodec_57;
-using ffmpeg::internal::avcodec::AVCodec_58;
-using ffmpeg::internal::avcodec::AVCodec_59;
-using ffmpeg::internal::avcodec::AVCodec_60;
-using ffmpeg::internal::avcodec::AVCodec_61;
+using libffmpeg::internal::AVCodec;
+using libffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVMediaType;
+using libffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVRational;
+using libffmpeg::internal::AVSampleFormat;
+using libffmpeg::internal::avcodec::AVCodec_56;
+using libffmpeg::internal::avcodec::AVCodec_57;
+using libffmpeg::internal::avcodec::AVCodec_58;
+using libffmpeg::internal::avcodec::AVCodec_59;
+using libffmpeg::internal::avcodec::AVCodec_60;
+using libffmpeg::internal::avcodec::AVCodec_61;
 
 namespace
 {
@@ -74,7 +74,7 @@ avutil::MediaType AVCodecWrapper::getMediaType() const
 {
   AVMediaType mediaType;
   CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, mediaType, type);
-  return ffmpeg::avutil::toMediaType(mediaType);
+  return libffmpeg::avutil::toMediaType(mediaType);
 }
 
 AVCodecID AVCodecWrapper::getCodecID() const
@@ -154,4 +154,4 @@ uint8_t AVCodecWrapper::getMaxLowres() const
   return maxLowres;
 }
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

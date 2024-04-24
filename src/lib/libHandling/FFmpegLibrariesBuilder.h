@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 struct LibrariesLoadingResult
@@ -41,4 +41,4 @@ private:
   LogLevel                        minimumLogLevel{LogLevel::Error};
 };
 
-} // namespace ffmpeg
+} // namespace libffmpeg

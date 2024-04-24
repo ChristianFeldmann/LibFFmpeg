@@ -8,7 +8,7 @@
 
 #include "FFmpegLibraries.h"
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
@@ -86,4 +86,4 @@ FFmpegLibrariesBuilder::withLoggingFunction(const LoggingFunction loggingCallbac
   return *this;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

@@ -16,21 +16,21 @@
 
 #include <array>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVCodecContext;
-using ffmpeg::internal::AVCodecDescriptor;
-using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::AVCodecParameters;
-using ffmpeg::internal::AVCOL_SPC_FCC;
-using ffmpeg::internal::AVMEDIA_TYPE_AUDIO;
-using ffmpeg::internal::AVPixelFormat;
-using ffmpeg::internal::AVRational;
-using ffmpeg::internal::AVStream;
+using libffmpeg::internal::AVCodecContext;
+using libffmpeg::internal::AVCodecDescriptor;
+using libffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVCodecParameters;
+using libffmpeg::internal::AVCOL_SPC_FCC;
+using libffmpeg::internal::AVMEDIA_TYPE_AUDIO;
+using libffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVRational;
+using libffmpeg::internal::AVStream;
 using ::testing::Return;
 
 constexpr auto TEST_CODEC_ID = internal::AV_CODEC_ID_TESTING;
@@ -41,14 +41,14 @@ template <FFmpegVersion V> void runAVStreamWrapperTestDefaultValues()
   EXPECT_CALL(*ffmpegLibraries, getLibrariesVersion()).WillRepeatedly(Return(getLibraryVerions(V)));
 
   ffmpegLibraries->functionChecks.avcodecDescriptorGetExpectedID =
-      ffmpeg::internal::AV_CODEC_ID_NONE;
+      libffmpeg::internal::AV_CODEC_ID_NONE;
 
   AVStreamType<V> stream;
   AVStreamWrapper streamWrapper(reinterpret_cast<AVStream *>(&stream), ffmpegLibraries);
 
   EXPECT_EQ(streamWrapper.getIndex(), 0);
   EXPECT_EQ(streamWrapper.getCodecType(), avutil::MediaType::Unknown);
-  EXPECT_EQ(streamWrapper.getCodecID(), ffmpeg::internal::AV_CODEC_ID_NONE);
+  EXPECT_EQ(streamWrapper.getCodecID(), libffmpeg::internal::AV_CODEC_ID_NONE);
   EXPECT_EQ(streamWrapper.getAverageFrameRate(), Rational({0, 0}));
   EXPECT_EQ(streamWrapper.getTimeBase(), Rational({0, 0}));
   EXPECT_EQ(streamWrapper.getFrameSize(), Size());
@@ -221,4 +221,4 @@ INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

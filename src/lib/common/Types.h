@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 struct Size
@@ -47,4 +47,4 @@ struct Rational
 using ByteVector = std::vector<std::byte>;
 using Path       = std::filesystem::path;
 
-} // namespace ffmpeg
+} // namespace libffmpeg

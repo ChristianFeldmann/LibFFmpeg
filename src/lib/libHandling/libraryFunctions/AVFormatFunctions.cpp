@@ -11,7 +11,7 @@
 
 #include "Functions.h"
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
@@ -72,4 +72,4 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
   return functions;
 }
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

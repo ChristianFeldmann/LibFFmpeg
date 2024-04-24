@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 struct MotionVector
@@ -32,4 +32,4 @@ struct MotionVector
 std::vector<MotionVector>
 parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, const size_t dataSize);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

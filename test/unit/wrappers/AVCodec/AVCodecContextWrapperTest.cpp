@@ -17,18 +17,18 @@
 
 #include <array>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
-using ffmpeg::internal::AVCodec;
-using ffmpeg::internal::AVCodecContext;
-using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::AVCodecParameters;
-using ffmpeg::internal::AVColorSpace;
-using ffmpeg::internal::AVFrame;
-using ffmpeg::internal::AVPacket;
-using ffmpeg::internal::AVPixelFormat;
-using ffmpeg::internal::AVRational;
+using libffmpeg::internal::AVCodec;
+using libffmpeg::internal::AVCodecContext;
+using libffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVCodecParameters;
+using libffmpeg::internal::AVColorSpace;
+using libffmpeg::internal::AVFrame;
+using libffmpeg::internal::AVPacket;
+using libffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVRational;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -46,7 +46,7 @@ template <FFmpegVersion V> void runAVCodecContextTest()
   ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   AVCodecContextType<V> codecContext;
-  codecContext.codec_type = ffmpeg::internal::AVMEDIA_TYPE_ATTACHMENT;
+  codecContext.codec_type = libffmpeg::internal::AVMEDIA_TYPE_ATTACHMENT;
   codecContext.codec_id   = TEST_CODEC_ID;
   codecContext.pix_fmt    = TEST_PIXEL_FORMAT;
   codecContext.width      = TEST_WIDTH;
@@ -156,4 +156,4 @@ INSTANTIATE_TEST_SUITE_P(AVCodecContextWrapper,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

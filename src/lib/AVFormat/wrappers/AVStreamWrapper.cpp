@@ -11,28 +11,28 @@
 #include "AVStreamWrapperInternal.h"
 #include "CastFormatClasses.h"
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVCodecContext;
-using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::AVCodecParameters;
-using ffmpeg::internal::AVRational;
-using ffmpeg::internal::AVStream;
-using ffmpeg::internal::AVStreamParseType;
-using ffmpeg::internal::avformat::AVStream_56;
-using ffmpeg::internal::avformat::AVStream_57;
-using ffmpeg::internal::avformat::AVStream_58;
-using ffmpeg::internal::avformat::AVStream_59;
-using ffmpeg::internal::avformat::AVStream_60;
-using ffmpeg::internal::avformat::AVStream_61;
+using libffmpeg::internal::AVCodecContext;
+using libffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVCodecParameters;
+using libffmpeg::internal::AVRational;
+using libffmpeg::internal::AVStream;
+using libffmpeg::internal::AVStreamParseType;
+using libffmpeg::internal::avformat::AVStream_56;
+using libffmpeg::internal::avformat::AVStream_57;
+using libffmpeg::internal::avformat::AVStream_58;
+using libffmpeg::internal::avformat::AVStream_59;
+using libffmpeg::internal::avformat::AVStream_60;
+using libffmpeg::internal::avformat::AVStream_61;
 
 } // namespace
 
-AVStreamWrapper::AVStreamWrapper(AVStream                         *stream,
+AVStreamWrapper::AVStreamWrapper(AVStream *                        stream,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : stream(stream), ffmpegLibraries(ffmpegLibraries)
 {
@@ -68,7 +68,7 @@ AVCodecID AVStreamWrapper::getCodecID() const
   if (const auto codecContext = this->getCodecContext())
     return codecContext->getCodecID();
 
-  return ffmpeg::internal::AV_CODEC_ID_NONE;
+  return libffmpeg::internal::AV_CODEC_ID_NONE;
 }
 
 Rational AVStreamWrapper::getAverageFrameRate() const
@@ -211,4 +211,4 @@ std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParame
   return {};
 }
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

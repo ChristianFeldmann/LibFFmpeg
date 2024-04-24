@@ -9,7 +9,7 @@
 #include <functional>
 #include <string>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 enum class LogLevel
@@ -33,4 +33,4 @@ struct LogEntry
 
 using LoggingFunction = std::function<void(const LogLevel, const std::string &)>;
 
-} // namespace ffmpeg
+} // namespace libffmpeg

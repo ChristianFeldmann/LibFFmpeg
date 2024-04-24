@@ -9,7 +9,7 @@
 #include <common/EnumMapper.h>
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 enum class PictureType
@@ -34,6 +34,6 @@ const EnumMapper<PictureType>
                        {PictureType::SP, "SP-Frame", "Switching predictively coded frame"},
                        {PictureType::SI, "SI-Frame", "Switching bi-predictively coded frame"}});
 
-PictureType toPictureType(const ffmpeg::internal::AVPictureType pictureType);
+PictureType toPictureType(const libffmpeg::internal::AVPictureType pictureType);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

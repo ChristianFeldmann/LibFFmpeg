@@ -6,10 +6,10 @@
 
 #include "PictureType.h"
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
-using ffmpeg::internal::AVPictureType;
+using libffmpeg::internal::AVPictureType;
 
 PictureType toPictureType(const AVPictureType pictureType)
 {
@@ -36,4 +36,4 @@ PictureType toPictureType(const AVPictureType pictureType)
   }
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

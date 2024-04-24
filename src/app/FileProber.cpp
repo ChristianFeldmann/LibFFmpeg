@@ -14,7 +14,7 @@
 #include <iostream>
 #include <sstream>
 
-using namespace ffmpeg;
+using namespace libffmpeg;
 
 const auto FILE_NAME = std::string("testFile.webm");
 
@@ -61,7 +61,7 @@ struct Settings
 {
   bool                  showPackets{};
   std::filesystem::path libraryPath{};
-  ffmpeg::LogLevel      logLevel{ffmpeg::LogLevel::Error};
+  libffmpeg::LogLevel   logLevel{libffmpeg::LogLevel::Error};
 };
 
 Settings parseCommandLineArguments(int argc, char const *argv[])
@@ -73,11 +73,11 @@ Settings parseCommandLineArguments(int argc, char const *argv[])
     if (argument == "-showAllPackets")
       settings.showPackets = true;
     if (argument == "-loglevelDebug")
-      settings.logLevel = ffmpeg::LogLevel::Debug;
+      settings.logLevel = libffmpeg::LogLevel::Debug;
     if (argument == "-loglevelInfo")
-      settings.logLevel = ffmpeg::LogLevel::Info;
+      settings.logLevel = libffmpeg::LogLevel::Info;
     if (argument == "-loglevelWarning")
-      settings.logLevel = ffmpeg::LogLevel::Warning;
+      settings.logLevel = libffmpeg::LogLevel::Warning;
     if (argument == "-libPath")
     {
       i++;

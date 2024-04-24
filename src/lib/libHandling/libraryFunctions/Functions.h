@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 template <typename T>
@@ -36,4 +36,4 @@ std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string>
                                                   const std::string               libraryName,
                                                   const LoggingFunction &         log);
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

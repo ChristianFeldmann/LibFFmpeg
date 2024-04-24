@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 struct PixelFormatDescriptor
@@ -80,4 +80,4 @@ Size getSizeOfFrameComponent(const int                    component,
                              const Size                   frameSize,
                              const PixelFormatDescriptor &pixelFormatDescriptor);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

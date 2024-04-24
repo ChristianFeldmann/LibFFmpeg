@@ -9,7 +9,7 @@
 #include <common/EnumMapper.h>
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 enum class MediaType
@@ -29,7 +29,7 @@ const EnumMapper<MediaType> mediaTypeMapper({{MediaType::Unknown, "Unknown"},
                                              {MediaType::Subtitle, "Subtitle"},
                                              {MediaType::Attachment, "Attachment"}});
 
-MediaType                     toMediaType(const ffmpeg::internal::AVMediaType mediaType);
-ffmpeg::internal::AVMediaType toAVMediaType(const MediaType mediaType);
+MediaType                        toMediaType(const libffmpeg::internal::AVMediaType mediaType);
+libffmpeg::internal::AVMediaType toAVMediaType(const MediaType mediaType);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

@@ -8,7 +8,7 @@
 
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::internal::avcodec
+namespace libffmpeg::internal::avcodec
 {
 
 struct AVProfile_57
@@ -25,8 +25,8 @@ struct AVCodecDescriptor_56
 {
   AVCodecID          id;
   AVMediaType        type;
-  const char        *name;
-  const char        *long_name;
+  const char *       name;
+  const char *       long_name;
   int                props;
   const char *const *mime_types;
 };
@@ -35,10 +35,10 @@ struct AVCodecDescriptor_57
 {
   AVCodecID                  id;
   AVMediaType                type;
-  const char                *name;
-  const char                *long_name;
+  const char *               name;
+  const char *               long_name;
   int                        props;
-  const char *const         *mime_types;
+  const char *const *        mime_types;
   const struct AVProfile_57 *profiles;
 };
 
@@ -47,4 +47,4 @@ typedef AVCodecDescriptor_57 AVCodecDescriptor_59;
 typedef AVCodecDescriptor_57 AVCodecDescriptor_60;
 typedef AVCodecDescriptor_57 AVCodecDescriptor_61;
 
-} // namespace ffmpeg::internal::avcodec
+} // namespace libffmpeg::internal::avcodec

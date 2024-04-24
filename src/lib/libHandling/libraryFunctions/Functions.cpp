@@ -8,7 +8,7 @@
 
 #include <common/Formatting.h>
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string> &missingFunctions,
@@ -24,4 +24,4 @@ std::string logMissingFunctionsAndGetErrorMessage(const std::vector<std::string>
   return errorMessage;
 }
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

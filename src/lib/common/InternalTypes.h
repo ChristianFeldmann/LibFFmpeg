@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-namespace ffmpeg::internal
+namespace libffmpeg::internal
 {
 
 // Some opaque types so that we can handle pointers to them.
@@ -295,4 +295,4 @@ struct AVDictionaryEntry
   char *value;
 };
 
-} // namespace ffmpeg::internal
+} // namespace libffmpeg::internal

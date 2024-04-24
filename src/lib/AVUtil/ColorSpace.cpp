@@ -6,10 +6,10 @@
 
 #include "ColorSpace.h"
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
-using ffmpeg::internal::AVColorSpace;
+using libffmpeg::internal::AVColorSpace;
 
 ColorSpace toColorspace(const AVColorSpace colorspace)
 {
@@ -51,4 +51,4 @@ ColorSpace toColorspace(const AVColorSpace colorspace)
   }
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

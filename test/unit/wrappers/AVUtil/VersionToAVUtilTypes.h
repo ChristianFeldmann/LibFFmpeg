@@ -13,7 +13,7 @@
 #include <AVUtil/wrappers/AVMotionVectorConversionInternal.h>
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 namespace
@@ -70,4 +70,4 @@ template <FFmpegVersion V> constexpr auto avFrameFromVersionFunc()
 
 template <FFmpegVersion V> using AVFrameType = typename decltype(avFrameFromVersionFunc<V>())::type;
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

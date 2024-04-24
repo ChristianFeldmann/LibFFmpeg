@@ -13,19 +13,19 @@
 
 #include <cstring>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVPacket;
-using ffmpeg::internal::avcodec::AVPacket_56;
-using ffmpeg::internal::avcodec::AVPacket_57;
-using ffmpeg::internal::avcodec::AVPacket_58;
-using ffmpeg::internal::avcodec::AVPacket_59;
-using ffmpeg::internal::avcodec::AVPacket_60;
-using ffmpeg::internal::avcodec::AVPacket_61;
+using libffmpeg::internal::AVPacket;
+using libffmpeg::internal::avcodec::AVPacket_56;
+using libffmpeg::internal::avcodec::AVPacket_57;
+using libffmpeg::internal::avcodec::AVPacket_58;
+using libffmpeg::internal::avcodec::AVPacket_59;
+using libffmpeg::internal::avcodec::AVPacket_60;
+using libffmpeg::internal::avcodec::AVPacket_61;
 
 constexpr auto AV_PKT_FLAG_KEY     = 0x0001; ///< The packet contains a keyframe
 constexpr auto AV_PKT_FLAG_CORRUPT = 0x0002; ///< The packet content is corrupted
@@ -41,7 +41,7 @@ AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibrari
   this->allocateNewPacket();
 }
 
-AVPacketWrapper::AVPacketWrapper(const ByteVector                 &data,
+AVPacketWrapper::AVPacketWrapper(const ByteVector &                data,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
@@ -181,4 +181,4 @@ void AVPacketWrapper::AVPacketDeleter::operator()(AVPacket *packet) const noexce
     this->ffmpegLibraries->avcodec.av_packet_free(&packet);
 }
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

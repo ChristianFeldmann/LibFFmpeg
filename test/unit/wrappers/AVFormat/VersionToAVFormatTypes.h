@@ -11,7 +11,7 @@
 #include <AVFormat/wrappers/AVStreamWrapperInternal.h>
 #include <wrappers/RunTestForAllVersions.h>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 namespace
@@ -56,4 +56,4 @@ template <FFmpegVersion V> constexpr auto avFormatContextTypeFunction()
 template <FFmpegVersion V>
 using AVFormatContextType = typename decltype(avFormatContextTypeFunction<V>())::type;
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

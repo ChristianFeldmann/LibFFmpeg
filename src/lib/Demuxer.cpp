@@ -8,7 +8,7 @@
 
 #include <common/Formatting.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 namespace
@@ -62,4 +62,4 @@ std::optional<avcodec::AVPacketWrapper> Demuxer::getNextPacket()
   return packet;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

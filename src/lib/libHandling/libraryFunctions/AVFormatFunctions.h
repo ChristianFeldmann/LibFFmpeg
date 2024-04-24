@@ -11,7 +11,7 @@
 #include <common/Types.h>
 #include <libHandling/SharedLibraryLoader.h>
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 struct AvFormatFunctions
@@ -31,4 +31,4 @@ struct AvFormatFunctions
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
                                                                      const LoggingFunction &log);
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

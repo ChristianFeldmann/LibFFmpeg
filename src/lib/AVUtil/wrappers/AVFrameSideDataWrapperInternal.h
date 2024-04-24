@@ -8,16 +8,16 @@
 
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::internal::avutil
+namespace libffmpeg::internal::avutil
 {
 
 struct AVFrameSideData_54
 {
   AVFrameSideDataType type;
-  uint8_t            *data;
+  uint8_t *           data;
   int                 size;
-  AVDictionary       *metadata;
-  AVBufferRef        *buf;
+  AVDictionary *      metadata;
+  AVBufferRef *       buf;
 };
 
 typedef AVFrameSideData_54 AVFrameSideData_55;
@@ -26,13 +26,13 @@ typedef AVFrameSideData_54 AVFrameSideData_56;
 struct AVFrameSideData_57
 {
   AVFrameSideDataType type;
-  uint8_t            *data;
+  uint8_t *           data;
   size_t              size;
-  AVDictionary       *metadata;
-  AVBufferRef        *buf;
+  AVDictionary *      metadata;
+  AVBufferRef *       buf;
 };
 
 typedef AVFrameSideData_57 AVFrameSideData_58;
 typedef AVFrameSideData_57 AVFrameSideData_59;
 
-} // namespace ffmpeg::internal::avutil
+} // namespace libffmpeg::internal::avutil

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <sstream>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 std::string to_string(int64_t timestamp, Rational timebase)
@@ -107,4 +107,4 @@ std::string to_string(const LogLevel logLevel)
   }
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

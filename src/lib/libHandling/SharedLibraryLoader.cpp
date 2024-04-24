@@ -12,7 +12,7 @@
 #include <limits.h>
 #endif
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 namespace
@@ -148,4 +148,4 @@ void SharedLibraryLoader::updateActuallyLoadedLibraryPath(const std::string &lib
     this->libraryPath = realPath;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

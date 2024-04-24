@@ -6,11 +6,11 @@
 
 #include "AVDictionaryWrapper.h"
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
-using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVDictionaryEntry;
+using libffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVDictionaryEntry;
 
 constexpr auto AV_DICT_IGNORE_SUFFIX = 2;
 
@@ -46,4 +46,4 @@ DictionaryMap AVDictionaryWrapper::toMap() const
   return map;
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 using internal::avutil::AVMotionVector_54;
@@ -73,4 +73,4 @@ parseMotionData(const LibraryVersions &libraryVersions, const uint8_t *data, con
     throw std::runtime_error("Invalid library version");
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

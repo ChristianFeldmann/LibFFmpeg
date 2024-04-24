@@ -16,19 +16,19 @@
 
 #include <gtest/gtest.h>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 namespace
 {
 
-using ffmpeg::avcodec::AVPacketType;
-using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVDictionaryEntry;
-using ffmpeg::internal::AVFormatContext;
-using ffmpeg::internal::AVInputFormat;
-using ffmpeg::internal::AVPacket;
-using ffmpeg::internal::AVStream;
+using libffmpeg::avcodec::AVPacketType;
+using libffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVDictionaryEntry;
+using libffmpeg::internal::AVFormatContext;
+using libffmpeg::internal::AVInputFormat;
+using libffmpeg::internal::AVPacket;
+using libffmpeg::internal::AVStream;
 using ::testing::Return;
 
 constexpr auto TEST_START_TIME          = 483;
@@ -224,4 +224,4 @@ INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

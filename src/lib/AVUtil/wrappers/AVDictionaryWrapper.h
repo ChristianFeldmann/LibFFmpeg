@@ -10,11 +10,11 @@
 
 #include <map>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 using DictionaryMap = std::map<std::string, std::string>;
-using ffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVDictionary;
 
 class AVDictionaryWrapper
 {
@@ -32,4 +32,4 @@ private:
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

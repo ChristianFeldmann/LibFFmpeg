@@ -9,7 +9,7 @@
 #include <common/EnumMapper.h>
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 enum class ColorSpace
@@ -58,6 +58,6 @@ const EnumMapper<ColorSpace> colorSpaceMapper(
       "Chromaticity-derived constant luminance system"},
      {ColorSpace::ICTCP, "Unspecified", "ITU-R BT.2100-0, ICtCp"}});
 
-ColorSpace toColorspace(const ffmpeg::internal::AVColorSpace colorspace);
+ColorSpace toColorspace(const libffmpeg::internal::AVColorSpace colorspace);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

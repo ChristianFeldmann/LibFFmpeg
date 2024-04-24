@@ -13,39 +13,42 @@
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 class AVCodecParametersWrapper
 {
 public:
   AVCodecParametersWrapper() = delete;
-  AVCodecParametersWrapper(ffmpeg::internal::AVCodecParameters *p,
-                           std::shared_ptr<IFFmpegLibraries>    libraries);
+  AVCodecParametersWrapper(libffmpeg::internal::AVCodecParameters *p,
+                           std::shared_ptr<IFFmpegLibraries>       libraries);
 
-  avutil::MediaType             getCodecType() const;
-  ffmpeg::internal::AVCodecID   getCodecID() const;
-  ByteVector                    getExtradata() const;
-  Size                          getSize() const;
-  avutil::ColorSpace            getColorspace() const;
-  avutil::PixelFormatDescriptor getPixelFormat() const;
-  Rational                      getSampleAspectRatio() const;
+  avutil::MediaType              getCodecType() const;
+  libffmpeg::internal::AVCodecID getCodecID() const;
+  ByteVector                     getExtradata() const;
+  Size                           getSize() const;
+  avutil::ColorSpace             getColorspace() const;
+  avutil::PixelFormatDescriptor  getPixelFormat() const;
+  Rational                       getSampleAspectRatio() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
 
   void setAVMediaType(avutil::MediaType type);
-  void setAVCodecID(ffmpeg::internal::AVCodecID id);
+  void setAVCodecID(libffmpeg::internal::AVCodecID id);
   void setExtradata(const ByteVector &extradata);
   void setSize(Size size);
   void setAVPixelFormat(avutil::PixelFormatDescriptor descriptor);
   void setProfileLevel(int profile, int level);
   void setSampleAspectRatio(int num, int den);
 
-  ffmpeg::internal::AVCodecParameters *getCodecParameters() const { return this->codecParameters; }
+  libffmpeg::internal::AVCodecParameters *getCodecParameters() const
+  {
+    return this->codecParameters;
+  }
 
 private:
-  ffmpeg::internal::AVCodecParameters *codecParameters{};
-  std::shared_ptr<IFFmpegLibraries>    ffmpegLibraries;
+  libffmpeg::internal::AVCodecParameters *codecParameters{};
+  std::shared_ptr<IFFmpegLibraries>       ffmpegLibraries;
 };
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avcodec

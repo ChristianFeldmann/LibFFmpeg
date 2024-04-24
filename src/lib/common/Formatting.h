@@ -11,7 +11,7 @@
 #include <AVCodec/wrappers/AVPacketWrapper.h>
 #include <Decoder.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 std::string toString(int64_t timestamp, Rational timebase);
@@ -31,4 +31,4 @@ std::string to_string(const Decoder::State state);
 
 std::string to_string(const LogLevel logLevel);
 
-} // namespace ffmpeg
+} // namespace libffmpeg

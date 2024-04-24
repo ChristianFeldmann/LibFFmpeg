@@ -13,34 +13,34 @@
 #include <memory>
 #include <vector>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 class AVCodecWrapper
 {
 public:
   AVCodecWrapper() = delete;
-  AVCodecWrapper(ffmpeg::internal::AVCodec        *codec,
+  AVCodecWrapper(libffmpeg::internal::AVCodec *    codec,
                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
-  explicit                   operator bool() const { return this->codec != nullptr; }
-  ffmpeg::internal::AVCodec *getAVCodec() const { return this->codec; }
+  explicit                      operator bool() const { return this->codec != nullptr; }
+  libffmpeg::internal::AVCodec *getAVCodec() const { return this->codec; }
 
-  std::string                                   getName() const;
-  std::string                                   getLongName() const;
-  avutil::MediaType                             getMediaType() const;
-  ffmpeg::internal::AVCodecID                   getCodecID() const;
-  int                                           getCapabilities() const;
-  std::vector<Rational>                         getSupportedFramerates() const;
-  std::vector<avutil::PixelFormatDescriptor>    getPixelFormats() const;
-  std::vector<int>                              getSupportedSamplerates() const;
-  std::vector<ffmpeg::internal::AVSampleFormat> getSampleFormats() const;
-  std::vector<uint64_t>                         getChannelLayouts() const;
-  uint8_t                                       getMaxLowres() const;
+  std::string                                      getName() const;
+  std::string                                      getLongName() const;
+  avutil::MediaType                                getMediaType() const;
+  libffmpeg::internal::AVCodecID                   getCodecID() const;
+  int                                              getCapabilities() const;
+  std::vector<Rational>                            getSupportedFramerates() const;
+  std::vector<avutil::PixelFormatDescriptor>       getPixelFormats() const;
+  std::vector<int>                                 getSupportedSamplerates() const;
+  std::vector<libffmpeg::internal::AVSampleFormat> getSampleFormats() const;
+  std::vector<uint64_t>                            getChannelLayouts() const;
+  uint8_t                                          getMaxLowres() const;
 
 private:
-  ffmpeg::internal::AVCodec        *codec{};
+  libffmpeg::internal::AVCodec *    codec{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

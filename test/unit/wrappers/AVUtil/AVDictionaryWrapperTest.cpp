@@ -12,11 +12,11 @@
 
 #include <array>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
-using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVDictionaryEntry;
+using libffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVDictionaryEntry;
 using StringPair = std::pair<std::string, std::string>;
 
 TEST(AVDictionaryWrapperTest, NullptrShouldReturnEmptyMap)
@@ -63,4 +63,4 @@ TEST(AVDictionaryWrapperTest, GetDictEntriesTest)
   EXPECT_EQ(ffmpegLibraries->functionCounters.avDictGet, 5);
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

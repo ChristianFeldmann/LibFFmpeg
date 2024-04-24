@@ -15,13 +15,13 @@
 
 #include <array>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVPacket;
+using libffmpeg::internal::AVPacket;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -54,7 +54,7 @@ public:
     this->avcodec.av_new_packet   = [this](AVPacket *packet, int dataSize) {
       return this->newPacket(packet, dataSize);
     };
-    if constexpr (std::is_same_v<AVPacketType, ffmpeg::internal::avcodec::AVPacket_56>)
+    if constexpr (std::is_same_v<AVPacketType, libffmpeg::internal::avcodec::AVPacket_56>)
     {
       this->avcodec.av_init_packet = [this](AVPacket *packet) { this->initPacket(packet); };
       this->avcodec.av_free_packet = [this](AVPacket *packet) { this->freePacket(packet); };
@@ -112,7 +112,7 @@ public:
   // AVCodec major version 56 only
   void initPacket(AVPacket *packet)
   {
-    auto castPacket          = reinterpret_cast<ffmpeg::internal::avcodec::AVPacket_56 *>(packet);
+    auto castPacket          = reinterpret_cast<libffmpeg::internal::avcodec::AVPacket_56 *>(packet);
     castPacket->stream_index = TEST_STREAM_INDEX;
     castPacket->pts          = TEST_PTS;
     castPacket->dts          = TEST_DTS;
@@ -271,4 +271,4 @@ INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

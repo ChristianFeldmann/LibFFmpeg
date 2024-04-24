@@ -13,13 +13,13 @@
 
 #include <gtest/gtest.h>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVInputFormat;
+using libffmpeg::internal::AVInputFormat;
 using ::testing::Return;
 
 template <FFmpegVersion V> void runAVInputFormatWrapperTest()
@@ -100,4 +100,4 @@ INSTANTIATE_TEST_SUITE_P(AVFormatWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat
