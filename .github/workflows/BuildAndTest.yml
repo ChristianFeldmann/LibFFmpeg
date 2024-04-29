@@ -12,7 +12,7 @@ jobs:
       matrix:
         config: [ {os: windows-latest, copyCommand: copy, artifactName: ffmpegTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, ffmpegTest: ffmpegTest.exe},
                   {os: ubuntu-latest, copyCommand: cp, artifactName: ffmpegTestUbuntu, buildPath: , dummyLib: libdummyLib.so, ffmpegTest: ffmpegTest},
-                  {os: macos-latest, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest},
+                  {os: macos-13, copyCommand: cp, artifactName: ffmpegTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest},
                   {os: macos-14, copyCommand: cp, artifactName: ffmpegTestMacM1, buildPath: , dummyLib: libdummyLib.dylib, ffmpegTest: ffmpegTest} ]
     runs-on: ${{ matrix.config.os }}
     
@@ -42,7 +42,7 @@ jobs:
       matrix:
         config: [ {os: windows-latest, artifactName: ffmpegTestWindows, azureFolder: windows, unzipCommand: 7z x },
                   {os: ubuntu-latest, artifactName: ffmpegTestUbuntu, azureFolder: ubuntu-22.04, unzipCommand: unzip },
-                  {os: macos-latest, artifactName: ffmpegTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
+                  {os: macos-13, artifactName: ffmpegTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
                   {os: macos-14, artifactName: ffmpegTestMacM1, azureFolder: macos-m1, unzipCommand: unzip } ]
         ffmpegVersions: ["2.8.22", "3.4.13", "4.4.4", "5.1.4", "6.1.1", "7.0"]
     runs-on: ${{ matrix.config.os }}
@@ -71,7 +71,7 @@ jobs:
       matrix:
         config: [ {os: windows-latest, artifactName: ffmpegTestWindows},
                   {os: ubuntu-latest, artifactName: ffmpegTestUbuntu},
-                  {os: macos-latest, artifactName: ffmpegTestMacIntel},
+                  {os: macos-13, artifactName: ffmpegTestMacIntel},
                   {os: macos-14, artifactName: ffmpegTestMacM1} ]
     runs-on: ${{ matrix.config.os }}
     steps:
