@@ -137,9 +137,6 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
     {
       avcodec::AVPacketWrapper emptyFlushPacket(this->ffmpegLibraries);
 
-      const auto dataPtr  = emptyFlushPacket.getData();
-      const auto dataSize = emptyFlushPacket.getDataSize();
-
       auto decodeResult = this->decoderContext->decodeVideo2(emptyFlushPacket);
       if (decodeResult.frame)
         return std::move(decodeResult.frame);
