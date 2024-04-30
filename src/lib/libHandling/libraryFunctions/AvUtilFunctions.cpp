@@ -11,11 +11,11 @@
 
 #include "Functions.h"
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                 const LoggingFunction     &log)
+                                                                 const LoggingFunction &    log)
 {
   if (!lib)
   {
@@ -90,4 +90,4 @@ std::optional<AvUtilFunctions> tryBindAVUtilFunctionsFromLibrary(const SharedLib
   return functions;
 }
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

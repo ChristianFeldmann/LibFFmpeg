@@ -9,7 +9,7 @@
 #include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::internal::avformat
+namespace libffmpeg::internal::avformat
 {
 
 class AVIndexEntry;
@@ -20,8 +20,8 @@ struct AVStream_56
 {
   int                  index{};
   int                  id{};
-  AVCodecContext      *codec{};
-  void                *priv_data{};
+  AVCodecContext *     codec{};
+  void *               priv_data{};
   AVFrac               pts{};
   AVRational           time_base{};
   int64_t              start_time{};
@@ -30,28 +30,28 @@ struct AVStream_56
   int                  disposition{};
   AVDiscard            discard{};
   AVRational           sample_aspect_ratio{};
-  AVDictionary        *metadata{};
+  AVDictionary *       metadata{};
   AVRational           avg_frame_rate{};
   avcodec::AVPacket_56 attached_pic{};
-  AVPacketSideData    *side_data{};
+  AVPacketSideData *   side_data{};
   int                  nb_side_data{};
   int                  event_flags{};
 };
 
 struct AVProbeData_57
 {
-  const char    *filename{};
+  const char *   filename{};
   unsigned char *buf{};
   int            buf_size{};
-  const char    *mime_type{};
+  const char *   mime_type{};
 };
 
 struct AVStream_57
 {
   int                  index{};
   int                  id{};
-  AVCodecContext      *codec{}; // Deprecated.
-  void                *priv_data{};
+  AVCodecContext *     codec{}; // Deprecated.
+  void *               priv_data{};
   AVFrac               pts{}; // Deprecated.
   AVRational           time_base{};
   int64_t              start_time{};
@@ -60,10 +60,10 @@ struct AVStream_57
   int                  disposition{};
   AVDiscard            discard{};
   AVRational           sample_aspect_ratio{};
-  AVDictionary        *metadata{};
+  AVDictionary *       metadata{};
   AVRational           avg_frame_rate{};
   avcodec::AVPacket_57 attached_pic{};
-  AVPacketSideData    *side_data{};
+  AVPacketSideData *   side_data{};
   int                  nb_side_data{};
   int                  event_flags{};
   // All field following this line are not part of the public API and may change/be removed.
@@ -95,7 +95,7 @@ struct AVStream_57
   int                          codec_info_nb_frames{};
   AVStreamParseType            need_parsing{};
   struct AVCodecParserContext *parser{};
-  struct AVPacketList         *last_in_packet_buffer{};
+  struct AVPacketList *        last_in_packet_buffer{};
   AVProbeData_57               probe_data{};
 #define MAX_REORDER_DELAY 16
   int64_t       pts_buffer[MAX_REORDER_DELAY + 1]{};
@@ -125,10 +125,10 @@ struct AVStream_57
   int           inject_global_side_data{};
   // All fields above this line are not part of the public API.
   // All fields below are part of the public API and ABI again.
-  char              *recommended_encoder_configuration{};
+  char *             recommended_encoder_configuration{};
   AVRational         display_aspect_ratio{};
-  struct FFFrac     *priv_pts{};
-  AVStreamInternal  *internal{};
+  struct FFFrac *    priv_pts{};
+  AVStreamInternal * internal{};
   AVCodecParameters *codecpar{};
 };
 
@@ -136,8 +136,8 @@ struct AVStream_58
 {
   int                  index{};
   int                  id{};
-  AVCodecContext      *codec{};
-  void                *priv_data{};
+  AVCodecContext *     codec{};
+  void *               priv_data{};
   AVRational           time_base{};
   int64_t              start_time{};
   int64_t              duration{};
@@ -145,15 +145,15 @@ struct AVStream_58
   int                  disposition{};
   AVDiscard            discard{};
   AVRational           sample_aspect_ratio{};
-  AVDictionary        *metadata{};
+  AVDictionary *       metadata{};
   AVRational           avg_frame_rate{};
   avcodec::AVPacket_58 attached_pic{};
-  AVPacketSideData    *side_data{};
+  AVPacketSideData *   side_data{};
   int                  nb_side_data{};
   int                  event_flags{};
   AVRational           r_frame_rate{};
-  char                *recommended_encoder_configuration{};
-  AVCodecParameters   *codecpar{};
+  char *               recommended_encoder_configuration{};
+  AVCodecParameters *  codecpar{};
 
   // All field following this line are not part of the public API and may change/be removed.
 };
@@ -162,7 +162,7 @@ struct AVStream_59
 {
   int                  index{};
   int                  id{};
-  void                *priv_data{};
+  void *               priv_data{};
   AVRational           time_base{};
   int64_t              start_time{};
   int64_t              duration{};
@@ -170,24 +170,24 @@ struct AVStream_59
   int                  disposition{};
   AVDiscard            discard{};
   AVRational           sample_aspect_ratio{};
-  AVDictionary        *metadata{};
+  AVDictionary *       metadata{};
   AVRational           avg_frame_rate{};
   avcodec::AVPacket_59 attached_pic{};
-  AVPacketSideData    *side_data{};
+  AVPacketSideData *   side_data{};
   int                  nb_side_data{};
   int                  event_flags{};
   AVRational           r_frame_rate{};
-  AVCodecParameters   *codecpar{};
+  AVCodecParameters *  codecpar{};
   int                  pts_wrap_bits{};
 };
 
 struct AVStream_60
 {
-  const AVClass       *av_class{};
+  const AVClass *      av_class{};
   int                  index{};
   int                  id{};
-  AVCodecParameters   *codecpar{};
-  void                *priv_data{};
+  AVCodecParameters *  codecpar{};
+  void *               priv_data{};
   AVRational           time_base{};
   int64_t              start_time{};
   int64_t              duration{};
@@ -195,10 +195,10 @@ struct AVStream_60
   int                  disposition{};
   AVDiscard            discard{};
   AVRational           sample_aspect_ratio{};
-  AVDictionary        *metadata{};
+  AVDictionary *       metadata{};
   AVRational           avg_frame_rate{};
   avcodec::AVPacket_60 attached_pic{};
-  AVPacketSideData    *side_data{};
+  AVPacketSideData *   side_data{};
   int                  nb_side_data{};
   int                  event_flags{};
   AVRational           r_frame_rate{};
@@ -207,4 +207,4 @@ struct AVStream_60
 
 typedef AVStream_60 AVStream_61;
 
-} // namespace ffmpeg::internal::avformat
+} // namespace libffmpeg::internal::avformat

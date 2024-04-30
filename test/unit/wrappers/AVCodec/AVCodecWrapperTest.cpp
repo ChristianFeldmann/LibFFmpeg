@@ -16,15 +16,15 @@
 
 #include <array>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVCodec;
-using ffmpeg::internal::AVPixelFormat;
-using ffmpeg::internal::AVRational;
+using libffmpeg::internal::AVCodec;
+using libffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVRational;
 using ::testing::Return;
 
 template <FFmpegVersion V> void runAVCodecWrapperTest()
@@ -40,7 +40,7 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
   AVCodecType<V> rawCodec;
   rawCodec.name         = TEST_NAME;
   rawCodec.long_name    = TEST_LONG_NAME;
-  rawCodec.type         = ffmpeg::internal::AVMEDIA_TYPE_SUBTITLE;
+  rawCodec.type         = libffmpeg::internal::AVMEDIA_TYPE_SUBTITLE;
   rawCodec.id           = TEST_CODEC_ID;
   rawCodec.capabilities = TEST_CAPABILITIES;
 
@@ -105,4 +105,4 @@ INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

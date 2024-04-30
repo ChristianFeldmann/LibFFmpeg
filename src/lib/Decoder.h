@@ -12,7 +12,7 @@
 #include <AVUtil/wrappers/AVFrameWrapper.h>
 #include <libHandling/IFFmpegLibraries.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 class Decoder
@@ -57,4 +57,4 @@ private:
   bool  flushing{};
 };
 
-} // namespace ffmpeg
+} // namespace libffmpeg

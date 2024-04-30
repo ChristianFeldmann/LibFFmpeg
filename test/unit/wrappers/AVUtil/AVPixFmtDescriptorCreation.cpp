@@ -7,18 +7,18 @@
 #include "AVPixFmtDescriptorCreation.h"
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversionInternal.h>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
-using ffmpeg::internal::avutil::AVComponentDescriptor_54;
-using ffmpeg::internal::avutil::AVComponentDescriptor_55;
-using ffmpeg::internal::avutil::AVComponentDescriptor_56;
-using ffmpeg::internal::avutil::AVComponentDescriptor_57;
-using ffmpeg::internal::avutil::AVPixFmtDescriptor_54;
-using ffmpeg::internal::avutil::AVPixFmtDescriptor_55;
-using ffmpeg::internal::avutil::AVPixFmtDescriptor_56;
-using ffmpeg::internal::avutil::AVPixFmtDescriptor_57;
-using ffmpeg::internal::avutil::AVPixFmtDescriptor_58;
+using libffmpeg::internal::avutil::AVComponentDescriptor_54;
+using libffmpeg::internal::avutil::AVComponentDescriptor_55;
+using libffmpeg::internal::avutil::AVComponentDescriptor_56;
+using libffmpeg::internal::avutil::AVComponentDescriptor_57;
+using libffmpeg::internal::avutil::AVPixFmtDescriptor_54;
+using libffmpeg::internal::avutil::AVPixFmtDescriptor_55;
+using libffmpeg::internal::avutil::AVPixFmtDescriptor_56;
+using libffmpeg::internal::avutil::AVPixFmtDescriptor_57;
+using libffmpeg::internal::avutil::AVPixFmtDescriptor_58;
 
 namespace
 {
@@ -74,4 +74,4 @@ createRawFormatDescriptor<AVPixFmtDescriptor_55>(const PixelFormatDescriptor &pi
 template AVPixFmtDescriptor_57
 createRawFormatDescriptor<AVPixFmtDescriptor_57>(const PixelFormatDescriptor &pixelFormat);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

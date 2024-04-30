@@ -11,7 +11,7 @@
 
 #include <gmock/gmock.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 struct AVDummy
@@ -95,4 +95,4 @@ private:
                           internal::AVDictionary **);
 };
 
-} // namespace ffmpeg
+} // namespace libffmpeg

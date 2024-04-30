@@ -12,23 +12,23 @@
 
 #include <memory>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 class AVFrameSideDataWrapper
 {
 public:
   AVFrameSideDataWrapper() = delete;
-  AVFrameSideDataWrapper(ffmpeg::internal::AVFrameSideData *sideData,
-                         std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries);
+  AVFrameSideDataWrapper(libffmpeg::internal::AVFrameSideData *sideData,
+                         std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries);
 
   std::vector<MotionVector> getMotionVectors() const;
 
   explicit operator bool() const { return sideData != nullptr; }
 
 private:
-  ffmpeg::internal::AVFrameSideData *sideData{};
-  std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries{};
+  libffmpeg::internal::AVFrameSideData *sideData{};
+  std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

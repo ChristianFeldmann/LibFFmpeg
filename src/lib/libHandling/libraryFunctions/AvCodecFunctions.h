@@ -12,7 +12,7 @@
 #include <common/Version.h>
 #include <libHandling/SharedLibraryLoader.h>
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 struct AvCodecFunctions
@@ -47,4 +47,4 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
                                                                    const Version avCodecVersion,
                                                                    const LoggingFunction &log);
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

@@ -9,14 +9,14 @@
 
 #include <optional>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
-using AvUtilFunctions = ffmpeg::internal::functions::AvUtilFunctions;
+using AvUtilFunctions = libffmpeg::internal::functions::AvUtilFunctions;
 
 [[nodiscard]] std::optional<int> setStaticLoggingCallback(AvUtilFunctions &avutilFunctions,
                                                           LoggingFunction  loggingFunction);
 
 void unsetStaticLoggingCallback(AvUtilFunctions &avutilFunctions, const int loggingFunctionIndex);
 
-} // namespace ffmpeg
+} // namespace libffmpeg

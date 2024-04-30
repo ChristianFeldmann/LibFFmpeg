@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 struct CodecDescriptorProperties
@@ -37,6 +37,6 @@ struct CodecDescriptor
 bool operator==(const CodecDescriptorProperties &lhs, const CodecDescriptorProperties &rhs);
 
 CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCodecDescriptor,
-                                         const Version                     &avCodecVersion);
+                                         const Version &                    avCodecVersion);
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

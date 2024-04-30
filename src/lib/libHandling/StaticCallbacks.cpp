@@ -9,7 +9,7 @@
 #include <array>
 #include <cstdarg>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 /* Here we store the callback functions per loaded ffmpeg library. If multiple ffmpeg libraries
@@ -117,4 +117,4 @@ void unsetStaticLoggingCallback(AvUtilFunctions &avutilFunctions, int loggingFun
       avutilFunctions.av_log_default_callback.target<void(void *, int, const char *, va_list)>());
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

@@ -11,16 +11,16 @@
 #include "AVCodecDescriptorConversionInternal.h"
 #include "CastCodecClasses.h"
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVCodecDescriptor;
-using ffmpeg::internal::avcodec::AVCodecDescriptor_56;
-using ffmpeg::internal::avcodec::AVCodecDescriptor_57;
-using ffmpeg::internal::avcodec::AVProfile_57;
+using libffmpeg::internal::AVCodecDescriptor;
+using libffmpeg::internal::avcodec::AVCodecDescriptor_56;
+using libffmpeg::internal::avcodec::AVCodecDescriptor_57;
+using libffmpeg::internal::avcodec::AVProfile_57;
 
 constexpr auto AV_CODEC_PROP_INTRA_ONLY = (1 << 0);
 constexpr auto AV_CODEC_PROP_LOSSY      = (1 << 1);
@@ -83,7 +83,7 @@ std::vector<std::string> parseProfiles(const struct AVProfile_57 *profiles)
 }
 
 CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCodecDescriptor,
-                                         const Version                     &avCodecVersion)
+                                         const Version &                    avCodecVersion)
 {
   if (avCodecDescriptor == nullptr)
     throw std::runtime_error("Invalid avCodecDescriptor given");
@@ -93,7 +93,7 @@ CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCo
   if (avCodecVersion.major == 56)
   {
     const auto p          = reinterpret_cast<const AVCodecDescriptor_56 *>(avCodecDescriptor);
-    descriptor.mediaType  = ffmpeg::avutil::toMediaType(p->type);
+    descriptor.mediaType  = libffmpeg::avutil::toMediaType(p->type);
     descriptor.codecName  = std::string(p->name);
     descriptor.longName   = std::string(p->long_name);
     descriptor.properties = parseProperties(p->props);
@@ -102,7 +102,7 @@ CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCo
   else
   {
     const auto p          = reinterpret_cast<const AVCodecDescriptor_57 *>(avCodecDescriptor);
-    descriptor.mediaType  = ffmpeg::avutil::toMediaType(p->type);
+    descriptor.mediaType  = libffmpeg::avutil::toMediaType(p->type);
     descriptor.codecName  = std::string(p->name);
     descriptor.longName   = std::string(p->long_name);
     descriptor.properties = parseProperties(p->props);
@@ -113,4 +113,4 @@ CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCo
   return descriptor;
 }
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

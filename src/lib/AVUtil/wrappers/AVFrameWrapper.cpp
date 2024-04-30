@@ -13,16 +13,16 @@
 
 #include <stdexcept>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVFrame;
-using ffmpeg::internal::AVPictureType;
-using ffmpeg::internal::AVRational;
+using libffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVFrame;
+using libffmpeg::internal::AVPictureType;
+using libffmpeg::internal::AVRational;
 
 ByteVector copyFrameDataFromRawArray(const uint8_t *inputData, Size size, const int linesize)
 {
@@ -125,7 +125,7 @@ avutil::PictureType AVFrameWrapper::getPictType() const
 {
   AVPictureType pictureType;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), pictureType, pict_type);
-  return ffmpeg::avutil::toPictureType(pictureType);
+  return libffmpeg::avutil::toPictureType(pictureType);
 }
 
 bool AVFrameWrapper::isKeyFrame() const
@@ -154,7 +154,7 @@ PixelFormatDescriptor AVFrameWrapper::getPixelFormatDescriptor() const
   int format;
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), format, format);
 
-  return convertAVPixFmtDescriptor(static_cast<ffmpeg::internal::AVPixelFormat>(format),
+  return convertAVPixFmtDescriptor(static_cast<libffmpeg::internal::AVPixelFormat>(format),
                                    this->ffmpegLibraries);
 }
 
@@ -172,4 +172,4 @@ void AVFrameWrapper::AVFrameDeleter::operator()(AVFrame *frame) const noexcept
     this->ffmpegLibraries->avutil.av_frame_free(&frame);
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

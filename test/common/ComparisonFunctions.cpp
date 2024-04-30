@@ -8,7 +8,7 @@
 
 #include <cstddef>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 bool areEqual(const std::vector<std::string> &lhs, const std::vector<std::string> &rhs)
@@ -42,4 +42,4 @@ std::int64_t calculateFrameDataHash(const avutil::AVFrameWrapper &frame)
   return hash;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

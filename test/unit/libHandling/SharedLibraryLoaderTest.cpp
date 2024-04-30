@@ -10,7 +10,7 @@
 
 TEST(SharedLibraryLoader, DefaultValuesTest)
 {
-  ffmpeg::SharedLibraryLoader loader;
+  libffmpeg::SharedLibraryLoader loader;
 
   EXPECT_FALSE(loader.isLoaded());
   EXPECT_TRUE(loader.getLibraryPath().empty());
@@ -26,7 +26,7 @@ TEST(SharedLibraryLoader, DefaultValuesTest)
 
 TEST(SharedLibraryLoader, OpenDummyLibrary)
 {
-  ffmpeg::SharedLibraryLoader loader;
+  libffmpeg::SharedLibraryLoader loader;
 
   const auto debugPath = std::filesystem::current_path();
 

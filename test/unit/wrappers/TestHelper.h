@@ -13,7 +13,7 @@
 
 #include <gtest/gtest.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 static std::string getNameWithFFmpegVersion(const testing::TestParamInfo<LibraryVersions> &info)
@@ -44,4 +44,4 @@ template <typename Iter> std::vector<Rational> toRationalVector(Iter begin, Iter
   return rationals;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

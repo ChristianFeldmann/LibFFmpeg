@@ -8,7 +8,7 @@
 
 #include <cstdint>
 
-namespace ffmpeg::internal::avutil
+namespace libffmpeg::internal::avutil
 {
 
 // This is important so that the compiler does not add padding if a struct is allocated.
@@ -38,4 +38,4 @@ struct AVMotionVector_55_56_57_58_59
 
 #pragma pack(pop)
 
-} // namespace ffmpeg::internal::avutil
+} // namespace libffmpeg::internal::avutil

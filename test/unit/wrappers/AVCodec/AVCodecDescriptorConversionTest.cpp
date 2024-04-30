@@ -14,11 +14,11 @@
 
 #include <array>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
-using ffmpeg::internal::AVCodecDescriptor;
-using ffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVCodecDescriptor;
+using libffmpeg::internal::AVCodecID;
 
 namespace
 {
@@ -44,7 +44,7 @@ template <FFmpegVersion V> void runParsingTest()
 {
   AVCodecDescriptorType<V> rawDescriptor;
   rawDescriptor.id        = static_cast<AVCodecID>(37);
-  rawDescriptor.type      = ffmpeg::internal::AVMEDIA_TYPE_VIDEO;
+  rawDescriptor.type      = libffmpeg::internal::AVMEDIA_TYPE_VIDEO;
   rawDescriptor.name      = TEST_NAME;
   rawDescriptor.long_name = TEST_LONG_NAME;
 
@@ -55,7 +55,7 @@ template <FFmpegVersion V> void runParsingTest()
   const std::array<const char *, 4> MIME_TYPES = {"MimeType0", "MimeType1", "MimeType2", nullptr};
   rawDescriptor.mime_types                     = MIME_TYPES.data();
 
-  std::array<ffmpeg::internal::avcodec::AVProfile_57, 4> profiles;
+  std::array<libffmpeg::internal::avcodec::AVProfile_57, 4> profiles;
   const std::array<const char *, 4>                      PROFILE_NAMES = {
       "ProfileName0", "ProfileName1", "ProfileName2", "TerminatingProfile"};
   constexpr auto FF_PROFILE_UNKNOWN = -99;
@@ -107,4 +107,4 @@ INSTANTIATE_TEST_SUITE_P(AVCodecWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

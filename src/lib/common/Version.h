@@ -12,7 +12,7 @@
 #include <ostream>
 #include <string>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 struct Version
@@ -97,4 +97,4 @@ constexpr auto SupportedFFmpegVersions = {LibraryVersions({FFmpegVersion::FFmpeg
                                                            VersionAVUtil(54),
                                                            VersionSwresample(1)})};
 
-} // namespace ffmpeg
+} // namespace libffmpeg

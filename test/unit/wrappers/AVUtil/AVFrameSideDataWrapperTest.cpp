@@ -14,15 +14,15 @@
 
 #include <array>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 namespace
 {
 
-using ffmpeg::internal::AV_FRAME_DATA_DOWNMIX_INFO;
-using ffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS;
-using ffmpeg::internal::AVFrameSideData;
+using libffmpeg::internal::AV_FRAME_DATA_DOWNMIX_INFO;
+using libffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS;
+using libffmpeg::internal::AVFrameSideData;
 using internal::avutil::AVMotionVector_54;
 using internal::avutil::AVMotionVector_55_56_57_58_59;
 
@@ -141,4 +141,4 @@ INSTANTIATE_TEST_SUITE_P(AVUtilWrappers,
                          testing::ValuesIn(SupportedFFmpegVersions),
                          getNameWithFFmpegVersion);
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

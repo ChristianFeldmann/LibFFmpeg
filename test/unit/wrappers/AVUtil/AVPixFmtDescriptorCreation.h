@@ -9,9 +9,9 @@
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <common/InternalTypes.h>
 
-using ffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVPixelFormat;
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 template <typename AVPixFmtDescriptorType>

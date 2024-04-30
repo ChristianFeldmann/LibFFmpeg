@@ -14,7 +14,7 @@
 
 #include <memory>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 class AVFrameWrapper
@@ -28,7 +28,7 @@ public:
   AVFrameWrapper &operator=(AVFrameWrapper &&);
   AVFrameWrapper &operator=(const AVFrameWrapper &) = delete;
 
-  ffmpeg::internal::AVFrame *getFrame() const { return this->frame.get(); }
+  libffmpeg::internal::AVFrame *getFrame() const { return this->frame.get(); }
 
   ByteVector                         getData(int component) const;
   int                                getLineSize(int component) const;
@@ -49,14 +49,14 @@ private:
     AVFrameDeleter() = default;
     AVFrameDeleter(const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)
         : ffmpegLibraries(ffmpegLibraries){};
-    void operator()(ffmpeg::internal::AVFrame *frame) const noexcept;
+    void operator()(libffmpeg::internal::AVFrame *frame) const noexcept;
 
   private:
     std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
   };
 
-  std::unique_ptr<ffmpeg::internal::AVFrame, AVFrameDeleter> frame{nullptr, AVFrameDeleter()};
-  std::shared_ptr<IFFmpegLibraries>                          ffmpegLibraries{};
+  std::unique_ptr<libffmpeg::internal::AVFrame, AVFrameDeleter> frame{nullptr, AVFrameDeleter()};
+  std::shared_ptr<IFFmpegLibraries>                             ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

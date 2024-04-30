@@ -10,7 +10,7 @@
 
 #include <memory>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 class AVPacketWrapper
@@ -26,7 +26,7 @@ public:
 
   void setTimestamps(const int64_t dts, const int64_t pts);
 
-  ffmpeg::internal::AVPacket *getPacket() const { return this->packet.get(); }
+  libffmpeg::internal::AVPacket *getPacket() const { return this->packet.get(); }
 
   struct Flags
   {
@@ -54,14 +54,15 @@ private:
     AVPacketDeleter() = default;
     AVPacketDeleter(const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)
         : ffmpegLibraries(ffmpegLibraries){};
-    void operator()(ffmpeg::internal::AVPacket *packet) const noexcept;
+    void operator()(libffmpeg::internal::AVPacket *packet) const noexcept;
 
   private:
     std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
   };
 
-  std::unique_ptr<ffmpeg::internal::AVPacket, AVPacketDeleter> packet{nullptr, AVPacketDeleter()};
-  std::shared_ptr<IFFmpegLibraries>                            ffmpegLibraries{};
+  std::unique_ptr<libffmpeg::internal::AVPacket, AVPacketDeleter> packet{nullptr,
+                                                                         AVPacketDeleter()};
+  std::shared_ptr<IFFmpegLibraries>                               ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

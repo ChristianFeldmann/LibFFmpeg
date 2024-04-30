@@ -17,7 +17,7 @@
 #include <filesystem>
 #include <string>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 struct LibraryInfo
@@ -43,4 +43,4 @@ public:
   internal::functions::SwResampleFunctions swresample{};
 };
 
-} // namespace ffmpeg
+} // namespace libffmpeg

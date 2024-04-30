@@ -13,7 +13,7 @@
 #include <AVCodec/wrappers/AVPacketWrapperInternal.h>
 #include <wrappers/RunTestForAllVersions.h>
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
 namespace
@@ -75,4 +75,4 @@ template <FFmpegVersion V> constexpr auto avCodecDescriptorTypeFunction()
 template <FFmpegVersion V>
 using AVCodecDescriptorType = typename decltype(avCodecDescriptorTypeFunction<V>())::type;
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

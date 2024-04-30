@@ -11,14 +11,14 @@
 
 #include <stdexcept>
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVFrameSideData;
-using ffmpeg::internal::AVFrameSideDataType;
+using libffmpeg::internal::AVFrameSideData;
+using libffmpeg::internal::AVFrameSideDataType;
 
 } // namespace
 
@@ -38,7 +38,7 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   AVFrameSideDataType type;
   CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, type, type);
 
-  if (type != ffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS)
+  if (type != libffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS)
     return {};
 
   uint8_t *data;
@@ -50,4 +50,4 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   return parseMotionData(this->ffmpegLibraries->getLibrariesVersion(), data, size);
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

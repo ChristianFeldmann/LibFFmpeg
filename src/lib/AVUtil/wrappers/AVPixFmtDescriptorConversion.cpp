@@ -11,7 +11,7 @@
 
 using namespace std::rel_ops;
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
 namespace
@@ -84,7 +84,7 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
     format.name = std::string(p->name);
     format.numberOfComponents = static_cast<int>(p->nb_components);
     format.shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
-                                 static_cast<int>(p->log2_chroma_h)};
+                                static_cast<int>(p->log2_chroma_h)};
     format.flags              = parseFlagsFromValue(p->flags);
 
     for (int i = 0; i < format.numberOfComponents; ++i)
@@ -104,7 +104,7 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
     format.name = std::string(p->name);
     format.numberOfComponents = static_cast<int>(p->nb_components);
     format.shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
-                                 static_cast<int>(p->log2_chroma_h)};
+                                static_cast<int>(p->log2_chroma_h)};
     format.flags              = parseFlagsFromValue(p->flags);
 
     for (int i = 0; i < format.numberOfComponents; ++i)
@@ -124,7 +124,7 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
     format.name = std::string(p->name);
     format.numberOfComponents = static_cast<int>(p->nb_components);
     format.shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
-                                 static_cast<int>(p->log2_chroma_h)};
+                                static_cast<int>(p->log2_chroma_h)};
     format.flags              = parseFlagsFromValue(p->flags);
 
     for (int i = 0; i < format.numberOfComponents; ++i)
@@ -157,4 +157,4 @@ Size getSizeOfFrameComponent(const int                    component,
   return {width, height};
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

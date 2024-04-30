@@ -8,13 +8,13 @@
 
 #include "StaticCallbacks.h"
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 namespace
 {
 
-using AvUtilFunctions = ffmpeg::internal::functions::AvUtilFunctions;
+using AvUtilFunctions = libffmpeg::internal::functions::AvUtilFunctions;
 
 std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int version)
 {
@@ -312,4 +312,4 @@ void FFmpegLibraries::disconnectAVLoggingCallback()
     unsetStaticLoggingCallback(this->avutil, this->loggingFunctionIndex.value());
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

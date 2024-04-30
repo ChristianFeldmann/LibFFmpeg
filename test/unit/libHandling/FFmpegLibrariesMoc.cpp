@@ -6,7 +6,7 @@
 
 #include "FFmpegLibrariesMoc.h"
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 using internal::AVCodec;
@@ -233,4 +233,4 @@ int FFmpegLibrariesMock::avcodec_open2_mock(internal::AVCodecContext *codecConte
   return 0;
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg

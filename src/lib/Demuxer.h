@@ -10,7 +10,7 @@
 #include <AVFormat/wrappers/AVFormatContextWrapper.h>
 #include <libHandling/IFFmpegLibraries.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 class Demuxer
@@ -33,4 +33,4 @@ private:
   avformat::AVFormatContextWrapper formatContext;
 };
 
-} // namespace ffmpeg
+} // namespace libffmpeg

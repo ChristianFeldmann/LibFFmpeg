@@ -8,7 +8,7 @@
 
 #include <libHandling/IFFmpegLibraries.h>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 struct AVInputFormatFlags
@@ -40,8 +40,8 @@ class AVInputFormatWrapper
 {
 public:
   AVInputFormatWrapper() = delete;
-  AVInputFormatWrapper(ffmpeg::internal::AVInputFormat  *inputFormat,
-                       std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  AVInputFormatWrapper(libffmpeg::internal::AVInputFormat *inputFormat,
+                       std::shared_ptr<IFFmpegLibraries>   ffmpegLibraries);
 
   std::string        getName() const;
   std::string        getLongName() const;
@@ -52,8 +52,8 @@ public:
   explicit operator bool() const { return this->inputFormat != nullptr; };
 
 private:
-  ffmpeg::internal::AVInputFormat  *inputFormat{};
-  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
+  libffmpeg::internal::AVInputFormat *inputFormat{};
+  std::shared_ptr<IFFmpegLibraries>   ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

@@ -19,11 +19,11 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace ffmpeg;
+using namespace libffmpeg;
 
-using ffmpeg::avutil::ColorSpace;
-using ffmpeg::avutil::MediaType;
-using ffmpeg::avutil::PictureType;
+using libffmpeg::avutil::ColorSpace;
+using libffmpeg::avutil::MediaType;
+using libffmpeg::avutil::PictureType;
 using ::testing::Contains;
 
 namespace

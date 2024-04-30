@@ -9,7 +9,7 @@
 #include "Functions.h"
 #include <common/Formatting.h>
 
-namespace ffmpeg::internal::functions
+namespace libffmpeg::internal::functions
 {
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedLibraryLoader &lib,
@@ -114,4 +114,4 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
   return functions;
 }
 
-} // namespace ffmpeg::internal::functions
+} // namespace libffmpeg::internal::functions

@@ -14,7 +14,7 @@
 
 #include <memory>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 class AVFormatContextWrapper
@@ -41,8 +41,8 @@ public:
   bool getNextPacket(avcodec::AVPacketWrapper &packet);
 
 private:
-  ffmpeg::internal::AVFormatContext *formatContext{nullptr};
-  std::shared_ptr<IFFmpegLibraries>  ffmpegLibraries{};
+  libffmpeg::internal::AVFormatContext *formatContext{nullptr};
+  std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries{};
 };
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

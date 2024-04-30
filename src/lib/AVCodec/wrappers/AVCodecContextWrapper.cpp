@@ -13,22 +13,22 @@
 #include "AVCodecContextWrapperInternal.h"
 #include "CastCodecClasses.h"
 
-namespace ffmpeg::avcodec
+namespace libffmpeg::avcodec
 {
 
-using ffmpeg::internal::AVCodecContext;
-using ffmpeg::internal::AVCodecID;
-using ffmpeg::internal::AVColorSpace;
-using ffmpeg::internal::AVDictionary;
-using ffmpeg::internal::AVMediaType;
-using ffmpeg::internal::AVPixelFormat;
-using ffmpeg::internal::AVRational;
-using ffmpeg::internal::avcodec::AVCodecContext_56;
-using ffmpeg::internal::avcodec::AVCodecContext_57;
-using ffmpeg::internal::avcodec::AVCodecContext_58;
-using ffmpeg::internal::avcodec::AVCodecContext_59;
-using ffmpeg::internal::avcodec::AVCodecContext_60;
-using ffmpeg::internal::avcodec::AVCodecContext_61;
+using libffmpeg::internal::AVCodecContext;
+using libffmpeg::internal::AVCodecID;
+using libffmpeg::internal::AVColorSpace;
+using libffmpeg::internal::AVDictionary;
+using libffmpeg::internal::AVMediaType;
+using libffmpeg::internal::AVPixelFormat;
+using libffmpeg::internal::AVRational;
+using libffmpeg::internal::avcodec::AVCodecContext_56;
+using libffmpeg::internal::avcodec::AVCodecContext_57;
+using libffmpeg::internal::avcodec::AVCodecContext_58;
+using libffmpeg::internal::avcodec::AVCodecContext_59;
+using libffmpeg::internal::avcodec::AVCodecContext_60;
+using libffmpeg::internal::avcodec::AVCodecContext_61;
 
 namespace internal
 {
@@ -227,4 +227,4 @@ ByteVector AVCodecContextWrapper::getExtradata() const
   return copyDataFromRawArray(extradata, extradataSize);
 }
 
-} // namespace ffmpeg::avcodec
+} // namespace libffmpeg::avcodec

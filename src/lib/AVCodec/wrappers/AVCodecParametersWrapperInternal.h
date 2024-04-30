@@ -6,7 +6,7 @@
 
 #pragma once
 
-namespace ffmpeg::internal::avcodec
+namespace libffmpeg::internal::avcodec
 {
 
 /* In avcodec version 56, this struct does not exist yet.
@@ -18,7 +18,7 @@ struct AVCodecParameters_56
 {
   AVMediaType  codec_type;
   AVCodecID    codec_id;
-  uint8_t     *extradata;
+  uint8_t *    extradata;
   int          extradata_size;
   int          format;
   int          profile;
@@ -34,7 +34,7 @@ struct AVCodecParameters_57
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
   uint32_t                      codec_tag;
-  uint8_t                      *extradata;
+  uint8_t *                     extradata;
   int                           extradata_size;
   int                           format;
   int64_t                       bit_rate;
@@ -65,9 +65,9 @@ struct AVCodecParameters_61
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
   uint32_t                      codec_tag;
-  uint8_t                      *extradata;
+  uint8_t *                     extradata;
   int                           extradata_size;
-  AVPacketSideData             *coded_side_data;
+  AVPacketSideData *            coded_side_data;
   int                           nb_coded_side_data;
   int                           format;
   int64_t                       bit_rate;
@@ -90,4 +90,4 @@ struct AVCodecParameters_61
   // Actually, there is more here, but the variables above are the only we need.
 };
 
-} // namespace ffmpeg::internal::avcodec
+} // namespace libffmpeg::internal::avcodec

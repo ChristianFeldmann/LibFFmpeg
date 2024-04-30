@@ -6,7 +6,7 @@
 
 #include "DebugFunctions.h"
 
-namespace ffmpeg::test
+namespace libffmpeg::test
 {
 
 FrameFileWriter::FrameFileWriter(std::string filename)
@@ -25,4 +25,4 @@ void FrameFileWriter::write(const avutil::AVFrameWrapper &frame)
   }
 }
 
-} // namespace ffmpeg::test
+} // namespace libffmpeg::test

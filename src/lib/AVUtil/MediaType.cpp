@@ -6,10 +6,10 @@
 
 #include "MediaType.h"
 
-namespace ffmpeg::avutil
+namespace libffmpeg::avutil
 {
 
-using ffmpeg::internal::AVMediaType;
+using libffmpeg::internal::AVMediaType;
 
 MediaType toMediaType(const AVMediaType mediaType)
 {
@@ -53,4 +53,4 @@ AVMediaType toAVMediaType(const MediaType mediaType)
   }
 }
 
-} // namespace ffmpeg::avutil
+} // namespace libffmpeg::avutil

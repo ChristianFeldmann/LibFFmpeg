@@ -13,19 +13,19 @@
 
 #include <sstream>
 
-namespace ffmpeg::avformat
+namespace libffmpeg::avformat
 {
 
 namespace
 {
 
-using ffmpeg::internal::AVInputFormat;
-using ffmpeg::internal::avformat::AVInputFormat_56;
-using ffmpeg::internal::avformat::AVInputFormat_57;
-using ffmpeg::internal::avformat::AVInputFormat_58;
-using ffmpeg::internal::avformat::AVInputFormat_59;
-using ffmpeg::internal::avformat::AVInputFormat_60;
-using ffmpeg::internal::avformat::AVInputFormat_61;
+using libffmpeg::internal::AVInputFormat;
+using libffmpeg::internal::avformat::AVInputFormat_56;
+using libffmpeg::internal::avformat::AVInputFormat_57;
+using libffmpeg::internal::avformat::AVInputFormat_58;
+using libffmpeg::internal::avformat::AVInputFormat_59;
+using libffmpeg::internal::avformat::AVInputFormat_60;
+using libffmpeg::internal::avformat::AVInputFormat_61;
 
 } // namespace
 
@@ -87,7 +87,7 @@ bool operator==(const AVInputFormatFlags &lhs, const AVInputFormatFlags &rhs)
           lhs.tsNegative == rhs.tsNegative && lhs.seekToPTS == rhs.seekToPTS);
 }
 
-AVInputFormatWrapper::AVInputFormatWrapper(AVInputFormat                    *inputFormat,
+AVInputFormatWrapper::AVInputFormatWrapper(AVInputFormat *                   inputFormat,
                                            std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : inputFormat(inputFormat), ffmpegLibraries(ffmpegLibraries)
 {
@@ -152,4 +152,4 @@ std::string AVInputFormatWrapper::getMimeType() const
   return mimeTypeCStr == nullptr ? "" : std::string(mimeTypeCStr);
 }
 
-} // namespace ffmpeg::avformat
+} // namespace libffmpeg::avformat

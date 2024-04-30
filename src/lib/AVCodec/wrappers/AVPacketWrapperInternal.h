@@ -8,7 +8,7 @@
 
 #include <common/InternalTypes.h>
 
-namespace ffmpeg::internal::avcodec
+namespace libffmpeg::internal::avcodec
 {
 
 // AVPacket is part of avcodec. The definition is different for different major versions of avcodec.
@@ -17,10 +17,10 @@ namespace ffmpeg::internal::avcodec
 // since its size is used in other structures (e.g. AVStream).
 struct AVPacket_56
 {
-  AVBufferRef      *buf;
+  AVBufferRef *     buf;
   int64_t           pts;
   int64_t           dts;
-  uint8_t          *data;
+  uint8_t *         data;
   int               size;
   int               stream_index;
   int               flags;
@@ -28,17 +28,17 @@ struct AVPacket_56
   int               side_data_elems;
   int               duration;
   void (*destruct)(AVPacket *);
-  void   *priv;
+  void *  priv;
   int64_t pos;
   int64_t convergence_duration;
 };
 
 struct AVPacket_57
 {
-  AVBufferRef      *buf;
+  AVBufferRef *     buf;
   int64_t           pts;
   int64_t           dts;
-  uint8_t          *data;
+  uint8_t *         data;
   int               size;
   int               stream_index;
   int               flags;
@@ -53,10 +53,10 @@ typedef AVPacket_57 AVPacket_58;
 
 struct AVPacket_59
 {
-  AVBufferRef      *buf;
+  AVBufferRef *     buf;
   int64_t           pts;
   int64_t           dts;
-  uint8_t          *data;
+  uint8_t *         data;
   int               size;
   int               stream_index;
   int               flags;
@@ -64,12 +64,12 @@ struct AVPacket_59
   int               side_data_elems;
   int64_t           duration;
   int64_t           pos;
-  void             *opaque;
-  AVBufferRef      *opaque_ref;
+  void *            opaque;
+  AVBufferRef *     opaque_ref;
   AVRational        time_base;
 };
 
 typedef AVPacket_59 AVPacket_60;
 typedef AVPacket_59 AVPacket_61;
 
-} // namespace ffmpeg::internal::avcodec
+} // namespace libffmpeg::internal::avcodec

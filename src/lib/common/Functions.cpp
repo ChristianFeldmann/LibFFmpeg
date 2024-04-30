@@ -8,7 +8,7 @@
 
 #include <sstream>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
-} // namespace ffmpeg
+} // namespace libffmpeg

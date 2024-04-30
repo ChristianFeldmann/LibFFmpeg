@@ -10,7 +10,7 @@
 
 #include <fstream>
 
-namespace ffmpeg::test
+namespace libffmpeg::test
 {
 
 class FrameFileWriter
@@ -25,4 +25,4 @@ private:
   std::ofstream outfile;
 };
 
-} // namespace ffmpeg::test
+} // namespace libffmpeg::test

@@ -13,7 +13,7 @@
 
 #include <mutex>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 class FFmpegLibraries : public IFFmpegLibraries
@@ -65,4 +65,4 @@ private:
   friend class FFmpegLibrariesBuilder;
 };
 
-} // namespace ffmpeg
+} // namespace libffmpeg

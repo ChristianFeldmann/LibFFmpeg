@@ -9,7 +9,7 @@
 #include <common/Error.h>
 #include <common/Formatting.h>
 
-namespace ffmpeg
+namespace libffmpeg
 {
 
 Decoder::Decoder(std::shared_ptr<IFFmpegLibraries> libraries)
@@ -170,4 +170,4 @@ std::optional<avutil::AVFrameWrapper> Decoder::decodeNextFrame()
   return {};
 }
 
-} // namespace ffmpeg
+} // namespace libffmpeg
