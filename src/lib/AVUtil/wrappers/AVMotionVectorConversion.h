@@ -8,6 +8,7 @@
 
 #include <common/Version.h>
 
+#include <stdint.h>
 #include <vector>
 
 namespace libffmpeg::avutil
