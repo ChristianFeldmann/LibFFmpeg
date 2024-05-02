@@ -9,6 +9,8 @@
 #include "AVPixFmtDescriptorConversionInternal.h"
 #include "CastUtilClasses.h"
 
+#include <utility>
+
 using namespace std::rel_ops;
 
 namespace libffmpeg::avutil
