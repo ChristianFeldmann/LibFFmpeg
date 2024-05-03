@@ -164,28 +164,30 @@ void compareQueuePacketsAndDrain(PacketQueue &queue1, PacketQueue &queue2)
     static int packetCount = -1;
     ++packetCount;
 
+    bool match = true;
+
     if (packet1.getDuration() != packet2.getDuration())
     {
       std::cout << "Error comparing packet " << packetCount << ". Duration unequal ("
                 << packet1.getDuration() << " vs " << packet2.getDuration() << ").\n";
-      return;
+      match = false;
     }
 
     if (packet1.getDataSize() != packet2.getDataSize())
     {
       std::cout << "Error comparing packet " << packetCount << ". Data size unequal ("
                 << packet1.getDataSize() << " vs " << packet2.getDataSize() << ").\n";
-      return;
+      match = false;
     }
-
-    if (!compareData(packet1.getData(), packet2.getData()))
+    else if (!compareData(packet1.getData(), packet2.getData()))
     {
       std::cout << "Error comparing packet " << packetCount << ". Data unequal.\n";
-      return;
+      match = false;
     }
 
-    std::cout << "Match for packet " << packetCount << ". Duration " << packet1.getDuration()
-              << ".\n";
+    if (match)
+      std::cout << "Match for packet " << packetCount << ". Duration " << packet1.getDuration()
+                << ".\n";
   }
 }
 
