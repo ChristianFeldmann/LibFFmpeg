@@ -19,6 +19,7 @@
 
 using namespace libffmpeg;
 using PacketQueue = std::queue<avcodec::AVPacketWrapper>;
+using DataQueue   = std::deque<std::byte>;
 
 void showUsage()
 {
@@ -50,6 +51,16 @@ struct Settings
   libffmpeg::LogLevel   logLevel{libffmpeg::LogLevel::Error};
 };
 
+/* For some codecs (e.g. aac) the packet sizes and durations must be identical.
+ * For other codecs (e.g. raw data like pcm), the size of the packets is not so
+ * important but the data (byte by byte) must match.
+ */
+enum class ComparisonMode
+{
+  Packets,
+  Data
+};
+
 std::optional<CompareFile> parseFileNameAndStreamIndex(const std::string &variable)
 {
   const auto columnPos = variable.rfind(":");
@@ -77,6 +88,66 @@ std::optional<CompareFile> parseFileNameAndStreamIndex(const std::string &variab
   return file;
 }
 
+Demuxer openInput(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries, const std::string &filename)
+{
+  Demuxer demuxer(ffmpegLibraries);
+  if (!demuxer.openFile(filename))
+    throw std::runtime_error("Error when opening first input file : " + filename + "\n ");
+
+  std::cout << "Successfully opened file " + filename + ".\n";
+
+  const auto formatContext = demuxer.getFormatContext();
+  const auto inputFormat   = formatContext->getInputFormat();
+
+  std::cout << "\nFile info:\n";
+  printInputFormat(formatContext, inputFormat);
+  std::cout << "\n";
+
+  return demuxer;
+}
+
+ComparisonMode checkStreamsAndGetComparMode(Demuxer & demuxer1,
+                                            Demuxer & demuxer2,
+                                            const int streamIndex1,
+                                            const int streamIndex2)
+{
+  const auto streams1 = demuxer1.getFormatContext()->getStreams();
+  const auto streams2 = demuxer2.getFormatContext()->getStreams();
+
+  if (streamIndex1 >= streams1.size())
+    throw std::runtime_error("Given stream index for stream 1 not found.");
+  if (streamIndex2 >= streams2.size())
+    throw std::runtime_error("Given stream index for stream 2 not found.");
+
+  const auto codecType1 = streams1.at(streamIndex1).getCodecType();
+  const auto codecType2 = streams2.at(streamIndex2).getCodecType();
+  if (codecType1 != codecType2)
+    throw std::runtime_error("Stream types of streams to compare do not match. Type 1 " +
+                             avutil::mediaTypeMapper.getName(codecType1) + " and type 2 " +
+                             avutil::mediaTypeMapper.getName(codecType2));
+
+  const auto codecDescriptor1 = streams1.at(streamIndex1).getCodecDescriptor();
+  if (!codecDescriptor1)
+    throw std::runtime_error("Error getting codec descriptor for stream 1.");
+  const auto codecDescriptor2 = streams2.at(streamIndex2).getCodecDescriptor();
+  if (!codecDescriptor2)
+    throw std::runtime_error("Error getting codec descriptor for stream 2.");
+
+  if (codecDescriptor1->codecName != codecDescriptor2->codecName)
+    throw std::runtime_error("Codec name of streams to compare do not match. Name 1 " +
+                             codecDescriptor1->codecName + " and name 2 " +
+                             codecDescriptor2->codecName);
+
+  if (codecDescriptor1->codecName.find("pcm") == 0)
+    return ComparisonMode::Data;
+  return ComparisonMode::Packets;
+}
+
+bool compareData(const ByteVector &data1, const ByteVector &data2)
+{
+  return std::equal(data1.begin(), data1.end(), data2.begin(), data2.end());
+}
+
 void compareQueuePacketsAndDrain(PacketQueue &queue1, PacketQueue &queue2)
 {
   while (!queue1.empty() && !queue2.empty())
@@ -100,24 +171,59 @@ void compareQueuePacketsAndDrain(PacketQueue &queue1, PacketQueue &queue2)
       return;
     }
 
-    // if (packet1.getDataSize() != packet2.getDataSize())
-    //   std::cout << "Error comparing packet. Data size unequal (" << packet1.getDataSize() << " vs
-    //   "
-    //             << packet2.getDataSize() << ").\n";
+    if (packet1.getDataSize() != packet2.getDataSize())
+    {
+      std::cout << "Error comparing packet " << packetCount << ". Data size unequal ("
+                << packet1.getDataSize() << " vs " << packet2.getDataSize() << ").\n";
+      return;
+    }
 
-    // COmpare data
+    if (!compareData(packet1.getData(), packet2.getData()))
+    {
+      std::cout << "Error comparing packet " << packetCount << ". Data unequal.\n";
+      return;
+    }
 
     std::cout << "Match for packet " << packetCount << ". Duration " << packet1.getDuration()
               << ".\n";
   }
 }
 
-void logPacketQueueState(const std::string &queueName, const PacketQueue &queue)
+void compareDataQueueAndDrain(DataQueue &queue1, DataQueue &queue2)
+{
+  int  bytesMatched = 0;
+  bool matched      = true;
+
+  while (!queue1.empty() && !queue2.empty())
+  {
+    const auto byte1 = queue1.front();
+    const auto byte2 = queue2.front();
+
+    queue1.pop_front();
+    queue2.pop_front();
+
+    static int byteCounter = -1;
+    ++byteCounter;
+    ++bytesMatched;
+
+    if (byte1 != byte2)
+    {
+      std::cout << "Error comparing data. Byte " << byteCounter << " differs.\n";
+      matched = false;
+    }
+  }
+
+  if (bytesMatched > 0)
+    std::cout << (matched ? "Successfully matched " : "Failed to match ") << bytesMatched
+              << " bytes.\n";
+}
+
+template <typename T> void logQueueState(const std::string &queueName, const T &queue)
 {
   if (!queue.empty())
   {
     std::cout << "Queue " << queueName << " is not empty. " << queue.size()
-              << " packets not matched.";
+              << " items not matched.";
   }
 }
 
@@ -219,58 +325,59 @@ int main(int argc, char const *argv[])
     }
   }
 
-  Demuxer demuxer1(loadingResult.ffmpegLibraries);
-  if (!demuxer1.openFile(settings->file1.filename))
-  {
-    std::cout << "Error when opening first input file : " + settings->file1.filename + "\n ";
-    return 1;
-  }
-  std::cout << "Successfully opened file " + settings->file1.filename + ".\n";
+  auto demuxer1 = openInput(loadingResult.ffmpegLibraries, settings->file1.filename);
+  auto demuxer2 = openInput(loadingResult.ffmpegLibraries, settings->file2.filename);
 
-  Demuxer demuxer2(loadingResult.ffmpegLibraries);
-  if (!demuxer2.openFile(settings->file2.filename))
-  {
-    std::cout << "Error when opening second input file : " + settings->file2.filename + "\n ";
-    return 1;
-  }
-  std::cout << "Successfully opened file " + settings->file2.filename + ".\n";
+  const auto compareMode = checkStreamsAndGetComparMode(
+      demuxer1, demuxer2, settings->file1.streamIndex, settings->file2.streamIndex);
 
-  const auto formatContext1 = demuxer1.getFormatContext();
-  const auto inputFormat1   = formatContext1->getInputFormat();
+  PacketQueue packetQueue[2];
+  DataQueue   dataQueue[2];
 
-  std::cout << "\nFile one info:\n";
-  printInputFormat(formatContext1, inputFormat1);
+  auto addPacketToQueue = [&packetQueue, &dataQueue, compareMode](avcodec::AVPacketWrapper &&packet,
+                                                                  const int streamIndex,
+                                                                  const int queueIndex) {
+    const auto packetStreamIndex = packet.getStreamIndex();
+    if (packetStreamIndex != streamIndex)
+      return;
+    if (compareMode == ComparisonMode::Packets)
+      packetQueue[queueIndex].push(std::move(packet));
+    else
+    {
+      const auto data = packet.getData();
+      dataQueue[queueIndex].insert(dataQueue[queueIndex].end(), data.begin(), data.end());
+    }
+  };
 
-  const auto formatContext2 = demuxer2.getFormatContext();
-  const auto inputFormat2   = formatContext2->getInputFormat();
-
-  std::cout << "\nFile two info:\n";
-  printInputFormat(formatContext2, inputFormat2);
-
-  PacketQueue packetQueue1;
-  PacketQueue packetQueue2;
-
-  // We don't assume that the packets from both files are iin the same order. So we have to queue
-  // them for comparison.
   while (true)
   {
     auto packet1 = demuxer1.getNextPacket();
-    if (packet1 && packet1->getStreamIndex() == settings->file1.streamIndex)
-      packetQueue1.push(std::move(*packet1));
-
     auto packet2 = demuxer2.getNextPacket();
-    if (packet2 && packet2->getStreamIndex() == settings->file2.streamIndex)
-      packetQueue2.push(std::move(*packet2));
-
-    compareQueuePacketsAndDrain(packetQueue1, packetQueue2);
-    // We could possibly check if the queues run too full
 
     if (!packet1 && !packet2)
       break;
+
+    if (packet1)
+      addPacketToQueue(std::move(*packet1), settings->file1.streamIndex, 0);
+    if (packet2)
+      addPacketToQueue(std::move(*packet2), settings->file2.streamIndex, 1);
+
+    if (compareMode == ComparisonMode::Packets)
+      compareQueuePacketsAndDrain(packetQueue[0], packetQueue[1]);
+    else
+      compareDataQueueAndDrain(dataQueue[0], dataQueue[1]);
   }
 
-  logPacketQueueState("1", packetQueue1);
-  logPacketQueueState("2", packetQueue2);
+  if (compareMode == ComparisonMode::Packets)
+  {
+    logQueueState("1", packetQueue[0]);
+    logQueueState("2", packetQueue[1]);
+  }
+  else
+  {
+    logQueueState("1", dataQueue[0]);
+    logQueueState("2", dataQueue[1]);
+  }
 
   return 0;
 }
