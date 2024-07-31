@@ -7,6 +7,7 @@
 #include <Demuxer.h>
 #include <common/Formatting.h>
 
+#include <cstddef>
 #include <iostream>
 #include <string>
 
@@ -66,7 +67,7 @@ template <typename T1, typename T2> std::string to_string(const std::map<T1, T2>
 }
 
 void printInputFormat(const avformat::AVFormatContextWrapper *formatContext,
-                      const avformat::AVInputFormatWrapper &  inputFormat)
+                      const avformat::AVInputFormatWrapper   &inputFormat)
 {
   std::cout << "  Format:\n";
   std::cout << "    Name              : " << inputFormat.getName() << "\n";
