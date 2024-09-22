@@ -15,7 +15,7 @@ namespace libffmpeg::internal::functions
 {
 
 std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const SharedLibraryLoader &lib,
-                                                                     const LoggingFunction &    log)
+                                                                     const LoggingFunction     &log)
 {
   if (!lib)
   {
@@ -29,9 +29,12 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
   lib.tryResolveFunction(functions.av_register_all, "av_register_all");
   lib.tryResolveFunction(functions.avformat_open_input, "avformat_open_input");
   lib.tryResolveFunction(functions.avformat_close_input, "avformat_close_input");
+  lib.tryResolveFunction(functions.avformat_alloc_context, "avformat_alloc_context");
   lib.tryResolveFunction(functions.avformat_find_stream_info, "avformat_find_stream_info");
   lib.tryResolveFunction(functions.av_read_frame, "av_read_frame");
   lib.tryResolveFunction(functions.av_seek_frame, "av_seek_frame");
+  lib.tryResolveFunction(functions.avio_alloc_context, "avio_alloc_context");
+  lib.tryResolveFunction(functions.avio_context_free, "avio_context_free");
 
   std::vector<std::string> missingFunctions;
 
@@ -46,20 +49,25 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
 
   const auto version = Version::fromFFmpegVersion(functions.avformat_version());
 
+  checkForMissingFunctionAndLog(
+      functions.avformat_version, "avformat_version", missingFunctions, log);
   if (version.major < 59)
     checkForMissingFunctionAndLog(
         functions.av_register_all, "av_register_all", missingFunctions, log);
-
   checkForMissingFunctionAndLog(
       functions.avformat_open_input, "avformat_open_input", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.avformat_close_input, "avformat_close_input", missingFunctions, log);
   checkForMissingFunctionAndLog(
+      functions.avformat_alloc_context, "avformat_alloc_context", missingFunctions, log);
+  checkForMissingFunctionAndLog(
       functions.avformat_find_stream_info, "avformat_find_stream_info", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_read_frame, "av_read_frame", missingFunctions, log);
   checkForMissingFunctionAndLog(functions.av_seek_frame, "av_seek_frame", missingFunctions, log);
   checkForMissingFunctionAndLog(
-      functions.avformat_version, "avformat_version", missingFunctions, log);
+      functions.avio_alloc_context, "avio_alloc_context", missingFunctions, log);
+  checkForMissingFunctionAndLog(
+      functions.avio_context_free, "avio_context_free", missingFunctions, log);
 
   if (!missingFunctions.empty())
   {

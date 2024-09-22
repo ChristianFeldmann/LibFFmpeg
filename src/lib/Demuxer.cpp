@@ -50,6 +50,11 @@ bool Demuxer::openFile(const Path &path)
   return this->formatContext.openFile(path);
 }
 
+bool Demuxer::openInput(std::unique_ptr<avformat::AVIOInputContext> ioInput)
+{
+  return this->formatContext.openInput(std::move(ioInput));
+}
+
 std::optional<avcodec::AVPacketWrapper> Demuxer::getNextPacket()
 {
   avcodec::AVPacketWrapper packet(this->ffmpegLibraries);

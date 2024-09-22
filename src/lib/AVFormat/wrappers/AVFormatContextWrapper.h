@@ -7,6 +7,7 @@
 #pragma once
 
 #include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <AVFormat/wrappers/AVIOContextWrapper.h>
 #include <AVFormat/wrappers/AVInputFormatWrapper.h>
 #include <AVFormat/wrappers/AVStreamWrapper.h>
 #include <AVUtil/wrappers/AVDictionaryWrapper.h>
@@ -27,6 +28,7 @@ public:
   ~AVFormatContextWrapper();
 
   bool openFile(const Path path);
+  bool openInput(std::unique_ptr<avformat::AVIOInputContext> ioInput);
 
   explicit operator bool() const;
 
@@ -41,8 +43,11 @@ public:
   bool getNextPacket(avcodec::AVPacketWrapper &packet);
 
 private:
-  libffmpeg::internal::AVFormatContext *formatContext{nullptr};
-  std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries{};
+  bool openInputAndFindStreamInfo(const std::optional<std::filesystem::path> path);
+
+  libffmpeg::internal::AVFormatContext       *formatContext{nullptr};
+  std::shared_ptr<IFFmpegLibraries>           ffmpegLibraries{};
+  std::unique_ptr<avformat::AVIOInputContext> ioInput{};
 };
 
 } // namespace libffmpeg::avformat

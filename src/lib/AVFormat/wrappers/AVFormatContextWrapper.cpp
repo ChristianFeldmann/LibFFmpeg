@@ -52,26 +52,37 @@ bool AVFormatContextWrapper::openFile(const std::filesystem::path path)
     return false;
   }
 
-  auto ret = this->ffmpegLibraries->avformat.avformat_open_input(
-      &this->formatContext, path.string().c_str(), nullptr, nullptr);
-  if (ret < 0)
+  return this->openInputAndFindStreamInfo(path);
+}
+
+bool AVFormatContextWrapper::openInput(std::unique_ptr<avformat::AVIOInputContext> ioInput)
+{
+  if (this->formatContext)
   {
     this->ffmpegLibraries->log(LogLevel::Error,
-                               "Error opening file (avformat_open_input). Return code " +
-                                   std::to_string(ret));
+                               "Error opening file. AVFormatContext is already initialized.");
     return false;
   }
 
-  ret = this->ffmpegLibraries->avformat.avformat_find_stream_info(this->formatContext, nullptr);
-  if (ret < 0)
+  if (!ioInput || !(*ioInput))
   {
-    this->ffmpegLibraries->log(LogLevel::Error,
-                               "Error opening file (avformat_open_input). Return code " +
-                                   std::to_string(ret));
+    this->ffmpegLibraries->log(LogLevel::Error, "Invalid ioInput given.");
     return false;
   }
 
-  return true;
+  this->formatContext = this->ffmpegLibraries->avformat.avformat_alloc_context();
+  if (this->formatContext == nullptr)
+  {
+    this->ffmpegLibraries->log(LogLevel::Error, "Error allocating AVFormatContext.");
+    return false;
+  }
+
+  this->ioInput = std::move(ioInput);
+
+  CAST_AVFORMAT_SET_MEMBER(
+      AVFormatContext, this->formatContext, pb, this->ioInput->getAVIOContext());
+
+  return this->openInputAndFindStreamInfo({});
 }
 
 AVFormatContextWrapper::operator bool() const
@@ -137,6 +148,31 @@ bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)
   const auto ret =
       this->ffmpegLibraries->avformat.av_read_frame(this->formatContext, packet.getPacket());
   return ret == 0;
+}
+
+bool AVFormatContextWrapper::openInputAndFindStreamInfo(
+    const std::optional<std::filesystem::path> path)
+{
+  auto ret = this->ffmpegLibraries->avformat.avformat_open_input(
+      &this->formatContext, path ? path->string().c_str() : nullptr, nullptr, nullptr);
+  if (ret < 0)
+  {
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Error opening file (avformat_open_input). Return code " +
+                                   std::to_string(ret));
+    return false;
+  }
+
+  ret = this->ffmpegLibraries->avformat.avformat_find_stream_info(this->formatContext, nullptr);
+  if (ret < 0)
+  {
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Error opening file (avformat_open_input). Return code " +
+                                   std::to_string(ret));
+    return false;
+  }
+
+  return true;
 }
 
 } // namespace libffmpeg::avformat
