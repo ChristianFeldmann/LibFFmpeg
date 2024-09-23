@@ -14,6 +14,10 @@
 namespace libffmpeg::internal::functions
 {
 
+using ReadPacketFunction  = int(void *opaque, uint8_t *buf, int buf_size);
+using WritePacketFunction = int(void *opaque, const uint8_t *buf, int buf_size);
+using SeekFunction        = int64_t(void *opaque, int64_t offset, int whence);
+
 struct AvFormatFunctions
 {
   std::function<unsigned()> avformat_version;
@@ -27,10 +31,6 @@ struct AvFormatFunctions
   std::function<int(AVFormatContext *s, AVPacket *pkt)>           av_read_frame;
   std::function<int(AVFormatContext *s, int stream_index, int64_t timestamp, int flags)>
       av_seek_frame;
-
-  using ReadPacketFunction  = int(void *opaque, uint8_t *buf, int buf_size);
-  using WritePacketFunction = int(void *opaque, const uint8_t *buf, int buf_size);
-  using SeekFunction        = int64_t(void *opaque, int64_t offset, int whence);
 
   std::function<AVIOContext *(unsigned char       *buffer,
                               int                  buffer_size,

@@ -28,24 +28,11 @@ static int read_packet_callback(void *opaque, uint8_t *buffer, int bufferSize)
 
 } // namespace
 
-AVIOInputContext::AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+AVIOContextWrapper::~AVIOContextWrapper()
 {
-  const size_t bufferSize = 4096;
-  auto buffer = static_cast<unsigned char *>(ffmpegLibraries->avutil.av_mallocz(bufferSize));
-  if (buffer == nullptr)
-  {
-    ffmpegLibraries->log(LogLevel::Error, "Error allocating buffer for IO context.");
-    return;
-  }
-
-  auto newContext = ffmpegLibraries->avformat.avio_alloc_context(
-      buffer, bufferSize, 0, this, &read_packet_callback, nullptr, nullptr);
-
-  this->ioContext = std::unique_ptr<AVIOContext, AVIOContextDeleter>(
-      newContext, AVIOContextDeleter(ffmpegLibraries));
 }
 
-AVIOContext *AVIOInputContext::getAVIOContext() const
+AVIOContext *AVIOContextWrapper::getAVIOContext() const
 {
   return this->ioContext.get();
 }
@@ -59,6 +46,27 @@ void AVIOInputContext::AVIOContextDeleter::operator()(AVIOContext *ioContext) co
     this->ffmpegLibraries->avformat.avio_context_free(&ioContext);
   else
     this->ffmpegLibraries->avutil.av_freep(&ioContext);
+}
+
+AVIOInputContext::AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
+    : AVIOContextWrapper()
+{
+  if (!ffmpegLibraries)
+    throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
+
+  const size_t bufferSize = 4096;
+  auto buffer = static_cast<unsigned char *>(ffmpegLibraries->avutil.av_mallocz(bufferSize));
+  if (buffer == nullptr)
+  {
+    ffmpegLibraries->log(LogLevel::Error, "Error allocating buffer for IO context.");
+    return;
+  }
+
+  auto newContext = ffmpegLibraries->avformat.avio_alloc_context(
+      buffer, bufferSize, 0, this, &read_packet_callback, nullptr, nullptr);
+
+  this->ioContext = std::unique_ptr<AVIOContext, AVIOContextDeleter>(
+      newContext, AVIOContextDeleter(ffmpegLibraries));
 }
 
 } // namespace libffmpeg::avformat

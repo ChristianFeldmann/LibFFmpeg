@@ -14,19 +14,17 @@
 namespace libffmpeg::avformat
 {
 
-class AVIOInputContext
+class AVIOContextWrapper
 {
 public:
-  AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
-  virtual ~AVIOInputContext() = default;
+  AVIOContextWrapper()          = default;
+  virtual ~AVIOContextWrapper() = 0;
 
   internal::AVIOContext *getAVIOContext() const;
 
-  virtual std::optional<int> read_packet(uint8_t *buf, int buf_size) = 0;
-
   explicit operator bool() const { return !!this->ioContext; };
 
-private:
+protected:
   class AVIOContextDeleter
   {
   public:
@@ -41,6 +39,15 @@ private:
 
   std::unique_ptr<internal::AVIOContext, AVIOContextDeleter> ioContext{nullptr,
                                                                        AVIOContextDeleter()};
+};
+
+class AVIOInputContext : public AVIOContextWrapper
+{
+public:
+  AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
+  virtual ~AVIOInputContext() = default;
+
+  virtual std::optional<int> read_packet(uint8_t *buf, int buf_size) = 0;
 };
 
 } // namespace libffmpeg::avformat
