@@ -66,12 +66,13 @@ std::optional<AvFormatFunctions> tryBindAVFormatFunctionsFromLibrary(const Share
   checkForMissingFunctionAndLog(functions.av_seek_frame, "av_seek_frame", missingFunctions, log);
   checkForMissingFunctionAndLog(
       functions.avio_alloc_context, "avio_alloc_context", missingFunctions, log);
-  checkForMissingFunctionAndLog(
+  if (version.major > 56)
+    checkForMissingFunctionAndLog(
       functions.avio_context_free, "avio_context_free", missingFunctions, log);
 
   if (!missingFunctions.empty())
   {
-    log(LogLevel::Debug,
+    log(LogLevel::Info,
         "Binding avFormat functions failed. Missing functions: " + to_string(missingFunctions));
     return {};
   }

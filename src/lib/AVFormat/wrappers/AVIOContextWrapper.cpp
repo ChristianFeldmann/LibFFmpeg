@@ -55,7 +55,10 @@ void AVIOInputContext::AVIOContextDeleter::operator()(AVIOContext *ioContext) co
   if (ioContext == nullptr)
     return;
 
-  this->ffmpegLibraries->avformat.avio_context_free(&ioContext);
+  if (this->ffmpegLibraries->getLibrariesVersion().avformat.major > 56)
+    this->ffmpegLibraries->avformat.avio_context_free(&ioContext);
+  else
+    this->ffmpegLibraries->avutil.av_freep(&ioContext);
 }
 
 } // namespace libffmpeg::avformat
