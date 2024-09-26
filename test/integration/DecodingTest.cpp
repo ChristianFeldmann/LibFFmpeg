@@ -19,7 +19,7 @@ namespace libffmpeg::test::integration
 using libffmpeg::avutil::PictureType;
 using ::testing::Contains;
 
-TEST(FFmpegTest, DecodingTest)
+TEST(Decoding, OpenTestFileAndDecodeAllFrames_ShouldReturnTheCorrectFrames)
 {
   auto libsAndLogs = LibrariesWithLogging();
 

@@ -21,7 +21,7 @@ using libffmpeg::avutil::ColorSpace;
 using libffmpeg::avutil::MediaType;
 using ::testing::Contains;
 
-TEST(FFmpegTest, CheckFormatAndStreamParameters)
+TEST(Demuxing, OpenTestFileAndCheckFormat_ShouldHaveCorrectFormat)
 {
   auto libsAndLogs = LibrariesWithLogging();
 
@@ -146,7 +146,7 @@ TEST(FFmpegTest, CheckFormatAndStreamParameters)
   EXPECT_EQ(videoStream.getIndex(), 1);
 }
 
-TEST(FFmpegTest, DemuxPackets)
+TEST(Demuxing, OpenTestFileAndDemuxPackets_ShouldReturnCorrectPackets)
 {
   auto libsAndLogs = LibrariesWithLogging();
 
@@ -188,7 +188,7 @@ TEST(FFmpegTest, DemuxPackets)
   EXPECT_EQ(packetCountVideo, 25);
 }
 
-TEST(FFmpegTest, DemuxPacketsAndCheckFFmpegCallbackLogs)
+TEST(Demuxing, OpenTestFileAndDemuxPackets_ShouldLogDemuxingEventsCorrectly)
 {
   auto libsAndLogs = LibrariesWithLogging();
 

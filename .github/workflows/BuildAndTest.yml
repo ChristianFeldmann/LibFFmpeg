@@ -52,7 +52,7 @@ jobs:
         name: ${{ matrix.config.artifactName }}
 
     - name: Make integrationTest executable
-      run: chmod a+x ffmpegTest
+      run: chmod a+x integrationTest
       if: ${{ matrix.config.os }} != windows-latest
 
     - name: Download FFmpeg
