@@ -53,6 +53,7 @@ constexpr std::array<AVErrorToReturnCode, 28> AVERRORToReturnCodeMap{
      {-1482175736, ReturnCode::HttpOther4xx},
      {-1482175992, ReturnCode::HttpServerError}}};
 
+
 } // namespace
 
 ReturnCode toReturnCode(const int returnValue)

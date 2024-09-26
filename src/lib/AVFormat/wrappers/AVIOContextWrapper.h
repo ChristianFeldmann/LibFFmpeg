@@ -47,7 +47,9 @@ public:
   AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   virtual ~AVIOInputContext() = default;
 
-  virtual std::optional<int> read_packet(uint8_t *buf, int buf_size) = 0;
+  virtual std::optional<int> readData(uint8_t *buf, int buf_size) = 0;
+  virtual std::optional<int> getFileSize() const                  = 0;
+  virtual bool               seek(int64_t offset)                 = 0;
 };
 
 } // namespace libffmpeg::avformat

@@ -31,7 +31,9 @@ public:
   {
   }
 
-  std::optional<int> read_packet(uint8_t *buf, int buf_size) override { return {}; }
+  std::optional<int> readData(uint8_t *buf, int buf_size) override { return {}; }
+  std::optional<int> getFileSize() const override { return {}; }
+  bool               seek(int64_t offset) override { return false; }
 };
 
 template <FFmpegVersion V> void runAVIOInputContextCreationTest()

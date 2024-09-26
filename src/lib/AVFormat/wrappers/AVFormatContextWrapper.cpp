@@ -145,30 +145,37 @@ avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata() const
 
 bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)
 {
-  const auto ret =
-      this->ffmpegLibraries->avformat.av_read_frame(this->formatContext, packet.getPacket());
-  return ret == 0;
+  const auto returnCode = toReturnCode(
+      this->ffmpegLibraries->avformat.av_read_frame(this->formatContext, packet.getPacket()));
+
+  if (returnCode != ReturnCode::Ok)
+    this->ffmpegLibraries->log(LogLevel::Error,
+                               "Error getting next packet (av_read_frame). Return code " +
+                                   ReturnCodeMapper.getName(returnCode));
+
+  return returnCode == ReturnCode::Ok;
 }
 
 bool AVFormatContextWrapper::openInputAndFindStreamInfo(
     const std::optional<std::filesystem::path> path)
 {
-  auto ret = this->ffmpegLibraries->avformat.avformat_open_input(
-      &this->formatContext, path ? path->string().c_str() : nullptr, nullptr, nullptr);
-  if (ret < 0)
+  auto returnCode = toReturnCode(this->ffmpegLibraries->avformat.avformat_open_input(
+      &this->formatContext, path ? path->string().c_str() : nullptr, nullptr, nullptr));
+  if (returnCode != ReturnCode::Ok)
   {
     this->ffmpegLibraries->log(LogLevel::Error,
                                "Error opening file (avformat_open_input). Return code " +
-                                   std::to_string(ret));
+                                   ReturnCodeMapper.getName(returnCode));
     return false;
   }
 
-  ret = this->ffmpegLibraries->avformat.avformat_find_stream_info(this->formatContext, nullptr);
-  if (ret < 0)
+  returnCode = toReturnCode(
+      this->ffmpegLibraries->avformat.avformat_find_stream_info(this->formatContext, nullptr));
+  if (returnCode != ReturnCode::Ok)
   {
     this->ffmpegLibraries->log(LogLevel::Error,
                                "Error opening file (avformat_open_input). Return code " +
-                                   std::to_string(ret));
+                                   ReturnCodeMapper.getName(returnCode));
     return false;
   }
 

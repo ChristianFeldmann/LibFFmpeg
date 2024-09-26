@@ -23,14 +23,14 @@ class FileReaderIOContext : public avformat::AVIOInputContext
 {
 public:
   FileReaderIOContext(const Path &path, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
-      : avformat::AVIOInputContext(ffmpegLibraries)
+      : avformat::AVIOInputContext(ffmpegLibraries), filePath(path)
   {
     this->inputFile.open(path, std::ios::binary);
     if (!this->inputFile.is_open())
       throw std::runtime_error("Error opening file " + path.string());
   }
 
-  std::optional<int> read_packet(uint8_t *buf, int buf_size) override
+  std::optional<int> readData(uint8_t *buf, int buf_size) override
   {
     this->inputFile.read(reinterpret_cast<char *>(buf), static_cast<std::streamsize>(buf_size));
     const auto actualRead = this->inputFile.gcount();
@@ -39,7 +39,19 @@ public:
     return {};
   }
 
+  std::optional<int> getFileSize() const override
+  {
+    return std::filesystem::file_size(this->filePath);
+  }
+
+  bool seek(int64_t offset) override
+  {
+    this->inputFile.seekg(offset);
+    return !this->inputFile.fail();
+  }
+
 private:
+  Path          filePath{};
   std::ifstream inputFile{};
 };
 
@@ -57,6 +69,18 @@ TEST(AVIOInputContext, DemuxAndDecodeUsingAVIOContext_shouldDemuxAndDecodeAllFra
 
   EXPECT_EQ(formatContext->getDuration(), 1000000);
   EXPECT_EQ(formatContext->getNumberStreams(), 2);
+
+  std::array<int, 2> packetCounters = {0, 0};
+  while (auto packet = demuxer.getNextPacket())
+  {
+    const auto streamIndex = packet->getStreamIndex();
+    EXPECT_TRUE(streamIndex == 0 || streamIndex == 1);
+
+    packetCounters[streamIndex]++;
+  }
+
+  EXPECT_EQ(45, packetCounters.at(0));
+  EXPECT_EQ(25, packetCounters.at(1));
 }
 
 } // namespace libffmpeg::test::integration

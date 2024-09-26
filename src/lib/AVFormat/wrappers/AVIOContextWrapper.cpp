@@ -16,14 +16,32 @@ using internal::AVIOContext;
 namespace
 {
 
-static int read_packet_callback(void *opaque, uint8_t *buffer, int bufferSize)
+static int readPacketCallback(void *opaque, uint8_t *buffer, int bufferSize)
 {
   auto *io = reinterpret_cast<AVIOInputContext *>(opaque);
 
-  if (const auto result = io->read_packet(buffer, bufferSize))
+  if (const auto result = io->readData(buffer, bufferSize))
     return *result;
 
   return toAVError(ReturnCode::EndOfFile);
+}
+
+int64_t seekCallback(void *opaque, int64_t offset, int whence)
+{
+  auto *io = reinterpret_cast<AVIOInputContext *>(opaque);
+
+  constexpr int AVSEEK_SIZE = 0x10000;
+  if (whence == AVSEEK_SIZE)
+  {
+    if (const auto fileSize = io->getFileSize())
+      return *fileSize;
+    return toAVError(ReturnCode::Unknown);
+  }
+
+  if (io->seek(offset))
+    return toAVError(ReturnCode::Ok);
+
+  return toAVError(ReturnCode::Unknown);
 }
 
 } // namespace
@@ -63,7 +81,7 @@ AVIOInputContext::AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibra
   }
 
   auto newContext = ffmpegLibraries->avformat.avio_alloc_context(
-      buffer, bufferSize, 0, this, &read_packet_callback, nullptr, nullptr);
+      buffer, bufferSize, 0, this, &readPacketCallback, nullptr, &seekCallback);
 
   this->ioContext = std::unique_ptr<AVIOContext, AVIOContextDeleter>(
       newContext, AVIOContextDeleter(ffmpegLibraries));
