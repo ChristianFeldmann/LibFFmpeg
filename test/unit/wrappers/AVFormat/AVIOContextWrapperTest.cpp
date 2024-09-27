@@ -66,7 +66,7 @@ template <FFmpegVersion V> void runAVIOInputContextCreationTest()
     EXPECT_NE(opaque, nullptr);
     EXPECT_NE(read_packet, nullptr);
     EXPECT_EQ(write_packet, nullptr);
-    EXPECT_EQ(seek, nullptr);
+    EXPECT_NE(seek, nullptr);
 
     // Clean up buffer
     delete[] buffer;
