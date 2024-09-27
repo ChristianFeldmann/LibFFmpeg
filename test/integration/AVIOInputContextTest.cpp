@@ -76,7 +76,7 @@ TEST(AVIOInputContext, DemuxAndDecodeUsingAVIOContext_shouldDemuxAndDecodeAllFra
   EXPECT_EQ(formatContext->getDuration(), 1000000);
   EXPECT_EQ(formatContext->getNumberStreams(), 2);
 
-  std::array<int, 2> packetCounters = {0, 0};
+  std::array<int, 2> packetCounters{0, 0};
   while (auto packet = demuxer.getNextPacket())
   {
     const auto streamIndex = packet->getStreamIndex();
