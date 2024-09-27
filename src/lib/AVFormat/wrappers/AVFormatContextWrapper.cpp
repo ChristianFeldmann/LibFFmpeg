@@ -148,7 +148,9 @@ bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)
   const auto returnCode = toReturnCode(
       this->ffmpegLibraries->avformat.av_read_frame(this->formatContext, packet.getPacket()));
 
-  if (returnCode != ReturnCode::Ok)
+  if (returnCode == ReturnCode::EndOfFile)
+    this->ffmpegLibraries->log(LogLevel::Info, "Could not read next packet. End of file.");
+  else if (returnCode != ReturnCode::Ok)
     this->ffmpegLibraries->log(LogLevel::Error,
                                "Error getting next packet (av_read_frame). Return code " +
                                    ReturnCodeMapper.getName(returnCode));

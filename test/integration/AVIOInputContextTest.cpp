@@ -46,7 +46,13 @@ public:
 
   bool seek(int64_t offset) override
   {
-    this->inputFile.seekg(offset);
+    if (this->inputFile.fail() && this->inputFile.eof())
+      this->inputFile.clear();
+
+    if (this->inputFile.fail())
+      return false;
+
+    this->inputFile.seekg(offset, std::ios_base::beg);
     return !this->inputFile.fail();
   }
 

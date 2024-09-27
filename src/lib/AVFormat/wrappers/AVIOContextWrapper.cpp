@@ -37,6 +37,10 @@ int64_t seekCallback(void *opaque, int64_t offset, int whence)
       return *fileSize;
     return toAVError(ReturnCode::Unknown);
   }
+  else if (whence != 0)
+  {
+    return toAVError(ReturnCode::Unknown);
+  }
 
   if (io->seek(offset))
     return toAVError(ReturnCode::Ok);
