@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <common/EnumMapper.h>
+
 #include <errno.h>
 #include <optional>
 #include <sstream>
@@ -46,6 +48,35 @@ enum class ReturnCode
   HttpServerError,
   Unknown
 };
+
+const EnumMapper<ReturnCode> ReturnCodeMapper({{ReturnCode::Ok, "Ok"},
+                                               {ReturnCode::TryAgain, "TryAgain"},
+                                               {ReturnCode::BSFNotFound, "BSFNotFound"},
+                                               {ReturnCode::Bug, "Bug"},
+                                               {ReturnCode::BufferTooSmall, "BufferTooSmall"},
+                                               {ReturnCode::DecoderNotFound, "DecoderNotFound"},
+                                               {ReturnCode::DemuxerNotFound, "DemuxerNotFound"},
+                                               {ReturnCode::EncoderNotFound, "EncoderNotFound"},
+                                               {ReturnCode::EndOfFile, "EndOfFile"},
+                                               {ReturnCode::Exit, "Exit"},
+                                               {ReturnCode::External, "External"},
+                                               {ReturnCode::FilterNotFound, "FilterNotFound"},
+                                               {ReturnCode::InvalidData, "InvalidData"},
+                                               {ReturnCode::MuxerNotFound, "MuxerNotFound"},
+                                               {ReturnCode::OptionNotFound, "OptionNotFound"},
+                                               {ReturnCode::NotImplementedYet, "NotImplementedYet"},
+                                               {ReturnCode::ProtocolNotFound, "ProtocolNotFound"},
+                                               {ReturnCode::StreamNotFound, "StreamNotFound"},
+                                               {ReturnCode::Experimental, "Experimental"},
+                                               {ReturnCode::InputChanged, "InputChanged"},
+                                               {ReturnCode::OutputChanged, "OutputChanged"},
+                                               {ReturnCode::HttpBadRequest, "HttpBadRequest"},
+                                               {ReturnCode::HttpUnauthorized, "HttpUnauthorized"},
+                                               {ReturnCode::HttpForbidden, "HttpForbidden"},
+                                               {ReturnCode::HttpNotFound, "HttpNotFound"},
+                                               {ReturnCode::HttpOther4xx, "HttpOther4xx"},
+                                               {ReturnCode::HttpServerError, "HttpServerError"},
+                                               {ReturnCode::Unknown, "Unknown"}});
 
 ReturnCode toReturnCode(const int returnValue);
 int        toAVError(const ReturnCode returnCode);
