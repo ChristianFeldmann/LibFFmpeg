@@ -49,7 +49,7 @@ template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
     return TypeWrapper<internal::avutil::AVMotionVector_54>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x || V == FFmpegVersion::FFmpeg_4x ||
                 V == FFmpegVersion::FFmpeg_5x || V == FFmpegVersion::FFmpeg_6x)
-    return TypeWrapper<internal::avutil::AVMotionVector_55_56_57_58_59>{};
+    return TypeWrapper<internal::avutil::AVMotionVector_55_56_57_58_59_60>{};
 }
 
 template <FFmpegVersion V>
