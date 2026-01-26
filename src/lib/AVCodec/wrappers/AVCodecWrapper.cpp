@@ -8,6 +8,7 @@
 
 #include <common/InternalTypes.h>
 
+#include <bitset>
 #include <cstdint>
 #include <optional>
 #include <stdexcept>
