@@ -219,7 +219,7 @@ std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParame
       return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
 
-  throw std::runtime_error("Invalid library version");
+  return {};
 }
 
 } // namespace libffmpeg::avformat
