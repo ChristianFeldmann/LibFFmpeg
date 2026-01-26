@@ -36,9 +36,6 @@ jobs:
         path: FFmpeg
         ref: n${{ matrix.ffmpeg.version }}
 
-    - name: LS all
-      run: ls -R
-
     - name: Apply FFmpeg 2 patch
       if: matrix.ffmpeg.version == '2.8.22'
       run: |
@@ -57,6 +54,9 @@ jobs:
         cd FFmpeg
         make -j 4
 
+    - name: LS all
+      run: ls -R
+
     - name: Package Zip file (macos)
       if: runner.os == 'macOS'
       run: |
@@ -74,10 +74,10 @@ jobs:
       run: |
         mkdir tempFolder
         cd tempFolder
-        cp ../FFmpeg/libavcodec/libavcodec.${{ matrix.ffmpeg.avcodec }}.so .
-        cp ../FFmpeg/libavformat/libavformat.${{ matrix.ffmpeg.avformat }}.so .
-        cp ../FFmpeg/libavutil/libavutil.${{ matrix.ffmpeg.avutil }}.so .
-        cp ../FFmpeg/libswresample/libswresample.${{ matrix.ffmpeg.swresample }}.so .
+        cp ../FFmpeg/libavcodec/libavcodec.so.${{ matrix.ffmpeg.avcodec }} .
+        cp ../FFmpeg/libavformat/libavformat.so.${{ matrix.ffmpeg.avformat }} .
+        cp ../FFmpeg/libavutil/libavutil.so.${{ matrix.ffmpeg.avutil }} .
+        cp ../FFmpeg/libswresample/libswresample.so.${{ matrix.ffmpeg.swresample }} .
         cp ../FFmpeg/ffmpeg .
         cp ../FFmpeg/ffprobe .
 
