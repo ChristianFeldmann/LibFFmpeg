@@ -90,4 +90,6 @@ struct AVCodecParameters_61
   // Actually, there is more here, but the variables above are the only we need.
 };
 
+typedef AVCodecParameters_61 AVCodecParameters_62;
+
 } // namespace libffmpeg::internal::avcodec

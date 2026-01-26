@@ -432,4 +432,49 @@ struct AVCodecContext_61
   // Actually, there is more here, but the variables above are the only we need.
 };
 
+struct AVCodecContext_62
+{
+  const AVClass *                    av_class{};
+  int                                log_level_offset{};
+  AVMediaType                        codec_type{};
+  const AVCodec *                    codec{};
+  AVCodecID                          codec_id{};
+  unsigned int                       codec_tag{};
+  void *                             priv_data{};
+  AVCodecInternal *                  internal{};
+  void *                             opaque{};
+  int64_t                            bit_rate;
+  int                                flags;
+  int                                flags2;
+  uint8_t *                          extradata;
+  int                                extradata_size;
+  AVRational                         time_base;
+  AVRational                         pkt_timebase;
+  AVRational                         framerate;
+  int                                delay;
+  int                                width, height;
+  int                                coded_width, coded_height;
+  AVRational                         sample_aspect_ratio;
+  enum AVPixelFormat                 pix_fmt;
+  enum AVPixelFormat                 sw_pix_fmt;
+  enum AVColorPrimaries              color_primaries;
+  enum AVColorTransferCharacteristic color_trc;
+  enum AVColorSpace                  colorspace;
+  enum AVColorRange                  color_range;
+  enum AVChromaLocation              chroma_sample_location;
+  enum AVFieldOrder                  field_order;
+  int                                refs;
+  int                                has_b_frames;
+  int                                slice_flags;
+  void (*draw_horiz_band)(struct AVCodecContext *s,
+                          const AVFrame *        src,
+                          int                    offset[AV_NUM_DATA_POINTERS],
+                          int                    y,
+                          int                    type,
+                          int                    height);
+  enum AVPixelFormat (*get_format)(struct AVCodecContext *s, const enum AVPixelFormat *fmt);
+
+  // Actually, there is more here, but the variables above are the only we need.
+};
+
 } // namespace libffmpeg::internal::avcodec

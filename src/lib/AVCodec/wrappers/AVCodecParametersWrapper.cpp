@@ -30,6 +30,7 @@ using libffmpeg::internal::avcodec::AVCodecParameters_58;
 using libffmpeg::internal::avcodec::AVCodecParameters_59;
 using libffmpeg::internal::avcodec::AVCodecParameters_60;
 using libffmpeg::internal::avcodec::AVCodecParameters_61;
+using libffmpeg::internal::avcodec::AVCodecParameters_62;
 
 constexpr std::size_t AV_INPUT_BUFFER_PADDING_SIZE = 32;
 
@@ -129,7 +130,7 @@ void AVCodecParametersWrapper::setClearValues()
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
 
-  if (version == 57 || version == 58 || version == 59 || version == 60 || version == 61)
+  if (version == 57 || version == 58 || version == 59 || version == 60)
   {
     auto p                   = reinterpret_cast<AVCodecParameters_57 *>(this->codecParameters);
     p->codec_type            = libffmpeg::internal::AVMEDIA_TYPE_UNKNOWN;
@@ -159,6 +160,39 @@ void AVCodecParametersWrapper::setClearValues()
     p->chroma_location = internal::AVCHROMA_LOC_UNSPECIFIED;
     p->video_delay     = 0;
   }
+  else if (version == 61 || version == 62)
+  {
+    auto p                   = reinterpret_cast<AVCodecParameters_61 *>(this->codecParameters);
+    p->codec_type            = libffmpeg::internal::AVMEDIA_TYPE_UNKNOWN;
+    p->codec_id              = libffmpeg::internal::AV_CODEC_ID_NONE;
+    p->codec_tag             = 0;
+    p->extradata             = nullptr;
+    p->extradata_size        = 0;
+    p->coded_side_data       = nullptr;
+    p->nb_coded_side_data    = 0;
+    p->format                = 0;
+    p->bit_rate              = 0;
+    p->bits_per_coded_sample = 0;
+    p->bits_per_raw_sample   = 0;
+    p->profile               = 0;
+    p->level                 = 0;
+    p->width                 = 0;
+    p->height                = 0;
+    {
+      AVRational ratio;
+      ratio.num              = 1;
+      ratio.den              = 1;
+      p->sample_aspect_ratio = ratio;
+      p->framerate           = ratio;
+    }
+    p->field_order     = internal::AV_FIELD_UNKNOWN;
+    p->color_range     = internal::AVCOL_RANGE_UNSPECIFIED;
+    p->color_primaries = internal::AVCOL_PRI_UNSPECIFIED;
+    p->color_trc       = internal::AVCOL_TRC_UNSPECIFIED;
+    p->color_space     = internal::AVCOL_SPC_UNSPECIFIED;
+    p->chroma_location = internal::AVCHROMA_LOC_UNSPECIFIED;
+    p->video_delay     = 0;
+  }
   else
     throw std::runtime_error("Invalid library version");
 }
@@ -176,7 +210,7 @@ void AVCodecParametersWrapper::setAVCodecID(AVCodecID id)
 
 void AVCodecParametersWrapper::setExtradata(const ByteVector &data)
 {
-  uint8_t *  extradata{};
+  uint8_t   *extradata{};
   const auto versions = this->ffmpegLibraries->getLibrariesVersion();
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 

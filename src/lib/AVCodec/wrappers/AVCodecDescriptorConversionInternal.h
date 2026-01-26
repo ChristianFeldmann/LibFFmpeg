@@ -46,5 +46,6 @@ typedef AVCodecDescriptor_57 AVCodecDescriptor_58;
 typedef AVCodecDescriptor_57 AVCodecDescriptor_59;
 typedef AVCodecDescriptor_57 AVCodecDescriptor_60;
 typedef AVCodecDescriptor_57 AVCodecDescriptor_61;
+typedef AVCodecDescriptor_57 AVCodecDescriptor_62;
 
 } // namespace libffmpeg::internal::avcodec

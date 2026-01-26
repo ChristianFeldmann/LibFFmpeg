@@ -29,10 +29,11 @@ using libffmpeg::internal::avformat::AVStream_58;
 using libffmpeg::internal::avformat::AVStream_59;
 using libffmpeg::internal::avformat::AVStream_60;
 using libffmpeg::internal::avformat::AVStream_61;
+using libffmpeg::internal::avformat::AVStream_62;
 
 } // namespace
 
-AVStreamWrapper::AVStreamWrapper(AVStream *                        stream,
+AVStreamWrapper::AVStreamWrapper(AVStream                         *stream,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : stream(stream), ffmpegLibraries(ffmpegLibraries)
 {
@@ -177,6 +178,10 @@ std::optional<avcodec::AVCodecContextWrapper> AVStreamWrapper::getCodecContext()
 std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParameters() const
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
+  if (version == 56)
+  {
+    return {};
+  }
   if (version == 57)
   {
     const auto p = reinterpret_cast<AVStream_57 *>(this->stream);
@@ -207,8 +212,14 @@ std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParame
     if (p->codecpar != nullptr)
       return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }
+  if (version == 62)
+  {
+    const auto p = reinterpret_cast<AVStream_62 *>(this->stream);
+    if (p->codecpar != nullptr)
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+  }
 
-  return {};
+  throw std::runtime_error("Invalid library version");
 }
 
 } // namespace libffmpeg::avformat

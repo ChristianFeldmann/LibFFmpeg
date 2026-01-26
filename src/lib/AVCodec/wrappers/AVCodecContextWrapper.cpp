@@ -29,6 +29,7 @@ using libffmpeg::internal::avcodec::AVCodecContext_58;
 using libffmpeg::internal::avcodec::AVCodecContext_59;
 using libffmpeg::internal::avcodec::AVCodecContext_60;
 using libffmpeg::internal::avcodec::AVCodecContext_61;
+using libffmpeg::internal::avcodec::AVCodecContext_62;
 
 namespace internal
 {

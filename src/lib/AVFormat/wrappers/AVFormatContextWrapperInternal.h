@@ -192,4 +192,6 @@ struct AVFormatContext_61
   // Actually, there is more here, but the variables above are the only we need.
 };
 
+typedef AVFormatContext_61 AVFormatContext_62;
+
 } // namespace libffmpeg::internal::avformat
