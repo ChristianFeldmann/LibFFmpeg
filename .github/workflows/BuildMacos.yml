@@ -57,7 +57,8 @@ jobs:
         cd FFmpeg
         make -j 4
 
-    - name: Package Zip file
+    - name: Package Zip file (macos)
+      if: runner.os == 'macOS'
       run: |
         mkdir tempFolder
         cd tempFolder
@@ -65,6 +66,18 @@ jobs:
         cp ../FFmpeg/libavformat/libavformat.${{ matrix.ffmpeg.avformat }}.dylib .
         cp ../FFmpeg/libavutil/libavutil.${{ matrix.ffmpeg.avutil }}.dylib .
         cp ../FFmpeg/libswresample/libswresample.${{ matrix.ffmpeg.swresample }}.dylib .
+        cp ../FFmpeg/ffmpeg .
+        cp ../FFmpeg/ffprobe .
+
+    - name: Package Zip file (linux)
+      if: runner.os == 'Linux'
+      run: |
+        mkdir tempFolder
+        cd tempFolder
+        cp ../FFmpeg/libavcodec/libavcodec.${{ matrix.ffmpeg.avcodec }}.so .
+        cp ../FFmpeg/libavformat/libavformat.${{ matrix.ffmpeg.avformat }}.so .
+        cp ../FFmpeg/libavutil/libavutil.${{ matrix.ffmpeg.avutil }}.so .
+        cp ../FFmpeg/libswresample/libswresample.${{ matrix.ffmpeg.swresample }}.so .
         cp ../FFmpeg/ffmpeg .
         cp ../FFmpeg/ffprobe .
 
