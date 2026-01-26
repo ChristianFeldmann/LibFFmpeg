@@ -53,9 +53,6 @@ jobs:
         cd FFmpeg
         make -j 4
 
-    - name: LS all
-      run: ls -R
-
     - name: Package Zip file (macos)
       if: runner.os == 'macOS'
       run: |
