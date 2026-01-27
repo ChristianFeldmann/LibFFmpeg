@@ -28,7 +28,7 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: mingw64
-        install: make pkgconf binutils diffutils mingw-w64-x86_64-gcc mingw-w64-x86_64-nasm
+        install: make pkgconf binutils diffutils mingw-w64-x86_64-gcc mingw-w64-x86_64-nasm mingw-w64-x86_64-binutils
 
     - name: Checkout code
       uses: actions/checkout@v4
