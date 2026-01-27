@@ -10,15 +10,16 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        ffmpeg: [{version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
-                 {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
-                 {version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
-                 {version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
-                 {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
-                 {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}]
+        # ffmpeg: [{version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
+        #          {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
+        #          {version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
+        #          {version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
+        #          {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
+        #          {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}]
+        ffmpeg: [{version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4}]
         #ffmpeg: [{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6}]
-        system: [{os: windows-2025,   msystem: mingw64}, 
-                 {os: windows-11-arm, msystem: clangarm64}]
+        system: [{os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
+                 {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}]
     
     runs-on: ${{ matrix.system.os }}
 
@@ -58,7 +59,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        ./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++ -static-libgcc"
+        ./configure --arch=${{ matrix.system.architecture }} --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++ -static-libgcc"
 
     - name: Build
       shell: msys2 {0}
