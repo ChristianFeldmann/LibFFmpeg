@@ -75,8 +75,13 @@ jobs:
         cp ../FFmpeg/libavformat/avformat-${{ matrix.ffmpeg.avformat }}.dll .
         cp ../FFmpeg/libavutil/avutil-${{ matrix.ffmpeg.avutil }}.dll .
         cp ../FFmpeg/libswresample/swresample-${{ matrix.ffmpeg.swresample }}.dll .
-        cp ../FFmpeg/ffmpeg .
-        cp ../FFmpeg/ffprobe .
+        cp ../FFmpeg/ffmpeg.exe .
+        cp ../FFmpeg/ffprobe.exe .
+
+    - name: Print version
+      run: |
+        ./FFmpeg/ffmpeg.exe --version
+        ./FFmpeg/ffprobe.exe --version
 
     - uses: actions/upload-artifact@master
       with:
