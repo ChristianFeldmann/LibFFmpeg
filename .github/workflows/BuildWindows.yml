@@ -18,7 +18,8 @@ jobs:
         #          {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
         #          {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}]
         ffmpeg: [{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6}]
-        system: [{os: windows-2025, msystem: mingw64}, {os: windows-11-arm, msystem: clangarm64}]
+        system: [{os: windows-2025,   msystem: mingw64,    compiler: gcc}, 
+                 {os: windows-11-arm, msystem: clangarm64, compiler: clang}]
     
     runs-on: ${{ matrix.system.os }}
 
@@ -28,7 +29,7 @@ jobs:
       uses: msys2/setup-msys2@v2
       with:
         msystem: ${{ matrix.system.msystem }}
-        install: make pkgconf binutils diffutils mingw-w64-x86_64-gcc mingw-w64-x86_64-nasm mingw-w64-x86_64-binutils mingw-w64-x86_64-pkg-config
+        install: make pkgconf binutils diffutils ${{ matrix.system.compiler }}
 
     - name: Checkout code
       uses: actions/checkout@v4
