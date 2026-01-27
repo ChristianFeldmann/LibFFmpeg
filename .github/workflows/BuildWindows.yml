@@ -1,0 +1,75 @@
+name: Build FFmpeg Windows
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    continue-on-error: true
+    strategy:
+      matrix:
+        ffmpeg: [{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6},
+                 {version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
+                 {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
+                 {version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
+                 {version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
+                 {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
+                 {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}]
+        os: [windows-2025, windows-11-arm]
+    
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Checkout FFmpeg
+      uses: actions/checkout@v4
+      with:
+        repository: FFmpeg/FFmpeg
+        path: FFmpeg
+        ref: n${{ matrix.ffmpeg.version }}
+
+    - name: Apply FFmpeg 2 patch
+      if: matrix.ffmpeg.version == '2.8.22'
+      run: |
+        cd FFmpeg
+        git apply ../.github/workflows/ffmpeg2Windows.patch
+        cd ..
+
+    - name: Apply FFmpeg 3 patch
+      if: matrix.ffmpeg.version == '3.4.14'
+      run: |
+        cd FFmpeg
+        git apply ../.github/workflows/ffmpeg3Windows.patch
+        cd ..
+
+    - name: Configure
+      run: |
+        cd FFmpeg
+        ./configure --disable-static --enable-shared --disable-debug --disable-everything --disable-doc --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file
+
+    - name: Build
+      run: |
+        ls
+        cd FFmpeg
+        make -j 4
+
+    - name: Package Zip file
+      run: |
+        mkdir tempFolder
+        cd tempFolder
+        cp ../FFmpeg/libavcodec/libavcodec.${{ matrix.ffmpeg.avcodec }}.dll .
+        cp ../FFmpeg/libavformat/libavformat.${{ matrix.ffmpeg.avformat }}.dll .
+        cp ../FFmpeg/libavutil/libavutil.${{ matrix.ffmpeg.avutil }}.dll .
+        cp ../FFmpeg/libswresample/libswresample.${{ matrix.ffmpeg.swresample }}.dll .
+        cp ../FFmpeg/ffmpeg .
+        cp ../FFmpeg/ffprobe .
+
+    - uses: actions/upload-artifact@master
+      with:
+        name: ffmpeg-${{ matrix.ffmpeg.version }}-${{ matrix.os }}
+        path: ${{ github.workspace }}/tempFolder/
