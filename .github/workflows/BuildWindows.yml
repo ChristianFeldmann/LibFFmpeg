@@ -71,10 +71,10 @@ jobs:
       run: |
         mkdir tempFolder
         cd tempFolder
-        cp ../FFmpeg/libavcodec/libavcodec.${{ matrix.ffmpeg.avcodec }}.dll .
-        cp ../FFmpeg/libavformat/libavformat.${{ matrix.ffmpeg.avformat }}.dll .
-        cp ../FFmpeg/libavutil/libavutil.${{ matrix.ffmpeg.avutil }}.dll .
-        cp ../FFmpeg/libswresample/libswresample.${{ matrix.ffmpeg.swresample }}.dll .
+        cp ../FFmpeg/libavcodec/avcodec-${{ matrix.ffmpeg.avcodec }}.dll .
+        cp ../FFmpeg/libavformat/avformat-${{ matrix.ffmpeg.avformat }}.dll .
+        cp ../FFmpeg/libavutil/avutil-${{ matrix.ffmpeg.avutil }}.dll .
+        cp ../FFmpeg/libswresample/swresample-${{ matrix.ffmpeg.swresample }}.dll .
         cp ../FFmpeg/ffmpeg .
         cp ../FFmpeg/ffprobe .
 
