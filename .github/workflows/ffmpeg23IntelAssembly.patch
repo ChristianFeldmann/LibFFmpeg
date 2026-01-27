@@ -1,20 +1,3 @@
-diff --git a/libavcodec/vda.c b/libavcodec/vda.c
-index 4670140c76..819ae030b0 100644
---- a/libavcodec/vda.c
-+++ b/libavcodec/vda.c
-@@ -73,6 +73,11 @@ int av_vda_default_init(AVCodecContext *avctx)
-     return AVERROR(ENOSYS);
- }
- 
-+int av_vda_default_init2(AVCodecContext *avctx, AVVDAContext *vdactx)
-+{
-+    return AVERROR(ENOSYS);
-+}
-+
- void av_vda_default_free(AVCodecContext *ctx)
- {
- }
- 
 diff --git a/libavcodec/x86/mathops.h b/libavcodec/x86/mathops.h
 index 6298f5ed19..ca7e2dffc1 100644
 --- a/libavcodec/x86/mathops.h

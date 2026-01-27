@@ -7,6 +7,7 @@ on:
 
 jobs:
   build:
+    continue-on-error: true
     strategy:
       matrix:
         ffmpeg: [{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6},
@@ -47,6 +48,13 @@ jobs:
       run: |
         cd FFmpeg
         git apply ../.github/workflows/ffmpeg3NeonH264.patch
+        cd ..
+
+    - name: Apply FFmpeg 3 VDA patch
+      if: matrix.ffmpeg.version == '3.4.14' && matrix.os == 'macos-15'
+      run: |
+        cd FFmpeg
+        git apply ../.github/workflows/ffmpeg3VDA.patch
         cd ..
 
     - name: Configure
