@@ -36,10 +36,17 @@ jobs:
         ref: n${{ matrix.ffmpeg.version }}
 
     - name: Apply FFmpeg 2 patch
-      if: matrix.ffmpeg.version == '2.8.22' || matrix.ffmpeg.version == '3.4.14'
+      if: (matrix.ffmpeg.version == '2.8.22' || matrix.ffmpeg.version == '3.4.14') && (runner.arch == 'X86' || runner.arch == 'X64')
       run: |
         cd FFmpeg
-        git apply ../.github/workflows/ffmpeg23.patch
+        git apply ../.github/workflows/ffmpeg23IntelAssembly.patch
+        cd ..
+
+    - name: Apply FFmpeg 3 Neon patch
+      if: matrix.ffmpeg.version == '3.4.14' && matrix.os == 'macos-15'
+      run: |
+        cd FFmpeg
+        git apply ../.github/workflows/ffmpeg3NeonH264.patch
         cd ..
 
     - name: Configure
