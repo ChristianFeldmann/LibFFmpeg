@@ -71,12 +71,13 @@ jobs:
       run: |
         mkdir tempFolder
         cd tempFolder
-        cp ../FFmpeg/libavcodec/*.dll .
-        cp ../FFmpeg/libavformat/*.dll .
-        cp ../FFmpeg/libavutil/*.dll .
-        cp ../FFmpeg/libswresample/*.dll .
-        cp ../FFmpeg/libavfilter/*.dll .
-        cp ../FFmpeg/libavdevice/*.dll .
+        cp ../FFmpeg/libavcodec/avcodec-*.dll .
+        cp ../FFmpeg/libavformat/avformat-*.dll .
+        cp ../FFmpeg/libavutil/avutil-*.dll .
+        cp ../FFmpeg/libswresample/swresample-*.dll .
+        cp ../FFmpeg/libavfilter/avfilter-*.dll .
+        cp ../FFmpeg/libavdevice/avdevice-*.dll .
+        cp ../FFmpeg/libswscale/swscale-*.dll .
         cp ../FFmpeg/ffmpeg.exe .
         cp ../FFmpeg/ffprobe.exe .
 
