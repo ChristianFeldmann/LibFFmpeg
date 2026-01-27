@@ -10,14 +10,15 @@ jobs:
     continue-on-error: true
     strategy:
       matrix:
-        # ffmpeg: [{version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
-        #          {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
-        #          {version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
-        #          {version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
-        #          {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
-        #          {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}]
-        ffmpeg: [{version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4}]
-        #ffmpeg: [{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6}]
+        ffmpeg: [
+                 #{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6},
+                 {version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
+                 {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
+                 #{version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
+                 {version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
+                 {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
+                 {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
+                 ]
         system: [{os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
                  {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}]
     
@@ -41,19 +42,12 @@ jobs:
         path: FFmpeg
         ref: n${{ matrix.ffmpeg.version }}
 
-    # # - name: Apply FFmpeg 2 patch
-    # #   if: matrix.ffmpeg.version == '2.8.22'
-    # #   run: |
-    # #     cd FFmpeg
-    # #     git apply ../.github/workflows/ffmpeg2Windows.patch
-    # #     cd ..
-
-    # # - name: Apply FFmpeg 3 patch
-    # #   if: matrix.ffmpeg.version == '3.4.14'
-    # #   run: |
-    # #     cd FFmpeg
-    # #     git apply ../.github/workflows/ffmpeg3Windows.patch
-    # #     cd ..
+    - name: Apply FFmpeg 2/3 intel assembly patch
+      if: (matrix.ffmpeg.version == '2.8.22' || matrix.ffmpeg.version == '3.4.14') && (runner.arch == 'X86' || runner.arch == 'X64')
+      run: |
+        cd FFmpeg
+        git apply ../.github/workflows/ffmpeg23IntelAssembly.patch
+        cd ..
 
     - name: Configure
       shell: msys2 {0}

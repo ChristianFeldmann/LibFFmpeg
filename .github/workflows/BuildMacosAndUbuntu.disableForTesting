@@ -36,7 +36,7 @@ jobs:
         path: FFmpeg
         ref: n${{ matrix.ffmpeg.version }}
 
-    - name: Apply FFmpeg 2 patch
+    - name: Apply FFmpeg 2/3 intel assembly patch
       if: (matrix.ffmpeg.version == '2.8.22' || matrix.ffmpeg.version == '3.4.14') && (runner.arch == 'X86' || runner.arch == 'X64')
       run: |
         cd FFmpeg
