@@ -58,7 +58,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        ./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" 
+        ./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++ -static-libgcc"
 
     - name: Build
       shell: msys2 {0}
@@ -71,10 +71,7 @@ jobs:
       run: |
         mkdir tempFolder
         cd tempFolder
-        cp ../FFmpeg/libavcodec/avcodec-${{ matrix.ffmpeg.avcodec }}.dll .
-        cp ../FFmpeg/libavformat/avformat-${{ matrix.ffmpeg.avformat }}.dll .
-        cp ../FFmpeg/libavutil/avutil-${{ matrix.ffmpeg.avutil }}.dll .
-        cp ../FFmpeg/libswresample/swresample-${{ matrix.ffmpeg.swresample }}.dll .
+        cp ../FFmpeg/libavcodec/*.dll .
         cp ../FFmpeg/ffmpeg.exe .
         cp ../FFmpeg/ffprobe.exe .
 
