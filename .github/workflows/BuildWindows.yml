@@ -58,7 +58,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        ./configure --arch=${{ matrix.system.architecture }} --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++ --disable-hwaccels
+        ./configure --arch=${{ matrix.system.architecture }} --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++" --disable-hwaccels
 
     - name: Build
       shell: msys2 {0}
