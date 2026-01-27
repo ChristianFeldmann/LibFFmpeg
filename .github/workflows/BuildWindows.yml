@@ -42,8 +42,15 @@ jobs:
         path: FFmpeg
         ref: n${{ matrix.ffmpeg.version }}
 
+    - name: Apply FFmpeg 2/3 intel assembly patch
+      if: (matrix.ffmpeg.version == '2.8.22' || matrix.ffmpeg.version == '3.4.14') && (runner.arch == 'X86' || runner.arch == 'X64')
+      run: |
+        cd FFmpeg
+        git apply ../.github/workflows/ffmpeg23IntelAssembly.patch
+        cd ..
+
     - name: Apply FFmpeg 3 Neon patch
-      if: matrix.ffmpeg.version == '3.4.14' && matrix.os == 'windows-11-arm'
+      if: matrix.ffmpeg.version == '3.4.14' && matrix.system.os == 'windows-11-arm'
       run: |
         cd FFmpeg
         git apply ../.github/workflows/ffmpeg3NeonH264.patch
@@ -58,7 +65,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        ./configure --arch=${{ matrix.system.architecture }} --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++" --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau 
+        ./configure --arch=${{ matrix.system.architecture }} --target-os=win64 --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++" --disable-d3d11va --disable-dxva2 --disable-vaapi --disable-vda --disable-vdpau 
 
     - name: Build
       shell: msys2 {0}
