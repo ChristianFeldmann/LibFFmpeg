@@ -51,10 +51,10 @@ jobs:
         cd ..
 
     - name: Apply FFmpeg 3 VDA patch
-      if: matrix.ffmpeg.version == '3.4.14' && matrix.os == 'macos-15'
+      if: (matrix.ffmpeg.version == '3.4.14' && matrix.os == 'macos-15') || (matrix.ffmpeg.version == '2.8.22' && (matrix.os == 'macos-15' || matrix.os == 'macos-15-intel'))
       run: |
         cd FFmpeg
-        git apply ../.github/workflows/ffmpeg3VDA.patch
+        git apply ../.github/workflows/ffmpeg2NonVDA.patch
         cd ..
 
     - name: Configure
