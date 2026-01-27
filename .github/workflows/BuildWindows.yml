@@ -54,11 +54,19 @@ jobs:
     # #     git apply ../.github/workflows/ffmpeg3Windows.patch
     # #     cd ..
 
-    - name: Configure
+    - name: Configure GCC
+      if: matrix.system.msystem == 'mingw64'
       shell: msys2 {0}
       run: |
         cd FFmpeg
         ./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=g++ --extra-libs="-pthread" --extra-cflags="-static -static-libstdc++ -static-libgcc" --extra-cxxflags="-static -static-libstdc++ -static-libgcc" --extra-ldflags="-static -static-libstdc++ -static-libgcc"
+
+    - name: Configure GCC
+      if: matrix.system.msystem == 'clangarm64'
+      shell: msys2 {0}
+      run: |
+        cd FFmpeg
+        ./configure --disable-static --enable-shared --disable-debug --disable-everything --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file --pkg-config-flags="--static" --ld=clang++ --extra-libs="-pthread" --extra-cflags="-static" --extra-cxxflags="-static" --extra-ldflags="-static"
 
     - name: Build
       shell: msys2 {0}
@@ -84,10 +92,11 @@ jobs:
       continue-on-error: true
       run: |
         cd tempFolder
-        ffmpeg.exe -version
-        ffprobe.exe -version
+        ls
+        ./ffmpeg.exe -version
+        ./ffprobe.exe -version
 
     - uses: actions/upload-artifact@master
       with:
-        name: ffmpeg-${{ matrix.ffmpeg.version }}-${{ matrix.os }}
+        name: ffmpeg-${{ matrix.ffmpeg.version }}-${{ matrix.system.os }}
         path: ${{ github.workspace }}/tempFolder/
