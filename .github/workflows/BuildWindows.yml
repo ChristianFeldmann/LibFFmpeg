@@ -64,7 +64,6 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        ls
         make -j 4
 
     - name: Package Zip file
@@ -83,10 +82,10 @@ jobs:
 
     - name: Print version
       continue-on-error: true
-      shell: msys2 {0}
       run: |
-        ./FFmpeg/ffmpeg.exe --version
-        ./FFmpeg/ffprobe.exe --version
+        cd tempFolder
+        ./FFmpeg/ffmpeg.exe -version
+        ./FFmpeg/ffprobe.exe -version
 
     - uses: actions/upload-artifact@master
       with:
