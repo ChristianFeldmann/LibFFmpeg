@@ -20,7 +20,7 @@ jobs:
                  {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
                  ]
         system: [
-                 #{os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
+                 {os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
                  {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
                  ]
     
