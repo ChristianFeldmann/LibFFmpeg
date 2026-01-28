@@ -73,7 +73,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        mingw32-make.exe -j 4 V=1
+        mingw32-make.exe 4 V=1
 
     - name: Package Zip file
       run: |
