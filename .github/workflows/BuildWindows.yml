@@ -19,8 +19,10 @@ jobs:
                  {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
                  {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
                  ]
-        system: [{os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
-                 {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}]
+        system: [
+                 #{os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
+                 {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
+                 ]
     
     runs-on: ${{ matrix.system.os }}
 
@@ -71,7 +73,7 @@ jobs:
       shell: msys2 {0}
       run: |
         cd FFmpeg
-        mingw32-make.exe -j 4
+        mingw32-make.exe -j 4 V=1
 
     - name: Package Zip file
       run: |
