@@ -64,7 +64,6 @@ jobs:
 
     - name: Build
       run: |
-        ls
         cd FFmpeg
         make -j 4
 
