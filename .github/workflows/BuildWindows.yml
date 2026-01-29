@@ -11,11 +11,11 @@ jobs:
     strategy:
       matrix:
         ffmpeg: [
-                 #{version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6},
-                 #{version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
-                 #{version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
-                 #{version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
-                 #{version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
+                 {version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6},
+                 {version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
+                 {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
+                 {version: 5.1.8, avcodec: 59, avformat: 59, avutil: 57, swresample: 4},
+                 {version: 4.4.6, avcodec: 58, avformat: 58, avutil: 56, swresample: 3},
                  {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2},
                  {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
                  ]
@@ -23,6 +23,13 @@ jobs:
                  {os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
                  {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
                  ]
+        exclude:
+          # I did not manage to compile the older ffmpeg versions an windows ARM
+          # Let me know if you manage to do so.
+          - ffmpeg: {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
+            system: {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
+          - ffmpeg: {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2}
+            system: {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
     
     runs-on: ${{ matrix.system.os }}
 
