@@ -68,8 +68,8 @@ jobs:
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip?${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4?${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ${{ matrix.config.unzipCommand }} ffmpeg.zip
         rm ffmpeg.zip
 
