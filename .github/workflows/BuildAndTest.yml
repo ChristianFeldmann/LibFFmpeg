@@ -10,10 +10,12 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: windows-latest, copyCommand: copy, artifactName: integrationTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
-                  {os: ubuntu-latest, copyCommand: cp, artifactName: integrationTestUbuntu, buildPath: , dummyLib: libdummyLib.so, integrationTest: integrationTest},
-                  {os: macos-13, copyCommand: cp, artifactName: integrationTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest},
-                  {os: macos-14, copyCommand: cp, artifactName: integrationTestMacM1, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest} ]
+        config: [ {os: windows-2025, copyCommand: copy, artifactName: integrationTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
+                  {os: windows-11-arm, copyCommand: copy, artifactName: integrationTestWindowsArm, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
+                  {os: ubuntu-24.04, copyCommand: cp, artifactName: integrationTestUbuntu, buildPath: , dummyLib: libdummyLib.so, integrationTest: integrationTest},
+                  {os: ubuntu-24.04-arm, copyCommand: cp, artifactName: integrationTestUbuntuArm, buildPath: , dummyLib: libdummyLib.so, integrationTest: integrationTest},
+                  {os: macos-15, copyCommand: cp, artifactName: integrationTestMacArm, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest},
+                  {os: macos-15-intel, copyCommand: cp, artifactName: integrationTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -40,11 +42,20 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-latest, artifactName: integrationTestWindows, azureFolder: windows, unzipCommand: 7z x },
-                  {os: ubuntu-latest, artifactName: integrationTestUbuntu, azureFolder: ubuntu-22.04, unzipCommand: unzip },
-                  {os: macos-13, artifactName: integrationTestMacIntel, azureFolder: macos-intel, unzipCommand: unzip },
-                  {os: macos-14, artifactName: integrationTestMacM1, azureFolder: macos-m1, unzipCommand: unzip } ]
-        ffmpegVersions: ["2.8.22", "3.4.13", "4.4.4", "5.1.4", "6.1.1", "7.0"]
+        config: [ {os: windows-2025, artifactName: integrationTestWindows, unzipCommand: 7z x },
+                  {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x },
+                  {os: ubuntu-24.04, artifactName: integrationTestUbuntu, unzipCommand: unzip },
+                  {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm, unzipCommand: unzip },
+                  {os: macos-15, artifactName: integrationTestMacArm, unzipCommand: unzip },
+                  {os: macos-15-intel, artifactName: integrationTestMacIntel, unzipCommand: unzip } ]
+        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3"]
+        exclude:
+          # I did not manage to compile the older ffmpeg versions an windows ARM
+          # Let me know if you manage to do so.
+          - ffmpegVersions: "2.8.22"
+            config: {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
+          - ffmpegVersions: "3.4.14"
+            config: {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
@@ -53,11 +64,11 @@ jobs:
 
     - name: Make integrationTest executable
       run: chmod a+x integrationTest
-      if: ${{ matrix.config.os }} != windows-latest
+      if: runner.os == 'Linux' || runner.os == 'macOS'
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/${{ matrix.config.azureFolder }}/ffmpeg-${{ matrix.ffmpegVersions }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ${{ matrix.config.unzipCommand }} ffmpeg.zip
         rm ffmpeg.zip
@@ -69,10 +80,12 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-latest, artifactName: integrationTestWindows},
-                  {os: ubuntu-latest, artifactName: integrationTestUbuntu},
-                  {os: macos-13, artifactName: integrationTestMacIntel},
-                  {os: macos-14, artifactName: integrationTestMacM1} ]
+        config: [ {os: windows-2025, artifactName: integrationTestWindows},
+                  {os: windows-11-arm, artifactName: integrationTestWindowsArm},
+                  {os: ubuntu-24.04, artifactName: integrationTestUbuntu},
+                  {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm},
+                  {os: macos-15, artifactName: integrationTestMacArm},
+                  {os: macos-15-intel, artifactName: integrationTestMacIntel} ]
     runs-on: ${{ matrix.config.os }}
     steps:
     - uses: actions/download-artifact@master
@@ -87,11 +100,11 @@ jobs:
 
     - name: Make integrationTest executable
       run: chmod a+x integrationTest
-      if: matrix.config.os != 'windows-latest'
+      if: runner.os == 'Linux' || runner.os == 'macOS'
 
     - name: Add ffmpeg to path
       run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-7.0.2-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      if: matrix.config.os == 'windows-latest'
+      if: runner.os == 'Windows'
 
     - name: Download Test files
       run: curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
