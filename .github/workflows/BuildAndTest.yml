@@ -103,7 +103,7 @@ jobs:
       if: runner.os == 'Linux' || runner.os == 'macOS'
 
     - name: Add ffmpeg to path
-      run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-7.0.2-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-8.0.1-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       if: runner.os == 'Windows'
 
     - name: Download Test files
