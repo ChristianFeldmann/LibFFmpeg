@@ -77,8 +77,8 @@ TEST(Demuxing, OpenTestFileAndCheckFormat_ShouldHaveCorrectFormat)
   EXPECT_EQ(audioCodecDescriptor->codecName, "aac");
   EXPECT_EQ(audioCodecDescriptor->longName, "AAC (Advanced Audio Coding)");
   avcodec::CodecDescriptorProperties expectedAudioProperties{};
-  if (majorVersion >= 58)
-    // Older (< ffmpeg 4) versions will report this flag as false
+  if (majorVersion >= 58 && majorVersion < 62)
+    // Older (< ffmpeg 4) versions and newer versions (>= 8) will report this flag as false
     expectedAudioProperties.intraOnly = true;
   expectedAudioProperties.lossy = true;
   EXPECT_EQ(audioCodecDescriptor->properties, expectedAudioProperties);
@@ -91,9 +91,13 @@ TEST(Demuxing, OpenTestFileAndCheckFormat_ShouldHaveCorrectFormat)
     // For some reason, the "LC" profile is reported twice for FFmpeg 3
     EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
                          {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "LC", "SSR", "LTP"}));
-  else
+  else if (majorVersion < 62)
     EXPECT_TRUE(areEqual(audioCodecDescriptor->profiles,
                          {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP"}));
+  else
+    EXPECT_TRUE(
+        areEqual(audioCodecDescriptor->profiles,
+                 {"LC", "HE-AAC", "HE-AACv2", "LD", "ELD", "Main", "SSR", "LTP", "xHE-AAC"}));
 
   EXPECT_EQ(audioStream.getAverageFrameRate(), Rational({24, 1}));
   EXPECT_EQ(audioStream.getTimeBase(), Rational({1, 44100}));
