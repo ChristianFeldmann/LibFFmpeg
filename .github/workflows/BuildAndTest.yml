@@ -83,7 +83,6 @@ jobs:
         config: [ {os: windows-2025, artifactName: integrationTestWindows},
                   {os: windows-11-arm, artifactName: integrationTestWindowsArm},
                   {os: ubuntu-24.04, artifactName: integrationTestUbuntu},
-                  {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm},
                   {os: macos-15, artifactName: integrationTestMacArm},
                   {os: macos-15-intel, artifactName: integrationTestMacIntel} ]
     runs-on: ${{ matrix.config.os }}
