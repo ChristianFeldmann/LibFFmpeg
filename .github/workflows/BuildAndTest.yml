@@ -48,7 +48,7 @@ jobs:
                   {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm, unzipCommand: unzip },
                   {os: macos-15, artifactName: integrationTestMacArm, unzipCommand: unzip },
                   {os: macos-15-intel, artifactName: integrationTestMacIntel, unzipCommand: unzip } ]
-        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3"]
+        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3", "8.0.1"]
         exclude:
           # I did not manage to compile the older ffmpeg versions an windows ARM
           # Let me know if you manage to do so.
