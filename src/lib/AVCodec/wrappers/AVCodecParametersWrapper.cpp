@@ -9,6 +9,7 @@
 #include <common/Functions.h>
 #include <common/InternalTypes.h>
 
+#include "AVCodec/wrappers/AVChannelInternal.h"
 #include "AVCodecParametersWrapperInternal.h"
 #include "CastCodecClasses.h"
 
@@ -128,7 +129,34 @@ Rational AVCodecParametersWrapper::getSampleAspectRatio() const
 
 ChannelLayout AVCodecParametersWrapper::getChannelLayout() const
 {
-  
+  const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;
+
+  if (version == 56)
+  {
+    return {};
+  }
+  else if (version == 57 || version == 58)
+  {
+    const auto p = reinterpret_cast<AVCodecParameters_57 *>(this->codecParameters);
+    return internal::avcodec::bitMaskToChannelLayout(p->channel_layout);
+  }
+  else if (version == 59)
+  {
+    const auto p = reinterpret_cast<AVCodecParameters_59 *>(this->codecParameters);
+    return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
+  }
+  else if (version == 60)
+  {
+    const auto p = reinterpret_cast<AVCodecParameters_60 *>(this->codecParameters);
+    return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
+  }
+  else if (version == 61 || version == 62)
+  {
+    const auto p = reinterpret_cast<AVCodecParameters_61 *>(this->codecParameters);
+    return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
+  }
+
+  throw std::runtime_error("Invalid library version");
 }
 
 void AVCodecParametersWrapper::setClearValues()

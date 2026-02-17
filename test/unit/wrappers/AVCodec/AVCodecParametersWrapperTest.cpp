@@ -11,7 +11,9 @@
 
 #include <libHandling/FFmpegLibrariesMoc.h>
 
+#include "TestDefinitions.h"
 #include "VersionToAVCodecTypes.h"
+#include "common/Version.h"
 
 #include <gtest/gtest.h>
 
@@ -28,8 +30,8 @@ using libffmpeg::internal::AVCodecParameters;
 using libffmpeg::internal::AVCOL_SPC_SMPTE240M;
 using libffmpeg::internal::AVMEDIA_TYPE_AUDIO;
 using libffmpeg::internal::AVPixelFormat;
-using libffmpeg::internal::AVPixFmtDescriptor;
 using libffmpeg::internal::AVRational;
+using ::testing::ElementsAreArray;
 using ::testing::Return;
 
 void runAVCodecParametersWrapperTestAVFormat56(const LibraryVersions &version)
@@ -77,6 +79,10 @@ template <FFmpegVersion V> void runAVCodecParametersWrapperTest()
   codecParameters.color_space         = AVCOL_SPC_SMPTE240M;
   codecParameters.format              = TEST_PIXEL_FORMAT;
   codecParameters.sample_aspect_ratio = AVRational({23, 88});
+  if constexpr (V == FFmpegVersion::FFmpeg_3x || V == FFmpegVersion::FFmpeg_4x)
+    codecParameters.channel_layout = TEST_CHANNEL_LAYOUT_5POINT1;
+  if constexpr (V >= FFmpegVersion::FFmpeg_5x)
+    codecParameters.ch_layout = TEST_AVCHANNEL_LAYOUT_5POINT1;
 
   AVCodecParametersWrapper parameters(reinterpret_cast<AVCodecParameters *>(&codecParameters),
                                       ffmpegLibraries);
@@ -88,6 +94,7 @@ template <FFmpegVersion V> void runAVCodecParametersWrapperTest()
   EXPECT_EQ(parameters.getColorspace(), avutil::ColorSpace::SMPTE240M);
   EXPECT_EQ(parameters.getPixelFormat().name, "None");
   EXPECT_EQ(parameters.getSampleAspectRatio(), Rational({23, 88}));
+  EXPECT_THAT(parameters.getChannelLayout(), ElementsAreArray(TEST_CHANNELINFO_5POINT1));
 
   EXPECT_EQ(ffmpegLibraries->functionCounters.avPixFmtDescGet, 1);
 }

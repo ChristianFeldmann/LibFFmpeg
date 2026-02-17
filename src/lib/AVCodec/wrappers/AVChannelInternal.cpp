@@ -114,31 +114,6 @@ std::optional<Channel> avChannelToChannel(const AVChannel avChannel)
   }
 }
 
-ChannelLayout bitMaskToChannelLayout(const uint64_t mask, const bool isAmbisonic = false)
-{
-  ChannelLayout layout;
-
-  std::bitset<64> bits(mask);
-  for (int bitPosition = 0; bitPosition < 64; ++bitPosition)
-  {
-    if (bits.test(bitPosition))
-    {
-      const auto avChannel = static_cast<AVChannel>(bitPosition);
-      if (const auto channel = avChannelToChannel(avChannel))
-      {
-        ChannelInfo channelInfo;
-        channelInfo.channel = *channel;
-        channelInfo.name    = libffmpeg::avcodec::channelMapper.getName(*channel);
-        if (isAmbisonic)
-          channelInfo.ambisonicIndex = bitPosition;
-        layout.push_back(channelInfo);
-      }
-    }
-  }
-
-  return layout;
-}
-
 ChannelLayout customChannelMapToLayout(const AVChannelCustom *map, int numberChannels)
 {
   ChannelLayout layout;
@@ -167,6 +142,31 @@ ChannelLayout customChannelMapToLayout(const AVChannelCustom *map, int numberCha
 
 } // namespace
 
+ChannelLayout bitMaskToChannelLayout(const uint64_t mask, const bool isAmbisonic)
+{
+  ChannelLayout layout;
+
+  std::bitset<64> bits(mask);
+  for (int bitPosition = 0; bitPosition < 64; ++bitPosition)
+  {
+    if (bits.test(bitPosition))
+    {
+      const auto avChannel = static_cast<AVChannel>(bitPosition);
+      if (const auto channel = avChannelToChannel(avChannel))
+      {
+        ChannelInfo channelInfo;
+        channelInfo.channel = *channel;
+        channelInfo.name    = libffmpeg::avcodec::channelMapper.getName(*channel);
+        if (isAmbisonic)
+          channelInfo.ambisonicIndex = bitPosition;
+        layout.push_back(channelInfo);
+      }
+    }
+  }
+
+  return layout;
+}
+
 std::vector<ChannelLayout> maskArrayToChannelLayouts(const uint64_t *masks)
 {
   std::vector<ChannelLayout> layouts;
@@ -182,6 +182,20 @@ std::vector<ChannelLayout> maskArrayToChannelLayouts(const uint64_t *masks)
   return layouts;
 }
 
+ChannelLayout avChannelLayoutToChannelLayout(const AVChannelLayout &avLayout)
+{
+  if (avLayout.order == AVChannelOrder::AV_CHANNEL_ORDER_UNSPEC)
+    return createUndefinedChannelLayout(avLayout.nb_channels);
+  else if (avLayout.order == AVChannelOrder::AV_CHANNEL_ORDER_NATIVE)
+    return bitMaskToChannelLayout(avLayout.u.mask);
+  else if (avLayout.order == AVChannelOrder::AV_CHANNEL_ORDER_CUSTOM)
+    return customChannelMapToLayout(avLayout.u.map, avLayout.nb_channels);
+  else if (avLayout.order == AVChannelOrder::AV_CHANNEL_ORDER_AMBISONIC)
+    return bitMaskToChannelLayout(avLayout.u.mask, true);
+
+  throw std::runtime_error("Invalid channel layout order");
+}
+
 std::vector<ChannelLayout> avChannelLayoutListToChannelLayouts(const AVChannelLayout *layoutList)
 {
   std::vector<ChannelLayout> layouts;
@@ -190,15 +204,7 @@ std::vector<ChannelLayout> avChannelLayoutListToChannelLayouts(const AVChannelLa
   auto layout = layoutList[i];
   while (layout.nb_channels != 0)
   {
-    if (layout.order == AVChannelOrder::AV_CHANNEL_ORDER_UNSPEC)
-      layouts.push_back(createUndefinedChannelLayout(layout.nb_channels));
-    else if (layout.order == AVChannelOrder::AV_CHANNEL_ORDER_NATIVE)
-      layouts.push_back(bitMaskToChannelLayout(layout.u.mask));
-    else if (layout.order == AVChannelOrder::AV_CHANNEL_ORDER_CUSTOM)
-      layouts.push_back(customChannelMapToLayout(layout.u.map, layout.nb_channels));
-    else if (layout.order == AVChannelOrder::AV_CHANNEL_ORDER_AMBISONIC)
-      layouts.push_back(bitMaskToChannelLayout(layout.u.mask, true));
-
+    layouts.push_back(avChannelLayoutToChannelLayout(layout));
     i++;
     layout = layoutList[i];
   }

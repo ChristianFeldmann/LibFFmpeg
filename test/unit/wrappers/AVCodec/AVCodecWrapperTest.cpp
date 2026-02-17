@@ -12,6 +12,8 @@
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
+#include "TestDefinitions.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -37,30 +39,6 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
   constexpr auto TEST_LONG_NAME    = "CodecLongNameTest";
   constexpr auto TEST_CODEC_ID     = internal::AV_CODEC_ID_TESTING;
   constexpr auto TEST_CAPABILITIES = 849;
-
-  constexpr uint64_t TEST_CHANNEL_LAYOUT_STEREO      = 0b11;
-  constexpr uint64_t TEST_CHANNEL_LAYOUT_5POINT1     = 0b11000001111;
-  constexpr uint64_t TEST_CHANNEL_LAYOUT_7POINT1     = 0b11000111111;
-  constexpr uint64_t TEST_CHANNEL_LAYOUT_TERMINATION = 0;
-  constexpr uint64_t TEST_CHANNEL_FORMATS[4]         = {TEST_CHANNEL_LAYOUT_STEREO,
-                                                        TEST_CHANNEL_LAYOUT_5POINT1,
-                                                        TEST_CHANNEL_LAYOUT_7POINT1,
-                                                        TEST_CHANNEL_LAYOUT_TERMINATION};
-
-  using internal::avcodec::AVChannelLayout;
-  using internal::avcodec::AVChannelOrder;
-  constexpr AVChannelLayout TEST_AVCHANNEL_LAYOUT_STEREO(
-      AVChannelOrder::AV_CHANNEL_ORDER_NATIVE, 2, {TEST_CHANNEL_LAYOUT_STEREO});
-  constexpr AVChannelLayout TEST_AVCHANNEL_LAYOUT_5POINT1(
-      AVChannelOrder::AV_CHANNEL_ORDER_NATIVE, 2, {TEST_CHANNEL_LAYOUT_5POINT1});
-  constexpr AVChannelLayout TEST_AVCHANNEL_LAYOUT_7POINT1(
-      AVChannelOrder::AV_CHANNEL_ORDER_NATIVE, 2, {TEST_CHANNEL_LAYOUT_7POINT1});
-  constexpr AVChannelLayout TEST_AVCHANNEL_LAYOUT_TERMINATION(
-      AVChannelOrder::AV_CHANNEL_ORDER_UNSPEC, 0, {0});
-  constexpr AVChannelLayout TEST_AVCHANNEL_LAYOUTS[4] = {TEST_AVCHANNEL_LAYOUT_STEREO,
-                                                         TEST_AVCHANNEL_LAYOUT_5POINT1,
-                                                         TEST_AVCHANNEL_LAYOUT_7POINT1,
-                                                         TEST_AVCHANNEL_LAYOUT_TERMINATION};
 
   AVCodecType<V> rawCodec;
   rawCodec.name         = TEST_NAME;
@@ -101,26 +79,9 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
   EXPECT_EQ(codec.getSupportedSamplerates(),
             std::vector(rawSupportedSampleRates.begin(), rawSupportedSampleRates.end() - 1));
 
-  const auto channelLayouts = codec.getSupportedChannelLayouts();
-
-  EXPECT_THAT(channelLayouts,
-              ElementsAre(std::vector<ChannelInfo>(
-                              {{Channel::FrontLeft, {}, "FL"}, {Channel::FrontRight, {}, "FR"}}),
-                          std::vector<ChannelInfo>({{Channel::FrontLeft, {}, "FL"},
-                                                    {Channel::FrontRight, {}, "FR"},
-                                                    {Channel::FrontCenter, {}, "FC"},
-                                                    {Channel::LowFrequency, {}, "LFE"},
-                                                    {Channel::SideLeft, {}, "SL"},
-                                                    {Channel::SideRight, {}, "SR"}}),
-                          std::vector<ChannelInfo>({{Channel::FrontLeft, {}, "FL"},
-                                                    {Channel::FrontRight, {}, "FR"},
-                                                    {Channel::FrontCenter, {}, "FC"},
-                                                    {Channel::LowFrequency, {}, "LFE"},
-                                                    {Channel::BackLeft, {}, "BL"},
-                                                    {Channel::BackRight, {}, "BR"},
-                                                    {Channel::SideLeft, {}, "SL"},
-                                                    {Channel::SideRight, {}, "SR"}})));
-  EXPECT_EQ(channelLayouts.size(), 3);
+  EXPECT_THAT(
+      codec.getSupportedChannelLayouts(),
+      ElementsAre(TEST_CHANNELINFO_STEREO, TEST_CHANNELINFO_5POINT1, TEST_CHANNELINFO_7POINT1));
 }
 
 } // namespace

@@ -165,8 +165,13 @@ struct AVCodecParameters_61
   AVColorSpace                  color_space;
   AVChromaLocation              chroma_location;
   int                           video_delay;
-
-  // Actually, there is more here, but the variables above are the only we need.
+  AVChannelLayout               ch_layout;
+  int                           sample_rate;
+  int                           block_align;
+  int                           frame_size;
+  int                           initial_padding;
+  int                           trailing_padding;
+  int                           seek_preroll;
 };
 
 typedef AVCodecParameters_61 AVCodecParameters_62;

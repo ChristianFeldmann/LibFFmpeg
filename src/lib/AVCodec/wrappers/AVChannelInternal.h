@@ -86,7 +86,10 @@ struct AVChannelLayout
 };
 
 using libffmpeg::avcodec::ChannelLayout;
+ChannelLayout bitMaskToChannelLayout(const uint64_t mask, const bool isAmbisonic = false);
 std::vector<ChannelLayout> maskArrayToChannelLayouts(const uint64_t *masks);
+
+ChannelLayout              avChannelLayoutToChannelLayout(const AVChannelLayout &avLayout);
 std::vector<ChannelLayout> avChannelLayoutListToChannelLayouts(const AVChannelLayout *layoutList);
 
 } // namespace libffmpeg::internal::avcodec
