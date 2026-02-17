@@ -104,6 +104,12 @@ struct ChannelInfo
   std::optional<Channel> channel;
   std::optional<int>     ambisonicIndex;
   std::string            name;
+
+  bool operator==(const ChannelInfo &other) const
+  {
+    return this->channel == other.channel && this->ambisonicIndex == other.ambisonicIndex &&
+           this->name == other.name;
+  }
 };
 
 using ChannelLayout = std::vector<ChannelInfo>;

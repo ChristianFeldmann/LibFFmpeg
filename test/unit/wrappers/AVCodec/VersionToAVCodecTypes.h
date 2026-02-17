@@ -33,6 +33,10 @@ namespace
       return TypeWrapper<internal::avcodec::wrapperNamePrefix##_60>{};                             \
     if constexpr (V == FFmpegVersion::FFmpeg_7x)                                                   \
       return TypeWrapper<internal::avcodec::wrapperNamePrefix##_61>{};                             \
+    if constexpr (V == FFmpegVersion::FFmpeg_8x)                                                   \
+      return TypeWrapper<internal::avcodec::wrapperNamePrefix##_62>{};                             \
+    else                                                                                           \
+      throw std::runtime_error("Invalid FFmpeg version");                                          \
   }
 
 } // namespace

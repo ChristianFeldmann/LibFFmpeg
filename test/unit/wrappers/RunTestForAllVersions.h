@@ -13,16 +13,22 @@ namespace libffmpeg
 
 #define RUN_TEST_FOR_VERSION(version, testFunctionName)                                            \
   {                                                                                                \
-    if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_2x)                                 \
-      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_2x>();                                        \
-    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_3x)                            \
-      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_3x>();                                        \
-    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_4x)                            \
-      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_4x>();                                        \
-    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_5x)                            \
-      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_5x>();                                        \
-    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_6x)                            \
-      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_6x>();                                        \
+    if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_2x)                              \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_2x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_3x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_3x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_4x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_4x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_5x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_5x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_6x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_6x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_7x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_7x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_8x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_8x>();                                     \
+    else                                                                                           \
+      throw std::runtime_error("Invalid FFmpeg version");                                          \
   }
 
 template <typename T> struct TypeWrapper

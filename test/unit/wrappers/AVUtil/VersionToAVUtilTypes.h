@@ -31,6 +31,12 @@ namespace
       return TypeWrapper<internal::avutil::wrapperNamePrefix##_57>{};                              \
     if constexpr (V == FFmpegVersion::FFmpeg_6x)                                                   \
       return TypeWrapper<internal::avutil::wrapperNamePrefix##_58>{};                              \
+    if constexpr (V == FFmpegVersion::FFmpeg_7x)                                                   \
+      return TypeWrapper<internal::avutil::wrapperNamePrefix##_59>{};                              \
+    if constexpr (V == FFmpegVersion::FFmpeg_8x)                                                   \
+      return TypeWrapper<internal::avutil::wrapperNamePrefix##_60>{};                              \
+    else                                                                                           \
+      throw std::runtime_error("Invalid FFmpeg version");                                          \
   }
 
 } // namespace
@@ -48,8 +54,10 @@ template <FFmpegVersion V> constexpr auto avMotionVectorTypeFromVersionFunc()
   if constexpr (V == FFmpegVersion::FFmpeg_2x)
     return TypeWrapper<internal::avutil::AVMotionVector_54>{};
   if constexpr (V == FFmpegVersion::FFmpeg_3x || V == FFmpegVersion::FFmpeg_4x ||
-                V == FFmpegVersion::FFmpeg_5x || V == FFmpegVersion::FFmpeg_6x)
+                V == FFmpegVersion::FFmpeg_5x || V == FFmpegVersion::FFmpeg_6x ||
+                V == FFmpegVersion::FFmpeg_7x || V == FFmpegVersion::FFmpeg_8x)
     return TypeWrapper<internal::avutil::AVMotionVector_55_56_57_58_59_60>{};
+  throw std::runtime_error("Invalid FFmpeg version");
 }
 
 template <FFmpegVersion V>
