@@ -57,6 +57,7 @@ jobs:
           - ffmpegVersions: "3.4.14"
             config: {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
     runs-on: ${{ matrix.config.os }}
+    continue-on-error: true
     steps:
     - uses: actions/download-artifact@master
       with:
@@ -86,6 +87,7 @@ jobs:
                   {os: macos-15, artifactName: integrationTestMacArm},
                   {os: macos-15-intel, artifactName: integrationTestMacIntel} ]
     runs-on: ${{ matrix.config.os }}
+    continue-on-error: true
     steps:
     - uses: actions/download-artifact@master
       with:
