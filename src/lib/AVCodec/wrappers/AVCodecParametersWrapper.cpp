@@ -126,6 +126,11 @@ Rational AVCodecParametersWrapper::getSampleAspectRatio() const
   return {sampleAspectRatio.num, sampleAspectRatio.den};
 }
 
+ChannelLayout AVCodecParametersWrapper::getChannelLayout() const
+{
+  
+}
+
 void AVCodecParametersWrapper::setClearValues()
 {
   const auto version = this->ffmpegLibraries->getLibrariesVersion().avformat.major;

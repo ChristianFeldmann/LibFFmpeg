@@ -13,6 +13,8 @@
 #include <common/Types.h>
 #include <libHandling/IFFmpegLibraries.h>
 
+#include "../Channel.h"
+
 namespace libffmpeg::avcodec
 {
 class AVCodecParametersWrapper
@@ -29,6 +31,7 @@ public:
   avutil::ColorSpace             getColorspace() const;
   avutil::PixelFormatDescriptor  getPixelFormat() const;
   Rational                       getSampleAspectRatio() const;
+  ChannelLayout                  getChannelLayout() const;
 
   // Set a default set of (unknown) values
   void setClearValues();

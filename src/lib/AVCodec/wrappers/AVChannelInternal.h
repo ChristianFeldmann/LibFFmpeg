@@ -8,6 +8,8 @@
 
 #include <common/InternalTypes.h>
 
+#include "../Channel.h"
+
 namespace libffmpeg::internal::avcodec
 {
 
@@ -82,5 +84,9 @@ struct AVChannelLayout
   } u{};
   void *opaque{};
 };
+
+using libffmpeg::avcodec::ChannelLayout;
+std::vector<ChannelLayout> maskArrayToChannelLayouts(const uint64_t *masks);
+std::vector<ChannelLayout> avChannelLayoutListToChannelLayouts(const AVChannelLayout *layoutList);
 
 } // namespace libffmpeg::internal::avcodec
