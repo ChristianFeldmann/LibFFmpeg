@@ -10,6 +10,8 @@
 #include <AVUtil/wrappers/AVPixFmtDescriptorConversion.h>
 #include <libHandling/IFFmpegLibraries.h>
 
+#include "../Channel.h"
+
 #include <memory>
 #include <vector>
 
@@ -20,7 +22,7 @@ class AVCodecWrapper
 {
 public:
   AVCodecWrapper() = delete;
-  AVCodecWrapper(libffmpeg::internal::AVCodec *    codec,
+  AVCodecWrapper(libffmpeg::internal::AVCodec     *codec,
                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   explicit                      operator bool() const { return this->codec != nullptr; }
@@ -35,11 +37,11 @@ public:
   std::vector<avutil::PixelFormatDescriptor>       getPixelFormats() const;
   std::vector<int>                                 getSupportedSamplerates() const;
   std::vector<libffmpeg::internal::AVSampleFormat> getSampleFormats() const;
-  std::vector<uint64_t>                            getChannelLayouts() const;
+  std::vector<ChannelLayout>                       getSupportedChannelLayouts() const;
   uint8_t                                          getMaxLowres() const;
 
 private:
-  libffmpeg::internal::AVCodec *    codec{};
+  libffmpeg::internal::AVCodec     *codec{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 

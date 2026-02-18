@@ -130,9 +130,44 @@ avutil::PictureType AVFrameWrapper::getPictType() const
 
 bool AVFrameWrapper::isKeyFrame() const
 {
-  int keyframe;
-  CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), keyframe, key_frame);
-  return keyframe == 1;
+  constexpr auto AV_FRAME_FLAG_KEY = (1 << 1);
+
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 60)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_60 *>(this->frame.get());
+    return (p->flags & AV_FRAME_FLAG_KEY) != 0;
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 59)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_59 *>(this->frame.get());
+    return p->key_frame == 1 || (p->flags & AV_FRAME_FLAG_KEY) != 0;
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 58)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_58 *>(this->frame.get());
+    return p->key_frame == 1 || (p->flags & AV_FRAME_FLAG_KEY) != 0;
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 57)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_57 *>(this->frame.get());
+    return p->key_frame == 1;
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 56)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_56 *>(this->frame.get());
+    return p->key_frame == 1;
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 55)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_55 *>(this->frame.get());
+    return p->key_frame == 1;
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 54)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_54 *>(this->frame.get());
+    return p->key_frame == 1;
+  }
+  throw std::runtime_error("Invalid library version");
 }
 
 std::optional<AVDictionaryWrapper> AVFrameWrapper::getMetadata() const

@@ -26,6 +26,7 @@ using libffmpeg::internal::avcodec::AVPacket_58;
 using libffmpeg::internal::avcodec::AVPacket_59;
 using libffmpeg::internal::avcodec::AVPacket_60;
 using libffmpeg::internal::avcodec::AVPacket_61;
+using libffmpeg::internal::avcodec::AVPacket_62;
 
 constexpr auto AV_PKT_FLAG_KEY     = 0x0001; ///< The packet contains a keyframe
 constexpr auto AV_PKT_FLAG_CORRUPT = 0x0002; ///< The packet content is corrupted

@@ -8,8 +8,10 @@
 
 #include <common/InternalTypes.h>
 
+#include <cstdint>
 #include <stdexcept>
 
+#include "AVChannelInternal.h"
 #include "AVCodecWrapperInternal.h"
 #include "CastCodecClasses.h"
 
@@ -22,12 +24,17 @@ using libffmpeg::internal::AVMediaType;
 using libffmpeg::internal::AVPixelFormat;
 using libffmpeg::internal::AVRational;
 using libffmpeg::internal::AVSampleFormat;
+using libffmpeg::internal::avcodec::AVChannel;
+using libffmpeg::internal::avcodec::AVChannelCustom;
+using libffmpeg::internal::avcodec::AVChannelLayout;
+using libffmpeg::internal::avcodec::AVChannelOrder;
 using libffmpeg::internal::avcodec::AVCodec_56;
 using libffmpeg::internal::avcodec::AVCodec_57;
 using libffmpeg::internal::avcodec::AVCodec_58;
 using libffmpeg::internal::avcodec::AVCodec_59;
 using libffmpeg::internal::avcodec::AVCodec_60;
 using libffmpeg::internal::avcodec::AVCodec_61;
+using libffmpeg::internal::avcodec::AVCodec_62;
 
 namespace
 {
@@ -140,11 +147,46 @@ std::vector<AVSampleFormat> AVCodecWrapper::getSampleFormats() const
   return convertRawListToVec(formats, AVSampleFormat(-1));
 }
 
-std::vector<uint64_t> AVCodecWrapper::getChannelLayouts() const
+std::vector<ChannelLayout> AVCodecWrapper::getSupportedChannelLayouts() const
 {
-  const uint64_t *layouts;
-  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, layouts, channel_layouts);
-  return convertRawListToVec(layouts, uint64_t(0));
+  using internal::avcodec::maskArrayToChannelLayouts;
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
+  {
+    const auto p = reinterpret_cast<AVCodec_56 *>(this->codec);
+    return maskArrayToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 57)
+  {
+    const auto p = reinterpret_cast<AVCodec_57 *>(this->codec);
+    return maskArrayToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 58)
+  {
+    const auto p = reinterpret_cast<AVCodec_58 *>(this->codec);
+    return maskArrayToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 59)
+  {
+    const auto p = reinterpret_cast<AVCodec_59 *>(this->codec);
+    return maskArrayToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 60)
+  {
+    const auto p = reinterpret_cast<AVCodec_60 *>(this->codec);
+    return avChannelLayoutListToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 61)
+  {
+    const auto p = reinterpret_cast<AVCodec_61 *>(this->codec);
+    return avChannelLayoutListToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 62)
+  {
+    const auto p = reinterpret_cast<AVCodec_62 *>(this->codec);
+    return avChannelLayoutListToChannelLayouts(p->channel_layouts);
+  }
+
+  throw std::runtime_error("Invalid library version");
 }
 
 uint8_t AVCodecWrapper::getMaxLowres() const

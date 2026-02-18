@@ -29,6 +29,12 @@ namespace
       return TypeWrapper<internal::avformat::wrapperNamePrefix##_59>{};                            \
     if constexpr (V == FFmpegVersion::FFmpeg_6x)                                                   \
       return TypeWrapper<internal::avformat::wrapperNamePrefix##_60>{};                            \
+    if constexpr (V == FFmpegVersion::FFmpeg_7x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_61>{};                            \
+    if constexpr (V == FFmpegVersion::FFmpeg_8x)                                                   \
+      return TypeWrapper<internal::avformat::wrapperNamePrefix##_62>{};                            \
+    else                                                                                           \
+      throw std::runtime_error("Invalid FFmpeg version");                                          \
   }
 
 } // namespace

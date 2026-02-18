@@ -207,4 +207,26 @@ struct AVStream_60
 
 typedef AVStream_60 AVStream_61;
 
+struct AVStream_62
+{
+  const AVClass *      av_class{};
+  int                  index{};
+  int                  id{};
+  AVCodecParameters *  codecpar{};
+  void *               priv_data{};
+  AVRational           time_base{};
+  int64_t              start_time{};
+  int64_t              duration{};
+  int64_t              nb_frames{};
+  int                  disposition{};
+  AVDiscard            discard{};
+  AVRational           sample_aspect_ratio{};
+  AVDictionary *       metadata{};
+  AVRational           avg_frame_rate{};
+  avcodec::AVPacket_62 attached_pic{};
+  int                  event_flags{};
+  AVRational           r_frame_rate{};
+  int                  pts_wrap_bits{};
+};
+
 } // namespace libffmpeg::internal::avformat

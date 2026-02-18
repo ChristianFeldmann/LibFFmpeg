@@ -9,8 +9,6 @@
 #include <AVUtil/MediaType.h>
 #include <libHandling/IFFmpegLibraries.h>
 
-#include <memory>
-
 namespace libffmpeg::avcodec
 {
 
@@ -37,6 +35,6 @@ struct CodecDescriptor
 bool operator==(const CodecDescriptorProperties &lhs, const CodecDescriptorProperties &rhs);
 
 CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCodecDescriptor,
-                                         const Version &                    avCodecVersion);
+                                         const Version                     &avCodecVersion);
 
 } // namespace libffmpeg::avcodec

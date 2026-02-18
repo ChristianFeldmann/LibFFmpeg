@@ -140,4 +140,38 @@ struct AVFrame_59
   // Actually, there is more here, but the variables above are the only we need.
 };
 
+struct AVFrame_60
+{
+  uint8_t *                     data[AV_NUM_DATA_POINTERS];
+  int                           linesize[AV_NUM_DATA_POINTERS];
+  uint8_t **                    extended_data;
+  int                           width, height;
+  int                           nb_samples;
+  int                           format;
+  AVPictureType                 pict_type;
+  AVRational                    sample_aspect_ratio;
+  int64_t                       pts;
+  int64_t                       pkt_dts;
+  AVRational                    time_base;
+  int                           quality;
+  void *                        opaque;
+  int                           repeat_pict;
+  int                           sample_rate;
+  AVBufferRef *                 buf[AV_NUM_DATA_POINTERS];
+  AVBufferRef **                extended_buf;
+  int                           nb_extended_buf;
+  AVFrameSideData **            side_data;
+  int                           nb_side_data;
+  int                           flags;
+  AVColorRange                  color_range;
+  AVColorPrimaries              color_primaries;
+  AVColorTransferCharacteristic color_trc;
+  AVColorSpace                  colorspace;
+  AVChromaLocation              chroma_location;
+  int64_t                       best_effort_timestamp;
+  AVDictionary *                metadata;
+
+  // Actually, there is more here, but the variables above are the only we need.
+};
+
 } // namespace libffmpeg::internal::avutil

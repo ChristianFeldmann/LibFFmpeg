@@ -33,14 +33,16 @@ template <FFmpegVersion V> void runAVFrameWrapperTest()
   ffmpegLibraries->functionChecks.avutilPixFmtDescGetExpectedFormat = TEST_PIXEL_FORMAT;
 
   int frameAllocCounter                  = 0;
-  ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]() {
+  ffmpegLibraries->avutil.av_frame_alloc = [&frameAllocCounter]()
+  {
     auto frame = new AVFrameType<V>;
     frameAllocCounter++;
     return reinterpret_cast<AVFrame *>(frame);
   };
 
   int frameFreeCounter                  = 0;
-  ffmpegLibraries->avutil.av_frame_free = [&frameFreeCounter](AVFrame **frame) {
+  ffmpegLibraries->avutil.av_frame_free = [&frameFreeCounter](AVFrame **frame)
+  {
     if (frame != nullptr && *frame != nullptr)
     {
       auto castFrame = reinterpret_cast<AVFrameType<V> *>(*frame);
@@ -56,15 +58,18 @@ template <FFmpegVersion V> void runAVFrameWrapperTest()
     EXPECT_EQ(frameFreeCounter, 0);
 
     {
-      auto castFrame                 = reinterpret_cast<AVFrameType<V> *>(frame.getFrame());
-      castFrame->width               = 320;
-      castFrame->height              = 160;
-      castFrame->linesize[0]         = 123;
-      castFrame->linesize[1]         = 223;
-      castFrame->linesize[2]         = 323;
-      castFrame->pts                 = 1000;
-      castFrame->pict_type           = internal::AV_PICTURE_TYPE_P;
-      castFrame->key_frame           = 1;
+      auto castFrame         = reinterpret_cast<AVFrameType<V> *>(frame.getFrame());
+      castFrame->width       = 320;
+      castFrame->height      = 160;
+      castFrame->linesize[0] = 123;
+      castFrame->linesize[1] = 223;
+      castFrame->linesize[2] = 323;
+      castFrame->pts         = 1000;
+      castFrame->pict_type   = internal::AV_PICTURE_TYPE_P;
+      if constexpr (V < FFmpegVersion::FFmpeg_8x)
+        castFrame->key_frame = 1;
+      if constexpr (V >= FFmpegVersion::FFmpeg_6x)
+        castFrame->flags = (1 << 1); // AV_FRAME_FLAG_KEY
       castFrame->sample_aspect_ratio = {16, 9};
       castFrame->format              = TEST_PIXEL_FORMAT;
     }

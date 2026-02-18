@@ -39,7 +39,8 @@ enum class FFmpegVersion
   FFmpeg_4x,
   FFmpeg_5x,
   FFmpeg_6x,
-  FFmpeg_7x
+  FFmpeg_7x,
+  FFmpeg_8x
 };
 
 const EnumMapper<FFmpegVersion>
@@ -48,7 +49,8 @@ const EnumMapper<FFmpegVersion>
                          {FFmpegVersion::FFmpeg_4x, "4.x", "FFmpeg 4.x"},
                          {FFmpegVersion::FFmpeg_5x, "5.x", "FFmpeg 5.x"},
                          {FFmpegVersion::FFmpeg_6x, "6.x", "FFmpeg 6.x"},
-                         {FFmpegVersion::FFmpeg_7x, "7.x", "FFmpeg 7.x"}});
+                         {FFmpegVersion::FFmpeg_7x, "7.x", "FFmpeg 7.x"},
+                         {FFmpegVersion::FFmpeg_8x, "8.x", "FFmpeg 8.x"}});
 
 struct LibraryVersions
 {
@@ -66,7 +68,12 @@ using VersionSwresample = Version;
 
 // These FFmpeg versions are supported. The numbers indicate the major versions.
 // The versions are sorted from newest to oldest, so that we try to open the newest ones first.
-constexpr auto SupportedFFmpegVersions = {LibraryVersions({FFmpegVersion::FFmpeg_7x,
+constexpr auto SupportedFFmpegVersions = {LibraryVersions({FFmpegVersion::FFmpeg_8x,
+                                                           VersionAVFormat(62),
+                                                           VersionAVCodec(62),
+                                                           VersionAVUtil(60),
+                                                           VersionSwresample(6)}),
+                                          LibraryVersions({FFmpegVersion::FFmpeg_7x,
                                                            VersionAVFormat(61),
                                                            VersionAVCodec(61),
                                                            VersionAVUtil(59),

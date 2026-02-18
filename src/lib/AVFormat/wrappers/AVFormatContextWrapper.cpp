@@ -22,6 +22,7 @@ using libffmpeg::internal::avformat::AVFormatContext_58;
 using libffmpeg::internal::avformat::AVFormatContext_59;
 using libffmpeg::internal::avformat::AVFormatContext_60;
 using libffmpeg::internal::avformat::AVFormatContext_61;
+using libffmpeg::internal::avformat::AVFormatContext_62;
 
 AVFormatContextWrapper::AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
 {

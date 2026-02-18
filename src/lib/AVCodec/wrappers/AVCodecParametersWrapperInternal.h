@@ -6,6 +6,10 @@
 
 #pragma once
 
+#include <common/InternalTypes.h>
+
+#include "AVChannelInternal.h"
+
 namespace libffmpeg::internal::avcodec
 {
 
@@ -18,7 +22,7 @@ struct AVCodecParameters_56
 {
   AVMediaType  codec_type;
   AVCodecID    codec_id;
-  uint8_t *    extradata;
+  uint8_t     *extradata;
   int          extradata_size;
   int          format;
   int          profile;
@@ -34,7 +38,7 @@ struct AVCodecParameters_57
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
   uint32_t                      codec_tag;
-  uint8_t *                     extradata;
+  uint8_t                      *extradata;
   int                           extradata_size;
   int                           format;
   int64_t                       bit_rate;
@@ -52,22 +56,97 @@ struct AVCodecParameters_57
   AVColorSpace                  color_space;
   AVChromaLocation              chroma_location;
   int                           video_delay;
-
-  // Actually, there is more here, but the variables above are the only we need.
+  uint64_t                      channel_layout;
+  int                           channels;
+  int                           sample_rate;
+  int                           block_align;
+  int                           frame_size;
+  int                           initial_padding;
+  int                           trailing_padding;
+  int                           seek_preroll;
 };
 
 typedef AVCodecParameters_57 AVCodecParameters_58;
-typedef AVCodecParameters_57 AVCodecParameters_59;
-typedef AVCodecParameters_57 AVCodecParameters_60;
+
+struct AVCodecParameters_59
+{
+  AVMediaType                   codec_type;
+  AVCodecID                     codec_id;
+  uint32_t                      codec_tag;
+  uint8_t                      *extradata;
+  int                           extradata_size;
+  int                           format;
+  int64_t                       bit_rate;
+  int                           bits_per_coded_sample;
+  int                           bits_per_raw_sample;
+  int                           profile;
+  int                           level;
+  int                           width;
+  int                           height;
+  AVRational                    sample_aspect_ratio;
+  AVFieldOrder                  field_order;
+  AVColorRange                  color_range;
+  AVColorPrimaries              color_primaries;
+  AVColorTransferCharacteristic color_trc;
+  AVColorSpace                  color_space;
+  AVChromaLocation              chroma_location;
+  int                           video_delay;
+  uint64_t                      channel_layout;
+  int                           channels;
+  int                           sample_rate;
+  int                           block_align;
+  int                           frame_size;
+  int                           initial_padding;
+  int                           trailing_padding;
+  int                           seek_preroll;
+  AVChannelLayout               ch_layout;
+};
+
+struct AVCodecParameters_60
+{
+  AVMediaType                   codec_type;
+  AVCodecID                     codec_id;
+  uint32_t                      codec_tag;
+  uint8_t                      *extradata;
+  int                           extradata_size;
+  int                           format;
+  int64_t                       bit_rate;
+  int                           bits_per_coded_sample;
+  int                           bits_per_raw_sample;
+  int                           profile;
+  int                           level;
+  int                           width;
+  int                           height;
+  AVRational                    sample_aspect_ratio;
+  AVFieldOrder                  field_order;
+  AVColorRange                  color_range;
+  AVColorPrimaries              color_primaries;
+  AVColorTransferCharacteristic color_trc;
+  AVColorSpace                  color_space;
+  AVChromaLocation              chroma_location;
+  int                           video_delay;
+  uint64_t                      channel_layout;
+  int                           channels;
+  int                           sample_rate;
+  int                           block_align;
+  int                           frame_size;
+  int                           initial_padding;
+  int                           trailing_padding;
+  int                           seek_preroll;
+  AVChannelLayout               ch_layout;
+  AVRational                    framerate;
+  AVPacketSideData             *coded_side_data;
+  int                           nb_coded_side_data;
+};
 
 struct AVCodecParameters_61
 {
   AVMediaType                   codec_type;
   AVCodecID                     codec_id;
   uint32_t                      codec_tag;
-  uint8_t *                     extradata;
+  uint8_t                      *extradata;
   int                           extradata_size;
-  AVPacketSideData *            coded_side_data;
+  AVPacketSideData             *coded_side_data;
   int                           nb_coded_side_data;
   int                           format;
   int64_t                       bit_rate;
@@ -86,8 +165,15 @@ struct AVCodecParameters_61
   AVColorSpace                  color_space;
   AVChromaLocation              chroma_location;
   int                           video_delay;
-
-  // Actually, there is more here, but the variables above are the only we need.
+  AVChannelLayout               ch_layout;
+  int                           sample_rate;
+  int                           block_align;
+  int                           frame_size;
+  int                           initial_padding;
+  int                           trailing_padding;
+  int                           seek_preroll;
 };
+
+typedef AVCodecParameters_61 AVCodecParameters_62;
 
 } // namespace libffmpeg::internal::avcodec

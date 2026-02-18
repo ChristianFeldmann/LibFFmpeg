@@ -12,6 +12,8 @@
 #include <wrappers/RunTestForAllVersions.h>
 #include <wrappers/TestHelper.h>
 
+#include "TestDefinitions.h"
+
 #include <gtest/gtest.h>
 
 #include <array>
@@ -25,6 +27,7 @@ namespace
 using libffmpeg::internal::AVCodec;
 using libffmpeg::internal::AVPixelFormat;
 using libffmpeg::internal::AVRational;
+using ::testing::ElementsAre;
 using ::testing::Return;
 
 template <FFmpegVersion V> void runAVCodecWrapperTest()
@@ -43,6 +46,10 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
   rawCodec.type         = libffmpeg::internal::AVMEDIA_TYPE_SUBTITLE;
   rawCodec.id           = TEST_CODEC_ID;
   rawCodec.capabilities = TEST_CAPABILITIES;
+  if constexpr (V <= FFmpegVersion::FFmpeg_5x)
+    rawCodec.channel_layouts = TEST_CHANNEL_FORMATS;
+  else
+    rawCodec.channel_layouts = TEST_AVCHANNEL_LAYOUTS;
 
   std::array<AVRational, 4> rawFrameRates = {
       AVRational({30, 1}), AVRational({30, 1001}), AVRational({77, 999}), AVRational({0, 0})};
@@ -71,6 +78,10 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
             std::vector(rawPixelFormats.begin(), rawPixelFormats.end() - 1));
   EXPECT_EQ(codec.getSupportedSamplerates(),
             std::vector(rawSupportedSampleRates.begin(), rawSupportedSampleRates.end() - 1));
+
+  EXPECT_THAT(
+      codec.getSupportedChannelLayouts(),
+      ElementsAre(TEST_CHANNELINFO_STEREO, TEST_CHANNELINFO_5POINT1, TEST_CHANNELINFO_7POINT1));
 }
 
 } // namespace
