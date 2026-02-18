@@ -87,15 +87,20 @@ TEST(Demuxing, OpenTestFileAndCheckFormat_ShouldHaveCorrectFormat)
   EXPECT_EQ(audioCodecDescriptor->mimeTypes.size(), 0);
 
   const auto audioCodecParameters = audioStream.getCodecParameters();
-  EXPECT_EQ(audioCodecParameters->getCodecType(), MediaType::Audio);
-  EXPECT_EQ(audioCodecParameters->getExtradata().size(), 5);
-  EXPECT_EQ(audioCodecParameters->getSize(), Size({0, 0}));
-  EXPECT_EQ(audioCodecParameters->getColorspace(), ColorSpace::UNSPECIFIED);
-  EXPECT_THAT(audioCodecParameters->getPixelFormat().name, testing::AnyOf("None", "gray"));
-  EXPECT_EQ(audioCodecParameters->getSampleAspectRatio(), Rational({0, 1}));
-  EXPECT_THAT(audioCodecParameters->getChannelLayout(),
-              ElementsAre(avcodec::ChannelInfo({avcodec::Channel::FrontLeft, {}, "FL"}),
-                          avcodec::ChannelInfo({avcodec::Channel::FrontRight, {}, "FR"})));
+  if (majorVersion <= 56)
+    EXPECT_FALSE(audioCodecParameters);
+  else
+  {
+    EXPECT_EQ(audioCodecParameters->getCodecType(), MediaType::Audio);
+    EXPECT_EQ(audioCodecParameters->getExtradata().size(), 5);
+    EXPECT_EQ(audioCodecParameters->getSize(), Size({0, 0}));
+    EXPECT_EQ(audioCodecParameters->getColorspace(), ColorSpace::UNSPECIFIED);
+    EXPECT_THAT(audioCodecParameters->getPixelFormat().name, testing::AnyOf("None", "gray"));
+    EXPECT_EQ(audioCodecParameters->getSampleAspectRatio(), Rational({0, 1}));
+    EXPECT_THAT(audioCodecParameters->getChannelLayout(),
+                ElementsAre(avcodec::ChannelInfo({avcodec::Channel::FrontLeft, {}, "FL"}),
+                            avcodec::ChannelInfo({avcodec::Channel::FrontRight, {}, "FR"})));
+  }
 
   if (majorVersion == 56)
     // FFmpeg versions 2 does not parse profiles in the descriptor
