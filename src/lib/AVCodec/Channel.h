@@ -8,6 +8,8 @@
 
 #include "common/EnumMapper.h"
 
+#include <ostream>
+
 namespace libffmpeg::avcodec
 {
 
@@ -102,6 +104,16 @@ struct ChannelInfo
   {
     return this->channel == other.channel && this->ambisonicIndex == other.ambisonicIndex &&
            this->name == other.name;
+  }
+
+  friend std::ostream &operator<<(std::ostream &stream, const ChannelInfo &channelInfo)
+  {
+    stream << "{ Channel "
+           << (channelInfo.channel ? channelMapper.getName(*channelInfo.channel) : "nullopt")
+           << ", ambisonicIndex: "
+           << (channelInfo.ambisonicIndex ? std::to_string(*channelInfo.ambisonicIndex) : "nullopt")
+           << ", name: \"" << channelInfo.name << "\"}";
+    return stream;
   }
 };
 
