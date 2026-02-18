@@ -60,7 +60,7 @@ jobs:
     - name: Configure
       run: |
         cd FFmpeg
-        ./configure --disable-static --enable-shared --disable-debug --disable-everything --disable-doc --enable-decoder=h264 --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file
+        ./configure --disable-static --enable-shared --disable-debug --disable-everything --disable-doc --enable-decoder=h264 --enable-decoder=aac --enable-demuxer=mov --enable-demuxer=matroska --enable-protocol=file
 
     - name: Build
       run: |
