@@ -72,10 +72,13 @@ jobs:
       run: |
         mkdir tempFolder
         cd tempFolder
-        cp ../FFmpeg/libavcodec/libavcodec.${{ matrix.ffmpeg.avcodec }}.dylib .
-        cp ../FFmpeg/libavformat/libavformat.${{ matrix.ffmpeg.avformat }}.dylib .
-        cp ../FFmpeg/libavutil/libavutil.${{ matrix.ffmpeg.avutil }}.dylib .
-        cp ../FFmpeg/libswresample/libswresample.${{ matrix.ffmpeg.swresample }}.dylib .
+        cp ../FFmpeg/libavcodec/libavcodec.*.dylib .
+        cp ../FFmpeg/libavformat/libavformat.*.dylib .
+        cp ../FFmpeg/libavutil/libavutil.*.dylib .
+        cp ../FFmpeg/libswresample/libswresample.*.dylib .
+        cp ../FFmpeg/libavfilter/libavfilter.*.dylib .
+        cp ../FFmpeg/libavdevice/libavdevice.*.dylib .
+        cp ../FFmpeg/libswscale/libswscale.*.dylib .
         cp ../FFmpeg/ffmpeg .
         cp ../FFmpeg/ffprobe .
 
@@ -84,10 +87,13 @@ jobs:
       run: |
         mkdir tempFolder
         cd tempFolder
-        cp ../FFmpeg/libavcodec/libavcodec.so.${{ matrix.ffmpeg.avcodec }} .
-        cp ../FFmpeg/libavformat/libavformat.so.${{ matrix.ffmpeg.avformat }} .
-        cp ../FFmpeg/libavutil/libavutil.so.${{ matrix.ffmpeg.avutil }} .
-        cp ../FFmpeg/libswresample/libswresample.so.${{ matrix.ffmpeg.swresample }} .
+        cp ../FFmpeg/libavcodec/libavcodec.so.* .
+        cp ../FFmpeg/libavformat/libavformat.so.* .
+        cp ../FFmpeg/libavutil/libavutil.so.* .
+        cp ../FFmpeg/libswresample/libswresample.so.* .
+        cp ../FFmpeg/libavfilter/libavfilter.so.* .
+        cp ../FFmpeg/libavdevice/libavdevice.so.* .
+        cp ../FFmpeg/libswscale/libswscale.so.* .
         cp ../FFmpeg/ffmpeg .
         cp ../FFmpeg/ffprobe .
 
