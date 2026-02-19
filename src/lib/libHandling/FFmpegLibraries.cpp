@@ -74,6 +74,7 @@ FFmpegLibraries::FFmpegLibraries()
 
 FFmpegLibraries::~FFmpegLibraries()
 {
+  this->log(LogLevel::Info, "Disconnecting av logging callback");
   std::scoped_lock<std::mutex> lock(this->loggingMutex);
 
   if (this->loggingFunctionIndex)
