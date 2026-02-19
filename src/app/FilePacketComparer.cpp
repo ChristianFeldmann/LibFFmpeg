@@ -10,6 +10,7 @@
 
 #include "Formatting.h"
 
+#include <array>
 #include <cstddef>
 #include <filesystem>
 #include <iomanip>
@@ -80,7 +81,7 @@ std::optional<CompareFile> parseFileNameAndStreamIndex(const std::string &variab
   {
     file.streamIndex = std::stoi(variable.substr(columnPos + 1));
   }
-  catch (const std::exception &e)
+  catch (const std::exception &)
   {
     return {};
   }
