@@ -22,13 +22,13 @@ public:
   AVDictionaryWrapper() = delete;
   AVDictionaryWrapper(AVDictionary *dictionary, std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
-  explicit      operator bool() const { return this->dictionary != nullptr; }
-  AVDictionary *getDictionary() const { return this->dictionary; }
+  explicit                    operator bool() const { return this->dictionary != nullptr; }
+  [[nodiscard]] AVDictionary *getDictionary() const { return this->dictionary; }
 
-  DictionaryMap toMap() const;
+  [[nodiscard]] DictionaryMap toMap() const;
 
 private:
-  AVDictionary *                    dictionary{};
+  AVDictionary                     *dictionary{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 

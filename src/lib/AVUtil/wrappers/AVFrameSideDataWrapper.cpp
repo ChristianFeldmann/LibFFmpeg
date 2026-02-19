@@ -22,7 +22,7 @@ using libffmpeg::internal::AVFrameSideDataType;
 
 } // namespace
 
-AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData *                 sideData,
+AVFrameSideDataWrapper::AVFrameSideDataWrapper(AVFrameSideData                  *sideData,
                                                std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : sideData(sideData), ffmpegLibraries(ffmpegLibraries)
 {
@@ -35,16 +35,16 @@ std::vector<MotionVector> AVFrameSideDataWrapper::getMotionVectors() const
   if (this->sideData == nullptr)
     return {};
 
-  AVFrameSideDataType type;
+  AVFrameSideDataType type{};
   CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, type, type);
 
   if (type != libffmpeg::internal::AV_FRAME_DATA_MOTION_VECTORS)
     return {};
 
-  uint8_t *data;
+  uint8_t *data{};
   CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, data, data);
 
-  int size;
+  int size{};
   CAST_AVUTIL_GET_MEMBER(AVFrameSideData, this->sideData, size, size);
 
   return parseMotionData(this->ffmpegLibraries->getLibrariesVersion(), data, size);

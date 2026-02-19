@@ -146,8 +146,10 @@ ChannelLayout bitMaskToChannelLayout(const uint64_t mask, const bool isAmbisonic
 {
   ChannelLayout layout;
 
-  std::bitset<64> bits(mask);
-  for (int bitPosition = 0; bitPosition < 64; ++bitPosition)
+  constexpr auto MAX_CHANNELS = 64;
+
+  std::bitset<MAX_CHANNELS> bits(mask);
+  for (int bitPosition = 0; bitPosition < MAX_CHANNELS; ++bitPosition)
   {
     if (bits.test(bitPosition))
     {

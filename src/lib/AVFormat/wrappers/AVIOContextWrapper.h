@@ -18,9 +18,9 @@ class AVIOContextWrapper
 {
 public:
   AVIOContextWrapper()          = default;
-  virtual ~AVIOContextWrapper() = 0;
+  virtual ~AVIOContextWrapper() = default;
 
-  internal::AVIOContext *getAVIOContext() const;
+  [[nodiscard]] internal::AVIOContext *getAVIOContext() const;
 
   explicit operator bool() const { return !!this->ioContext; };
 
@@ -47,9 +47,9 @@ public:
   AVIOInputContext(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   virtual ~AVIOInputContext() = default;
 
-  virtual std::optional<int> readData(uint8_t *buf, int buf_size) = 0;
-  virtual std::optional<int> getFileSize() const                  = 0;
-  virtual bool               seek(int64_t offset)                 = 0;
+  virtual std::optional<int>               readData(uint8_t *buf, int buf_size) = 0;
+  [[nodiscard]] virtual std::optional<int> getFileSize() const                  = 0;
+  virtual bool                             seek(int64_t offset)                 = 0;
 };
 
 } // namespace libffmpeg::avformat

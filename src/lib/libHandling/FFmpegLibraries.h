@@ -20,7 +20,11 @@ class FFmpegLibraries : public IFFmpegLibraries
 {
 public:
   FFmpegLibraries();
-  ~FFmpegLibraries();
+  ~FFmpegLibraries() override;
+  FFmpegLibraries(const FFmpegLibraries &)            = delete;
+  FFmpegLibraries &operator=(const FFmpegLibraries &) = delete;
+  FFmpegLibraries(FFmpegLibraries &&)                 = delete;
+  FFmpegLibraries &operator=(FFmpegLibraries &&)      = delete;
 
   std::vector<LibraryInfo> getLibrariesInfo() const override;
   LibraryVersions          getLibrariesVersion() const override { return this->libraryVersions; }
@@ -33,7 +37,7 @@ private:
   [[nodiscard]] bool tryLoadFFmpegLibrariesInPath(const Path &path);
 
   [[nodiscard]] bool
-                     tryLoadLibrariesBindFunctionsAndCheckVersions(const Path &           directory,
+                     tryLoadLibrariesBindFunctionsAndCheckVersions(const Path            &directory,
                                                                    const LibraryVersions &libraryVersions);
   [[nodiscard]] bool tryLoadBindAndCheckAVUtil(const Path &directory, const Version version);
   [[nodiscard]] bool tryLoadBindAndCheckSWResample(const Path &directory, const Version version);
@@ -41,9 +45,9 @@ private:
   [[nodiscard]] bool tryLoadBindAndCheckAVFormat(const Path &directory, const Version version);
 
   [[nodiscard]] bool tryLoadLibraryInPath(SharedLibraryLoader &lib,
-                                          const Path &         directory,
-                                          const std::string &  libName,
-                                          const Version &      version);
+                                          const Path          &directory,
+                                          const std::string   &libName,
+                                          const Version       &version);
 
   void unloadAllLibraries();
 
@@ -56,7 +60,6 @@ private:
   void            getLibraryVersionsFromLoadedLibraries();
 
   void               connectAVLoggingCallback();
-  void               disconnectAVLoggingCallback();
   mutable std::mutex loggingMutex;
 
   LoggingFunction    loggingFunction;

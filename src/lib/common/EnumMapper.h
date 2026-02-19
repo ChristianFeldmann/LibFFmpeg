@@ -57,7 +57,7 @@ std::optional<unsigned long> toUnsigned(const std::string &text)
 
 std::string toLower(std::string str)
 {
-  std::transform(
+  std::ranges::transform(
       str.begin(), str.end(), str.begin(), [](unsigned char c) { return std::tolower(c); });
   return str;
 }
@@ -77,9 +77,12 @@ public:
   };
   struct Entry
   {
-    Entry(const T &value, const std::string &name) : value(value), name(name) {}
-    Entry(const T &value, const std::string &name, std::string text)
-        : value(value), name(name), text(text)
+    Entry(const T &&value, const std::string &&name)
+        : value(std::move(value)), name(std::move(name))
+    {
+    }
+    Entry(const T &&value, const std::string &&name, const std::string &&text)
+        : value(std::move(value)), name(std::move(name)), text(std::move(text))
     {
     }
     T           value{};
@@ -90,9 +93,10 @@ public:
   using EntryVector = std::vector<Entry>;
 
   EnumMapper() = default;
-  EnumMapper(const EntryVector &entryVector) : entryVector(entryVector){};
+  EnumMapper(const EntryVector &&entryVector) : entryVector(std::move(entryVector)) {};
 
-  std::optional<T> getValue(const std::string &name, StringType stringType = StringType::Name) const
+  [[nodiscard]] std::optional<T> getValue(const std::string &name,
+                                          StringType         stringType = StringType::Name) const
   {
     if (stringType == StringType::NameOrIndex)
       if (auto index = toUnsigned(name))
@@ -108,8 +112,8 @@ public:
     return {};
   }
 
-  std::optional<T> getValueCaseInsensitive(const std::string &name,
-                                           StringType         stringType = StringType::Name) const
+  [[nodiscard]] std::optional<T>
+  getValueCaseInsensitive(const std::string &name, StringType stringType = StringType::Name) const
   {
     if (stringType == StringType::NameOrIndex)
       if (auto index = toUnsigned(name))
@@ -126,7 +130,7 @@ public:
     return {};
   }
 
-  std::string getName(const T &value) const
+  [[nodiscard]] std::string getName(const T &value) const
   {
     for (const auto &entry : this->entryVector)
       if (entry.value == value)
@@ -135,7 +139,7 @@ public:
         "The given type T was not registered in the mapper. All possible enums must be mapped.");
   }
 
-  std::string getText(const T &value) const
+  [[nodiscard]] std::string getText(const T &value) const
   {
     for (const auto &entry : this->entryVector)
       if (entry.value == value)
@@ -144,7 +148,7 @@ public:
         "The given type T was not registered in the mapper. All possible enums must be mapped.");
   }
 
-  size_t indexOf(const T &value) const
+  [[nodiscard]] size_t indexOf(const T &value) const
   {
     for (size_t i = 0; i < this->entryVector.size(); i++)
       if (this->entryVector.at(i).value == value)
@@ -153,14 +157,14 @@ public:
         "The given type T was not registered in the mapper. All possible enums must be mapped.");
   }
 
-  std::optional<T> at(const size_t index) const
+  [[nodiscard]] std::optional<T> at(const size_t index) const
   {
     if (index >= this->entryVector.size())
       return {};
     return this->entryVector.at(index).value;
   }
 
-  std::vector<T> getEnums() const
+  [[nodiscard]] std::vector<T> getEnums() const
   {
     std::vector<T> m;
     for (const auto &entry : this->entryVector)
@@ -168,7 +172,7 @@ public:
     return m;
   }
 
-  std::vector<std::string> getNames() const
+  [[nodiscard]] std::vector<std::string> getNames() const
   {
     std::vector<std::string> l;
     for (const auto &entry : this->entryVector)
@@ -176,7 +180,7 @@ public:
     return l;
   }
 
-  std::vector<std::string> getTextEntries() const
+  [[nodiscard]] std::vector<std::string> getTextEntries() const
   {
     std::vector<std::string> l;
     for (const auto &entry : this->entryVector)
@@ -184,9 +188,9 @@ public:
     return l;
   }
 
-  size_t size() const { return this->entryVector.size(); }
+  [[nodiscard]] size_t size() const { return this->entryVector.size(); }
 
-  const EntryVector &entries() const { return this->entryVector; }
+  [[nodiscard]] const EntryVector &entries() const { return this->entryVector; }
 
 private:
   EntryVector entryVector;

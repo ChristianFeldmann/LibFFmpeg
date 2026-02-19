@@ -4,9 +4,9 @@
  * For a copy, see <https://opensource.org/licenses/MIT>.
  */
 
-#include <libHandling/FFmpegLibrariesBuilder.h>
 #include <Demuxer.h>
 #include <common/Formatting.h>
+#include <libHandling/FFmpegLibrariesBuilder.h>
 
 #include <gtest/gtest.h>
 
@@ -53,12 +53,11 @@ public:
 
   bool containsLogEntry(const LogEntry &logEntry)
   {
-    return std::find(this->logEntries.begin(), this->logEntries.end(), logEntry) !=
-           this->logEntries.end();
+    return std::ranges::find(this->logEntries, logEntry) != this->logEntries.end();
   }
 
   std::vector<LogEntry>             logEntries{};
   std::shared_ptr<IFFmpegLibraries> libraries;
 };
 
-}
+} // namespace libffmpeg::test::integration

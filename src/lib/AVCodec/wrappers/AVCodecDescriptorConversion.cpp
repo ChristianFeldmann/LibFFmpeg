@@ -63,7 +63,7 @@ std::vector<std::string> parseMimeTypes(const char *const *mime_types)
 
   int i = 0;
   while (mime_types[i] != nullptr)
-    mimeTypes.push_back(std::string(mime_types[i++]));
+    mimeTypes.emplace_back(mime_types[i++]);
 
   return mimeTypes;
 }
@@ -77,13 +77,13 @@ std::vector<std::string> parseProfiles(const struct AVProfile_57 *profiles)
 
   int i = 0;
   while (profiles[i].profile != FF_PROFILE_UNKNOWN)
-    parsedProfiles.push_back(std::string(profiles[i++].name));
+    parsedProfiles.emplace_back(profiles[i++].name);
 
   return parsedProfiles;
 }
 
 CodecDescriptor convertAVCodecDescriptor(const internal::AVCodecDescriptor *avCodecDescriptor,
-                                         const Version &                    avCodecVersion)
+                                         const Version                     &avCodecVersion)
 {
   if (avCodecDescriptor == nullptr)
     throw std::runtime_error("Invalid avCodecDescriptor given");

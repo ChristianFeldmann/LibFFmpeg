@@ -30,7 +30,7 @@ void logToLoggingFunction(
   std::string message;
   va_list     vargs_copy;
   va_copy(vargs_copy, vargs);
-  const auto len = vsnprintf(0, 0, fmt, vargs_copy);
+  const auto len = vsnprintf(nullptr, 0, fmt, vargs_copy);
   message.resize(len);
   vsnprintf(&message[0], len + 1, fmt, vargs);
 

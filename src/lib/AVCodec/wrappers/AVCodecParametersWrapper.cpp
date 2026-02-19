@@ -57,7 +57,7 @@ avutil::MediaType AVCodecParametersWrapper::getCodecType() const
 {
   RETURN_IF_VERSION_TOO_OLD(avutil::MediaType::Unknown);
 
-  AVMediaType mediaType;
+  AVMediaType mediaType{};
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, mediaType, codec_type);
   return libffmpeg::avutil::toMediaType(mediaType);
 }
@@ -66,7 +66,7 @@ AVCodecID AVCodecParametersWrapper::getCodecID() const
 {
   RETURN_IF_VERSION_TOO_OLD(libffmpeg::internal::AV_CODEC_ID_NONE);
 
-  AVCodecID codecID;
+  AVCodecID codecID{};
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, codecID, codec_id);
   return codecID;
 }
@@ -75,10 +75,10 @@ ByteVector AVCodecParametersWrapper::getExtradata() const
 {
   RETURN_IF_VERSION_TOO_OLD({});
 
-  uint8_t *extradata;
+  uint8_t *extradata{};
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, extradata, extradata);
 
-  int extradataSize;
+  int extradataSize{};
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, extradataSize, extradata_size);
 
   return copyDataFromRawArray(extradata, extradataSize);
@@ -88,18 +88,18 @@ Size AVCodecParametersWrapper::getSize() const
 {
   RETURN_IF_VERSION_TOO_OLD({});
 
-  int width, height;
-  CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, width, width);
-  CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, height, height);
+  Size size{};
+  CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, size.width, width);
+  CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, size.height, height);
 
-  return {width, height};
+  return size;
 }
 
 avutil::ColorSpace AVCodecParametersWrapper::getColorspace() const
 {
   RETURN_IF_VERSION_TOO_OLD(avutil::ColorSpace::UNSPECIFIED);
 
-  internal::AVColorSpace avColorspace;
+  internal::AVColorSpace avColorspace{};
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, avColorspace, color_space);
 
   return avutil::toColorspace(avColorspace);
@@ -109,7 +109,7 @@ avutil::PixelFormatDescriptor AVCodecParametersWrapper::getPixelFormat() const
 {
   RETURN_IF_VERSION_TOO_OLD({});
 
-  int pixelFormatIndex;
+  int pixelFormatIndex{};
   CAST_AVCODEC_GET_MEMBER(AVCodecParameters, this->codecParameters, pixelFormatIndex, format);
 
   const auto avPixelFormat = static_cast<internal::AVPixelFormat>(pixelFormatIndex);
@@ -121,10 +121,10 @@ Rational AVCodecParametersWrapper::getSampleAspectRatio() const
 {
   RETURN_IF_VERSION_TOO_OLD({});
 
-  AVRational sampleAspectRatio;
+  AVRational sampleAspectRatio{};
   CAST_AVCODEC_GET_MEMBER(
       AVCodecParameters, this->codecParameters, sampleAspectRatio, sample_aspect_ratio);
-  return {sampleAspectRatio.num, sampleAspectRatio.den};
+  return fromAVRational(sampleAspectRatio);
 }
 
 ChannelLayout AVCodecParametersWrapper::getChannelLayout() const
@@ -180,7 +180,7 @@ void AVCodecParametersWrapper::setClearValues()
     p->width                 = 0;
     p->height                = 0;
     {
-      AVRational ratio;
+      AVRational ratio{};
       ratio.num              = 1;
       ratio.den              = 1;
       p->sample_aspect_ratio = ratio;
@@ -212,7 +212,7 @@ void AVCodecParametersWrapper::setClearValues()
     p->width                 = 0;
     p->height                = 0;
     {
-      AVRational ratio;
+      AVRational ratio{};
       ratio.num              = 1;
       ratio.den              = 1;
       p->sample_aspect_ratio = ratio;
@@ -285,7 +285,7 @@ void AVCodecParametersWrapper::setProfileLevel(int profile, int level)
 
 void AVCodecParametersWrapper::setSampleAspectRatio(int num, int den)
 {
-  AVRational ratio;
+  AVRational ratio{};
   ratio.num = num;
   ratio.den = den;
   CAST_AVCODEC_SET_MEMBER(AVCodecParameters, this->codecParameters, sample_aspect_ratio, ratio);

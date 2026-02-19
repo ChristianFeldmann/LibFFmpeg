@@ -78,7 +78,7 @@ Decoder::SendPacketResult Decoder::sendPacket(const avcodec::AVPacketWrapper &pa
     return SendPacketResult::NotSentPullFramesFirst;
   }
 
-  ReturnCode returnCode;
+  ReturnCode returnCode{};
   if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major == 56)
   {
     // In the old interface there is no pushPacket/pullFrame so we have

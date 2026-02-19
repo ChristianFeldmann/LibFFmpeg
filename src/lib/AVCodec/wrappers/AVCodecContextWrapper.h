@@ -26,9 +26,9 @@ public:
   AVCodecContextWrapper(libffmpeg::internal::AVCodecContext *codecContext,
                         std::shared_ptr<IFFmpegLibraries>    ffmpegLibraries);
   AVCodecContextWrapper(const AVCodecContextWrapper &) = delete;
-  AVCodecContextWrapper &operator                      =(AVCodecContextWrapper &&);
+  AVCodecContextWrapper &operator=(AVCodecContextWrapper &&) noexcept;
   AVCodecContextWrapper &operator=(const AVCodecContextWrapper &) = delete;
-  AVCodecContextWrapper(AVCodecContextWrapper &&wrapper);
+  AVCodecContextWrapper(AVCodecContextWrapper &&wrapper) noexcept;
   ~AVCodecContextWrapper();
 
   bool openContextForDecoding(const avcodec::AVCodecParametersWrapper &codecParameters);
@@ -47,13 +47,13 @@ public:
   // This is the old FFMpeg 2 interface before pushPacket/pullFrame.
   DecodeResult decodeVideo2(const avcodec::AVPacketWrapper &packet);
 
-  avutil::MediaType              getCodecType() const;
-  libffmpeg::internal::AVCodecID getCodecID() const;
-  avutil::PixelFormatDescriptor  getPixelFormat() const;
-  Size                           getSize() const;
-  avutil::ColorSpace             getColorspace() const;
-  Rational                       getTimeBase() const;
-  ByteVector                     getExtradata() const;
+  [[nodiscard]] avutil::MediaType              getCodecType() const;
+  [[nodiscard]] libffmpeg::internal::AVCodecID getCodecID() const;
+  [[nodiscard]] avutil::PixelFormatDescriptor  getPixelFormat() const;
+  [[nodiscard]] Size                           getSize() const;
+  [[nodiscard]] avutil::ColorSpace             getColorspace() const;
+  [[nodiscard]] Rational                       getTimeBase() const;
+  [[nodiscard]] ByteVector                     getExtradata() const;
 
 private:
   /* It depends on how the wrapper is created who has ownership of this.

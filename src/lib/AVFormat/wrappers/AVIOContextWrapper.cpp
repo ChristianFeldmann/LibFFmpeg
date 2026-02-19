@@ -50,9 +50,6 @@ int64_t seekCallback(void *opaque, int64_t offset, int whence)
 
 } // namespace
 
-AVIOContextWrapper::~AVIOContextWrapper()
-{
-}
 
 AVIOContext *AVIOContextWrapper::getAVIOContext() const
 {

@@ -40,19 +40,19 @@ LibrariesLoadingResult FFmpegLibrariesBuilder::tryLoadingOfLibraries()
   if (paths.empty())
   {
     lib->log(LogLevel::Info, "No search paths specified. We will only try the default empty path.");
-    paths.push_back("");
+    paths.emplace_back("");
   }
 
 #if (defined(__APPLE__) && defined(__arm64__))
   // On apple silicone, the libraries that were installed through homebrew are not automatically
   // in the library search path. We will search the homebrew library path manually.
   // Issue: https://github.com/Homebrew/brew/issues/13481
-  paths.push_back("/opt/homebrew/lib");
+  paths.emplace_back("/opt/homebrew/lib");
 #elif (defined(__APPLE__) && !defined(__arm64__))
   // On macos on Intel, it can also happen that the default directory that homebrew libraries
   // are installed in is not in the search path.
   // https://apple.stackexchange.com/questions/40704/homebrew-installed-libraries-how-do-i-use-them
-  paths.push_back("/usr/local/lib");
+  paths.emplace_back("/usr/local/lib");
 #endif
 
   for (const auto &path : paths)

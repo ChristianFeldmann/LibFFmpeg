@@ -36,9 +36,9 @@ std::vector<std::string> getPossibleLibraryNames(std::string libraryName, int ve
   return {};
 }
 
-bool checkLibraryVersion(const std::string &    libName,
+bool checkLibraryVersion(const std::string     &libName,
                          unsigned               ffmpegVersionOfLoadedLibrary,
-                         const Version &        expectedVersion,
+                         const Version         &expectedVersion,
                          const LoggingFunction &log)
 {
   const auto loadedVersion = Version::fromFFmpegVersion(ffmpegVersionOfLoadedLibrary);
@@ -68,13 +68,16 @@ Path getAbsolutePath(const Path &path)
 
 FFmpegLibraries::FFmpegLibraries()
 {
-  std::lock_guard<std::mutex> lock(this->loggingMutex);
+  std::scoped_lock<std::mutex> lock(this->loggingMutex);
   this->loggingFunction = [](const LogLevel, const std::string &) {};
 }
 
 FFmpegLibraries::~FFmpegLibraries()
 {
-  this->disconnectAVLoggingCallback();
+  std::scoped_lock<std::mutex> lock(this->loggingMutex);
+
+  if (this->loggingFunctionIndex)
+    unsetStaticLoggingCallback(this->avutil, this->loggingFunctionIndex.value());
 }
 
 bool FFmpegLibraries::tryLoadFFmpegLibrariesInPath(const Path &path)
@@ -193,9 +196,9 @@ bool FFmpegLibraries::tryLoadBindAndCheckAVFormat(const Path &directory, const V
 }
 
 bool FFmpegLibraries::tryLoadLibraryInPath(SharedLibraryLoader &lib,
-                                           const Path &         directory,
-                                           const std::string &  libName,
-                                           const Version &      version)
+                                           const Path          &directory,
+                                           const std::string   &libName,
+                                           const Version       &version)
 {
   this->log(LogLevel::Info, "Trying to load library " + libName + " in path " + directory.string());
 
@@ -249,12 +252,13 @@ std::vector<LibraryInfo> FFmpegLibraries::getLibrariesInfo() const
   std::vector<LibraryInfo> infoPerLIbrary;
 
   auto addLibraryInfo =
-      [&infoPerLIbrary](const char *name, const Path &path, const unsigned ffmpegVersion) {
-        const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
-        const auto version        = libraryVersion.toString();
+      [&infoPerLIbrary](const char *name, const Path &path, const unsigned ffmpegVersion)
+  {
+    const auto libraryVersion = Version::fromFFmpegVersion(ffmpegVersion);
+    const auto version        = libraryVersion.toString();
 
-        infoPerLIbrary.push_back(LibraryInfo({name, path, version}));
-      };
+    infoPerLIbrary.push_back(LibraryInfo({.name = name, .path = path, .version = version}));
+  };
 
   addLibraryInfo("AVFormat", this->libAvformat.getLibraryPath(), this->avformat.avformat_version());
   addLibraryInfo("AVCodec", this->libAvcodec.getLibraryPath(), this->avcodec.avcodec_version());
@@ -269,9 +273,10 @@ void FFmpegLibraries::setLoggingFunction(const LoggingFunction function,
                                          const LogLevel        minimumLogLevel)
 {
   {
-    std::lock_guard<std::mutex> lock(this->loggingMutex);
-    this->loggingFunction = [this, function, minimumLogLevel](const LogLevel     logLevel,
-                                                              const std::string &message) {
+    std::scoped_lock<std::mutex> lock(this->loggingMutex);
+    this->loggingFunction =
+        [this, function, minimumLogLevel](const LogLevel logLevel, const std::string &message)
+    {
       if (function && logLevel >= minimumLogLevel)
         function(logLevel, message);
     };
@@ -282,7 +287,7 @@ void FFmpegLibraries::setLoggingFunction(const LoggingFunction function,
 
 void FFmpegLibraries::log(const LogLevel logLevel, const std::string &message) const
 {
-  std::lock_guard<std::mutex> lock(this->loggingMutex);
+  std::scoped_lock<std::mutex> lock(this->loggingMutex);
   this->loggingFunction(logLevel, message);
 }
 
@@ -298,18 +303,9 @@ void FFmpegLibraries::getLibraryVersionsFromLoadedLibraries()
 void FFmpegLibraries::connectAVLoggingCallback()
 {
   this->log(LogLevel::Info, "Setting up av logging callback");
-  std::lock_guard<std::mutex> lock(this->loggingMutex);
+  std::scoped_lock<std::mutex> lock(this->loggingMutex);
 
   this->loggingFunctionIndex = setStaticLoggingCallback(this->avutil, this->loggingFunction);
-}
-
-void FFmpegLibraries::disconnectAVLoggingCallback()
-{
-  this->log(LogLevel::Info, "Disconnectiong av logging callback");
-  std::lock_guard<std::mutex> lock(this->loggingMutex);
-
-  if (this->loggingFunctionIndex)
-    unsetStaticLoggingCallback(this->avutil, this->loggingFunctionIndex.value());
 }
 
 } // namespace libffmpeg

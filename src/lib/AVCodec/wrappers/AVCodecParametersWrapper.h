@@ -24,14 +24,14 @@ public:
   AVCodecParametersWrapper(libffmpeg::internal::AVCodecParameters *p,
                            std::shared_ptr<IFFmpegLibraries>       libraries);
 
-  avutil::MediaType              getCodecType() const;
-  libffmpeg::internal::AVCodecID getCodecID() const;
-  ByteVector                     getExtradata() const;
-  Size                           getSize() const;
-  avutil::ColorSpace             getColorspace() const;
-  avutil::PixelFormatDescriptor  getPixelFormat() const;
-  Rational                       getSampleAspectRatio() const;
-  ChannelLayout                  getChannelLayout() const;
+  [[nodiscard]] avutil::MediaType              getCodecType() const;
+  [[nodiscard]] libffmpeg::internal::AVCodecID getCodecID() const;
+  [[nodiscard]] ByteVector                     getExtradata() const;
+  [[nodiscard]] Size                           getSize() const;
+  [[nodiscard]] avutil::ColorSpace             getColorspace() const;
+  [[nodiscard]] avutil::PixelFormatDescriptor  getPixelFormat() const;
+  [[nodiscard]] Rational                       getSampleAspectRatio() const;
+  [[nodiscard]] ChannelLayout                  getChannelLayout() const;
 
   // Set a default set of (unknown) values
   void setClearValues();
@@ -44,7 +44,7 @@ public:
   void setProfileLevel(int profile, int level);
   void setSampleAspectRatio(int num, int den);
 
-  libffmpeg::internal::AVCodecParameters *getCodecParameters() const
+  [[nodiscard]] libffmpeg::internal::AVCodecParameters *getCodecParameters() const
   {
     return this->codecParameters;
   }

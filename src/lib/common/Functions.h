@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <common/Functions.h>
+#include <common/InternalTypes.h>
 #include <common/Types.h>
 
 #include <string>
@@ -26,6 +26,11 @@ inline ByteVector copyDataFromRawArray(const uint8_t *inputData, const int input
   const auto inputDataAsBytes = reinterpret_cast<const std::byte *>(inputData);
   std::copy(inputDataAsBytes, inputDataAsBytes + inputDataSize, data.begin());
   return data;
+}
+
+inline Rational fromAVRational(const internal::AVRational &avRational)
+{
+  return Rational({.numerator = avRational.num, .denominator = avRational.den});
 }
 
 } // namespace libffmpeg

@@ -18,16 +18,20 @@ std::string to_string(int64_t timestamp, Rational timebase)
   auto absolutSeconds = static_cast<double>(timestamp) * static_cast<double>(timebase.numerator) /
                         static_cast<double>(timebase.denominator);
 
-  const auto hours = static_cast<int>(absolutSeconds / 60 / 60);
-  absolutSeconds -= hours * 60 * 60;
+  constexpr auto secondsPerHour   = 60 * 60;
+  constexpr auto secondsPerMinute = 60;
 
-  const auto minutes = static_cast<int>(absolutSeconds / 60);
-  absolutSeconds -= minutes * 60;
+  const auto hours = static_cast<int>(absolutSeconds / secondsPerHour);
+  absolutSeconds -= hours * secondsPerHour;
+
+  const auto minutes = static_cast<int>(absolutSeconds / secondsPerMinute);
+  absolutSeconds -= minutes * secondsPerMinute;
 
   const auto seconds = static_cast<int>(absolutSeconds);
   absolutSeconds -= seconds;
 
-  auto milliseconds = static_cast<int>(absolutSeconds * 1000);
+  constexpr auto millisecondsPerSecond = 1000;
+  auto           milliseconds          = static_cast<int>(absolutSeconds * millisecondsPerSecond);
 
   std::ostringstream stream;
   stream << std::setfill('0') << std::setw(2) << hours << ":";

@@ -37,7 +37,8 @@ class AVStreamGroup;
 
 struct AVCodecContext;
 
-#define AV_NUM_DATA_POINTERS 8
+constexpr int     AV_NUM_DATA_POINTERS = 8;
+constexpr int64_t AV_NOPTS_VALUE       = 0x8000000000000000;
 
 /* These enums are only used internally. So far, these enums did not change between the FFmpeg
  * versions. If they ever do change, we will have to add a wrapper around them.

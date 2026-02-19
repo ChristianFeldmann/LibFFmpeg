@@ -173,7 +173,6 @@ TEST(Demuxing, OpenTestFileAndDemuxPackets_ShouldReturnCorrectPackets)
   auto libsAndLogs = LibrariesWithLogging();
 
   auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
-  const auto formatContext = demuxer.getFormatContext();
 
   constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
                                                           461,  56,  36,  25, 419, 54,  29, 23, 339,
@@ -215,7 +214,6 @@ TEST(Demuxing, OpenTestFileAndDemuxPackets_ShouldLogDemuxingEventsCorrectly)
   auto libsAndLogs = LibrariesWithLogging();
 
   auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
-  const auto formatContext = demuxer.getFormatContext();
 
   while (auto packet = demuxer.getNextPacket())
   {

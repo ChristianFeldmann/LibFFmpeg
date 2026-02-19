@@ -21,9 +21,11 @@ namespace libffmpeg::avformat
 class AVFormatContextWrapper
 {
 public:
-  AVFormatContextWrapper()                               = delete;
-  AVFormatContextWrapper(const AVFormatContextWrapper &) = delete;
-  AVFormatContextWrapper(AVFormatContextWrapper &&wrapper);
+  AVFormatContextWrapper()                                          = delete;
+  AVFormatContextWrapper(const AVFormatContextWrapper &)            = delete;
+  AVFormatContextWrapper &operator=(const AVFormatContextWrapper &) = delete;
+  AVFormatContextWrapper(AVFormatContextWrapper &&wrapper) noexcept;
+  AVFormatContextWrapper &operator=(AVFormatContextWrapper &&) noexcept;
   AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
   ~AVFormatContextWrapper();
 
@@ -32,13 +34,13 @@ public:
 
   explicit operator bool() const;
 
-  std::vector<AVStreamWrapper> getStreams() const;
-  int                          getNumberStreams() const;
-  AVStreamWrapper              getStream(int idx) const;
-  AVInputFormatWrapper         getInputFormat() const;
-  int64_t                      getStartTime() const;
-  int64_t                      getDuration() const;
-  avutil::AVDictionaryWrapper  getMetadata() const;
+  [[nodiscard]] std::vector<AVStreamWrapper> getStreams() const;
+  [[nodiscard]] int                          getNumberStreams() const;
+  [[nodiscard]] AVStreamWrapper              getStream(int idx) const;
+  [[nodiscard]] AVInputFormatWrapper         getInputFormat() const;
+  [[nodiscard]] int64_t                      getStartTime() const;
+  [[nodiscard]] int64_t                      getDuration() const;
+  [[nodiscard]] avutil::AVDictionaryWrapper  getMetadata() const;
 
   bool getNextPacket(avcodec::AVPacketWrapper &packet);
 

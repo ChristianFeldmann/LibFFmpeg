@@ -36,7 +36,7 @@ namespace internal
 
 } // namespace internal
 
-AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext *                  codecContext,
+AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContext                   *codecContext,
                                              std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : codecContext(codecContext), ffmpegLibraries(ffmpegLibraries)
 {
@@ -53,7 +53,8 @@ AVCodecContextWrapper::AVCodecContextWrapper(std::shared_ptr<IFFmpegLibraries> f
     throw std::runtime_error("Provided ffmpeg libraries pointer must not be null");
 }
 
-AVCodecContextWrapper &AVCodecContextWrapper::operator=(AVCodecContextWrapper &&codecContextWrapper)
+AVCodecContextWrapper &
+AVCodecContextWrapper::operator=(AVCodecContextWrapper &&codecContextWrapper) noexcept
 {
   this->codecContext               = codecContextWrapper.codecContext;
   this->codecContextOwnership      = codecContextWrapper.codecContextOwnership;
@@ -62,12 +63,11 @@ AVCodecContextWrapper &AVCodecContextWrapper::operator=(AVCodecContextWrapper &&
   return *this;
 }
 
-AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContextWrapper &&codecContextWrapper)
+AVCodecContextWrapper::AVCodecContextWrapper(AVCodecContextWrapper &&codecContextWrapper) noexcept
+    : codecContext(codecContextWrapper.codecContext),
+      codecContextOwnership(codecContextWrapper.codecContextOwnership),
+      ffmpegLibraries(std::move(codecContextWrapper.ffmpegLibraries))
 {
-  this->codecContext               = codecContextWrapper.codecContext;
-  this->codecContextOwnership      = codecContextWrapper.codecContextOwnership;
-  codecContextWrapper.codecContext = nullptr;
-  this->ffmpegLibraries            = std::move(codecContextWrapper.ffmpegLibraries);
 }
 
 AVCodecContextWrapper::~AVCodecContextWrapper()
@@ -173,56 +173,56 @@ AVCodecContextWrapper::decodeVideo2(const avcodec::AVPacketWrapper &packet)
 
 avutil::MediaType AVCodecContextWrapper::getCodecType() const
 {
-  AVMediaType type;
+  AVMediaType type{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, type, codec_type);
   return avutil::toMediaType(type);
 }
 
 AVCodecID AVCodecContextWrapper::getCodecID() const
 {
-  AVCodecID id;
+  AVCodecID id{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, id, codec_id);
   return id;
 }
 
 avutil::PixelFormatDescriptor AVCodecContextWrapper::getPixelFormat() const
 {
-  AVPixelFormat avPixelFormat;
+  AVPixelFormat avPixelFormat{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avPixelFormat, pix_fmt);
   return avutil::convertAVPixFmtDescriptor(avPixelFormat, this->ffmpegLibraries);
 }
 
 Size AVCodecContextWrapper::getSize() const
 {
-  int width;
+  int width{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, width, width);
 
-  int height;
+  int height{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, height, height);
 
-  return {width, height};
+  return {.width = width, .height = height};
 }
 
 avutil::ColorSpace AVCodecContextWrapper::getColorspace() const
 {
-  AVColorSpace avColorspace;
+  AVColorSpace avColorspace{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, avColorspace, colorspace);
   return avutil::toColorspace(avColorspace);
 }
 
 Rational AVCodecContextWrapper::getTimeBase() const
 {
-  AVRational timebase;
+  AVRational timebase{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, timebase, time_base);
-  return Rational({timebase.num, timebase.den});
+  return fromAVRational(timebase);
 }
 
 ByteVector AVCodecContextWrapper::getExtradata() const
 {
-  uint8_t *extradata;
+  uint8_t *extradata{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, extradata, extradata);
 
-  int extradataSize;
+  int extradataSize{};
   CAST_AVCODEC_GET_MEMBER(AVCodecContext, this->codecContext, extradataSize, extradata_size);
 
   return copyDataFromRawArray(extradata, extradataSize);
