@@ -17,16 +17,16 @@ struct AVProfile_57
   const char *name;
 };
 
-typedef AVProfile_57 AVProfile_58;
-typedef AVProfile_57 AVProfile_59;
-typedef AVProfile_57 AVProfile_60;
+using AVProfile_58 = AVProfile_57;
+using AVProfile_59 = AVProfile_57;
+using AVProfile_60 = AVProfile_57;
 
 struct AVCodecDescriptor_56
 {
   AVCodecID          id;
   AVMediaType        type;
-  const char *       name;
-  const char *       long_name;
+  const char        *name;
+  const char        *long_name;
   int                props;
   const char *const *mime_types;
 };
@@ -35,17 +35,17 @@ struct AVCodecDescriptor_57
 {
   AVCodecID                  id;
   AVMediaType                type;
-  const char *               name;
-  const char *               long_name;
+  const char                *name;
+  const char                *long_name;
   int                        props;
-  const char *const *        mime_types;
+  const char *const         *mime_types;
   const struct AVProfile_57 *profiles;
 };
 
-typedef AVCodecDescriptor_57 AVCodecDescriptor_58;
-typedef AVCodecDescriptor_57 AVCodecDescriptor_59;
-typedef AVCodecDescriptor_57 AVCodecDescriptor_60;
-typedef AVCodecDescriptor_57 AVCodecDescriptor_61;
-typedef AVCodecDescriptor_57 AVCodecDescriptor_62;
+using AVCodecDescriptor_58 = AVCodecDescriptor_57;
+using AVCodecDescriptor_59 = AVCodecDescriptor_57;
+using AVCodecDescriptor_60 = AVCodecDescriptor_57;
+using AVCodecDescriptor_61 = AVCodecDescriptor_57;
+using AVCodecDescriptor_62 = AVCodecDescriptor_57;
 
 } // namespace libffmpeg::internal::avcodec

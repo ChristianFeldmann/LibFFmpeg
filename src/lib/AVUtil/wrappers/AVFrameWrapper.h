@@ -21,24 +21,25 @@ class AVFrameWrapper
 {
 public:
   AVFrameWrapper()                       = delete;
+  ~AVFrameWrapper()                      = default;
   AVFrameWrapper(const AVFrameWrapper &) = delete;
-  AVFrameWrapper(AVFrameWrapper &&frame);
+  AVFrameWrapper(AVFrameWrapper &&frame) noexcept;
   AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
-  AVFrameWrapper &operator=(AVFrameWrapper &&);
+  AVFrameWrapper &operator=(AVFrameWrapper &&) noexcept;
   AVFrameWrapper &operator=(const AVFrameWrapper &) = delete;
 
-  libffmpeg::internal::AVFrame *getFrame() const { return this->frame.get(); }
+  [[nodiscard]] libffmpeg::internal::AVFrame *getFrame() const { return this->frame.get(); }
 
-  ByteVector                         getData(int component) const;
-  int                                getLineSize(int component) const;
-  Size                               getSize() const;
-  std::optional<int64_t>             getPTS() const;
-  avutil::PictureType                getPictType() const;
-  bool                               isKeyFrame() const;
-  std::optional<AVDictionaryWrapper> getMetadata() const;
-  PixelFormatDescriptor              getPixelFormatDescriptor() const;
-  Rational                           getSampleAspectRatio() const;
+  [[nodiscard]] ByteVector                         getData(int component) const;
+  [[nodiscard]] int                                getLineSize(int component) const;
+  [[nodiscard]] Size                               getSize() const;
+  [[nodiscard]] std::optional<int64_t>             getPTS() const;
+  [[nodiscard]] avutil::PictureType                getPictType() const;
+  [[nodiscard]] bool                               isKeyFrame() const;
+  [[nodiscard]] std::optional<AVDictionaryWrapper> getMetadata() const;
+  [[nodiscard]] PixelFormatDescriptor              getPixelFormatDescriptor() const;
+  [[nodiscard]] Rational                           getSampleAspectRatio() const;
 
   explicit operator bool() const { return this->frame != nullptr; }
 
@@ -48,7 +49,7 @@ private:
   public:
     AVFrameDeleter() = default;
     AVFrameDeleter(const std::shared_ptr<IFFmpegLibraries> &ffmpegLibraries)
-        : ffmpegLibraries(ffmpegLibraries){};
+        : ffmpegLibraries(ffmpegLibraries) {};
     void operator()(libffmpeg::internal::AVFrame *frame) const noexcept;
 
   private:

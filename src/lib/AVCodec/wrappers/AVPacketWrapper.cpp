@@ -7,6 +7,7 @@
 #include "AVPacketWrapper.h"
 
 #include <common/Functions.h>
+#include <common/InternalTypes.h>
 
 #include "AVPacketWrapperInternal.h"
 #include "CastCodecClasses.h"
@@ -42,7 +43,7 @@ AVPacketWrapper::AVPacketWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibrari
   this->allocateNewPacket();
 }
 
-AVPacketWrapper::AVPacketWrapper(const ByteVector &                data,
+AVPacketWrapper::AVPacketWrapper(const ByteVector                 &data,
                                  std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : ffmpegLibraries(ffmpegLibraries)
 {
@@ -55,7 +56,7 @@ AVPacketWrapper::AVPacketWrapper(const ByteVector &                data,
   if (ret > 0)
     throw std::runtime_error("Error calling av_new_packet");
 
-  uint8_t *dataPointer;
+  uint8_t *dataPointer{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dataPointer, data);
   std::memcpy(dataPointer, data.data(), data.size());
 }
@@ -84,39 +85,38 @@ void AVPacketWrapper::setTimestamps(const int64_t dts, const int64_t pts)
 
 int AVPacketWrapper::getStreamIndex() const
 {
-  int index;
+  int index{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), index, stream_index);
   return index;
 }
 
 std::optional<int64_t> AVPacketWrapper::getPTS() const
 {
-  int64_t pts;
+  int64_t pts{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), pts, pts);
 
-  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
-  if (pts == AV_NOPTS_VALUE)
+  if (pts == internal::AV_NOPTS_VALUE)
     return {};
   return pts;
 }
 
 int64_t AVPacketWrapper::getDTS() const
 {
-  int64_t dts;
+  int64_t dts{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dts, dts);
   return dts;
 }
 
 int64_t AVPacketWrapper::getDuration() const
 {
-  int64_t duration;
+  int64_t duration{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), duration, duration);
   return duration;
 }
 
 AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 {
-  int flagsAsInt;
+  int flagsAsInt{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), flagsAsInt, flags);
 
   Flags flags;
@@ -133,7 +133,7 @@ AVPacketWrapper::Flags AVPacketWrapper::getFlags() const
 
 int AVPacketWrapper::getDataSize() const
 {
-  int dataSize;
+  int dataSize{};
   CAST_AVCODEC_GET_MEMBER(AVPacket, this->packet.get(), dataSize, size);
   return dataSize;
 }

@@ -22,27 +22,27 @@ class AVStreamWrapper
 {
 public:
   AVStreamWrapper() = delete;
-  AVStreamWrapper(libffmpeg::internal::AVStream *   stream,
+  AVStreamWrapper(libffmpeg::internal::AVStream    *stream,
                   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   explicit operator bool() const { return this->stream != nullptr; };
 
-  int                            getIndex() const;
-  avutil::MediaType              getCodecType() const;
-  libffmpeg::internal::AVCodecID getCodecID() const;
-  Rational                       getAverageFrameRate() const;
-  Rational                       getTimeBase() const;
-  Size                           getFrameSize() const;
-  avutil::ColorSpace             getColorspace() const;
-  avutil::PixelFormatDescriptor  getPixelFormat() const;
-  ByteVector                     getExtradata() const;
+  [[nodiscard]] int                            getIndex() const;
+  [[nodiscard]] avutil::MediaType              getCodecType() const;
+  [[nodiscard]] libffmpeg::internal::AVCodecID getCodecID() const;
+  [[nodiscard]] Rational                       getAverageFrameRate() const;
+  [[nodiscard]] Rational                       getTimeBase() const;
+  [[nodiscard]] Size                           getFrameSize() const;
+  [[nodiscard]] avutil::ColorSpace             getColorspace() const;
+  [[nodiscard]] avutil::PixelFormatDescriptor  getPixelFormat() const;
+  [[nodiscard]] ByteVector                     getExtradata() const;
 
-  std::optional<avcodec::CodecDescriptor>          getCodecDescriptor() const;
-  std::optional<avcodec::AVCodecParametersWrapper> getCodecParameters() const;
-  std::optional<avcodec::AVCodecContextWrapper>    getCodecContext() const;
+  [[nodiscard]] std::optional<avcodec::CodecDescriptor>          getCodecDescriptor() const;
+  [[nodiscard]] std::optional<avcodec::AVCodecParametersWrapper> getCodecParameters() const;
+  [[nodiscard]] std::optional<avcodec::AVCodecContextWrapper>    getCodecContext() const;
 
 private:
-  libffmpeg::internal::AVStream *   stream{};
+  libffmpeg::internal::AVStream    *stream{};
   std::shared_ptr<IFFmpegLibraries> ffmpegLibraries{};
 };
 

@@ -22,13 +22,13 @@ struct AVComponentDescriptor_54
 
 struct AVPixFmtDescriptor_54
 {
-  const char *             name;
+  const char              *name;
   uint8_t                  nb_components;
   uint8_t                  log2_chroma_w;
   uint8_t                  log2_chroma_h;
   uint8_t                  flags;
   AVComponentDescriptor_54 comp[4];
-  const char *             alias;
+  const char              *alias;
 };
 
 struct AVComponentDescriptor_55
@@ -45,20 +45,20 @@ struct AVComponentDescriptor_55
   int offset_plus1;
 };
 
-typedef AVComponentDescriptor_55 AVComponentDescriptor_56;
+using AVComponentDescriptor_56 = AVComponentDescriptor_55;
 
 struct AVPixFmtDescriptor_55
 {
-  const char *             name;
+  const char              *name;
   uint8_t                  nb_components;
   uint8_t                  log2_chroma_w;
   uint8_t                  log2_chroma_h;
   uint64_t                 flags;
   AVComponentDescriptor_55 comp[4];
-  const char *             alias;
+  const char              *alias;
 };
 
-typedef AVPixFmtDescriptor_55 AVPixFmtDescriptor_56;
+using AVPixFmtDescriptor_56 = AVPixFmtDescriptor_55;
 
 struct AVComponentDescriptor_57
 {
@@ -71,17 +71,17 @@ struct AVComponentDescriptor_57
 
 struct AVPixFmtDescriptor_57
 {
-  const char *             name;
+  const char              *name;
   uint8_t                  nb_components;
   uint8_t                  log2_chroma_w;
   uint8_t                  log2_chroma_h;
   uint64_t                 flags;
   AVComponentDescriptor_57 comp[4];
-  const char *             alias;
+  const char              *alias;
 };
 
-typedef AVPixFmtDescriptor_57 AVPixFmtDescriptor_58;
-typedef AVPixFmtDescriptor_57 AVPixFmtDescriptor_59;
-typedef AVPixFmtDescriptor_57 AVPixFmtDescriptor_60;
+using AVPixFmtDescriptor_58 = AVPixFmtDescriptor_57;
+using AVPixFmtDescriptor_59 = AVPixFmtDescriptor_57;
+using AVPixFmtDescriptor_60 = AVPixFmtDescriptor_57;
 
 } // namespace libffmpeg::internal::avutil

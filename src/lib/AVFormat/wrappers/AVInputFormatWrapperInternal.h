@@ -30,22 +30,22 @@ constexpr auto AVFMT_SEEK_TO_PTS   = 0x4000000;
 
 struct AVInputFormat_56
 {
-  const char *                    name;
-  const char *                    long_name;
+  const char                     *name;
+  const char                     *long_name;
   int                             flags;
-  const char *                    extensions;
+  const char                     *extensions;
   const struct AVCodecTag *const *codec_tag;
-  const AVClass *                 priv_class;
-  const char *                    mime_type;
+  const AVClass                  *priv_class;
+  const char                     *mime_type;
 
   // There is more but it is not part of the public ABI
 };
 
-typedef AVInputFormat_56 AVInputFormat_57;
-typedef AVInputFormat_56 AVInputFormat_58;
-typedef AVInputFormat_56 AVInputFormat_59;
-typedef AVInputFormat_56 AVInputFormat_60;
-typedef AVInputFormat_56 AVInputFormat_61;
-typedef AVInputFormat_56 AVInputFormat_62;
+using AVInputFormat_57 = AVInputFormat_56;
+using AVInputFormat_58 = AVInputFormat_56;
+using AVInputFormat_59 = AVInputFormat_56;
+using AVInputFormat_60 = AVInputFormat_56;
+using AVInputFormat_61 = AVInputFormat_56;
+using AVInputFormat_62 = AVInputFormat_56;
 
 } // namespace libffmpeg::internal::avformat

@@ -22,8 +22,8 @@ struct Version
 
   bool operator!=(const Version &other) const;
 
-  std::string   toString() const;
-  std::ostream &operator<<(std::ostream &stream) const;
+  [[nodiscard]] std::string   toString() const;
+  [[nodiscard]] std::ostream &operator<<(std::ostream &stream) const;
 
   static Version fromFFmpegVersion(const unsigned ffmpegVersion);
 
@@ -68,40 +68,41 @@ using VersionSwresample = Version;
 
 // These FFmpeg versions are supported. The numbers indicate the major versions.
 // The versions are sorted from newest to oldest, so that we try to open the newest ones first.
-constexpr auto SupportedFFmpegVersions = {LibraryVersions({FFmpegVersion::FFmpeg_8x,
-                                                           VersionAVFormat(62),
-                                                           VersionAVCodec(62),
-                                                           VersionAVUtil(60),
-                                                           VersionSwresample(6)}),
-                                          LibraryVersions({FFmpegVersion::FFmpeg_7x,
-                                                           VersionAVFormat(61),
-                                                           VersionAVCodec(61),
-                                                           VersionAVUtil(59),
-                                                           VersionSwresample(5)}),
-                                          LibraryVersions({FFmpegVersion::FFmpeg_6x,
-                                                           VersionAVFormat(60),
-                                                           VersionAVCodec(60),
-                                                           VersionAVUtil(58),
-                                                           VersionSwresample(4)}),
-                                          LibraryVersions({FFmpegVersion::FFmpeg_5x,
-                                                           VersionAVFormat(59),
-                                                           VersionAVCodec(59),
-                                                           VersionAVUtil(57),
-                                                           VersionSwresample(4)}),
-                                          LibraryVersions({FFmpegVersion::FFmpeg_4x,
-                                                           VersionAVFormat(58),
-                                                           VersionAVCodec(58),
-                                                           VersionAVUtil(56),
-                                                           VersionSwresample(3)}),
-                                          LibraryVersions({FFmpegVersion::FFmpeg_3x,
-                                                           VersionAVFormat(57),
-                                                           VersionAVCodec(57),
-                                                           VersionAVUtil(55),
-                                                           VersionSwresample(2)}),
-                                          LibraryVersions({FFmpegVersion::FFmpeg_2x,
-                                                           VersionAVFormat(56),
-                                                           VersionAVCodec(56),
-                                                           VersionAVUtil(54),
-                                                           VersionSwresample(1)})};
+constexpr auto SupportedFFmpegVersions = {
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_8x,
+                     .avformat      = VersionAVFormat(62),
+                     .avcodec       = VersionAVCodec(62),
+                     .avutil        = VersionAVUtil(60),
+                     .swresample    = VersionSwresample(6)}),
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_7x,
+                     .avformat      = VersionAVFormat(61),
+                     .avcodec       = VersionAVCodec(61),
+                     .avutil        = VersionAVUtil(59),
+                     .swresample    = VersionSwresample(5)}),
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_6x,
+                     .avformat      = VersionAVFormat(60),
+                     .avcodec       = VersionAVCodec(60),
+                     .avutil        = VersionAVUtil(58),
+                     .swresample    = VersionSwresample(4)}),
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_5x,
+                     .avformat      = VersionAVFormat(59),
+                     .avcodec       = VersionAVCodec(59),
+                     .avutil        = VersionAVUtil(57),
+                     .swresample    = VersionSwresample(4)}),
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_4x,
+                     .avformat      = VersionAVFormat(58),
+                     .avcodec       = VersionAVCodec(58),
+                     .avutil        = VersionAVUtil(56),
+                     .swresample    = VersionSwresample(3)}),
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_3x,
+                     .avformat      = VersionAVFormat(57),
+                     .avcodec       = VersionAVCodec(57),
+                     .avutil        = VersionAVUtil(55),
+                     .swresample    = VersionSwresample(2)}),
+    LibraryVersions({.ffmpegVersion = FFmpegVersion::FFmpeg_2x,
+                     .avformat      = VersionAVFormat(56),
+                     .avcodec       = VersionAVCodec(56),
+                     .avutil        = VersionAVUtil(54),
+                     .swresample    = VersionSwresample(1)})};
 
 } // namespace libffmpeg

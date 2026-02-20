@@ -43,11 +43,11 @@ public:
   AVInputFormatWrapper(libffmpeg::internal::AVInputFormat *inputFormat,
                        std::shared_ptr<IFFmpegLibraries>   ffmpegLibraries);
 
-  std::string        getName() const;
-  std::string        getLongName() const;
-  AVInputFormatFlags getFlags() const;
-  std::string        getExtensions() const;
-  std::string        getMimeType() const;
+  [[nodiscard]] std::string        getName() const;
+  [[nodiscard]] std::string        getLongName() const;
+  [[nodiscard]] AVInputFormatFlags getFlags() const;
+  [[nodiscard]] std::string        getExtensions() const;
+  [[nodiscard]] std::string        getMimeType() const;
 
   explicit operator bool() const { return this->inputFormat != nullptr; };
 

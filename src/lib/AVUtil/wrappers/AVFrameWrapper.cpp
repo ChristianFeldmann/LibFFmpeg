@@ -9,6 +9,7 @@
 #include "AVFrameWrapperInternal.h"
 #include "CastUtilClasses.h"
 
+#include <common/Functions.h>
 #include <common/InternalTypes.h>
 
 #include <stdexcept>
@@ -58,28 +59,27 @@ AVFrameWrapper::AVFrameWrapper(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries
     throw std::runtime_error("Error allocating AVFrame");
 }
 
-AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&other)
+AVFrameWrapper::AVFrameWrapper(AVFrameWrapper &&other) noexcept
+    : frame(std::move(other.frame)), ffmpegLibraries(std::move(other.ffmpegLibraries))
 {
-  this->frame           = std::move(other.frame);
-  this->ffmpegLibraries = std::move(other.ffmpegLibraries);
 }
 
-AVFrameWrapper &AVFrameWrapper::operator=(AVFrameWrapper &&other)
+AVFrameWrapper &AVFrameWrapper::operator=(AVFrameWrapper &&other) noexcept
 {
   this->frame           = std::move(other.frame);
   this->ffmpegLibraries = std::move(other.ffmpegLibraries);
   return *this;
 }
 
-ByteVector AVFrameWrapper::getData(int component) const
+ByteVector AVFrameWrapper::getData(const int component) const
 {
-  if (component < 0 || component > AV_NUM_DATA_POINTERS)
+  if (component < 0 || component > internal::AV_NUM_DATA_POINTERS)
     return {};
 
-  uint8_t *dataPointer;
+  uint8_t *dataPointer{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), dataPointer, data[component]);
 
-  int linesize;
+  int linesize{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), linesize, linesize[component]);
 
   const auto componentSize =
@@ -89,22 +89,22 @@ ByteVector AVFrameWrapper::getData(int component) const
   return copyFrameDataFromRawArray(dataPointer, componentSize, linesize);
 }
 
-int AVFrameWrapper::getLineSize(int component) const
+int AVFrameWrapper::getLineSize(const int component) const
 {
-  if (component < 0 || component > AV_NUM_DATA_POINTERS)
+  if (component < 0 || component > internal::AV_NUM_DATA_POINTERS)
     return {};
 
-  int linesize;
+  int linesize{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), linesize, linesize[component]);
   return linesize;
 }
 
 Size AVFrameWrapper::getSize() const
 {
-  int width;
+  int width{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), width, width);
 
-  int height;
+  int height{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), height, height);
 
   return {width, height};
@@ -112,18 +112,17 @@ Size AVFrameWrapper::getSize() const
 
 std::optional<int64_t> AVFrameWrapper::getPTS() const
 {
-  int64_t pts;
+  int64_t pts{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), pts, pts);
 
-  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
-  if (pts == AV_NOPTS_VALUE)
+  if (pts == internal::AV_NOPTS_VALUE)
     return {};
   return pts;
 }
 
 avutil::PictureType AVFrameWrapper::getPictType() const
 {
-  AVPictureType pictureType;
+  AVPictureType pictureType{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), pictureType, pict_type);
   return libffmpeg::avutil::toPictureType(pictureType);
 }
@@ -186,7 +185,7 @@ std::optional<AVDictionaryWrapper> AVFrameWrapper::getMetadata() const
 
 PixelFormatDescriptor AVFrameWrapper::getPixelFormatDescriptor() const
 {
-  int format;
+  int format{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), format, format);
 
   return convertAVPixFmtDescriptor(static_cast<libffmpeg::internal::AVPixelFormat>(format),
@@ -195,10 +194,10 @@ PixelFormatDescriptor AVFrameWrapper::getPixelFormatDescriptor() const
 
 Rational AVFrameWrapper::getSampleAspectRatio() const
 {
-  AVRational sampleAspectRatio;
+  AVRational sampleAspectRatio{};
   CAST_AVUTIL_GET_MEMBER(AVFrame, this->frame.get(), sampleAspectRatio, sample_aspect_ratio);
 
-  return Rational({sampleAspectRatio.num, sampleAspectRatio.den});
+  return fromAVRational(sampleAspectRatio);
 }
 
 void AVFrameWrapper::AVFrameDeleter::operator()(AVFrame *frame) const noexcept

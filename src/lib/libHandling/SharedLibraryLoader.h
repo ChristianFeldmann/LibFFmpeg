@@ -37,10 +37,10 @@ public:
   bool load(const std::string &libraryName);
   bool load(const Path &absolutePathToLibraryFile);
 
-  auto getLibraryPath() const { return this->libraryPath; }
+  [[nodiscard]] auto getLibraryPath() const { return this->libraryPath; }
 
-  bool isLoaded() const { return this->libHandle != nullptr; }
-       operator bool() const { return this->isLoaded(); }
+  [[nodiscard]] bool isLoaded() const { return this->libHandle != nullptr; }
+                     operator bool() const { return this->isLoaded(); }
 
   template <typename T>
   void tryResolveFunction(std::function<T> &function, const std::string_view functionName) const

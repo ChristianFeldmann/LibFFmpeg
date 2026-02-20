@@ -32,7 +32,7 @@ public:
     EndOfBitstream,
     Error
   };
-  State getDecoderState() const { return this->decoderState; }
+  [[nodiscard]] State getDecoderState() const { return this->decoderState; }
 
   enum class SendPacketResult
   {

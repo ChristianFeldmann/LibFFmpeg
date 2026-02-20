@@ -10,6 +10,7 @@
 
 #include "Formatting.h"
 
+#include <array>
 #include <cstddef>
 #include <filesystem>
 #include <iomanip>
@@ -80,7 +81,7 @@ std::optional<CompareFile> parseFileNameAndStreamIndex(const std::string &variab
   {
     file.streamIndex = std::stoi(variable.substr(columnPos + 1));
   }
-  catch (const std::exception &e)
+  catch (const std::exception &)
   {
     return {};
   }
@@ -106,8 +107,8 @@ Demuxer openInput(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries, const std::
   return demuxer;
 }
 
-ComparisonMode checkStreamsAndGetComparMode(Demuxer & demuxer1,
-                                            Demuxer & demuxer2,
+ComparisonMode checkStreamsAndGetComparMode(Demuxer  &demuxer1,
+                                            Demuxer  &demuxer2,
                                             const int streamIndex1,
                                             const int streamIndex2)
 {
@@ -138,14 +139,14 @@ ComparisonMode checkStreamsAndGetComparMode(Demuxer & demuxer1,
                              codecDescriptor1->codecName + " and name 2 " +
                              codecDescriptor2->codecName);
 
-  if (codecDescriptor1->codecName.find("pcm") == 0)
+  if (codecDescriptor1->codecName.starts_with("pcm"))
     return ComparisonMode::Data;
   return ComparisonMode::Packets;
 }
 
 bool compareData(const ByteVector &data1, const ByteVector &data2)
 {
-  return std::equal(data1.begin(), data1.end(), data2.begin(), data2.end());
+  return std::ranges::equal(data1, data2);
 }
 
 void compareQueuePacketsAndDrain(PacketQueue &queue1, PacketQueue &queue2)
@@ -157,9 +158,6 @@ void compareQueuePacketsAndDrain(PacketQueue &queue1, PacketQueue &queue2)
 
     queue1.pop();
     queue2.pop();
-
-    const auto streamIndex1 = packet1.getStreamIndex();
-    const auto streamIndex2 = packet2.getStreamIndex();
 
     static int packetCount = -1;
     ++packetCount;
@@ -333,12 +331,13 @@ int main(int argc, char const *argv[])
   const auto compareMode = checkStreamsAndGetComparMode(
       demuxer1, demuxer2, settings->file1.streamIndex, settings->file2.streamIndex);
 
-  PacketQueue packetQueue[2];
-  DataQueue   dataQueue[2];
+  std::array<PacketQueue, 2> packetQueue;
+  std::array<DataQueue, 2>   dataQueue;
 
   auto addPacketToQueue = [&packetQueue, &dataQueue, compareMode](avcodec::AVPacketWrapper &&packet,
                                                                   const int streamIndex,
-                                                                  const int queueIndex) {
+                                                                  const int queueIndex)
+  {
     const auto packetStreamIndex = packet.getStreamIndex();
     if (packetStreamIndex != streamIndex)
       return;

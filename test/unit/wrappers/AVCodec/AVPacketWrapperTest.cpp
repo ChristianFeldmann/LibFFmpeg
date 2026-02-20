@@ -51,9 +51,8 @@ public:
   {
     this->avcodec.av_packet_alloc = [this]() { return this->allocatePacket(); };
     this->avcodec.av_packet_free  = [this](AVPacket **packet) { this->freePacket(packet); };
-    this->avcodec.av_new_packet   = [this](AVPacket *packet, int dataSize) {
-      return this->newPacket(packet, dataSize);
-    };
+    this->avcodec.av_new_packet   = [this](AVPacket *packet, int dataSize)
+    { return this->newPacket(packet, dataSize); };
     if constexpr (std::is_same_v<AVPacketType, libffmpeg::internal::avcodec::AVPacket_56>)
     {
       this->avcodec.av_init_packet = [this](AVPacket *packet) { this->initPacket(packet); };
@@ -112,7 +111,7 @@ public:
   // AVCodec major version 56 only
   void initPacket(AVPacket *packet)
   {
-    auto castPacket          = reinterpret_cast<libffmpeg::internal::avcodec::AVPacket_56 *>(packet);
+    auto castPacket = reinterpret_cast<libffmpeg::internal::avcodec::AVPacket_56 *>(packet);
     castPacket->stream_index = TEST_STREAM_INDEX;
     castPacket->pts          = TEST_PTS;
     castPacket->dts          = TEST_DTS;
@@ -212,15 +211,14 @@ template <FFmpegVersion V> void runTimestampTest()
   AVPacketWrapper packet(ffmpegLibraries);
   checkPacketForExpectedDefaultValues(packet);
 
-  constexpr int64_t PTS_TEST       = 890;
-  constexpr int64_t AV_NOPTS_VALUE = 0x8000000000000000;
-  constexpr int64_t DTS_TEST       = 8200;
+  constexpr int64_t PTS_TEST = 890;
+  constexpr int64_t DTS_TEST = 8200;
 
   packet.setTimestamps(DTS_TEST, PTS_TEST);
   EXPECT_EQ(packet.getPTS(), PTS_TEST);
   EXPECT_EQ(packet.getDTS(), DTS_TEST);
 
-  packet.setTimestamps(DTS_TEST, AV_NOPTS_VALUE);
+  packet.setTimestamps(DTS_TEST, internal::AV_NOPTS_VALUE);
   EXPECT_FALSE(packet.getPTS());
 }
 

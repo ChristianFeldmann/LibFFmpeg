@@ -14,26 +14,26 @@ namespace libffmpeg::internal::avutil
 struct AVFrameSideData_54
 {
   AVFrameSideDataType type;
-  uint8_t *           data;
+  uint8_t            *data;
   int                 size;
-  AVDictionary *      metadata;
-  AVBufferRef *       buf;
+  AVDictionary       *metadata;
+  AVBufferRef        *buf;
 };
 
-typedef AVFrameSideData_54 AVFrameSideData_55;
-typedef AVFrameSideData_54 AVFrameSideData_56;
+using AVFrameSideData_55 = AVFrameSideData_54;
+using AVFrameSideData_56 = AVFrameSideData_54;
 
 struct AVFrameSideData_57
 {
   AVFrameSideDataType type;
-  uint8_t *           data;
+  uint8_t            *data;
   size_t              size;
-  AVDictionary *      metadata;
-  AVBufferRef *       buf;
+  AVDictionary       *metadata;
+  AVBufferRef        *buf;
 };
 
-typedef AVFrameSideData_57 AVFrameSideData_58;
-typedef AVFrameSideData_57 AVFrameSideData_59;
-typedef AVFrameSideData_57 AVFrameSideData_60;
+using AVFrameSideData_58 = AVFrameSideData_57;
+using AVFrameSideData_59 = AVFrameSideData_57;
+using AVFrameSideData_60 = AVFrameSideData_57;
 
 } // namespace libffmpeg::internal::avutil

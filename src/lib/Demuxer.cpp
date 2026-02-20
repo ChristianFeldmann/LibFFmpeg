@@ -39,10 +39,20 @@ Demuxer::Demuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
   this->ffmpegLibraries = ffmpegLibraries;
 }
 
-Demuxer::Demuxer(Demuxer &&demuxer)
+Demuxer::Demuxer(Demuxer &&demuxer) noexcept
     : ffmpegLibraries(std::move(demuxer.ffmpegLibraries)),
       formatContext(std::move(demuxer.formatContext))
 {
+}
+
+Demuxer &Demuxer::operator=(Demuxer &&demuxer) noexcept
+{
+  if (this != &demuxer)
+  {
+    this->ffmpegLibraries = std::move(demuxer.ffmpegLibraries);
+    this->formatContext   = std::move(demuxer.formatContext);
+  }
+  return *this;
 }
 
 bool Demuxer::openFile(const Path &path)

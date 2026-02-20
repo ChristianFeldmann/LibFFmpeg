@@ -30,10 +30,11 @@ struct LibraryInfo
 class IFFmpegLibraries
 {
 public:
-  virtual ~IFFmpegLibraries(){};
+  IFFmpegLibraries()          = default;
+  virtual ~IFFmpegLibraries() = default;
 
-  virtual std::vector<LibraryInfo> getLibrariesInfo() const    = 0;
-  virtual LibraryVersions          getLibrariesVersion() const = 0;
+  [[nodiscard]] virtual std::vector<LibraryInfo> getLibrariesInfo() const    = 0;
+  [[nodiscard]] virtual LibraryVersions          getLibrariesVersion() const = 0;
 
   virtual void log(const LogLevel logLevel, const std::string &message) const = 0;
 

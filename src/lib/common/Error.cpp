@@ -60,10 +60,9 @@ ReturnCode toReturnCode(const int returnValue)
   if (returnValue >= 0)
     return ReturnCode::Ok;
 
-  const auto result = std::find_if(AVERRORToReturnCodeMap.begin(),
-                                   AVERRORToReturnCodeMap.end(),
-                                   [returnValue](AVErrorToReturnCode errorToReturnCode)
-                                   { return errorToReturnCode.first == returnValue; });
+  const auto result = std::ranges::find_if(AVERRORToReturnCodeMap,
+                                           [returnValue](AVErrorToReturnCode errorToReturnCode)
+                                           { return errorToReturnCode.first == returnValue; });
   if (result != AVERRORToReturnCodeMap.end())
     return result->second;
 
@@ -75,10 +74,9 @@ int toAVError(const ReturnCode returnCode)
   if (returnCode == ReturnCode::Ok)
     return 0;
 
-  const auto result = std::find_if(AVERRORToReturnCodeMap.begin(),
-                                   AVERRORToReturnCodeMap.end(),
-                                   [returnCode](AVErrorToReturnCode errorToReturnCode)
-                                   { return errorToReturnCode.second == returnCode; });
+  const auto result = std::ranges::find_if(AVERRORToReturnCodeMap,
+                                           [returnCode](AVErrorToReturnCode errorToReturnCode)
+                                           { return errorToReturnCode.second == returnCode; });
   if (result != AVERRORToReturnCodeMap.end())
     return result->first;
 

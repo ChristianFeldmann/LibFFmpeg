@@ -17,9 +17,12 @@ namespace libffmpeg
 class Demuxer
 {
 public:
-  Demuxer()                = delete;
-  Demuxer(const Demuxer &) = delete;
-  Demuxer(Demuxer &&demuxer);
+  Demuxer()                           = delete;
+  ~Demuxer()                          = default;
+  Demuxer(const Demuxer &)            = delete;
+  Demuxer &operator=(const Demuxer &) = delete;
+  Demuxer(Demuxer &&demuxer) noexcept;
+  Demuxer &operator=(Demuxer &&) noexcept;
   Demuxer(std::shared_ptr<IFFmpegLibraries> ffmpegLibraries);
 
   bool openFile(const Path &path);

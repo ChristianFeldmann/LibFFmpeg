@@ -38,11 +38,11 @@ TEST(LibrariesLoading, LoadLibrariesAndCheckLoggingCallback)
        "Loading of ffmpeg libraries successfully finished. FFmpeg is ready to be used."}));
 
   EXPECT_FALSE(
-      libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnectiong av logging callback"}));
+      libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnecting av logging callback"}));
 
   libsAndLogs.libraries.reset();
 
-  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnectiong av logging callback"}));
+  EXPECT_TRUE(libsAndLogs.containsLogEntry({LogLevel::Info, "Disconnecting av logging callback"}));
 }
 
 } // namespace libffmpeg::test::integration

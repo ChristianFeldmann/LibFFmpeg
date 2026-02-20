@@ -20,7 +20,7 @@ static std::string getNameWithFFmpegVersion(const testing::TestParamInfo<Library
 {
   const auto version = info.param.ffmpegVersion;
   auto       name    = "FFmpeg_" + ffmpegVersionMapper.getName(version);
-  std::replace(name.begin(), name.end(), '.', '_');
+  std::ranges::replace(name, '.', '_');
   return name;
 }
 

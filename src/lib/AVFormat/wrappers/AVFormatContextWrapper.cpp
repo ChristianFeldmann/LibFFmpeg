@@ -31,11 +31,19 @@ AVFormatContextWrapper::AVFormatContextWrapper(std::shared_ptr<IFFmpegLibraries>
   this->ffmpegLibraries = ffmpegLibraries;
 }
 
-AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContextWrapper &&wrapper)
+AVFormatContextWrapper::AVFormatContextWrapper(AVFormatContextWrapper &&wrapper) noexcept
+    : formatContext(wrapper.formatContext), ffmpegLibraries(std::move(wrapper.ffmpegLibraries))
 {
-  this->formatContext   = wrapper.formatContext;
-  wrapper.formatContext = nullptr;
-  this->ffmpegLibraries = std::move(wrapper.ffmpegLibraries);
+}
+
+AVFormatContextWrapper &AVFormatContextWrapper::operator=(AVFormatContextWrapper &&wrapper) noexcept
+{
+  if (this != &wrapper)
+  {
+    this->formatContext   = wrapper.formatContext;
+    this->ffmpegLibraries = std::move(wrapper.ffmpegLibraries);
+  }
+  return *this;
 }
 
 AVFormatContextWrapper::~AVFormatContextWrapper()
@@ -113,14 +121,14 @@ AVStreamWrapper AVFormatContextWrapper::getStream(int idx) const
 
   AVStream *streamPointer{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, streamPointer, streams[idx]);
-  return AVStreamWrapper(streamPointer, this->ffmpegLibraries);
+  return {streamPointer, this->ffmpegLibraries};
 }
 
 AVInputFormatWrapper AVFormatContextWrapper::getInputFormat() const
 {
   AVInputFormat *inputFormatPointer{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, inputFormatPointer, iformat);
-  return AVInputFormatWrapper(inputFormatPointer, this->ffmpegLibraries);
+  return {inputFormatPointer, this->ffmpegLibraries};
 }
 
 int64_t AVFormatContextWrapper::getStartTime() const
@@ -141,7 +149,7 @@ avutil::AVDictionaryWrapper AVFormatContextWrapper::getMetadata() const
 {
   AVDictionary *metadata{};
   CAST_AVFORMAT_GET_MEMBER(AVFormatContext, this->formatContext, metadata, metadata);
-  return avutil::AVDictionaryWrapper(metadata, this->ffmpegLibraries);
+  return {metadata, this->ffmpegLibraries};
 }
 
 bool AVFormatContextWrapper::getNextPacket(avcodec::AVPacketWrapper &packet)

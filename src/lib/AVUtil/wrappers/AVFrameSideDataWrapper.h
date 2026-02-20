@@ -22,7 +22,7 @@ public:
   AVFrameSideDataWrapper(libffmpeg::internal::AVFrameSideData *sideData,
                          std::shared_ptr<IFFmpegLibraries>     ffmpegLibraries);
 
-  std::vector<MotionVector> getMotionVectors() const;
+  [[nodiscard]] std::vector<MotionVector> getMotionVectors() const;
 
   explicit operator bool() const { return sideData != nullptr; }
 

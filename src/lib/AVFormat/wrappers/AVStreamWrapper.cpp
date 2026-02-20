@@ -7,6 +7,7 @@
 #include "AVStreamWrapper.h"
 
 #include <AVCodec/wrappers/AVPacketWrapper.h>
+#include <common/Functions.h>
 
 #include "AVStreamWrapperInternal.h"
 #include "CastFormatClasses.h"
@@ -45,7 +46,7 @@ AVStreamWrapper::AVStreamWrapper(AVStream                         *stream,
 
 int AVStreamWrapper::getIndex() const
 {
-  int index;
+  int index{};
   CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, index, index);
   return index;
 }
@@ -74,18 +75,18 @@ AVCodecID AVStreamWrapper::getCodecID() const
 
 Rational AVStreamWrapper::getAverageFrameRate() const
 {
-  AVRational frameRate;
+  AVRational frameRate{};
   CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, frameRate, avg_frame_rate);
-  return {frameRate.num, frameRate.den};
+  return fromAVRational(frameRate);
 }
 
 Rational AVStreamWrapper::getTimeBase() const
 {
-  AVRational timebase;
+  AVRational timebase{};
   CAST_AVFORMAT_GET_MEMBER(AVStream, this->stream, timebase, time_base);
 
   if (timebase.den != 0 && timebase.num != 0)
-    return {timebase.num, timebase.den};
+    return fromAVRational(timebase);
 
   // The stream time_base seems not to be set. Try the time_base in the codec.
   if (const auto codecContext = this->getCodecContext())
