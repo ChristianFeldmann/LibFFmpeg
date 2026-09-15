@@ -11,6 +11,7 @@ jobs:
     strategy:
       matrix:
         ffmpeg: [
+                 {version: 9.0.1, avcodec: 63, avformat: 63, avutil: 61, swresample: 7},
                  {version: 8.0.1, avcodec: 62, avformat: 62, avutil: 60, swresample: 6},
                  {version: 7.0.3, avcodec: 61, avformat: 61, avutil: 59, swresample: 5},
                  {version: 6.1.4, avcodec: 60, avformat: 60, avutil: 58, swresample: 4},
@@ -20,16 +21,16 @@ jobs:
                  {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
                  ]
         system: [
-                 {os: windows-2025,   msystem: mingw64,    architecture: x86_64}, 
-                 {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
+                 {os: windows-2025-vs2026,   msystem: mingw64,    architecture: x86_64}, 
+                 {os: windows-11-vs2026-arm, msystem: clangarm64, architecture: aarch64}
                  ]
         exclude:
           # I did not manage to compile the older ffmpeg versions an windows ARM
           # Let me know if you manage to do so.
           - ffmpeg: {version: 2.8.22, avcodec: 56, avformat: 56, avutil: 54, swresample: 1}
-            system: {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
+            system: {os: windows-11-vs2026-arm, msystem: clangarm64, architecture: aarch64}
           - ffmpeg: {version: 3.4.14, avcodec: 57, avformat: 57, avutil: 55, swresample: 2}
-            system: {os: windows-11-arm, msystem: clangarm64, architecture: aarch64}
+            system: {os: windows-11-vs2026-arm, msystem: clangarm64, architecture: aarch64}
     
     runs-on: ${{ matrix.system.os }}
 
@@ -42,10 +43,10 @@ jobs:
         pacboy: make:p pkgconf:p binutils:p diffutils:p nasm:p yasm:p gcc:p
 
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Checkout FFmpeg
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: FFmpeg/FFmpeg
         path: FFmpeg
