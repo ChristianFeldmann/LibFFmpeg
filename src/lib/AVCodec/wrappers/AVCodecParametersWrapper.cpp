@@ -156,6 +156,11 @@ ChannelLayout AVCodecParametersWrapper::getChannelLayout() const
     const auto p = reinterpret_cast<AVCodecParameters_61 *>(this->codecParameters);
     return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
   }
+  else if (version == 63)
+  {
+    const auto p = reinterpret_cast<AVCodecParameters_63 *>(this->codecParameters);
+    return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
+  }
 
   throw std::runtime_error("Invalid library version");
 }
