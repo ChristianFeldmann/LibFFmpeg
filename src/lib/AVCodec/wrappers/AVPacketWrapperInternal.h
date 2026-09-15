@@ -72,5 +72,6 @@ struct AVPacket_59
 using AVPacket_60 = AVPacket_59;
 using AVPacket_61 = AVPacket_59;
 using AVPacket_62 = AVPacket_59;
+using AVPacket_63 = AVPacket_59;
 
 } // namespace libffmpeg::internal::avcodec

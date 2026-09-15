@@ -27,6 +27,7 @@ using libffmpeg::internal::avformat::AVInputFormat_59;
 using libffmpeg::internal::avformat::AVInputFormat_60;
 using libffmpeg::internal::avformat::AVInputFormat_61;
 using libffmpeg::internal::avformat::AVInputFormat_62;
+using libffmpeg::internal::avformat::AVInputFormat_63;
 
 } // namespace
 
@@ -88,7 +89,7 @@ bool operator==(const AVInputFormatFlags &lhs, const AVInputFormatFlags &rhs)
           lhs.tsNegative == rhs.tsNegative && lhs.seekToPTS == rhs.seekToPTS);
 }
 
-AVInputFormatWrapper::AVInputFormatWrapper(AVInputFormat *                   inputFormat,
+AVInputFormatWrapper::AVInputFormatWrapper(AVInputFormat                    *inputFormat,
                                            std::shared_ptr<IFFmpegLibraries> ffmpegLibraries)
     : inputFormat(inputFormat), ffmpegLibraries(ffmpegLibraries)
 {
@@ -118,24 +119,25 @@ AVInputFormatFlags AVInputFormatWrapper::getFlags() const
   CAST_AVFORMAT_GET_MEMBER(AVInputFormat, this->inputFormat, rawFlags, flags);
 
   AVInputFormatFlags flags;
-  flags.noFile        = (rawFlags & internal::avformat::AVFMT_NOFILE);
-  flags.needNumber    = (rawFlags & internal::avformat::AVFMT_NEEDNUMBER);
-  flags.experimental  = (rawFlags & internal::avformat::AVFMT_EXPERIMENTAL);
-  flags.showIDs       = (rawFlags & internal::avformat::AVFMT_SHOW_IDS);
-  flags.globalHeaders = (rawFlags & internal::avformat::AVFMT_GLOBALHEADER);
-  flags.noTiemstamps  = (rawFlags & internal::avformat::AVFMT_NOTIMESTAMPS);
-  flags.genericIndex  = (rawFlags & internal::avformat::AVFMT_GENERIC_INDEX);
-  flags.tsDiscont     = (rawFlags & internal::avformat::AVFMT_TS_DISCONT);
-  flags.variableFPS   = (rawFlags & internal::avformat::AVFMT_VARIABLE_FPS);
-  flags.noDimensions  = (rawFlags & internal::avformat::AVFMT_NODIMENSIONS);
-  flags.noStreams     = (rawFlags & internal::avformat::AVFMT_NOSTREAMS);
-  flags.noBinSearch   = (rawFlags & internal::avformat::AVFMT_NOBINSEARCH);
-  flags.noGenSearch   = (rawFlags & internal::avformat::AVFMT_NOGENSEARCH);
-  flags.noByteSeek    = (rawFlags & internal::avformat::AVFMT_NO_BYTE_SEEK);
-  flags.allowFlush    = (rawFlags & internal::avformat::AVFMT_ALLOW_FLUSH);
-  flags.tsNonStrict   = (rawFlags & internal::avformat::AVFMT_TS_NONSTRICT);
-  flags.tsNegative    = (rawFlags & internal::avformat::AVFMT_TS_NEGATIVE);
-  flags.seekToPTS     = (rawFlags & internal::avformat::AVFMT_SEEK_TO_PTS);
+  flags.noFile         = (rawFlags & internal::avformat::AVFMT_NOFILE);
+  flags.needNumber     = (rawFlags & internal::avformat::AVFMT_NEEDNUMBER);
+  flags.experimental   = (rawFlags & internal::avformat::AVFMT_EXPERIMENTAL);
+  flags.showIDs        = (rawFlags & internal::avformat::AVFMT_SHOW_IDS);
+  flags.globalHeaders  = (rawFlags & internal::avformat::AVFMT_GLOBALHEADER);
+  flags.noTiemstamps   = (rawFlags & internal::avformat::AVFMT_NOTIMESTAMPS);
+  flags.genericIndex   = (rawFlags & internal::avformat::AVFMT_GENERIC_INDEX);
+  flags.tsDiscont      = (rawFlags & internal::avformat::AVFMT_TS_DISCONT);
+  flags.variableFPS    = (rawFlags & internal::avformat::AVFMT_VARIABLE_FPS);
+  flags.noDimensions   = (rawFlags & internal::avformat::AVFMT_NODIMENSIONS);
+  flags.noStreams      = (rawFlags & internal::avformat::AVFMT_NOSTREAMS);
+  flags.noBinSearch    = (rawFlags & internal::avformat::AVFMT_NOBINSEARCH);
+  flags.noGenSearch    = (rawFlags & internal::avformat::AVFMT_NOGENSEARCH);
+  flags.noByteSeek     = (rawFlags & internal::avformat::AVFMT_NO_BYTE_SEEK);
+  flags.allowFlush     = (rawFlags & internal::avformat::AVFMT_ALLOW_FLUSH);
+  flags.tsNonStrict    = (rawFlags & internal::avformat::AVFMT_TS_NONSTRICT);
+  flags.tsNegative     = (rawFlags & internal::avformat::AVFMT_TS_NEGATIVE);
+  flags.fixedFrameSize = (rawFlags & internal::avformat::AVFMT_FIXED_FRAMESIZE);
+  flags.seekToPTS      = (rawFlags & internal::avformat::AVFMT_SEEK_TO_PTS);
   return flags;
 }
 

@@ -82,6 +82,14 @@ std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedL
                                   log);
     functions.newParametersAPIAvailable = true;
   }
+  if (avCodecVersion.major >= 62)
+  {
+    lib.tryResolveFunction(functions.avcodec_get_supported_config, "avcodec_get_supported_config");
+    checkForMissingFunctionAndLog(functions.avcodec_get_supported_config,
+                                  "avcodec_get_supported_config",
+                                  missingFunctions,
+                                  log);
+  }
   else
   {
     log(LogLevel::Debug,

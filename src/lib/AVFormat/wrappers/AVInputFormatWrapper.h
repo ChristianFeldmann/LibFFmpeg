@@ -30,6 +30,7 @@ struct AVInputFormatFlags
   bool allowFlush{};
   bool tsNonStrict{};
   bool tsNegative{};
+  bool fixedFrameSize{};
   bool seekToPTS{};
 };
 

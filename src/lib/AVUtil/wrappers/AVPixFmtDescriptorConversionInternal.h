@@ -83,5 +83,6 @@ struct AVPixFmtDescriptor_57
 using AVPixFmtDescriptor_58 = AVPixFmtDescriptor_57;
 using AVPixFmtDescriptor_59 = AVPixFmtDescriptor_57;
 using AVPixFmtDescriptor_60 = AVPixFmtDescriptor_57;
+using AVPixFmtDescriptor_61 = AVPixFmtDescriptor_57;
 
 } // namespace libffmpeg::internal::avutil

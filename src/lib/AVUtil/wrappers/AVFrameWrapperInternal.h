@@ -174,4 +174,6 @@ struct AVFrame_60
   // Actually, there is more here, but the variables above are the only we need.
 };
 
+using AVFrame_61 = AVFrame_60;
+
 } // namespace libffmpeg::internal::avutil

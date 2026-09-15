@@ -27,6 +27,8 @@ namespace libffmpeg
       testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_7x>();                                     \
     else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_8x)                         \
       testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_8x>();                                     \
+    else if (version.ffmpegVersion == libffmpeg::FFmpegVersion::FFmpeg_9x)                         \
+      testFunctionName<libffmpeg::FFmpegVersion::FFmpeg_9x>();                                     \
     else                                                                                           \
       throw std::runtime_error("Invalid FFmpeg version");                                          \
   }

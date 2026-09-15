@@ -131,6 +131,11 @@ bool AVFrameWrapper::isKeyFrame() const
 {
   constexpr auto AV_FRAME_FLAG_KEY = (1 << 1);
 
+  if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 61)
+  {
+    const auto p = reinterpret_cast<internal::avutil::AVFrame_61 *>(this->frame.get());
+    return (p->flags & AV_FRAME_FLAG_KEY) != 0;
+  }
   if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 60)
   {
     const auto p = reinterpret_cast<internal::avutil::AVFrame_60 *>(this->frame.get());

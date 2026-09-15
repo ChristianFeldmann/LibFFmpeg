@@ -86,7 +86,7 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
     format.name = std::string(p->name);
     format.numberOfComponents = static_cast<int>(p->nb_components);
     format.shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
-                                static_cast<int>(p->log2_chroma_h)};
+                                 static_cast<int>(p->log2_chroma_h)};
     format.flags              = parseFlagsFromValue(p->flags);
 
     for (int i = 0; i < format.numberOfComponents; ++i)
@@ -106,7 +106,7 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
     format.name = std::string(p->name);
     format.numberOfComponents = static_cast<int>(p->nb_components);
     format.shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
-                                static_cast<int>(p->log2_chroma_h)};
+                                 static_cast<int>(p->log2_chroma_h)};
     format.flags              = parseFlagsFromValue(p->flags);
 
     for (int i = 0; i < format.numberOfComponents; ++i)
@@ -120,13 +120,13 @@ convertAVPixFmtDescriptor(const internal::AVPixelFormat            avPixelFormat
       format.componentDescriptors.push_back(descriptor);
     }
   }
-  else if (version == 57 || version == 58 || version == 59 || version == 60)
+  else if (version == 57 || version == 58 || version == 59 || version == 60 || version == 61)
   {
     auto p      = reinterpret_cast<const internal::avutil::AVPixFmtDescriptor_57 *>(descriptor);
     format.name = std::string(p->name);
     format.numberOfComponents = static_cast<int>(p->nb_components);
     format.shiftLumaToChroma  = {static_cast<int>(p->log2_chroma_w),
-                                static_cast<int>(p->log2_chroma_h)};
+                                 static_cast<int>(p->log2_chroma_h)};
     format.flags              = parseFlagsFromValue(p->flags);
 
     for (int i = 0; i < format.numberOfComponents; ++i)

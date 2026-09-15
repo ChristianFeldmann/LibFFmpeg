@@ -48,21 +48,23 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
   rawCodec.capabilities = TEST_CAPABILITIES;
   if constexpr (V <= FFmpegVersion::FFmpeg_5x)
     rawCodec.channel_layouts = TEST_CHANNEL_FORMATS;
-  else
+  else if constexpr (V <= FFmpegVersion::FFmpeg_8x)
     rawCodec.channel_layouts = TEST_AVCHANNEL_LAYOUTS;
 
-  std::array<AVRational, 4> rawFrameRates = {
+  constexpr std::array<AVRational, 4> rawFrameRates = {
       AVRational({30, 1}), AVRational({30, 1001}), AVRational({77, 999}), AVRational({0, 0})};
-  rawCodec.supported_framerates = rawFrameRates.data();
+  constexpr std::array<AVPixelFormat, 4> rawPixelFormats         = {static_cast<AVPixelFormat>(72),
+                                                                    static_cast<AVPixelFormat>(44),
+                                                                    static_cast<AVPixelFormat>(92),
+                                                                    AVPixelFormat::AV_PIX_FMT_NONE};
+  constexpr std::array<int, 4>           rawSupportedSampleRates = {22, 44, 55, 0};
 
-  std::vector<AVPixelFormat> rawPixelFormats = {static_cast<AVPixelFormat>(72),
-                                                static_cast<AVPixelFormat>(44),
-                                                static_cast<AVPixelFormat>(92),
-                                                AVPixelFormat::AV_PIX_FMT_NONE};
-  rawCodec.pix_fmts                          = rawPixelFormats.data();
-
-  std::vector<int> rawSupportedSampleRates = {22, 44, 55, 0};
-  rawCodec.supported_samplerates           = rawSupportedSampleRates.data();
+  if constexpr (V <= FFmpegVersion::FFmpeg_8x)
+  {
+    rawCodec.supported_framerates  = rawFrameRates.data();
+    rawCodec.pix_fmts              = rawPixelFormats.data();
+    rawCodec.supported_samplerates = rawSupportedSampleRates.data();
+  }
 
   AVCodecWrapper codec(reinterpret_cast<AVCodec *>(&rawCodec), ffmpegLibraries);
 
@@ -71,17 +73,29 @@ template <FFmpegVersion V> void runAVCodecWrapperTest()
   EXPECT_EQ(codec.getMediaType(), avutil::MediaType::Subtitle);
   EXPECT_EQ(codec.getCodecID(), TEST_CODEC_ID);
   EXPECT_EQ(codec.getCapabilities(), TEST_CAPABILITIES);
-  EXPECT_EQ(codec.getSupportedFramerates(),
-            toRationalVector(rawFrameRates.begin(), rawFrameRates.end() - 1));
-  EXPECT_EQ(codec.getPixelFormats().size(), 3);
-  EXPECT_EQ(ffmpegLibraries->functionCallValues.avPixFmtDescGet,
-            std::vector(rawPixelFormats.begin(), rawPixelFormats.end() - 1));
-  EXPECT_EQ(codec.getSupportedSamplerates(),
-            std::vector(rawSupportedSampleRates.begin(), rawSupportedSampleRates.end() - 1));
 
-  EXPECT_THAT(
-      codec.getSupportedChannelLayouts(),
-      ElementsAre(TEST_CHANNELINFO_STEREO, TEST_CHANNELINFO_5POINT1, TEST_CHANNELINFO_7POINT1));
+  if constexpr (V <= FFmpegVersion::FFmpeg_8x)
+  {
+    EXPECT_EQ(codec.getSupportedFramerates(),
+              toRationalVector(rawFrameRates.begin(), rawFrameRates.end() - 1));
+    EXPECT_EQ(codec.getPixelFormats().size(), 3);
+    EXPECT_EQ(ffmpegLibraries->functionCallValues.avPixFmtDescGet,
+              std::vector(rawPixelFormats.begin(), rawPixelFormats.end() - 1));
+    EXPECT_EQ(codec.getSupportedSamplerates(),
+              std::vector(rawSupportedSampleRates.begin(), rawSupportedSampleRates.end() - 1));
+
+    EXPECT_THAT(
+        codec.getSupportedChannelLayouts(),
+        ElementsAre(TEST_CHANNELINFO_STEREO, TEST_CHANNELINFO_5POINT1, TEST_CHANNELINFO_7POINT1));
+  }
+  else
+  {
+    EXPECT_THROW((void)codec.getSupportedFramerates(), std::runtime_error);
+    EXPECT_THROW((void)codec.getPixelFormats(), std::runtime_error);
+    EXPECT_THROW((void)codec.getSupportedSamplerates(), std::runtime_error);
+    EXPECT_THROW((void)codec.getSupportedChannelLayouts(), std::runtime_error);
+    EXPECT_THROW((void)codec.getPixelFormats(), std::runtime_error);
+  }
 }
 
 } // namespace

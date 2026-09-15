@@ -47,5 +47,6 @@ using AVCodecDescriptor_59 = AVCodecDescriptor_57;
 using AVCodecDescriptor_60 = AVCodecDescriptor_57;
 using AVCodecDescriptor_61 = AVCodecDescriptor_57;
 using AVCodecDescriptor_62 = AVCodecDescriptor_57;
+using AVCodecDescriptor_63 = AVCodecDescriptor_57;
 
 } // namespace libffmpeg::internal::avcodec

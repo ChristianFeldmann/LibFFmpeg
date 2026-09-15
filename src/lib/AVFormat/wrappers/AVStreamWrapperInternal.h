@@ -231,4 +231,6 @@ struct AVStream_62
   int                  pts_wrap_bits{};
 };
 
+using AVStream_63 = AVStream_62;
+
 } // namespace libffmpeg::internal::avformat

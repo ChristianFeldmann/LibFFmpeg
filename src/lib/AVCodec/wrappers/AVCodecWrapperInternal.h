@@ -91,4 +91,17 @@ struct AVCodec_61
 
 using AVCodec_62 = AVCodec_61;
 
+struct AVCodec_63
+{
+  const char      *name{};
+  const char      *long_name{};
+  AVMediaType      type{};
+  AVCodecID        id{};
+  int              capabilities{};
+  uint8_t          max_lowres{};
+  const AVClass   *priv_class{};
+  const AVProfile *profiles{};
+  const char      *wrapper_name{};
+};
+
 } // namespace libffmpeg::internal::avcodec
