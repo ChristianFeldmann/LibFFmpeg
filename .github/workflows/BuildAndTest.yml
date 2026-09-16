@@ -48,7 +48,7 @@ jobs:
                   {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm, unzipCommand: unzip },
                   {os: macos-26, artifactName: integrationTestMacArm, unzipCommand: unzip },
                   {os: macos-26-intel, artifactName: integrationTestMacIntel, unzipCommand: unzip } ]
-        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3", "8.0.1"]
+        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3", "8.0.1", "9.0.1"]
         exclude:
           # I did not manage to compile the older ffmpeg versions an windows ARM
           # Let me know if you manage to do so.
@@ -69,7 +69,7 @@ jobs:
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip?${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github-v2/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip?${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4?${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ${{ matrix.config.unzipCommand }} ffmpeg.zip
         rm ffmpeg.zip
@@ -82,6 +82,7 @@ jobs:
     strategy:
       matrix:
         config: [ {os: windows-2025-vs2026, artifactName: integrationTestWindows},
+                  {os: windows-11-vs2026-arm, artifactName: integrationTestWindows},
                   {os: ubuntu-24.04, artifactName: integrationTestUbuntu},
                   {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm},
                   {os: macos-26, artifactName: integrationTestMacArm},
@@ -104,7 +105,7 @@ jobs:
       if: runner.os == 'Linux' || runner.os == 'macOS'
 
     - name: Add ffmpeg to path
-      run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-8.0.1-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-9.0.1-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       if: runner.os == 'Windows'
 
     - name: Download Test files
