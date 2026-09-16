@@ -32,6 +32,7 @@ using libffmpeg::internal::avcodec::AVCodecParameters_59;
 using libffmpeg::internal::avcodec::AVCodecParameters_60;
 using libffmpeg::internal::avcodec::AVCodecParameters_61;
 using libffmpeg::internal::avcodec::AVCodecParameters_62;
+using libffmpeg::internal::avcodec::AVCodecParameters_63;
 
 constexpr std::size_t AV_INPUT_BUFFER_PADDING_SIZE = 32;
 
@@ -155,6 +156,11 @@ ChannelLayout AVCodecParametersWrapper::getChannelLayout() const
     const auto p = reinterpret_cast<AVCodecParameters_61 *>(this->codecParameters);
     return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
   }
+  else if (version == 63)
+  {
+    const auto p = reinterpret_cast<AVCodecParameters_63 *>(this->codecParameters);
+    return internal::avcodec::avChannelLayoutToChannelLayout(p->ch_layout);
+  }
 
   throw std::runtime_error("Invalid library version");
 }
@@ -225,6 +231,40 @@ void AVCodecParametersWrapper::setClearValues()
     p->color_space     = internal::AVCOL_SPC_UNSPECIFIED;
     p->chroma_location = internal::AVCHROMA_LOC_UNSPECIFIED;
     p->video_delay     = 0;
+  }
+  else if (version == 63)
+  {
+    auto p                   = reinterpret_cast<AVCodecParameters_63 *>(this->codecParameters);
+    p->codec_type            = libffmpeg::internal::AVMEDIA_TYPE_UNKNOWN;
+    p->codec_id              = libffmpeg::internal::AV_CODEC_ID_NONE;
+    p->codec_tag             = 0;
+    p->extradata             = nullptr;
+    p->extradata_size        = 0;
+    p->coded_side_data       = nullptr;
+    p->nb_coded_side_data    = 0;
+    p->format                = 0;
+    p->bit_rate              = 0;
+    p->bits_per_coded_sample = 0;
+    p->bits_per_raw_sample   = 0;
+    p->profile               = 0;
+    p->level                 = 0;
+    p->width                 = 0;
+    p->height                = 0;
+    {
+      AVRational ratio{};
+      ratio.num              = 1;
+      ratio.den              = 1;
+      p->sample_aspect_ratio = ratio;
+      p->framerate           = ratio;
+    }
+    p->field_order     = internal::AV_FIELD_UNKNOWN;
+    p->color_range     = internal::AVCOL_RANGE_UNSPECIFIED;
+    p->color_primaries = internal::AVCOL_PRI_UNSPECIFIED;
+    p->color_trc       = internal::AVCOL_TRC_UNSPECIFIED;
+    p->color_space     = internal::AVCOL_SPC_UNSPECIFIED;
+    p->chroma_location = internal::AVCHROMA_LOC_UNSPECIFIED;
+    p->video_delay     = 0;
+    p->alpha_mode      = internal::AVALPHA_MODE_UNSPECIFIED;
   }
   else
     throw std::runtime_error("Invalid library version");

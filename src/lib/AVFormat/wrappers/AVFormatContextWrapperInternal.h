@@ -195,5 +195,6 @@ struct AVFormatContext_61
 };
 
 using AVFormatContext_62 = AVFormatContext_61;
+using AVFormatContext_63 = AVFormatContext_61;
 
 } // namespace libffmpeg::internal::avformat

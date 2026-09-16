@@ -9,24 +9,25 @@
 namespace libffmpeg::internal::avformat
 {
 
-constexpr auto AVFMT_NOFILE        = 0x0001;
-constexpr auto AVFMT_NEEDNUMBER    = 0x0002;
-constexpr auto AVFMT_EXPERIMENTAL  = 0x0004;
-constexpr auto AVFMT_SHOW_IDS      = 0x0008;
-constexpr auto AVFMT_GLOBALHEADER  = 0x0040;
-constexpr auto AVFMT_NOTIMESTAMPS  = 0x0080;
-constexpr auto AVFMT_GENERIC_INDEX = 0x0100;
-constexpr auto AVFMT_TS_DISCONT    = 0x0200;
-constexpr auto AVFMT_VARIABLE_FPS  = 0x0400;
-constexpr auto AVFMT_NODIMENSIONS  = 0x0800;
-constexpr auto AVFMT_NOSTREAMS     = 0x1000;
-constexpr auto AVFMT_NOBINSEARCH   = 0x2000;
-constexpr auto AVFMT_NOGENSEARCH   = 0x4000;
-constexpr auto AVFMT_NO_BYTE_SEEK  = 0x8000;
-constexpr auto AVFMT_ALLOW_FLUSH   = 0x10000;
-constexpr auto AVFMT_TS_NONSTRICT  = 0x20000;
-constexpr auto AVFMT_TS_NEGATIVE   = 0x40000;
-constexpr auto AVFMT_SEEK_TO_PTS   = 0x4000000;
+constexpr auto AVFMT_NOFILE          = 0x0001;
+constexpr auto AVFMT_NEEDNUMBER      = 0x0002;
+constexpr auto AVFMT_EXPERIMENTAL    = 0x0004;
+constexpr auto AVFMT_SHOW_IDS        = 0x0008;
+constexpr auto AVFMT_GLOBALHEADER    = 0x0040;
+constexpr auto AVFMT_NOTIMESTAMPS    = 0x0080;
+constexpr auto AVFMT_GENERIC_INDEX   = 0x0100;
+constexpr auto AVFMT_TS_DISCONT      = 0x0200;
+constexpr auto AVFMT_VARIABLE_FPS    = 0x0400;
+constexpr auto AVFMT_NODIMENSIONS    = 0x0800;
+constexpr auto AVFMT_NOSTREAMS       = 0x1000;
+constexpr auto AVFMT_NOBINSEARCH     = 0x2000;
+constexpr auto AVFMT_NOGENSEARCH     = 0x4000;
+constexpr auto AVFMT_NO_BYTE_SEEK    = 0x8000;
+constexpr auto AVFMT_ALLOW_FLUSH     = 0x10000;
+constexpr auto AVFMT_TS_NONSTRICT    = 0x20000;
+constexpr auto AVFMT_TS_NEGATIVE     = 0x40000;
+constexpr auto AVFMT_FIXED_FRAMESIZE = 0x80000;
+constexpr auto AVFMT_SEEK_TO_PTS     = 0x4000000;
 
 struct AVInputFormat_56
 {
@@ -47,5 +48,6 @@ using AVInputFormat_59 = AVInputFormat_56;
 using AVInputFormat_60 = AVInputFormat_56;
 using AVInputFormat_61 = AVInputFormat_56;
 using AVInputFormat_62 = AVInputFormat_56;
+using AVInputFormat_63 = AVInputFormat_56;
 
 } // namespace libffmpeg::internal::avformat

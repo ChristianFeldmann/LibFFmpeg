@@ -35,5 +35,6 @@ struct AVFrameSideData_57
 using AVFrameSideData_58 = AVFrameSideData_57;
 using AVFrameSideData_59 = AVFrameSideData_57;
 using AVFrameSideData_60 = AVFrameSideData_57;
+using AVFrameSideData_61 = AVFrameSideData_57;
 
 } // namespace libffmpeg::internal::avutil

@@ -10,12 +10,12 @@ jobs:
   build:
     strategy:
       matrix:
-        config: [ {os: windows-2025, copyCommand: copy, artifactName: integrationTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
-                  {os: windows-11-arm, copyCommand: copy, artifactName: integrationTestWindowsArm, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
+        config: [ {os: windows-2025-vs2026, copyCommand: copy, artifactName: integrationTestWindows, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
+                  {os: windows-11-vs2026-arm, copyCommand: copy, artifactName: integrationTestWindowsArm, buildPath: Release/, dummyLib: dummyLib.dll, integrationTest: integrationTest.exe},
                   {os: ubuntu-24.04, copyCommand: cp, artifactName: integrationTestUbuntu, buildPath: , dummyLib: libdummyLib.so, integrationTest: integrationTest},
                   {os: ubuntu-24.04-arm, copyCommand: cp, artifactName: integrationTestUbuntuArm, buildPath: , dummyLib: libdummyLib.so, integrationTest: integrationTest},
-                  {os: macos-15, copyCommand: cp, artifactName: integrationTestMacArm, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest},
-                  {os: macos-15-intel, copyCommand: cp, artifactName: integrationTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest} ]
+                  {os: macos-26, copyCommand: cp, artifactName: integrationTestMacArm, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest},
+                  {os: macos-26-intel, copyCommand: cp, artifactName: integrationTestMacIntel, buildPath: , dummyLib: libdummyLib.dylib, integrationTest: integrationTest} ]
     runs-on: ${{ matrix.config.os }}
     
     steps:
@@ -42,20 +42,20 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-2025, artifactName: integrationTestWindows, unzipCommand: 7z x },
-                  {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x },
+        config: [ {os: windows-2025-vs2026, artifactName: integrationTestWindows, unzipCommand: 7z x },
+                  {os: windows-11-vs2026-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x },
                   {os: ubuntu-24.04, artifactName: integrationTestUbuntu, unzipCommand: unzip },
                   {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm, unzipCommand: unzip },
-                  {os: macos-15, artifactName: integrationTestMacArm, unzipCommand: unzip },
-                  {os: macos-15-intel, artifactName: integrationTestMacIntel, unzipCommand: unzip } ]
-        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3", "8.0.1"]
+                  {os: macos-26, artifactName: integrationTestMacArm, unzipCommand: unzip },
+                  {os: macos-26-intel, artifactName: integrationTestMacIntel, unzipCommand: unzip } ]
+        ffmpegVersions: ["2.8.22", "3.4.14", "4.4.6", "5.1.8", "6.1.4", "7.0.3", "8.0.1", "9.0.1"]
         exclude:
           # I did not manage to compile the older ffmpeg versions an windows ARM
           # Let me know if you manage to do so.
           - ffmpegVersions: "2.8.22"
-            config: {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
+            config: {os: windows-11-vs2026-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
           - ffmpegVersions: "3.4.14"
-            config: {os: windows-11-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
+            config: {os: windows-11-vs2026-arm, artifactName: integrationTestWindowsArm, unzipCommand: 7z x }
     runs-on: ${{ matrix.config.os }}
     continue-on-error: true
     steps:
@@ -69,7 +69,7 @@ jobs:
 
     - name: Download FFmpeg
       run: |
-        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip?${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
+        curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}ffmpeg/github-v2/ffmpeg-${{ matrix.ffmpegVersions }}-${{ matrix.config.os }}.zip?${{ secrets.AZURE_BLOB_TOKEN }}" -o ffmpeg.zip
         curl -L "${{ secrets.AZURE_BLOB_ROOT_PATH }}bitstream-testfiles/TestFile_h264_aac_1s_320x240.mp4?${{ secrets.AZURE_BLOB_TOKEN }}" -o TestFile_h264_aac_1s_320x240.mp4
         ${{ matrix.config.unzipCommand }} ffmpeg.zip
         rm ffmpeg.zip
@@ -81,11 +81,12 @@ jobs:
     needs: build
     strategy:
       matrix:
-        config: [ {os: windows-2025, artifactName: integrationTestWindows},
+        config: [ {os: windows-2025-vs2026, artifactName: integrationTestWindows},
+                  {os: windows-11-vs2026-arm, artifactName: integrationTestWindows},
                   {os: ubuntu-24.04, artifactName: integrationTestUbuntu},
                   {os: ubuntu-24.04-arm, artifactName: integrationTestUbuntuArm},
-                  {os: macos-15, artifactName: integrationTestMacArm},
-                  {os: macos-15-intel, artifactName: integrationTestMacIntel} ]
+                  {os: macos-26, artifactName: integrationTestMacArm},
+                  {os: macos-26-intel, artifactName: integrationTestMacIntel} ]
     runs-on: ${{ matrix.config.os }}
     continue-on-error: true
     steps:
@@ -104,7 +105,7 @@ jobs:
       if: runner.os == 'Linux' || runner.os == 'macOS'
 
     - name: Add ffmpeg to path
-      run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-8.0.1-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      run: echo "C:\ProgramData\chocolatey\lib\ffmpeg-shared\tools\ffmpeg-9.0.1-full_build-shared\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       if: runner.os == 'Windows'
 
     - name: Download Test files

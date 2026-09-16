@@ -31,6 +31,7 @@ using libffmpeg::internal::avformat::AVStream_59;
 using libffmpeg::internal::avformat::AVStream_60;
 using libffmpeg::internal::avformat::AVStream_61;
 using libffmpeg::internal::avformat::AVStream_62;
+using libffmpeg::internal::avformat::AVStream_63;
 
 } // namespace
 
@@ -216,6 +217,12 @@ std::optional<avcodec::AVCodecParametersWrapper> AVStreamWrapper::getCodecParame
   if (version == 62)
   {
     const auto p = reinterpret_cast<AVStream_62 *>(this->stream);
+    if (p->codecpar != nullptr)
+      return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
+  }
+  if (version == 63)
+  {
+    const auto p = reinterpret_cast<AVStream_63 *>(this->stream);
     if (p->codecpar != nullptr)
       return avcodec::AVCodecParametersWrapper(p->codecpar, this->ffmpegLibraries);
   }

@@ -144,6 +144,14 @@ enum AVChromaLocation
   AVCHROMA_LOC_BOTTOM      = 6
 };
 
+enum AVAlphaMode
+{
+  AVALPHA_MODE_UNSPECIFIED   = 0, ///< Unknown alpha handling, or no alpha channel
+  AVALPHA_MODE_PREMULTIPLIED = 1, ///< Alpha channel is multiplied into color values
+  AVALPHA_MODE_STRAIGHT      = 2, ///< Alpha channel is independent of color values
+  AVALPHA_MODE_NB                 ///< Not part of ABI
+};
+
 enum AVMediaType
 {
   AVMEDIA_TYPE_UNKNOWN = -1, ///< Usually treated as AVMEDIA_TYPE_DATA
@@ -195,7 +203,18 @@ enum AVFrameSideDataType
   AV_FRAME_DATA_FILM_GRAIN_PARAMS,
   AV_FRAME_DATA_DETECTION_BBOXES,
   AV_FRAME_DATA_DOVI_RPU_BUFFER,
-  AV_FRAME_DATA_DOVI_METADATA
+  AV_FRAME_DATA_DYNAMIC_HDR_VIVID,
+  AV_FRAME_DATA_AMBIENT_VIEWING_ENVIRONMENT,
+  AV_FRAME_DATA_VIDEO_HINT,
+  AV_FRAME_DATA_LCEVC,
+  AV_FRAME_DATA_VIEW_ID,
+  AV_FRAME_DATA_3D_REFERENCE_DISPLAYS,
+  AV_FRAME_DATA_EXIF,
+  AV_FRAME_DATA_DYNAMIC_HDR_SMPTE_2094_APP5,
+  AV_FRAME_DATA_IAMF_MIX_GAIN_PARAM,
+  AV_FRAME_DATA_IAMF_DEMIXING_INFO_PARAM,
+  AV_FRAME_DATA_IAMF_RECON_GAIN_INFO_PARAM,
+  AV_FRAME_DATA_RAW_COLOR_PARAMS
 };
 
 enum AVDiscard
@@ -294,6 +313,18 @@ struct AVDictionaryEntry
 {
   char *key;
   char *value;
+};
+
+enum AVCodecConfig
+{
+  AV_CODEC_CONFIG_PIX_FORMAT,     ///< AVPixelFormat, terminated by AV_PIX_FMT_NONE
+  AV_CODEC_CONFIG_FRAME_RATE,     ///< AVRational, terminated by {0, 0}
+  AV_CODEC_CONFIG_SAMPLE_RATE,    ///< int, terminated by 0
+  AV_CODEC_CONFIG_SAMPLE_FORMAT,  ///< AVSampleFormat, terminated by AV_SAMPLE_FMT_NONE
+  AV_CODEC_CONFIG_CHANNEL_LAYOUT, ///< AVChannelLayout, terminated by {0}
+  AV_CODEC_CONFIG_COLOR_RANGE,    ///< AVColorRange, terminated by AVCOL_RANGE_UNSPECIFIED
+  AV_CODEC_CONFIG_COLOR_SPACE,    ///< AVColorSpace, terminated by AVCOL_SPC_UNSPECIFIED
+  AV_CODEC_CONFIG_ALPHA_MODE,     ///< AVAlphaMode, terminated by AVALPHA_MODE_UNSPECIFIED
 };
 
 } // namespace libffmpeg::internal

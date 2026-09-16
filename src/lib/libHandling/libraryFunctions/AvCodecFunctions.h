@@ -41,6 +41,15 @@ struct AvCodecFunctions
   std::function<int(AVCodecContext *, const AVPacket *)>          avcodec_send_packet;
   std::function<int(AVCodecContext *, AVFrame *)>                 avcodec_receive_frame;
   std::function<int(AVCodecContext *, const AVCodecParameters *)> avcodec_parameters_to_context;
+
+  // FFmpeg >= Version 8 ( >= avcodec 62 )
+  std::function<int(const AVCodecContext *avctx,
+                    const AVCodec        *codec,
+                    AVCodecConfig         config,
+                    unsigned              flags,
+                    const void          **out_configs,
+                    int                  *out_num_configs)>
+      avcodec_get_supported_config;
 };
 
 std::optional<AvCodecFunctions> tryBindAVCodecFunctionsFromLibrary(const SharedLibraryLoader &lib,

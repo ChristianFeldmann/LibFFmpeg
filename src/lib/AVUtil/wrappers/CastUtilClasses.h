@@ -43,6 +43,11 @@
       const auto p     = reinterpret_cast<internal::avutil::classPrefix##_60 *>(castFrom);         \
       variableToAssign = p->member;                                                                \
     }                                                                                              \
+    else if (this->ffmpegLibraries->getLibrariesVersion().avutil.major == 61)                      \
+    {                                                                                              \
+      const auto p     = reinterpret_cast<internal::avutil::classPrefix##_61 *>(castFrom);         \
+      variableToAssign = p->member;                                                                \
+    }                                                                                              \
     else                                                                                           \
       throw std::runtime_error("Invalid library version");                                         \
   }

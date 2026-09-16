@@ -35,6 +35,7 @@ using libffmpeg::internal::avcodec::AVCodec_59;
 using libffmpeg::internal::avcodec::AVCodec_60;
 using libffmpeg::internal::avcodec::AVCodec_61;
 using libffmpeg::internal::avcodec::AVCodec_62;
+using libffmpeg::internal::avcodec::AVCodec_63;
 
 namespace
 {
@@ -100,8 +101,14 @@ int AVCodecWrapper::getCapabilities() const
 
 std::vector<Rational> AVCodecWrapper::getSupportedFramerates() const
 {
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major >= 63)
+  {
+    throw std::runtime_error(
+        "Retrieving supported framerates from AVCodec was deprecated and moved to AVCodecContext.");
+  }
+
   const AVRational *rates{};
-  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, rates, supported_framerates);
+  CAST_AVCODEC_GET_MEMBER_UP_TO_62(AVCodec, this->codec, rates, supported_framerates);
 
   std::vector<Rational> framerates;
   int                   i   = 0;
@@ -117,8 +124,14 @@ std::vector<Rational> AVCodecWrapper::getSupportedFramerates() const
 
 std::vector<avutil::PixelFormatDescriptor> AVCodecWrapper::getPixelFormats() const
 {
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major >= 63)
+  {
+    throw std::runtime_error("Retrieving supported pixel formats from AVCodec was deprecated and "
+                             "moved to AVCodecContext.");
+  }
+
   const AVPixelFormat *formatsPointer{};
-  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, formatsPointer, pix_fmts);
+  CAST_AVCODEC_GET_MEMBER_UP_TO_62(AVCodec, this->codec, formatsPointer, pix_fmts);
 
   std::vector<avutil::PixelFormatDescriptor> formats;
 
@@ -135,15 +148,27 @@ std::vector<avutil::PixelFormatDescriptor> AVCodecWrapper::getPixelFormats() con
 
 std::vector<int> AVCodecWrapper::getSupportedSamplerates() const
 {
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major >= 63)
+  {
+    throw std::runtime_error("Retrieving supported sample rates from AVCodec was deprecated and "
+                             "moved to AVCodecContext.");
+  }
+
   const int *rates{};
-  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, rates, supported_samplerates);
+  CAST_AVCODEC_GET_MEMBER_UP_TO_62(AVCodec, this->codec, rates, supported_samplerates);
   return convertRawListToVec(rates, 0);
 }
 
 std::vector<AVSampleFormat> AVCodecWrapper::getSampleFormats() const
 {
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major >= 63)
+  {
+    throw std::runtime_error("Retrieving supported sample formats from AVCodec was deprecated and "
+                             "moved to AVCodecContext.");
+  }
+
   const AVSampleFormat *formats{};
-  CAST_AVCODEC_GET_MEMBER(AVCodec, this->codec, formats, sample_fmts);
+  CAST_AVCODEC_GET_MEMBER_UP_TO_62(AVCodec, this->codec, formats, sample_fmts);
   return convertRawListToVec(formats, AVSampleFormat(-1));
 }
 
@@ -184,6 +209,11 @@ std::vector<ChannelLayout> AVCodecWrapper::getSupportedChannelLayouts() const
   {
     const auto p = reinterpret_cast<AVCodec_62 *>(this->codec);
     return avChannelLayoutListToChannelLayouts(p->channel_layouts);
+  }
+  if (this->ffmpegLibraries->getLibrariesVersion().avcodec.major >= 63)
+  {
+    throw std::runtime_error("Retrieving supported channel layouts from AVCodec was deprecated and "
+                             "moved to AVCodecContext.");
   }
 
   throw std::runtime_error("Invalid library version");

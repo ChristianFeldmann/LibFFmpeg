@@ -56,7 +56,8 @@ TEST(Demuxing, OpenTestFileAndCheckFormat_ShouldHaveCorrectFormat)
   EXPECT_THAT((std::array{"mov,mp4,m4a,3gp,3g2,mj2",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v",
                           "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif",
-                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif,heic,heif"}),
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4b,ism,ismv,isma,f4v,avif,heic,heif",
+                          "mov,mp4,m4a,3gp,3g2,mj2,psp,m4v,m4b,ism,ismv,isma,f4v,avif,heic,heif"}),
               Contains(inputFormat.getExtensions()));
 
   avformat::AVInputFormatFlags expectedFlags{};
@@ -172,7 +173,7 @@ TEST(Demuxing, OpenTestFileAndDemuxPackets_ShouldReturnCorrectPackets)
 {
   auto libsAndLogs = LibrariesWithLogging();
 
-  auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
+  auto demuxer = libsAndLogs.openTestFileInDemuxer();
 
   constexpr std::array<int, 25> expectedDataSizesVideo = {3827, 499, 90,  46, 29,  439, 82, 36, 40,
                                                           461,  56,  36,  25, 419, 54,  29, 23, 339,
@@ -213,7 +214,7 @@ TEST(Demuxing, OpenTestFileAndDemuxPackets_ShouldLogDemuxingEventsCorrectly)
 {
   auto libsAndLogs = LibrariesWithLogging();
 
-  auto       demuxer       = libsAndLogs.openTestFileInDemuxer();
+  auto demuxer = libsAndLogs.openTestFileInDemuxer();
 
   while (auto packet = demuxer.getNextPacket())
   {

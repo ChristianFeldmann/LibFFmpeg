@@ -390,28 +390,28 @@ using AVCodecContext_60 = AVCodecContext_59;
 
 struct AVCodecContext_61
 {
-  const AVClass     *av_class{};
-  int                log_level_offset{};
-  AVMediaType        codec_type{};
-  const AVCodec     *codec{};
-  AVCodecID          codec_id{};
-  unsigned int       codec_tag{};
-  void              *priv_data{};
-  AVCodecInternal   *internal{};
-  void              *opaque{};
-  int64_t            bit_rate{};
-  int                flags{};
-  int                flags2{};
-  uint8_t           *extradata{};
-  int                extradata_size{};
-  AVRational         time_base{};
-  AVRational         pkt_timebase{};
-  AVRational         framerate{};
-  int                ticks_per_frame{};
-  int                delay{};
-  int                width{}, height{};
-  int                coded_width{}, coded_height{};
-  AVRational         sample_aspect_ratio{};
+  const AVClass   *av_class{};
+  int              log_level_offset{};
+  AVMediaType      codec_type{};
+  const AVCodec   *codec{};
+  AVCodecID        codec_id{};
+  unsigned int     codec_tag{};
+  void            *priv_data{};
+  AVCodecInternal *internal{};
+  void            *opaque{};
+  int64_t          bit_rate{};
+  int              flags{};
+  int              flags2{};
+  uint8_t         *extradata{};
+  int              extradata_size{};
+  AVRational       time_base{};
+  AVRational       pkt_timebase{};
+  AVRational       framerate{};
+  int              ticks_per_frame{};
+  int              delay{};
+  int              width{}, height{};
+  int              coded_width{}, coded_height{};
+  AVRational       sample_aspect_ratio{};
   enum AVPixelFormat pix_fmt
   {
   };
@@ -452,27 +452,27 @@ struct AVCodecContext_61
 
 struct AVCodecContext_62
 {
-  const AVClass     *av_class{};
-  int                log_level_offset{};
-  AVMediaType        codec_type{};
-  const AVCodec     *codec{};
-  AVCodecID          codec_id{};
-  unsigned int       codec_tag{};
-  void              *priv_data{};
-  AVCodecInternal   *internal{};
-  void              *opaque{};
-  int64_t            bit_rate{};
-  int                flags{};
-  int                flags2{};
-  uint8_t           *extradata{};
-  int                extradata_size{};
-  AVRational         time_base{};
-  AVRational         pkt_timebase{};
-  AVRational         framerate{};
-  int                delay{};
-  int                width{}, height{};
-  int                coded_width{}, coded_height{};
-  AVRational         sample_aspect_ratio{};
+  const AVClass   *av_class{};
+  int              log_level_offset{};
+  AVMediaType      codec_type{};
+  const AVCodec   *codec{};
+  AVCodecID        codec_id{};
+  unsigned int     codec_tag{};
+  void            *priv_data{};
+  AVCodecInternal *internal{};
+  void            *opaque{};
+  int64_t          bit_rate{};
+  int              flags{};
+  int              flags2{};
+  uint8_t         *extradata{};
+  int              extradata_size{};
+  AVRational       time_base{};
+  AVRational       pkt_timebase{};
+  AVRational       framerate{};
+  int              delay{};
+  int              width{}, height{};
+  int              coded_width{}, coded_height{};
+  AVRational       sample_aspect_ratio{};
   enum AVPixelFormat pix_fmt
   {
   };
@@ -510,5 +510,7 @@ struct AVCodecContext_62
 
   // Actually, there is more here, but the variables above are the only we need.
 };
+
+using AVCodecContext_63 = struct AVCodecContext_62;
 
 } // namespace libffmpeg::internal::avcodec
